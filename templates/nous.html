@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À propos de nous | Golden Yield</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{ box-sizing:border-box; font-family:'Poppins',sans-serif; }
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+}
+
+/* APP */
+.app{
+  max-width:480px;
+  margin:auto;
+  padding:20px 16px 80px;
+}
+
+/* HEADER */
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
+}
+.header i{
+  font-size:20px;
+  cursor:pointer;
+}
+.header h2{
+  margin:0;
+  font-size:18px;
+  font-weight:600;
+}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 15px 35px rgba(0,0,0,.3);
+  margin-bottom:16px;
+}
+
+/* TITLE */
+.card h3{
+  margin:0 0 10px;
+  font-size:16px;
+  color:#00c6ff;
+}
+
+/* TEXT */
+.card p{
+  font-size:13px;
+  line-height:1.6;
+  opacity:.9;
+  margin:0;
+}
+
+/* ICON ROW */
+.icon-row{
+  display:flex;
+  gap:12px;
+  margin-top:12px;
+}
+.icon-box{
+  flex:1;
+  background:rgba(255,255,255,0.06);
+  border-radius:14px;
+  padding:14px 10px;
+  text-align:center;
+  font-size:12px;
+}
+.icon-box i{
+  display:block;
+  font-size:20px;
+  margin-bottom:6px;
+  color:#00c6ff;
+}
+
+/* VALUES */
+.value{
+  display:flex;
+  gap:12px;
+  margin-bottom:12px;
+}
+.value i{
+  font-size:18px;
+  color:#00c6ff;
+}
+.value span{
+  font-size:13px;
+  line-height:1.5;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <i class="fa-solid fa-arrow-left" onclick="location.href='/profile'"></i>
+    <h2>À propos de nous</h2>
+  </div>
+
+  <!-- WHO WE ARE -->
+  <div class="card">
+    <h3>Qui sommes-nous ?</h3>
+    <p>
+      <strong>Golden Yield</strong> est une plateforme d’investissement numérique
+      conçue pour offrir à ses utilisateurs des opportunités de revenus
+      fiables, accessibles et transparentes.
+    </p>
+  </div>
+
+  <!-- MISSION -->
+  <div class="card">
+    <h3>Notre mission</h3>
+    <p>
+      Permettre à chacun de faire fructifier son capital grâce à des solutions
+      d’investissement simples, sécurisées et adaptées aux réalités locales.
+    </p>
+  </div>
+
+  <!-- STATS -->
+  <div class="card">
+    <h3>Pourquoi nous choisir ?</h3>
+
+    <div class="icon-row">
+      <div class="icon-box">
+        <i class="fa-solid fa-shield-halved"></i>
+        Sécurité
+      </div>
+      <div class="icon-box">
+        <i class="fa-solid fa-bolt"></i>
+        Rapidité
+      </div>
+      <div class="icon-box">
+        <i class="fa-solid fa-hand-holding-dollar"></i>
+        Rentabilité
+      </div>
+    </div>
+  </div>
+
+  <!-- VALUES -->
+  <div class="card">
+    <h3>Nos valeurs</h3>
+
+    <div class="value">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>Transparence totale sur toutes les opérations</span>
+    </div>
+
+    <div class="value">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>Sécurité des fonds et des données utilisateurs</span>
+    </div>
+
+    <div class="value">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>Support client disponible et réactif</span>
+    </div>
+
+    <div class="value">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>Amélioration continue de la plateforme</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard | Golden Yield</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* Background circles */
+.bg-circle{
+  position:fixed;
+  width:420px;
+  height:420px;
+  background:rgba(255,255,255,0.05);
+  border-radius:50%;
+  animation:float 10s infinite ease-in-out;
+  z-index:0;
+}
+.bg-circle.one{ top:-120px; left:-120px; }
+.bg-circle.two{ bottom:-140px; right:-140px; animation-delay:3s; }
+
+@keyframes float{
+  0%{ transform:translateY(0); }
+  50%{ transform:translateY(-30px); }
+  100%{ transform:translateY(0); }
+}
+
+/* APP */
+.app{
+  max-width:480px;
+  margin:auto;
+  padding:25px 16px 140px;
+  position:relative;
+  z-index:5;
+}
+
+/* HEADER */
+.header{
+  margin-bottom:20px;
+}
+.header h2{
+  margin:0;
+  font-size:20px;
+  font-weight:600;
+}
+.header small{
+  opacity:.85;
+}
+
+/* GLASS CARD */
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.3);
+  margin-bottom:18px;
+}
+
+/* SOLDE */
+.balance h1{
+  margin:6px 0;
+  font-size:26px;
+}
+.balance span{
+  font-size:13px;
+  opacity:.85;
+}
+
+/* STATS */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:12px;
+}
+.stat{
+  text-align:center;
+  padding:12px 6px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.06);
+}
+.stat strong{
+  display:block;
+  font-size:16px;
+  color:#00c6ff;
+}
+.stat small{
+  font-size:11px;
+  opacity:.75;
+}
+
+/* ACTIONS */
+.actions{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:18px;
+}
+.action{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(12px);
+  border-radius:16px;
+  padding:14px 0;
+  text-align:center;
+  font-size:12px;
+  cursor:pointer;
+}
+.action i{
+  display:block;
+  font-size:22px;
+  color:#00c6ff;
+  margin-bottom:6px;
+}
+
+/* INFO */
+.info h4{
+  margin:0 0 6px;
+  font-size:15px;
+  color:#00c6ff;
+}
+.info p{
+  font-size:13px;
+  opacity:.85;
+  line-height:1.5;
+}
+
+/* PROMO IMAGES */
+.promo-images{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:10px;
+}
+.promo-images img{
+  width:100%;
+  height:110px;
+  object-fit:cover;
+  border-radius:16px;
+  box-shadow:0 12px 25px rgba(0,0,0,.3);
+}
+
+/* SUPPORT */
+.support-btn{
+  position:fixed;
+  bottom:90px;
+  right:20px;
+  width:56px;
+  height:56px;
+  background:linear-gradient(135deg,#00c6ff,#0072ff);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:24px;
+  box-shadow:0 10px 25px rgba(0,114,255,.5);
+  animation:pulse 2s infinite;
+  z-index:20;
+}
+@keyframes pulse{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.08); }
+  100%{ transform:scale(1); }
+}
+
+/* NAV */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(12px);
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
+  z-index:10;
+}
+.bottom-nav a{
+  color:#aaa;
+  font-size:12px;
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.bottom-nav i{
+  font-size:18px;
+  margin-bottom:2px;
+}
+.bottom-nav a.active{
+  color:#00c6ff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg-circle one"></div>
+<div class="bg-circle two"></div>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h2>BOT CHINA</h2>
+    <small>Bienvenue, {{ user.phone }}</small>
+  </div>
+
+  <!-- SOLDE -->
+  <div class="card balance">
+    <span>Solde total</span>
+    <h1>{{ user.solde_total or 0 }} XOF</h1>
+    <span>Revenu cumulé : {{ revenu_cumule or 0 }} XOF</span>
+
+    <div class="stats">
+      <div class="stat">
+        <strong>{{ user.solde_revenu or 0 }}</strong>
+        <small>Revenus</small>
+      </div>
+      <div class="stat">
+        <strong>{{ total_users or 0 }}</strong>
+        <small>All users</small>
+      </div>
+      <div class="stat">
+        <strong>{{ total_invested or 0 }}</strong>
+        <small>All profil</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <div class="action" onclick="location.href='/deposit'">
+      <i class="fa-solid fa-wallet"></i>Dépôt
+    </div>
+    <div class="action" onclick="location.href='/retrait'">
+      <i class="fa-solid fa-arrow-up"></i>Retrait
+    </div>
+    <div class="action" onclick="location.href='/achats'">
+      <i class="fa-solid fa-chart-line"></i>Mes Achats
+    </div>
+    <div class="action" onclick="location.href='/profile'">
+      <i class="fa-solid fa-user"></i>Moi
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="card info">
+    <h4>Conseil Golden Yield</h4>
+    <p>
+      Réinvestissez régulièrement vos gains pour augmenter vos revenus journaliers
+      et accélérer votre croissance financière.
+    </p>
+  </div>
+
+  <!-- PROMO -->
+  <div class="promo-images">
+    <img src="/static/images/c1.jpg" alt="Opportunité">
+    <img src="/static/images/c2.jpg" alt="Revenus">
+  </div>
+
+</div>
+
+<!-- SUPPORT -->
+<a href="/support" class="support-btn">
+  <i class="fa-solid fa-headset"></i>
+</a>
+
+<!-- NAV -->
+<div class="bottom-nav">
+  <a href="/dashboard" class="active">
+    <i class="fa-solid fa-house"></i>Accueil
+  </a>
+  <a href="/produits_rapide">
+    <i class="fa-solid fa-chart-line"></i>Produits
+  </a>
+  <a href="/team">
+    <i class="fa-solid fa-users"></i>Team
+  </a>
+</div>
+
+</body>
+</html>

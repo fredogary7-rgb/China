@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support Admin | Golden Yield</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:#fff;
+    min-height:100vh;
+}
+
+.app{
+    max-width:480px;
+    margin:auto;
+    padding:25px 16px 120px;
+}
+
+.header h2{
+    margin:0 0 12px 0;
+    font-size:22px;
+}
+
+.user-list{
+    list-style:none;
+    padding:0;
+}
+
+.user-list li{
+    background:rgba(255,255,255,0.08);
+    padding:14px 18px;
+    border-radius:16px;
+    margin-bottom:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.user-list li:hover{
+    background:rgba(0,198,255,0.2);
+}
+
+.user-list a{
+    text-decoration:none;
+    color:#fff;
+    flex:1;
+}
+
+.badge{
+    background:#ff3b3b;
+    color:#fff;
+    font-size:12px;
+    font-weight:600;
+    padding:2px 8px;
+    border-radius:12px;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+    <div class="header">
+        <h2>Support Admin</h2>
+        <p>Liste des utilisateurs ayant envoyé des messages</p>
+    </div>
+
+    <ul class="user-list">
+        {% for user in users %}
+        <li>
+            <a href="{{ url_for('admin_support_chat', phone=user.user_phone) }}">
+                {{ user.user_phone }}
+            </a>
+            {% if user.unread_count > 0 %}
+            <span class="badge">{{ user.unread_count }}</span>
+            {% endif %}
+        </li>
+        {% else %}
+        <li>Aucun utilisateur pour le moment.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+</body>
+</html>

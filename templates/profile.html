@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil | Golden Yield</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{ box-sizing:border-box; font-family:'Poppins',sans-serif; }
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+}
+
+/* APP */
+.app{
+  max-width:480px;
+  margin:auto;
+  padding:20px 16px 100px;
+}
+
+/* HEADER */
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
+}
+.header i{
+  font-size:20px;
+  cursor:pointer;
+}
+.header h2{
+  margin:0;
+  font-size:18px;
+  font-weight:600;
+}
+
+/* PROFILE CARD */
+.profile-card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border-radius:20px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,.3);
+  margin-bottom:20px;
+}
+
+.avatar{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#00c6ff,#0072ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  margin:auto;
+}
+
+.profile-card h3{
+  margin:12px 0 4px;
+  font-size:17px;
+}
+
+.profile-card small{
+  opacity:.75;
+  font-size:13px;
+}
+
+/* QUICK ACTIONS */
+.quick-actions{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.quick{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(12px);
+  border-radius:18px;
+  padding:18px 10px;
+  text-align:center;
+  cursor:pointer;
+}
+
+.quick i{
+  font-size:24px;
+  color:#00c6ff;
+  margin-bottom:6px;
+  display:block;
+}
+
+.quick span{
+  font-size:13px;
+}
+
+/* MENU */
+.menu{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.menu a{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 18px;
+  color:#fff;
+  text-decoration:none;
+  font-size:14px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+.menu a:last-child{
+  border-bottom:none;
+}
+
+.menu-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.menu-left i{
+  color:#00c6ff;
+  font-size:18px;
+}
+
+/* LOGOUT */
+.logout{
+  margin-top:20px;
+  background:rgba(255,0,0,0.15);
+  color:#ff6b6b;
+  text-align:center;
+  padding:14px;
+  border-radius:18px;
+  text-decoration:none;
+  display:block;
+  font-weight:500;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <i class="fa-solid fa-arrow-left" onclick="location.href='/dashboard'"></i>
+    <h2>Mon Profil</h2>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="profile-card">
+    <div class="avatar">
+      <i class="fa-solid fa-user"></i>
+    </div>
+    <h3>{{ user.phone }}</h3>
+    <small>Compte actif</small>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="quick-actions">
+    <div class="quick" onclick="location.href='/deposit'">
+      <i class="fa-solid fa-wallet"></i>
+      <span>Recharger</span>
+    </div>
+    <div class="quick" onclick="location.href='/retrait'">
+      <i class="fa-solid fa-arrow-up"></i>
+      <span>Retirer</span>
+    </div>
+  </div>
+
+  <!-- MENU -->
+  <div class="menu">
+    <a href="/historique">
+      <div class="menu-left">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Historique des transactions</span>
+      </div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </a>
+
+    <a href="/nous">
+      <div class="menu-left">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>À propos de nous</span>
+      </div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </a>
+
+    <a href="/rules">
+      <div class="menu-left">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <span>Nos règles</span>
+      </div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </a>
+
+    <a href="/channels">
+      <div class="menu-left">
+        <i class="fa-solid fa-bullhorn"></i>
+        <span>Nos canaux</span>
+      </div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </a>
+  </div>
+
+  <!-- LOGOUT -->
+  <a href="/logout" class="logout">
+    <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+  </a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mes investissements</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{
+  margin:0;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+}
+.app{
+  max-width:480px;
+  margin:auto;
+  padding:24px 16px 90px;
+}
+
+/* HEADER */
+.header{
+  text-align:center;
+  margin-bottom:20px;
+}
+.header h2{
+  margin:0;
+}
+.header small{
+  opacity:.85;
+}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(14px);
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
+  margin-bottom:16px;
+}
+
+/* ROW */
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:8px;
+  font-size:14px;
+}
+.row strong{
+  color:#00c6ff;
+}
+
+/* PROGRESS */
+.progress-box{
+  margin-top:12px;
+}
+.progress-bar{
+  width:100%;
+  height:10px;
+  background:rgba(255,255,255,.15);
+  border-radius:10px;
+  overflow:hidden;
+}
+.progress{
+  height:100%;
+  background:linear-gradient(135deg,#00c6ff,#0072ff);
+  width:0%;
+}
+
+/* STATUS */
+.status{
+  margin-top:10px;
+  font-size:13px;
+}
+.active{
+  color:#00ff99;
+}
+.finished{
+  color:#ffae00;
+}
+
+/* EMPTY */
+.empty{
+  text-align:center;
+  opacity:.8;
+  margin-top:60px;
+}
+.empty i{
+  font-size:50px;
+  margin-bottom:10px;
+  color:#00c6ff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <h2>📦 Mes investissements</h2>
+    <small>Suivi en temps réel</small>
+  </div>
+
+  {% if investissements %}
+    {% for inv in investissements %}
+    <div class="card">
+
+      <div class="row">
+        <span>Montant investi</span>
+        <strong>{{ inv.montant }} XOF</strong>
+      </div>
+
+      <div class="row">
+        <span>Revenu journalier</span>
+        <strong>{{ inv.revenu_journalier }} XOF</strong>
+      </div>
+
+      <div class="row">
+        <span>Jours restants</span>
+        <strong>{{ inv.jours_restants }}</strong>
+      </div>
+
+      <div class="progress-box">
+        <div class="progress-bar">
+          <div class="progress" style="width:{{ inv.progression }}%"></div>
+        </div>
+        <small>{{ inv.progression }} % complété</small>
+      </div>
+
+      <div class="status">
+        Statut :
+        {% if inv.actif and inv.jours_restants > 0 %}
+          <strong class="active">Actif</strong>
+        {% else %}
+          <strong class="finished">Terminé</strong>
+        {% endif %}
+      </div>
+
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">
+      <i class="fa-solid fa-box-open"></i>
+      <p>Aucun investissement pour le moment</p>
+    </div>
+  {% endif %}
+
+</div>
+
+</body>
+</html>

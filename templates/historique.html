@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historique | Golden Yield</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{ box-sizing:border-box; font-family:'Poppins',sans-serif; }
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+}
+
+/* APP */
+.app{
+  max-width:480px;
+  margin:auto;
+  padding:20px 16px 90px;
+}
+
+/* HEADER */
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
+}
+.header i{
+  font-size:20px;
+  cursor:pointer;
+}
+.header h2{
+  margin:0;
+  font-size:18px;
+  font-weight:600;
+}
+
+/* SECTION */
+.section{
+  margin-bottom:22px;
+}
+
+.section-title{
+  font-size:14px;
+  margin-bottom:10px;
+  opacity:.9;
+}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border-radius:18px;
+  padding:14px 16px;
+  margin-bottom:10px;
+  box-shadow:0 12px 30px rgba(0,0,0,.25);
+}
+
+/* ROW */
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.icon{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+}
+
+.deposit{ background:rgba(0,198,255,.2); color:#00c6ff; }
+.withdraw{ background:rgba(255,99,71,.2); color:#ff6b6b; }
+.commission{ background:rgba(0,255,170,.2); color:#00ffae; }
+.invest{ background:rgba(255,215,0,.2); color:#ffd700; }
+
+.amount{
+  font-weight:600;
+}
+
+.small{
+  font-size:12px;
+  opacity:.7;
+}
+
+/* INVEST PROGRESS */
+.progress{
+  background:rgba(255,255,255,0.1);
+  border-radius:10px;
+  height:6px;
+  margin-top:8px;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,#00c6ff,#0072ff);
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <i class="fa-solid fa-arrow-left" onclick="location.href='/profile'"></i>
+    <h2>Historique</h2>
+  </div>
+
+  <!-- DEPOTS -->
+  <div class="section">
+    <div class="section-title">Dépôts</div>
+    {% for d in depots %}
+    <div class="card">
+      <div class="row">
+        <div class="left">
+          <div class="icon deposit"><i class="fa-solid fa-wallet"></i></div>
+          <div>
+            <div class="amount">+ {{ d.montant }} XOF</div>
+            <div class="small">{{ d.date }}</div>
+          </div>
+        </div>
+        <span class="small">{{ d.statut }}</span>
+      </div>
+    </div>
+    {% else %}
+      <div class="small">Aucun dépôt</div>
+    {% endfor %}
+  </div>
+
+  <!-- RETRAITS -->
+  <div class="section">
+    <div class="section-title">Retraits</div>
+    {% for r in retraits %}
+    <div class="card">
+      <div class="row">
+        <div class="left">
+          <div class="icon withdraw"><i class="fa-solid fa-arrow-up"></i></div>
+          <div>
+            <div class="amount">- {{ r.montant }} XOF</div>
+            <div class="small">{{ r.date }}</div>
+          </div>
+        </div>
+        <span class="small">{{ r.statut }}</span>
+      </div>
+    </div>
+    {% else %}
+      <div class="small">Aucun retrait</div>
+    {% endfor %}
+  </div>
+
+  <!-- COMMISSIONS -->
+  <div class="section">
+    <div class="section-title">Commissions</div>
+    {% for c in commissions %}
+    <div class="card">
+      <div class="row">
+        <div class="left">
+          <div class="icon commission"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <div class="amount">+ {{ c.montant }} XOF</div>
+            <div class="small">{{ c.date }}</div>
+          </div>
+        </div>
+        <span class="small">Niveau {{ c.niveau }}</span>
+      </div>
+    </div>
+    {% else %}
+      <div class="small">Aucune commission</div>
+    {% endfor %}
+  </div>
+
+  <!-- INVESTISSEMENTS -->
+  <div class="section">
+    <div class="section-title">Revenus des investissements</div>
+    {% for inv in investissements %}
+    <div class="card">
+      <div class="row">
+        <div class="left">
+          <div class="icon invest"><i class="fa-solid fa-chart-line"></i></div>
+          <div>
+            <div class="amount">+ {{ inv.montant }} XOF / jour</div>
+            <div class="small">{{ inv.jours_restants }} jours restants</div>
+          </div>
+        </div>
+        <span class="small">{{ inv.progression }}%</span>
+      </div>
+
+      <div class="progress">
+        <div class="progress-bar" style="width:{{ inv.progression }}%"></div>
+      </div>
+    </div>
+    {% else %}
+      <div class="small">Aucun investissement actif</div>
+    {% endfor %}
+  </div>
+
+</div>
+
+</body>
+</html>

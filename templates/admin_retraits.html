@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | Retraits</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f6f8;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 960px;
+    margin: 40px auto;
+    padding: 0 16px;
+}
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+th, td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+th {
+    background: #0072ff;
+    color: #fff;
+}
+tr:last-child td {
+    border-bottom: none;
+}
+.status-validé {
+    color: green;
+    font-weight: bold;
+}
+.status-refusé {
+    color: red;
+    font-weight: bold;
+}
+.status-enattente {
+    color: orange;
+    font-weight: bold;
+}
+button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 14px;
+}
+.btn-valider { background: #28a745; }
+.btn-refuser { background: #dc3545; }
+.btn-valider:hover { background: #218838; }
+.btn-refuser:hover { background: #c82333; }
+.flash {
+    max-width: 960px;
+    margin: 20px auto;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: #fff;
+}
+.flash-success { background: #28a745; }
+.flash-warning { background: #ffc107; color: #333; }
+.flash-info { background: #17a2b8; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Liste des retraits</h1>
+
+    <!-- Messages Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Utilisateur</th>
+                <th>Montant (XOF)</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for retrait in retraits %}
+            <tr>
+                <td>{{ retrait.id }}</td>
+                <td>{{ retrait.phone }}</td>
+                <td>{{ retrait.montant }}</td>
+                <td>{{ retrait.date.strftime("%d/%m/%Y %H:%M") }}</td>
+                <td class="status-{% if retrait.statut=='validé' %}validé{% elif retrait.statut=='refusé' %}refusé{% else %}enattente{% endif %}">
+                    {{ retrait.statut }}
+                </td>
+                <td>
+                    {% if retrait.statut == 'en attente' %}
+                    <a href="{{ url_for('valider_retrait', retrait_id=retrait.id) }}">
+                        <button class="btn-valider">Valider</button>
+                    </a>
+                    <a href="{{ url_for('refuser_retrait', retrait_id=retrait.id) }}">
+                        <button class="btn-refuser">Refuser</button>
+                    </a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

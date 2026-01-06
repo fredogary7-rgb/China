@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmation | {{ p.nom }}</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{
+  margin:0;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+}
+.app{
+  max-width:480px;
+  margin:auto;
+  padding:24px 16px 40px;
+}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(14px);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
+  margin-bottom:18px;
+}
+
+/* HEADER */
+.header{
+  text-align:center;
+}
+.header img{
+  width:120px;
+  border-radius:16px;
+  margin-bottom:12px;
+}
+.header h2{
+  margin:6px 0;
+}
+.header span{
+  color:#00c6ff;
+  font-weight:600;
+}
+
+/* INFO */
+.info-row{
+  display:flex;
+  justify-content:space-between;
+  margin:12px 0;
+  font-size:14px;
+}
+.info-row strong{
+  color:#00c6ff;
+}
+
+/* BUTTON */
+.btn{
+  width:100%;
+  padding:16px;
+  border-radius:30px;
+  border:none;
+  font-size:16px;
+  font-weight:600;
+  background:linear-gradient(135deg,#00c6ff,#0072ff);
+  color:#fff;
+  cursor:pointer;
+  margin-top:16px;
+}
+.btn:disabled{
+  opacity:.6;
+}
+
+/* SUCCESS */
+.success{
+  text-align:center;
+}
+.success i{
+  font-size:60px;
+  color:#00ff99;
+  margin-bottom:12px;
+}
+.success h3{
+  margin:10px 0;
+}
+.success p{
+  opacity:.85;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+{% if not submitted %}
+<!-- 🟦 CONFIRMATION -->
+<div class="card header">
+  <img src="{{ url_for('static', filename='images/' + p.image) }}">
+  <h2>{{ p.nom }}</h2>
+  <span>Produit rapide VIP</span>
+</div>
+
+<div class="card">
+  <div class="info-row">
+    <span>Prix</span>
+    <strong>{{ p.prix }} XOF</strong>
+  </div>
+  <div class="info-row">
+    <span>Revenu journalier</span>
+    <strong>{{ p.revenu_journalier }} XOF</strong>
+  </div>
+  <div class="info-row">
+    <span>Durée</span>
+    <strong>35 jours</strong>
+  </div>
+  <div class="info-row">
+    <span>Revenu total</span>
+    <strong>{{ revenu_total }} XOF</strong>
+  </div>
+</div>
+
+<div class="card">
+  <div class="info-row">
+    <span>Votre solde</span>
+    <strong>{{ user.solde_total }} XOF</strong>
+  </div>
+</div>
+
+<form method="POST">
+  <button class="btn">Confirmer l’achat</button>
+</form>
+
+{% else %}
+<!-- 🟢 SUCCESS -->
+<div class="card success">
+  <i class="fa-solid fa-circle-check"></i>
+  <h3>Achat réussi 🎉</h3>
+  <p>
+    Votre produit <strong>{{ p.nom }}</strong> est actif.<br>
+    Les revenus journaliers seront crédités automatiquement.
+  </p>
+
+  <a href="/dashboard">
+    <button class="btn">Retour au tableau de bord</button>
+  </a>
+</div>
+{% endif %}
+
+</div>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nos règles | Golden Yield</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{ box-sizing:border-box; font-family:'Poppins',sans-serif; }
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+}
+
+/* APP */
+.app{
+  max-width:480px;
+  margin:auto;
+  padding:20px 16px 80px;
+}
+
+/* HEADER */
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px;
+}
+.header i{
+  font-size:20px;
+  cursor:pointer;
+}
+.header h2{
+  margin:0;
+  font-size:18px;
+  font-weight:600;
+}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 15px 35px rgba(0,0,0,.3);
+  margin-bottom:16px;
+}
+
+/* TITLE */
+.card h3{
+  margin:0 0 10px;
+  font-size:15px;
+  color:#00c6ff;
+}
+
+/* TEXT */
+.card p{
+  font-size:13px;
+  line-height:1.6;
+  opacity:.9;
+  margin:6px 0;
+}
+
+/* RULE ITEM */
+.rule{
+  display:flex;
+  gap:10px;
+  margin:6px 0;
+  font-size:13px;
+  line-height:1.5;
+}
+.rule i{
+  color:#00c6ff;
+  margin-top:2px;
+}
+
+/* WARNING */
+.warning{
+  color:#ffb703;
+}
+.danger{
+  color:#ff6b6b;
+}
+
+/* FOOTER NOTE */
+.note{
+  text-align:center;
+  font-size:12px;
+  opacity:.8;
+  margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <i class="fa-solid fa-arrow-left" onclick="location.href='/profile'"></i>
+    <h2>Nos règles</h2>
+  </div>
+
+  <!-- INTRO -->
+  <div class="card">
+    <p>
+      Afin de garantir une expérience <strong>sécurisée</strong>, <strong>transparente</strong>
+      et <strong>équitable</strong> à tous nos utilisateurs, veuillez lire attentivement
+      et respecter les conditions d’utilisation de la plateforme <strong>Golden Yield</strong>.
+    </p>
+  </div>
+
+  <!-- 1 -->
+  <div class="card">
+    <h3>🔐 1. Création et utilisation du compte</h3>
+
+    <div class="rule"><i class="fa-solid fa-check"></i>Un seul compte est autorisé par utilisateur</div>
+    <div class="rule"><i class="fa-solid fa-check"></i>Les informations fournies doivent être exactes et vérifiables</div>
+    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Tout compte frauduleux ou dupliqué sera suspendu sans préavis</div>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <h3>💰 2. Dépôts et investissements</h3>
+
+    <div class="rule"><i class="fa-solid fa-check"></i>Les investissements se font uniquement via les produits officiels Golden Yield</div>
+    <div class="rule"><i class="fa-solid fa-check"></i>Chaque produit est valable pour la durée indiquée</div>
+    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Aucun remboursement après activation d’un produit</div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <h3>📈 3. Revenus et bénéfices</h3>
+
+    <div class="rule"><i class="fa-solid fa-check"></i>Les revenus sont générés quotidiennement</div>
+    <div class="rule"><i class="fa-solid fa-check"></i>Les gains sont crédités automatiquement</div>
+    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Toute tentative de manipulation entraîne un bannissement définitif</div>
+  </div>
+
+  <!-- 4 -->
+  <div class="card">
+    <h3>💸 4. Retraits</h3>
+
+    <div class="rule"><i class="fa-solid fa-check"></i>Les retraits respectent les conditions de la plateforme</div>
+    <div class="rule"><i class="fa-solid fa-check"></i>Le montant minimum et les frais doivent être respectés</div>
+    <div class="rule warning"><i class="fa-solid fa-clock"></i>Les délais peuvent varier selon le volume de demandes</div>
+  </div>
+
+  <!-- 5 -->
+  <div class="card">
+    <h3>🤝 5. Parrainage</h3>
+
+    <div class="rule"><i class="fa-solid fa-check"></i>Les commissions suivent le plan officiel</div>
+    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Faux comptes, abus et auto-parrainage interdits</div>
+  </div>
+
+  <!-- 6 -->
+  <div class="card">
+    <h3>🛑 6. Suspension et résiliation</h3>
+
+    <p>Golden Yield se réserve le droit de suspendre ou fermer tout compte en cas de :</p>
+    <div class="rule danger"><i class="fa-solid fa-ban"></i>Fraude</div>
+    <div class="rule danger"><i class="fa-solid fa-ban"></i>Activité suspecte</div>
+    <div class="rule danger"><i class="fa-solid fa-ban"></i>Non-respect des règles</div>
+  </div>
+
+  <!-- 7 -->
+  <div class="card">
+    <h3>🔒 7. Responsabilité</h3>
+
+    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Mauvaise utilisation de la plateforme</div>
+    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Partage de vos informations personnelles</div>
+  </div>
+
+  <!-- NOTE -->
+  <div class="note">
+    📌 En utilisant la plateforme Golden Yield, vous acceptez automatiquement l’ensemble de ces conditions.<br><br>
+    ✨ <strong>Golden Yield</strong> – Une plateforme structurée, sécurisée et tournée vers la croissance durable 📦📈
+  </div>
+
+</div>
+
+</body>
+</html>

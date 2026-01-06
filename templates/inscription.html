@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscription | Plateforme d'Investissement</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      overflow: hidden;
+    }
+
+    /* Background animation */
+    .bg-circle {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+      animation: float 10s infinite ease-in-out;
+    }
+    .bg-circle.one { top: -100px; left: -100px; }
+    .bg-circle.two { bottom: -120px; right: -120px; animation-delay: 3s; }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-30px); }
+      100% { transform: translateY(0); }
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(15px);
+      border-radius: 18px;
+      padding: 35px;
+      color: #fff;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      animation: slideUp 0.8s ease;
+      z-index: 10;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 { text-align: center; margin-bottom: 10px; }
+    p { text-align: center; font-size: 14px; opacity: .85; }
+
+    .form-group { margin-bottom: 16px; }
+    label { font-size: 13px; }
+
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      margin-top: 6px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+
+    input:focus, select:focus {
+      box-shadow: 0 0 0 2px rgba(0,198,255,0.6);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: #fff;
+      transition: .2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,114,255,0.5);
+    }
+
+    .footer {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .footer a {
+      color: #00c6ff;
+      text-decoration: none;
+    }
+
+    .flash {
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .flash.success { background: rgba(0,255,150,0.2); }
+    .flash.danger { background: rgba(255,80,80,0.25); }
+    .flash.warning { background: rgba(255,180,0,0.25); }
+
+    /* Service client */
+    .support-btn{
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      width:55px;
+      height:55px;
+      background:linear-gradient(135deg,#00c6ff,#0072ff);
+      color:#fff;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:26px;
+      text-decoration:none;
+      box-shadow:0 10px 25px rgba(0,114,255,0.5);
+      animation:pulse 2s infinite;
+      z-index:999;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="bg-circle one"></div>
+<div class="bg-circle two"></div>
+
+<div class="card">
+  <h2>Créer un compte</h2>
+  <p>Commencez à investir et gagnez chaque jour</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="POST">
+
+    <div class="form-group">
+      <label>Pays</label>
+      <select name="country" required>
+        <option value="">Choisissez votre pays</option>
+        <option value="Benin">🇧🇯 Bénin</option>
+        <option value="Gabon">🇬🇦 Gabon</option>
+        <option value="Senegal">🇸🇳 Sénégal</option>
+        <option value="Togo">🇹🇬 Togo</option>
+        <option value="Cote d'Ivoire">🇨🇮 Côte d’Ivoire</option>
+        <option value="Cameroun">🇨🇲 Cameroun</option>
+        <option value="Niger">🇳🇪 Niger</option>
+        <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
+        <option value="Congo Brazzaville">🇨🇬 Congo Brazzaville</option>
+        <option value="Congo Kinshasa">🇨🇩 Congo Kinshasa</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Numéro de téléphone</label>
+      <input type="text" name="phone" required>
+    </div>
+
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" name="password" required>
+    </div>
+
+    <div class="form-group">
+      <label>Confirmer le mot de passe</label>
+      <input type="password" name="confirm_password" required>
+    </div>
+
+    <div class="form-group">
+      <label>Code d'invitation (optionnel)</label>
+      <input type="text" name="code_invitation" value="{{ code_ref }}">
+    </div>
+
+    <button class="btn">S'inscrire</button>
+  </form>
+
+  <div class="footer">
+    Déjà inscrit ? <a href="{{ url_for('connexion_page') }}">Se connecter</a>
+  </div>
+</div>
+
+<!-- Service client -->
+<a href="https://wa.me/22800000000" target="_blank" class="support-btn" title="Service client">💬</a>
+
+</body>
+</html>

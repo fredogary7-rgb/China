@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support Chat | Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:#fff;
+    min-height:100vh;
+}
+
+.app{
+    max-width:480px;
+    margin:auto;
+    padding:25px 16px 120px;
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+}
+
+.header h2{
+    margin:0 0 12px 0;
+    font-size:22px;
+}
+
+.chat-box{
+    flex:1;
+    overflow-y:auto;
+    padding-right:5px;
+    margin-bottom:12px;
+}
+
+.message{
+    margin-bottom:12px;
+    max-width:75%;
+    padding:12px 14px;
+    border-radius:16px;
+    line-height:1.4;
+    word-wrap:break-word;
+}
+
+.message.user{
+    background:rgba(0,198,255,0.15);
+    align-self:flex-start;
+}
+
+.message.admin{
+    background:rgba(0,198,255,0.7);
+    align-self:flex-end;
+    color:#fff;
+}
+
+.form-container{
+    display:flex;
+    gap:8px;
+}
+
+.form-container input{
+    flex:1;
+    padding:14px;
+    border-radius:25px;
+    border:none;
+    font-size:14px;
+}
+
+.form-container button{
+    padding:14px 20px;
+    border:none;
+    border-radius:25px;
+    background:#00c6ff;
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.form-container button:hover{
+    background:#0072ff;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+    <div class="header">
+        <h2>Chat support : {{ phone }}</h2>
+    </div>
+
+    <div class="chat-box" id="chatBox">
+        {% for msg in messages %}
+            <div class="message {% if msg.sender=='user' %}user{% else %}admin{% endif %}">
+                {{ msg.message }}
+            </div>
+        {% else %}
+            <div class="message user">Aucun message pour le moment.</div>
+        {% endfor %}
+    </div>
+
+    <form method="POST" class="form-container">
+        <input type="text" name="message" placeholder="Écrire un message..." required autocomplete="off">
+        <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+
+</div>
+
+<script>
+    // Scroll automatique vers le bas
+    const chatBox = document.getElementById('chatBox');
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+
+</body>
+</html>
