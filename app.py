@@ -522,7 +522,7 @@ def create_deposit():
 
     # 🔗 Lien MoneyFusion
     payment_link = (
-        f"https://www.pay.moneyfusion.net/presto-cash-_1762687066538/"
+        f"https://my.moneyfusion.net/69594cda71fba9518349a3c1"
     )
 
     # 💾 SAUVEGARDE DU DEPOT
