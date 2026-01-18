@@ -522,7 +522,7 @@ def create_deposit():
 
     # 🔗 Lien MoneyFusion
     payment_link = (
-        f"https://my.moneyfusion.net/69594cda71fba9518349a3c1"
+        f"https://my.moneyfusion.net/696c9dbf2e7cbfd74476e816"
     )
 
     # 💾 SAUVEGARDE DU DEPOT
