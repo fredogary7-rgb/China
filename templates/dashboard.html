@@ -3,158 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard | Golden Yield</title>
+<title>Dashboard | AFRIORA</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-*{
-  box-sizing:border-box;
-  font-family:'Poppins',sans-serif;
+:root{
+  --green:#22c55e;
 }
+
+*{ box-sizing:border-box; font-family:'Poppins',sans-serif; }
 
 body{
   margin:0;
   min-height:100vh;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;
-  overflow-x:hidden;
+  background:
+    linear-gradient(rgba(5,40,25,.92),rgba(5,40,25,.92)),
+    url("/static/images/diamond-bg.jpg") center/cover no-repeat fixed;
+  color:#e6f5ef;
 }
 
-/* Background circles */
-.bg-circle{
-  position:fixed;
-  width:420px;
-  height:420px;
-  background:rgba(255,255,255,0.05);
-  border-radius:50%;
-  animation:float 10s infinite ease-in-out;
-  z-index:0;
-}
-.bg-circle.one{ top:-120px; left:-120px; }
-.bg-circle.two{ bottom:-140px; right:-140px; animation-delay:3s; }
-
-@keyframes float{
-  0%{ transform:translateY(0); }
-  50%{ transform:translateY(-30px); }
-  100%{ transform:translateY(0); }
-}
-
-/* APP */
 .app{
   max-width:480px;
   margin:auto;
-  padding:25px 16px 140px;
-  position:relative;
-  z-index:5;
+  padding:16px 16px 150px;
 }
 
 /* HEADER */
 .header{
-  margin-bottom:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
 }
-.header h2{
-  margin:0;
-  font-size:20px;
-  font-weight:600;
+.header h2{ margin:0; font-size:20px; }
+.header small{ font-size:12px; opacity:.8; }
+
+/* BANNERS */
+.top-banner,.bottom-banner{
+  width:100%;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 20px 40px rgba(0,0,0,.5);
 }
-.header small{
-  opacity:.85;
+.top-banner{ height:150px; margin-bottom:18px; }
+.bottom-banner{ height:110px; margin:25px 0 10px; }
+.top-banner img,.bottom-banner img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
-/* GLASS CARD */
+/* CARD */
 .card{
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(15px);
-  border-radius:20px;
+  background:rgba(11,42,32,.95);
+  border-radius:18px;
   padding:18px;
-  box-shadow:0 20px 40px rgba(0,0,0,.3);
   margin-bottom:18px;
+  border:1px solid rgba(34,197,94,.35);
+  box-shadow:0 25px 50px rgba(0,0,0,.45);
 }
 
-/* SOLDE */
-.balance h1{
-  margin:6px 0;
-  font-size:26px;
+/* BALANCE */
+.balance-main span{ font-size:13px; opacity:.8; }
+.balance-main h1{ margin:6px 0; font-size:30px; color:#dcfce7; }
+
+/* CUMUL */
+.cumulative{
+  background:linear-gradient(135deg,#052e1d,#064e3b);
+  border-left:5px solid var(--green);
 }
-.balance span{
-  font-size:13px;
-  opacity:.85;
-}
+.cumulative h3{ margin:0 0 6px; color:var(--green); }
 
 /* STATS */
 .stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  margin-top:12px;
+  gap:10px;
 }
 .stat{
-  text-align:center;
-  padding:12px 6px;
+  background:#06261b;
   border-radius:14px;
-  background:rgba(255,255,255,0.06);
+  padding:12px;
+  text-align:center;
 }
-.stat strong{
-  display:block;
-  font-size:16px;
-  color:#00c6ff;
-}
-.stat small{
-  font-size:11px;
-  opacity:.75;
-}
+.stat strong{ color:var(--green); }
 
 /* ACTIONS */
 .actions{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:14px;
-  margin-bottom:18px;
 }
 .action{
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(12px);
+  background:#06261b;
   border-radius:16px;
   padding:14px 0;
   text-align:center;
   font-size:12px;
   cursor:pointer;
 }
-.action i{
-  display:block;
-  font-size:22px;
-  color:#00c6ff;
-  margin-bottom:6px;
-}
-
-/* INFO */
-.info h4{
-  margin:0 0 6px;
-  font-size:15px;
-  color:#00c6ff;
-}
-.info p{
-  font-size:13px;
-  opacity:.85;
-  line-height:1.5;
-}
-
-/* PROMO IMAGES */
-.promo-images{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-top:10px;
-}
-.promo-images img{
-  width:100%;
-  height:110px;
-  object-fit:cover;
-  border-radius:16px;
-  box-shadow:0 12px 25px rgba(0,0,0,.3);
-}
+.action i{ display:block; font-size:22px; margin-bottom:6px; }
 
 /* SUPPORT */
 .support-btn{
@@ -163,21 +113,14 @@ body{
   right:20px;
   width:56px;
   height:56px;
-  background:linear-gradient(135deg,#00c6ff,#0072ff);
+  background:linear-gradient(135deg,#22c55e,#16a34a);
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
   color:#fff;
   font-size:24px;
-  box-shadow:0 10px 25px rgba(0,114,255,.5);
-  animation:pulse 2s infinite;
   z-index:20;
-}
-@keyframes pulse{
-  0%{ transform:scale(1); }
-  50%{ transform:scale(1.08); }
-  100%{ transform:scale(1); }
 }
 
 /* NAV */
@@ -188,116 +131,138 @@ body{
   transform:translateX(-50%);
   width:100%;
   max-width:480px;
-  background:rgba(0,0,0,0.55);
-  backdrop-filter:blur(12px);
+  background:rgba(7,26,19,.95);
   display:flex;
   justify-content:space-around;
   padding:10px 0;
-  z-index:10;
 }
 .bottom-nav a{
-  color:#aaa;
+  color:#9ca3af;
   font-size:12px;
   text-decoration:none;
   display:flex;
   flex-direction:column;
   align-items:center;
 }
-.bottom-nav i{
-  font-size:18px;
-  margin-bottom:2px;
+.bottom-nav a.active{ color:var(--green); }
+
+/* 🔥 POPUP */
+.modal-bg{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  backdrop-filter:blur(6px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
 }
-.bottom-nav a.active{
-  color:#00c6ff;
+.modal{
+  background:#0b2a20;
+  border-radius:22px;
+  padding:22px;
+  width:90%;
+  max-width:360px;
+  border:1px solid rgba(34,197,94,.4);
 }
+.modal h2{ color:var(--green); margin-top:0; }
+.modal ol{ padding-left:18px; font-size:13px; }
+.modal-btns{
+  display:flex;
+  gap:10px;
+  margin-top:16px;
+}
+.modal-btns a,.modal-btns button{
+  flex:1;
+  padding:12px;
+  border-radius:14px;
+  border:none;
+  font-weight:600;
+}
+.telegram{ background:#229ED9; color:#fff; text-decoration:none; }
+.close-btn{ background:linear-gradient(135deg,#22c55e,#16a34a); color:#fff; }
 </style>
 </head>
 
 <body>
 
-<div class="bg-circle one"></div>
-<div class="bg-circle two"></div>
+<!-- 🔥 POPUP AFRIORA -->
+<div class="modal-bg" id="popup">
+  <div class="modal">
+    <h2>Bienvenue sur AFRIORA 💎</h2>
+    <p>Plateforme d’investissement professionnelle nouvelle génération.</p>
+    <ol>
+      <li>Bonus d'inscription : <strong>500 FCFA</strong></li>
+      <li>Retrait minimum : <strong>1 500 FCFA</strong></li>
+      <li>Commissions : <strong>25% / 3% / 2%</strong></li>
+      <li>Retrait rapide et sécurisé</li>
+    </ol>
+    <div class="modal-btns">
+      <a href="https://t.me/Afriora2026" class="telegram">Telegram</a>
+      <button class="close-btn" onclick="closePopup()">Continuer</button>
+    </div>
+  </div>
+</div>
 
 <div class="app">
 
-  <!-- HEADER -->
   <div class="header">
-    <h2>BOT CHINA</h2>
-    <small>Bienvenue, {{ user.phone }}</small>
+    <h2>AFRIORA 💎</h2>
+    <small>{{ user.phone }}</small>
   </div>
 
-  <!-- SOLDE -->
-  <div class="card balance">
+  <div class="top-banner">
+    <img src="/static/images/b.jpg">
+  </div>
+
+  <div class="card balance-main">
     <span>Solde total</span>
     <h1>{{ user.solde_total or 0 }} XOF</h1>
-    <span>Revenu cumulé : {{ revenu_cumule or 0 }} XOF</span>
-
-    <div class="stats">
-      <div class="stat">
-        <strong>{{ user.solde_revenu or 0 }}</strong>
-        <small>Revenus</small>
-      </div>
-      <div class="stat">
-        <strong>{{ total_users or 0 }}</strong>
-        <small>All users</small>
-      </div>
-      <div class="stat">
-        <strong>{{ total_invested or 0 }}</strong>
-        <small>All profil</small>
-      </div>
-    </div>
   </div>
 
-  <!-- ACTIONS -->
+  <div class="card cumulative">
+    <h3>Revenus cumulés</h3>
+    <strong>{{ revenu_cumule or 0 }} XOF</strong>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><strong>{{ user.solde_revenu or 0 }}</strong><small>Revenus</small></div>
+    <div class="stat"><strong>{{ total_users or 0 }}</strong><small>Utilisateurs</small></div>
+    <div class="stat"><strong>{{ total_invested or 0 }}</strong><small>Profils</small></div>
+  </div>
+
   <div class="actions">
-    <div class="action" onclick="location.href='/deposit'">
-      <i class="fa-solid fa-wallet"></i>Dépôt
-    </div>
-    <div class="action" onclick="location.href='/retrait'">
-      <i class="fa-solid fa-arrow-up"></i>Retrait
-    </div>
-    <div class="action" onclick="location.href='/achats'">
-      <i class="fa-solid fa-chart-line"></i>Mes Achats
-    </div>
-    <div class="action" onclick="location.href='/profile'">
-      <i class="fa-solid fa-user"></i>Moi
-    </div>
+    <div class="action" onclick="location.href='/deposit'"><i class="fa-wallet fa-solid"></i>Dépôt</div>
+    <div class="action" onclick="location.href='/retrait'"><i class="fa-arrow-up fa-solid"></i>Retrait</div>
+    <div class="action" onclick="location.href='/achats'"><i class="fa-chart-line fa-solid"></i>Achats</div>
+    <div class="action" onclick="location.href='/profile'"><i class="fa-user fa-solid"></i>Profil</div>
   </div>
 
-  <!-- INFO -->
-  <div class="card info">
-    <h4>Conseil Golden Yield</h4>
-    <p>
-      Réinvestissez régulièrement vos gains pour augmenter vos revenus journaliers
-      et accélérer votre croissance financière.
-    </p>
-  </div>
-
-  <!-- PROMO -->
-  <div class="promo-images">
-    <img src="/static/images/c1.jpg" alt="Opportunité">
-    <img src="/static/images/c2.jpg" alt="Revenus">
+  <div class="bottom-banner">
+    <img src="/static/images/b.jpg">
   </div>
 
 </div>
 
-<!-- SUPPORT -->
 <a href="/support" class="support-btn">
   <i class="fa-solid fa-headset"></i>
 </a>
 
-<!-- NAV -->
 <div class="bottom-nav">
-  <a href="/dashboard" class="active">
-    <i class="fa-solid fa-house"></i>Accueil
-  </a>
-  <a href="/produits_rapide">
-    <i class="fa-solid fa-chart-line"></i>Produits
-  </a>
-  <a href="/team">
-    <i class="fa-solid fa-users"></i>Team
-  </a>
-</div>
+  <a href="/dashboard" class="active"><i class="fa-house fa-solid"></i>Accueil</a>
+  <a href="/produits_rapide"><i class="fa-gem fa-solid"></i>Produits</a>
+  <a href="/team"><i class="fa-users fa-solid"></i>Team</a>
+</div> 
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("popup").style.display = "flex";
+});
+
+function closePopup(){
+  document.getElementById("popup").style.display = "none";
+}
+</script>
 
 </body>
 </html>

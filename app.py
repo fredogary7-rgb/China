@@ -316,7 +316,7 @@ def connexion_page():
 
         flash({
             "title": "Connexion réussie",
-            "message": "Bienvenue sur BOT CHINA !"
+            "message": "Bienvenue sur Afriora !"
         }, "success")
 
         return redirect(url_for("dashboard_page"))
@@ -702,14 +702,14 @@ def nous_page():
 
 
 PRODUITS_VIP = [
-    {"id": 1, "nom": "Yield 1", "prix": 3000, "revenu_journalier": 360, "image": "c3.jpg"},
-    {"id": 2, "nom": "Yield 2", "prix": 8000, "revenu_journalier": 960, "image": "c3.jpg"},
-    {"id": 3, "nom": "Yield 3", "prix": 20000, "revenu_journalier": 2400, "image": "c3.jpg"},
-    {"id": 4, "nom": "Yield 4", "prix": 40000, "revenu_journalier": 4800, "image": "c3.jpg"},
-    {"id": 5, "nom": "Yield 5", "prix": 80000, "revenu_journalier": 9600, "image": "c3.jpg"},
-    {"id": 6, "nom": "Yield 6", "prix": 120000, "revenu_journalier": 14400, "image": "c3.jpg"},
-    {"id": 7, "nom": "Yield 7", "prix": 200000, "revenu_journalier": 24000, "image": "c3.jpg"},
-    {"id": 8, "nom": "Yield 8", "prix": 400000, "revenu_journalier": 48000, "image": "c3.jpg"}
+    {"id": 1, "nom": "Diamand 1", "prix": 4000, "revenu_journalier":  460, "image": "b.jpg"},
+    {"id": 2, "nom": "Diamant 2", "prix": 8000, "revenu_journalier":  980, "image": "b.jpg"},
+    {"id": 2, "nom": "Diamant 2", "prix": 15000, "revenu_journalier":  1600, "image": "b.jpg"},
+    {"id": 4, "nom": "Diamand 4", "prix": 20000, "revenu_journalier": 2100, "image": "b.jpg"},
+    {"id": 5, "nom": "Diamand 5", "prix": 30000, "revenu_journalier": 3400, "image": "b.jpg"},
+    {"id": 6, "nom": "Diamand 6", "prix": 50000, "revenu_journalier": 5900, "image": "b.jpg"},
+    {"id": 7, "nom": "Diamant 7", "prix": 80000, "revenu_journalier": 8900, "image": "b.jpg"},
+    {"id": 8, "nom": "Diamand 8", "prix": 100000, "revenu_journalier":12000, "image": "b.jpg"}
 ]
 
 
@@ -903,14 +903,14 @@ def profile_page():
 
 def get_image(montant):
     mapping = {
-        3000: "fed1.jpg",
-        8000: "fed1.jpg",
-        20000: "fed1.jpg",
-        40000: "fed1.jpg",
-        90000: "fed1.jpg",
-        180000: "fed1.jpg",
-        400000: "fed1.jpg",
-        800000: "fed1.jpg",
+        3000: "b.jpg",
+        8000: "b.jpg",
+        20000: "b.jpg",
+        40000: "b.jpg",
+        90000: "b.jpg",
+        180000: "b.jpg",
+        400000: "b.jpg",
+        800000: "b.jpg",
     }
     return mapping.get(int(montant), "fed1.jpg")
 

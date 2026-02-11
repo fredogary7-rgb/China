@@ -3,115 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AFRIORA | Inscription</title>
+  <title>AFRIORA 💎 | Inscription</title>
 
-  <!-- Font pro -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     * {
       box-sizing: border-box;
-      font-family: 'Roboto', sans-serif;
+      font-family: 'Inter', sans-serif;
     }
 
     body {
       margin: 0;
       min-height: 100vh;
-      background: #f2f4f7;
+      background: linear-gradient(160deg, #0b1218, #0e1f2a);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #1f2937;
+      color: #ffffff;
     }
 
-    .container {
+    /* Décor */
+    .shape {
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      background: rgba(22,160,133,0.12);
+      border-radius: 50%;
+      filter: blur(40px);
+    }
+    .shape.one { top: -120px; left: -120px; }
+    .shape.two { bottom: -140px; right: -140px; }
+
+    /* Carte */
+    .card {
       width: 100%;
       max-width: 420px;
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 32px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.05);
+      border-radius: 18px;
+      padding: 36px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+      backdrop-filter: blur(16px);
+      z-index: 10;
+      animation: fadeUp .9s ease;
+      border: 1px solid rgba(22,160,133,0.25);
     }
 
-    /* Header */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Marque */
     .brand {
       text-align: center;
-      font-size: 26px;
+      font-size: 30px;
       font-weight: 700;
-      color: #0f3d5e;
-      margin-bottom: 6px;
+      color: #16a085;
+      margin-bottom: 5px;
+      letter-spacing: 1px;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 0;
+      font-weight: 600;
     }
 
     .subtitle {
       text-align: center;
       font-size: 14px;
-      color: #6b7280;
-      margin-bottom: 24px;
-    }
-
-    h2 {
-      font-size: 18px;
-      margin-bottom: 20px;
-      text-align: center;
-      font-weight: 500;
+      opacity: 0.85;
+      margin: 10px 0 25px;
     }
 
     /* Messages */
     .flash {
       margin-bottom: 12px;
       padding: 10px;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 13px;
     }
-    .flash.success { background: #e6f6ee; color: #065f46; }
-    .flash.danger { background: #fdecea; color: #7f1d1d; }
-    .flash.warning { background: #fff7e6; color: #92400e; }
+    .flash.success { background: rgba(0,200,120,0.25); }
+    .flash.danger { background: rgba(255,80,80,0.25); }
+    .flash.warning { background: rgba(255,180,0,0.25); }
 
-    /* Form */
+    /* Formulaire */
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 16px;
     }
 
     label {
-      display: block;
       font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 6px;
-      color: #374151;
+      opacity: .9;
     }
 
     input, select {
       width: 100%;
-      padding: 11px 12px;
-      border-radius: 6px;
-      border: 1px solid #d1d5db;
-      font-size: 14px;
+      padding: 13px 14px;
+      margin-top: 6px;
+      border-radius: 10px;
+      border: none;
       outline: none;
-      background: #fff;
+      font-size: 14px;
+      background: #ffffff;
+      color: #000;
     }
 
     input:focus, select:focus {
-      border-color: #0f3d5e;
-      box-shadow: 0 0 0 2px rgba(15,61,94,0.15);
+      box-shadow: 0 0 0 2px rgba(22,160,133,0.6);
     }
 
-    /* Button */
+    /* Bouton */
     .btn {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       margin-top: 10px;
-      background: #0f3d5e;
-      color: #ffffff;
+      border-radius: 14px;
       border: none;
-      border-radius: 6px;
       font-size: 15px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      transition: background .2s;
+      background: linear-gradient(135deg, #16a085, #0e6655);
+      color: #fff;
+      transition: .3s;
     }
 
     .btn:hover {
-      background: #0c2f48;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(22,160,133,0.45);
     }
 
     /* Footer */
@@ -119,11 +140,10 @@
       margin-top: 18px;
       text-align: center;
       font-size: 13px;
-      color: #6b7280;
     }
 
     .footer a {
-      color: #0f3d5e;
+      color: #16a085;
       text-decoration: none;
       font-weight: 500;
     }
@@ -133,27 +153,37 @@
       position: fixed;
       right: 20px;
       bottom: 20px;
-      width: 50px;
-      height: 50px;
-      background: #25D366;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #25D366, #1da851);
       color: #fff;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 26px;
       text-decoration: none;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="shape one"></div>
+<div class="shape two"></div>
+
+<div class="card">
   <div class="brand">AFRIORA 💎</div>
-  <div class="subtitle">Plateforme d’investissement professionnelle</div>
-  <h2>Créer un compte</h2>
+  <h2>Inscription</h2>
+  <div class="subtitle">Rejoignez une plateforme d’investissement fiable</div>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% for category, message in messages %}
@@ -165,7 +195,7 @@
     <div class="form-group">
       <label>Pays</label>
       <select name="country" required>
-        <option value="">Sélectionnez votre pays</option>
+        <option value="">Choisissez votre pays</option>
         <option value="Benin">🇧🇯 Bénin</option>
         <option value="Gabon">🇬🇦 Gabon</option>
         <option value="Senegal">🇸🇳 Sénégal</option>
@@ -199,7 +229,7 @@
       <input type="text" name="code_invitation" value="{{ code_ref }}">
     </div>
 
-    <button class="btn">Créer un compte</button>
+    <button class="btn">Créer mon compte</button>
   </form>
 
   <div class="footer">

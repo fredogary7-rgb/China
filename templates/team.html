@@ -3,134 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mon équipe | Golden Yield</title>
+<title>Équipe | AFRIORA</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-*{ box-sizing:border-box; font-family:'Poppins',sans-serif; }
+:root{
+  --green:#22c55e;
+  --green-dark:#064e3b;
+  --bg:#071a13;
+  --card:#0b2a20;
+  --border:rgba(34,197,94,.25);
+  --text:#e6f5ef;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
 
 body{
   margin:0;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;
   min-height:100vh;
+  background:
+    linear-gradient(rgba(6,30,20,.95),rgba(6,30,20,.95)),
+    url("/static/images/b.jpg") center/cover no-repeat fixed;
+  color:var(--text);
 }
 
-/* CONTAINER */
+/* APP */
 .app{
   max-width:480px;
   margin:auto;
-  padding-bottom:100px;
+  padding-bottom:120px;
 }
 
-/* COMMISSION BOX */
+/* COMMISSION */
 .commission-box{
-  background:rgba(0,0,0,0.5);
-  backdrop-filter:blur(12px);
-  border-radius:18px;
-  padding:16px;
+  margin:16px;
+  padding:18px;
+  border-radius:22px;
+  background:linear-gradient(145deg,#052e1d,#064e3b);
+  border:1px solid var(--border);
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin:16px;
+  box-shadow:0 20px 45px rgba(0,0,0,.45);
 }
 
 .commission-box h2{
   margin:0;
   font-size:14px;
-  color:#f5c842;
+  letter-spacing:.5px;
+  opacity:.85;
 }
 
-.commission-box .amount{
+.amount{
   font-size:26px;
   font-weight:700;
-  color:#fff;
+  margin-top:6px;
+  color:#d1fae5;
 }
 
 .commission-box img{
-  width:80px;
-  height:80px;
+  width:76px;
+  height:76px;
+  border-radius:16px;
   object-fit:cover;
-  border-radius:14px;
+  box-shadow:0 10px 25px rgba(34,197,94,.35);
 }
 
-/* INVITATION BOX */
+/* INVITE */
 .invite-box{
-  background:rgba(0,0,0,0.5);
-  backdrop-filter:blur(12px);
-  border-radius:16px;
+  margin:16px;
   padding:14px;
+  border-radius:18px;
+  background:rgba(11,42,32,.95);
+  border:1px solid var(--border);
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin:16px;
 }
 
 .invite-left{
   display:flex;
-  align-items:center;
   gap:10px;
+  align-items:center;
   overflow:hidden;
 }
 
-.invite-left span{
+.invite-left i{
+  color:var(--green);
   font-size:20px;
 }
 
 .invite-text{
-  font-size:13px;
-  color:#fff;
+  font-size:12px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  max-width:200px;
+  max-width:220px;
 }
 
 .copy-btn{
-  background:linear-gradient(135deg,#00c6ff,#0072ff);
-  color:#fff;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
   border:none;
+  color:#fff;
   padding:8px 14px;
   border-radius:12px;
-  cursor:pointer;
   font-size:13px;
+  cursor:pointer;
   transition:.2s;
 }
 
 .copy-btn:hover{
   transform:translateY(-2px);
-  box-shadow:0 8px 20px rgba(0,114,255,.5);
+  box-shadow:0 10px 25px rgba(34,197,94,.45);
 }
 
-/* SECTION TITLE */
+/* SECTION */
 .section-title{
+  margin:18px 16px 8px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin:16px;
 }
 
 .section-title h3{
   margin:0;
   font-size:16px;
-  color:#f5c842;
+  letter-spacing:.4px;
 }
 
 .section-title a{
-  font-size:13px;
-  color:#ccc;
+  font-size:12px;
   text-decoration:none;
+  opacity:.7;
+  color:var(--text);
 }
 
 /* LEVEL CARD */
 .level-card{
-  background:rgba(0,0,0,0.5);
-  backdrop-filter:blur(12px);
-  border-radius:18px;
-  padding:16px;
   margin:16px;
+  padding:18px;
+  border-radius:22px;
+  background:rgba(11,42,32,.95);
+  border:1px solid var(--border);
 }
 
 .level-header{
@@ -142,15 +161,19 @@ body{
 
 .level-header h4{
   margin:0;
-  font-size:16px;
-  color:#f5c842;
+  font-size:15px;
+  letter-spacing:.3px;
 }
 
 .badge{
-  width:42px;
-  height:42px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  object-fit:cover;
+  box-shadow:0 6px 18px rgba(34,197,94,.4);
 }
 
+/* STATS */
 .level-stats{
   display:flex;
   justify-content:space-between;
@@ -163,60 +186,49 @@ body{
 
 .stat strong{
   display:block;
-  font-size:20px;
-  color:#fff;
+  font-size:18px;
+  color:#d1fae5;
 }
 
 .stat span{
-  font-size:12px;
-  color:#ccc;
+  font-size:11px;
+  opacity:.75;
 }
 
-/* BONUS CARD */
+/* BONUS */
 .bonus-card{
-  background:rgba(0,0,0,0.5);
-  backdrop-filter:blur(12px);
-  padding:16px;
-  border-radius:18px;
   margin:16px;
-  font-size:14px;
-  color:#fff;
-  line-height:1.5;
+  padding:18px;
+  border-radius:22px;
+  background:rgba(11,42,32,.95);
+  border:1px solid var(--border);
+  font-size:13px;
+  line-height:1.6;
 }
 
 .bonus-title{
-  font-size:17px;
-  font-weight:700;
+  font-size:15px;
+  font-weight:600;
   margin-bottom:10px;
-  color:#f5c842;
-  position:relative;
-  padding-left:10px;
+  color:#d1fae5;
 }
 
-/* SUPPORT BUTTON */
+/* SUPPORT */
 .support-btn{
   position:fixed;
   right:20px;
   bottom:20px;
-  width:55px;
-  height:55px;
-  background:linear-gradient(135deg,#00c6ff,#0072ff);
+  width:56px;
+  height:56px;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
   color:#fff;
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:26px;
+  font-size:24px;
   text-decoration:none;
-  box-shadow:0 10px 25px rgba(0,114,255,.5);
-  animation:pulse 2s infinite;
-  z-index:999;
-}
-
-@keyframes pulse{
-  0%{ transform:scale(1); }
-  50%{ transform:scale(1.1); }
-  100%{ transform:scale(1); }
+  box-shadow:0 12px 30px rgba(34,197,94,.55);
 }
 </style>
 </head>
@@ -228,119 +240,91 @@ body{
   <!-- COMMISSION -->
   <div class="commission-box">
     <div>
-      <h2>Commission</h2>
+      <h2>Commissions totales</h2>
       <div class="amount">{{ stats.commissions_total }} XOF</div>
     </div>
-    <img src="/static/images/c5.jpg" alt="banner">
+    <img src="/static/images/b.jpg" alt="AFRIORA">
   </div>
 
-  <!-- INVITATION LINK -->
+  <!-- INVITE -->
   <div class="invite-box">
     <div class="invite-left">
-      <span>🎁</span>
+      <i class="fa-solid fa-gem"></i>
       <div class="invite-text" id="refLink">{{ referral_link }}</div>
     </div>
     <button class="copy-btn" onclick="copyLink()">Copier</button>
   </div>
 
-  <!-- TEAM LEVELS -->
+  <!-- LEVELS -->
   <div class="section-title">
-    <h3>Niveau de l'équipe</h3>
-    <a href="#">Détails de l'équipe ></a>
+    <h3>Structure de l’équipe</h3>
+    <a href="#">Voir détails</a>
   </div>
 
   <!-- LEVEL 1 -->
   <div class="level-card">
     <div class="level-header">
-      <h4>Niveau 1</h4>
-      <img src="/static/images/c1.jpg" class="badge">
+      <h4>Niveau Diamant I</h4>
+      <img src="/static/images/b.jpg" class="badge">
     </div>
     <div class="level-stats">
-      <div class="stat">
-        <strong>25%</strong>
-        <span>Remise Niveau 1</span>
-      </div>
-      <div class="stat">
-        <strong>{{ stats.level1 }}</strong>
-        <span>Total invités</span>
-      </div>
-      <div class="stat">
-        <strong>0</strong>
-        <span>Actifs</span>
-      </div>
+      <div class="stat"><strong>25%</strong><span>Commission</span></div>
+      <div class="stat"><strong>{{ stats.level1 }}</strong><span>Membres</span></div>
+      <div class="stat"><strong>0</strong><span>Actifs</span></div>
     </div>
   </div>
 
   <!-- LEVEL 2 -->
   <div class="level-card">
     <div class="level-header">
-      <h4>Niveau 2</h4>
-      <img src="/static/images/c2.jpg" class="badge">
+      <h4>Niveau Diamant II</h4>
+      <img src="/static/images/b.jpg" class="badge">
     </div>
     <div class="level-stats">
-      <div class="stat">
-        <strong>3%</strong>
-        <span>Remise Niveau 2</span>
-      </div>
-      <div class="stat">
-        <strong>{{ stats.level2 }}</strong>
-        <span>Total invités</span>
-      </div>
-      <div class="stat">
-        <strong>0</strong>
-        <span>Actifs</span>
-      </div>
+      <div class="stat"><strong>3%</strong><span>Commission</span></div>
+      <div class="stat"><strong>{{ stats.level2 }}</strong><span>Membres</span></div>
+      <div class="stat"><strong>0</strong><span>Actifs</span></div>
     </div>
   </div>
 
   <!-- LEVEL 3 -->
   <div class="level-card">
     <div class="level-header">
-      <h4>Niveau 3</h4>
-      <img src="/static/images/c3.jpg" class="badge">
+      <h4>Niveau Diamant III</h4>
+      <img src="/static/images/b.jpg" class="badge">
     </div>
     <div class="level-stats">
-      <div class="stat">
-        <strong>2%</strong>
-        <span>Remise Niveau 3</span>
-      </div>
-      <div class="stat">
-        <strong>{{ stats.level3 }}</strong>
-        <span>Total invités</span>
-      </div>
-      <div class="stat">
-        <strong>0</strong>
-        <span>Actifs</span>
-      </div>
+      <div class="stat"><strong>2%</strong><span>Commission</span></div>
+      <div class="stat"><strong>{{ stats.level3 }}</strong><span>Membres</span></div>
+      <div class="stat"><strong>0</strong><span>Actifs</span></div>
     </div>
   </div>
 
-  <!-- BONUS CARD -->
+  <!-- BONUS -->
   <div class="bonus-card">
-    <div class="bonus-title">Bonus d'invitation</div>
-
+    <div class="bonus-title">Programme de récompenses AFRIORA</div>
     <p>
-        Lorsque vos amis invités s'inscrivent et investissent.
-        Lorsque les membres de votre équipe de niveau 1 investissent, vous recevez une récompense en espèces de 25 %.
-        Lorsque les membres de votre équipe de niveau 2 investissent, vous recevez une récompense en espèces de 3 %.
-        Lorsque les membres de votre équipe de niveau 3 investissent, vous recevez une récompense en espèces de 2 %.
+      AFRIORA récompense la croissance de votre réseau.
+      Les commissions sont versées automatiquement dès l’activation des investissements
+      par les membres de votre équipe.
     </p>
-
     <p>
-        Les membres de votre équipe peuvent obtenir des récompenses en espèces lors de leur premier investissement.
+      Les bonus sont calculés par niveau et crédités en temps réel sur votre solde.
     </p>
   </div>
 
 </div>
 
 <!-- SUPPORT -->
-<a href="/support" target="_blank" class="support-btn" title="Service client">💬</a>
+<a href="/support" class="support-btn" title="Support AFRIORA">
+  <i class="fa-solid fa-headset"></i>
+</a>
 
 <script>
-function copyLink() {
-  const text = document.getElementById("refLink").innerText;
+function copyLink(){
+  const text=document.getElementById("refLink").innerText;
   navigator.clipboard.writeText(text);
-  alert("Lien copié !");
+  alert("Lien de parrainage copié");
 }
 </script>
 

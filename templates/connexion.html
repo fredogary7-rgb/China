@@ -3,190 +3,173 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connexion | Plateforme d'Investissement</title>
+  <title>AFRIORA | Connexion</title>
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font pro -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
   <style>
-    *{ box-sizing:border-box; font-family:'Poppins',sans-serif; }
-
-    body{
-      margin:0;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-      overflow:hidden;
+    * {
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
     }
 
-    /* Background animation */
-    .bg-circle{
-      position:absolute;
-      width:400px;
-      height:400px;
-      background:rgba(255,255,255,0.05);
-      border-radius:50%;
-      animation:float 10s infinite ease-in-out;
-    }
-    .bg-circle.one{ top:-100px; left:-100px; }
-    .bg-circle.two{ bottom:-120px; right:-120px; animation-delay:3s; }
-
-    @keyframes float{
-      0%{ transform:translateY(0); }
-      50%{ transform:translateY(-30px); }
-      100%{ transform:translateY(0); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f2f4f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f2937;
     }
 
-    /* Card */
-    .card{
-      width:100%;
-      max-width:420px;
-      background:rgba(255,255,255,0.08);
-      backdrop-filter:blur(15px);
-      border-radius:18px;
-      padding:35px;
-      color:#fff;
-      box-shadow:0 20px 40px rgba(0,0,0,.3);
-      animation:slideUp .8s ease;
-      z-index:10;
+    .container {
+      width: 100%;
+      max-width: 400px;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 32px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.08);
     }
 
-    @keyframes slideUp{
-      from{ opacity:0; transform:translateY(40px); }
-      to{ opacity:1; transform:translateY(0); }
+    /* Brand */
+    .brand {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 700;
+      color: #0f3d5e;
+      margin-bottom: 4px;
     }
 
-    h2{
-      text-align:center;
-      margin-bottom:8px;
-      font-weight:600;
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 24px;
     }
 
-    p{
-      text-align:center;
-      font-size:14px;
-      opacity:.85;
-      margin-bottom:25px;
+    h2 {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 20px;
     }
 
-    .form-group{ margin-bottom:18px; }
+    /* Flash messages */
+    .flash {
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .flash.success { background: #e6f6ee; color: #065f46; }
+    .flash.danger { background: #fdecea; color: #7f1d1d; }
+    .flash.warning { background: #fff7e6; color: #92400e; }
 
-    label{
-      font-size:13px;
-      opacity:.9;
+    /* Form */
+    .form-group {      margin-bottom: 16px;
     }
 
-    input{
-      width:100%;
-      padding:12px 14px;
-      margin-top:6px;
-      border-radius:10px;
-      border:none;
-      outline:none;
-      font-size:14px;
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #374151;
     }
 
-    input:focus{
-      box-shadow:0 0 0 2px rgba(0,198,255,.6);
+    input {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      outline: none;
+      background: #ffffff;
     }
 
-    .btn{
-      width:100%;
-      padding:13px;
-      border-radius:12px;
-      border:none;
-      cursor:pointer;
-      font-weight:600;
-      font-size:15px;
-      background:linear-gradient(135deg,#00c6ff,#0072ff);
-      color:#fff;
-      transition:.2s;
+    input:focus {
+      border-color: #0f3d5e;
+      box-shadow: 0 0 0 2px rgba(15,61,94,0.15);
     }
 
-    .btn:hover{
-      transform:translateY(-2px);
-      box-shadow:0 10px 25px rgba(0,114,255,.5);
+    /* Button */
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background: #0f3d5e;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s;
     }
 
-    .footer{
-      margin-top:18px;
-      text-align:center;
-      font-size:13px;
+    .btn:hover {
+      background: #0c2f48;
     }
 
-    .footer a{
-      color:#00c6ff;
-      text-decoration:none;
-      font-weight:500;
+    /* Footer */
+    .footer {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 13px;
+      color: #6b7280;
     }
 
-    .flash{
-      margin-bottom:15px;
-      padding:10px 12px;
-      border-radius:8px;
-      font-size:13px;
-    }
-    .flash.success{ background:rgba(0,255,150,.2); }
-    .flash.danger{ background:rgba(255,80,80,.25); }
-    .flash.warning{ background:rgba(255,180,0,.25); }
-
-    /* Service client */
-    .support-btn{
-      position:fixed;
-      right:20px;
-      bottom:20px;
-      width:55px;
-      height:55px;
-      background:linear-gradient(135deg,#00c6ff,#0072ff);
-      color:#fff;
-      border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:26px;
-      text-decoration:none;
-      box-shadow:0 10px 25px rgba(0,114,255,.5);
-      animation:pulse 2s infinite;
-      z-index:999;
+    .footer a {
+      color: #0f3d5e;
+      text-decoration: none;
+      font-weight: 500;
     }
 
-    @keyframes pulse{
-      0%{ transform:scale(1); }
-      50%{ transform:scale(1.1); }
-      100%{ transform:scale(1); }
+    /* Support */
+    .support-btn {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 50px;
+      height: 50px;
+      background: #25D366;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      text-decoration: none;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
     }
   </style>
 </head>
 
 <body>
 
-<div class="bg-circle one"></div>
-<div class="bg-circle two"></div>
+<div class="container">
+  <div class="brand">AFRIORA 💎</div>
+  <div class="subtitle">Plateforme d’investissement sécurisée</div>
 
-<div class="card">
   <h2>Connexion</h2>
-  <p>Accédez à votre tableau de bord</p>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
   {% endwith %}
 
   <form method="POST">
-
     <div class="form-group">
       <label>Numéro de téléphone</label>
-      <input type="text" name="phone" placeholder="Ex: 90xxxxxx" required>
+      <input type="text" name="phone" placeholder="Ex : 90xxxxxx" required>
     </div>
 
     <div class="form-group">
       <label>Mot de passe</label>
-      <input type="password" name="password" placeholder="********" required>
+      <input type="password" name="password" placeholder="••••••••" required>
     </div>
 
     <button type="submit" class="btn">Se connecter</button>
@@ -198,7 +181,6 @@
   </div>
 </div>
 
-<!-- Service client -->
 <a href="https://wa.me/22800000000" target="_blank" class="support-btn" title="Service client">💬</a>
 
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Retrait | AFRIORA</title>
+<title>Recharger | AFRIORA</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -24,11 +24,11 @@
 
 body{
   margin:0;
-  min-height:100vh;
   background:
     linear-gradient(rgba(5,40,25,.94),rgba(5,40,25,.94)),
     url("/static/images/b.jpg") center/cover no-repeat fixed;
   color:#e6f5ef;
+  min-height:100vh;
 }
 
 /* APP */
@@ -44,10 +44,13 @@ body{
   display:flex;
   align-items:center;
   gap:10px;
-  background:rgba(7,26,19,.95);
+  font-weight:500;
+  background:rgba(7,26,19,.9);
   border-bottom:1px solid var(--border);
 }
-.header i{ font-size:18px; }
+.header i{
+  font-size:18px;
+}
 
 /* HERO */
 .hero{
@@ -70,42 +73,55 @@ body{
   color:#dcfce7;
 }
 
+/* CONTENT */
+.container{
+  padding:0 16px;
+}
+
 /* SECTION */
 .section{
   background:rgba(11,42,32,.95);
   border-radius:20px;
   padding:18px;
-  margin:18px 16px 0;
+  margin-top:18px;
   border:1px solid var(--border);
 }
 
 .section h3{
   margin:0 0 12px;
-  font-size:15px;
+  font-size:16px;
   color:var(--green);
 }
 
-/* WALLET */
-.wallet{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px;
-  border-radius:16px;
+/* AMOUNTS */
+.amount-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.amount-btn{
+  padding:12px 0;
+  text-align:center;
+  border-radius:14px;
   background:#06261b;
   border:1px solid var(--border);
   cursor:pointer;
+  font-weight:500;
   transition:.2s;
 }
-.wallet:hover{
-  background:rgba(34,197,94,.12);
+.amount-btn:hover{
+  background:rgba(34,197,94,.15);
 }
-.wallet small{ opacity:.75; }
 
-/* INPUT */
-input{
+/* FORM */
+.form-row{
+  margin-top:14px;
+}
+
+input,select{
   width:100%;
-  padding:14px;
+  padding:13px;
   border-radius:14px;
   background:#06261b;
   border:1px solid var(--border);
@@ -115,24 +131,15 @@ input{
 input::placeholder{
   color:rgba(255,255,255,.6);
 }
-input:focus{
+input:focus,select:focus{
   outline:none;
   border-color:var(--green);
 }
 
-/* FEES */
-.fees{
-  display:flex;
-  justify-content:space-between;
-  font-size:13px;
-  margin-top:10px;
-  opacity:.85;
-}
-
 /* BUTTON */
-.btn{
-  width:calc(100% - 32px);
-  margin:24px 16px;
+.btn-pay{
+  width:100%;
+  margin-top:20px;
   padding:15px;
   border-radius:28px;
   background:linear-gradient(135deg,#22c55e,#16a34a);
@@ -143,28 +150,24 @@ input:focus{
   cursor:pointer;
   transition:.2s;
 }
-.btn:hover{
+.btn-pay:hover{
   box-shadow:0 15px 30px rgba(34,197,94,.45);
 }
-
-/* RULES */
-.rules{
-  margin:18px 16px;
-  background:rgba(11,42,32,.9);
-  border-radius:18px;
-  padding:16px;
-  font-size:13px;
-  line-height:1.6;
-  border:1px solid var(--border);
+.btn-pay:disabled{
+  opacity:.6;
 }
-.rules h4{
-  margin:0 0 8px;
-  color:var(--green);
+
+/* INFO */
+.rules{
+  margin-top:18px;
+  font-size:13px;
+  opacity:.85;
+  line-height:1.6;
 }
 
 /* VISUAL */
 .visual{
-  margin:18px 16px;
+  margin-top:20px;
   border-radius:18px;
   overflow:hidden;
   border:1px solid var(--border);
@@ -179,8 +182,8 @@ input:focus{
 /* SUPPORT */
 .support-btn{
   position:fixed;
-  right:20px;
   bottom:20px;
+  right:20px;
   width:56px;
   height:56px;
   background:linear-gradient(135deg,#22c55e,#16a34a);
@@ -203,62 +206,75 @@ input:focus{
   <!-- HEADER -->
   <div class="header">
     <i class="fa-solid fa-arrow-left"></i>
-    <span>Retrait</span>
+    <span>Recharger le compte</span>
   </div>
 
   <!-- HERO -->
   <div class="hero">
-    <span>Solde retirable</span>
-    <h2>{{ "{:,.0f}".format(solde_retraitable).replace(",", " ") }} XOF</h2>
+    <span>Solde disponible</span>
+    <h2>{{ "{:,.0f}".format(user.solde_total or 0) }} XOF</h2>
   </div>
 
-  <form method="POST">
+  <div class="container">
 
-    <!-- WALLET -->
     <div class="section">
-      <h3>Portefeuille de retrait</h3>
-      <div class="wallet" onclick="location.href='/ajouter_portefeuille'">
-        <div>
-          <strong>{{ user.wallet_operator }}</strong><br>
-          <small>{{ user.wallet_number }}</small>
-        </div>
-        <i class="fa-solid fa-chevron-right"></i>
+      <h3>Montant du dépôt</h3>
+
+      <div class="amount-grid">
+        <div class="amount-btn" onclick="setAmount(3000)">3 000</div>
+        <div class="amount-btn" onclick="setAmount(5000)">5 000</div>
+        <div class="amount-btn" onclick="setAmount(10000)">10 000</div>
+        <div class="amount-btn" onclick="setAmount(25000)">25 000</div>
+        <div class="amount-btn" onclick="setAmount(50000)">50 000</div>
+        <div class="amount-btn" onclick="setAmount(100000)">100 000</div>
+      </div>
+
+      <div class="form-row">
+        <input type="number" id="montant" placeholder="Entrer le montant (min 3 000)">
+      </div>
+
+      <div class="form-row">
+        <select id="country">
+          <option value="">Pays</option>
+          <option>Togo</option>
+          <option>Bénin</option>
+          <option>Côte d'Ivoire</option>
+          <option>Sénégal</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <select id="operator">
+          <option value="">Moyen de paiement</option>
+          <option>Orange Money</option>
+          <option>MTN Money</option>
+          <option>Moov Money</option>
+          <option>Airtel Money</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <input type="tel" id="phone" placeholder="Numéro Mobile Money">
+      </div>
+
+      <div class="form-row">
+        <input type="text" id="fullname" placeholder="Nom du titulaire">
+      </div>
+
+      <button class="btn-pay" onclick="payerEnLigne()">Procéder au paiement</button>
+
+      <div class="rules">
+        • Dépôt minimum : 3 000 FCFA<br>
+        • Paiement sécurisé et automatisé<br>
+        • Validation rapide après confirmation
       </div>
     </div>
 
-    <!-- AMOUNT -->
-    <div class="section">
-      <h3>Montant du retrait</h3>
-      <input type="number" name="montant" id="montant" placeholder="Minimum 1 500 XOF" required>
-
-      <div class="fees">
-        <span>Montant reçu</span>
-        <span id="netAmount">0 XOF</span>
-      </div>
-      <div class="fees">
-        <span>Frais (15%)</span>
-        <span id="feesAmount">0 XOF</span>
-      </div>
+    <div class="visual">
+      <img src="/static/images/b.jpg" alt="AFRIORA Secure Payment">
     </div>
 
-    <button class="btn" id="withdrawBtn" type="submit">Confirmer le retrait</button>
-
-  </form>
-
-  <!-- RULES -->
-  <div class="rules">
-    <h4>Informations importantes</h4>
-    • Retrait soumis à validation<br>
-    • Frais appliqués automatiquement<br>
-    • Vérifiez votre numéro Mobile Money<br>
-    • Toute erreur peut entraîner un rejet
   </div>
-
-  <!-- VISUAL -->
-  <div class="visual">
-    <img src="/static/images/b.jpg" alt="Secure Withdrawal">
-  </div>
-
 </div>
 
 <a href="/support" class="support-btn">
@@ -266,16 +282,7 @@ input:focus{
 </a>
 
 <script>
-document.getElementById("montant").addEventListener("input", function () {
-  let montant = parseFloat(this.value) || 0;
-  let fees = montant * 0.15;
-  let net = montant - fees;
-
-  document.getElementById("netAmount").innerText =
-    net > 0 ? net.toLocaleString("fr-FR") + " XOF" : "0 XOF";
-  document.getElementById("feesAmount").innerText =
-    fees > 0 ? fees.toLocaleString("fr-FR") + " XOF" : "0 XOF";
-});
+function setAmount(v){ document.getElementById("montant").value=v; }
 </script>
 
 </body>
