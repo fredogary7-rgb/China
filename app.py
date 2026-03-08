@@ -155,7 +155,7 @@ class SupportMessage(db.Model):
 
 def donner_commission(filleul_phone, montant):
     # Niveaux : 30% – 5% – 3%
-    COMMISSIONS = {1: 0.20, 2: 0.03, 3: 0.01}
+    COMMISSIONS = {1: 0.27, 2: 0.02, 3: 0.01}
 
     current_phone = filleul_phone
 
@@ -712,7 +712,15 @@ PRODUITS_VIP = [
     {"id": 8, "nom": "Total 8", "prix": 100000, "revenu_journalier":12000, "image": "t.jpg"}
 ]
 
+def credit_user_revenu(user, montant=1000):
+    """
+    Crédit automatique du revenu utilisateur
+    lorsqu'un produit est acheté.
+    """
+    if not hasattr(user, "user_revenu") or user.solde_revenu is None:
+        user.solde_revenu = 0
 
+    user.solde_revenu += montant
 # ============================
 # PAGE PRODUITS RAPIDES
 # ============================
@@ -764,6 +772,7 @@ def confirmer_produit_rapide(vip_id):
 
     # Débit
     user.solde_total -= montant
+    credit_user_revenu(user, 1000)
 
     # Création investissement
     inv = Investissement(
