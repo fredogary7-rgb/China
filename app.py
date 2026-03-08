@@ -704,7 +704,7 @@ def nous_page():
 PRODUITS_VIP = [
     {"id": 1, "nom": "Total 1", "prix": 4000, "revenu_journalier":  460, "image": "t.jpg"},
     {"id": 2, "nom": "Total 2", "prix": 8000, "revenu_journalier":  980, "image": "t.jpg"},
-    {"id": 2, "nom": "Total 2", "prix": 15000, "revenu_journalier":  1600, "image": "t.jpg"},
+    {"id": 3, "nom": "Total 3", "prix": 15000, "revenu_journalier":  1600, "image": "t.jpg"},
     {"id": 4, "nom": "Total 4", "prix": 20000, "revenu_journalier": 2100, "image": "t.jpg"},
     {"id": 5, "nom": "Total 5", "prix": 30000, "revenu_journalier": 3400, "image": "t.jpg"},
     {"id": 6, "nom": "Total 6", "prix": 50000, "revenu_journalier": 5900, "image": "t.jpg"},
