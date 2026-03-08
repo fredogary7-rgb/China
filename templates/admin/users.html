@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Utilisateurs</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6f9;
+margin:20px;
+}
+
+h2{
+margin-bottom:20px;
+}
+
+.search-box{
+margin-bottom:15px;
+}
+
+.search-box input{
+width:300px;
+padding:8px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th, td{
+padding:8px;
+border:1px solid #ddd;
+text-align:center;
+font-size:14px;
+}
+
+th{
+background:#f2f2f2;
+}
+
+.status-active{
+color:green;
+font-weight:bold;
+}
+
+.status-ban{
+color:red;
+font-weight:bold;
+}
+
+.btn{
+padding:5px 10px;
+border:none;
+border-radius:4px;
+cursor:pointer;
+font-size:12px;
+}
+
+.btn-credit{
+background:#2ecc71;
+color:white;
+}
+
+.btn-debit{
+background:#e67e22;
+color:white;
+}
+
+.btn-ban{
+background:#e74c3c;
+color:white;
+}
+
+.btn-unban{
+background:#27ae60;
+color:white;
+}
+
+.btn-invest{
+background:#3498db;
+color:white;
+}
+
+input.small{
+width:70px;
+padding:4px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>Gestion des utilisateurs</h2>
+
+<div class="search-box">
+<input type="text" id="searchUser" placeholder="Rechercher numéro ou nom...">
+</div>
+
+<table id="userTable">
+
+<tr>
+<th>ID</th>
+<th>Nom</th>
+<th>Numéro</th>
+<th>Solde</th>
+<th>Date</th>
+<th>Statut</th>
+<th>Crédit / Débit</th>
+<th>Quick Invest</th>
+<th>Bannir</th>
+</tr>
+
+{% for u in users %}
+
+<tr>
+
+<td>{{u.id}}</td>
+
+<td>{{u.fullname}}</td>
+
+<td>{{u.phone}}</td>
+
+<td><b>{{u.solde_total}} FCFA</b></td>
+
+<td>{{u.date_creation.strftime("%d/%m/%Y")}}</td>
+
+<td>
+
+{% if u.is_banned %}
+<span class="status-ban">Suspendu</span>
+{% else %}
+<span class="status-active">Actif</span>
+{% endif %}
+
+</td>
+
+<td>
+
+<form action="/admin/user/{{u.id}}/balance" method="POST">
+
+<input class="small" type="number" name="montant" placeholder="montant" required>
+
+<button class="btn btn-credit" name="action" value="credit">+</button>
+
+<button class="btn btn-debit" name="action" value="debit">-</button>
+
+</form>
+
+</td>
+
+<td>
+
+<form action="/admin/user/{{u.id}}/quick-invest" method="POST">
+
+<input class="small" type="number" name="montant" placeholder="montant" required>
+
+<input class="small" type="number" name="duree" placeholder="jours" required>
+
+<input class="small" type="number" name="revenu_journalier" placeholder="gain" required>
+
+<button class="btn btn-invest">Activer</button>
+
+</form>
+
+</td>
+
+<td>
+
+{% if u.is_banned %}
+
+<a href="/admin/user/{{u.id}}/toggle-ban">
+<button class="btn btn-unban">Réactiver</button>
+</a>
+
+{% else %}
+
+<a href="/admin/user/{{u.id}}/toggle-ban">
+<button class="btn btn-ban">Suspendre</button>
+</a>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<script>
+
+document.getElementById("searchUser").addEventListener("keyup",function(){
+
+let value=this.value.toLowerCase()
+
+let rows=document.querySelectorAll("#userTable tr")
+
+rows.forEach((row,index)=>{
+
+if(index===0)return
+
+let text=row.innerText.toLowerCase()
+
+row.style.display=text.includes(value)?"":"none"
+
+})
+
+})
+
+</script>
+
+</body>
+</html>

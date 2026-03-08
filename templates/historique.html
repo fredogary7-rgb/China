@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Historique | Golden Yield</title>
+<title>Historique | TotalEnergies</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -119,15 +119,13 @@ body{
 
 <div class="app">
 
-  <!-- HEADER -->
   <div class="header">
-    <i class="fa-solid fa-arrow-left" onclick="location.href='/profile'"></i>
-    <h2>Historique</h2>
+    <i class="fa-solid fa-arrow-left" onclick="history.back()"></i>
+    <h2>Historique TotalEnergies</h2>
   </div>
 
-  <!-- DEPOTS -->
   <div class="section">
-    <div class="section-title">Dépôts</div>
+    <div class="section-title">Apports financiers</div>
     {% for d in depots %}
     <div class="card">
       <div class="row">
@@ -142,11 +140,10 @@ body{
       </div>
     </div>
     {% else %}
-      <div class="small">Aucun dépôt</div>
+      <div class="small">Aucun apport en cours</div>
     {% endfor %}
   </div>
 
-  <!-- RETRAITS -->
   <div class="section">
     <div class="section-title">Retraits</div>
     {% for r in retraits %}
@@ -163,13 +160,12 @@ body{
       </div>
     </div>
     {% else %}
-      <div class="small">Aucun retrait</div>
+      <div class="small">Aucun retrait effectué</div>
     {% endfor %}
   </div>
 
-  <!-- COMMISSIONS -->
   <div class="section">
-    <div class="section-title">Commissions</div>
+    <div class="section-title">Commissions Réseau</div>
     {% for c in commissions %}
     <div class="card">
       <div class="row">
@@ -184,18 +180,17 @@ body{
       </div>
     </div>
     {% else %}
-      <div class="small">Aucune commission</div>
+      <div class="small">Aucune commission générée</div>
     {% endfor %}
   </div>
 
-  <!-- INVESTISSEMENTS -->
   <div class="section">
-    <div class="section-title">Revenus des investissements</div>
+    <div class="section-title">Production énergétique</div>
     {% for inv in investissements %}
     <div class="card">
       <div class="row">
         <div class="left">
-          <div class="icon invest"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="icon invest"><i class="fa-solid fa-bolt"></i></div>
           <div>
             <div class="amount">+ {{ inv.montant }} XOF / jour</div>
             <div class="small">{{ inv.jours_restants }} jours restants</div>
@@ -209,7 +204,7 @@ body{
       </div>
     </div>
     {% else %}
-      <div class="small">Aucun investissement actif</div>
+      <div class="small">Aucun actif énergétique actif</div>
     {% endfor %}
   </div>
 
@@ -217,3 +212,4 @@ body{
 
 </body>
 </html>
+

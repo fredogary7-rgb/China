@@ -265,8 +265,8 @@ def inscription_page():
         new_user = User(
             phone=phone,
             password=password,
-            solde_total=500,
-            solde_depot=500,
+            solde_total=1000,
+            solde_depot=1000,
             solde_revenu=0,
             solde_parrainage=0,
             parrain=parrain_user.phone if parrain_user else None
@@ -702,14 +702,14 @@ def nous_page():
 
 
 PRODUITS_VIP = [
-    {"id": 1, "nom": "Diamand 1", "prix": 4000, "revenu_journalier":  460, "image": "b.jpg"},
-    {"id": 2, "nom": "Diamant 2", "prix": 8000, "revenu_journalier":  980, "image": "b.jpg"},
-    {"id": 2, "nom": "Diamant 2", "prix": 15000, "revenu_journalier":  1600, "image": "b.jpg"},
-    {"id": 4, "nom": "Diamand 4", "prix": 20000, "revenu_journalier": 2100, "image": "b.jpg"},
-    {"id": 5, "nom": "Diamand 5", "prix": 30000, "revenu_journalier": 3400, "image": "b.jpg"},
-    {"id": 6, "nom": "Diamand 6", "prix": 50000, "revenu_journalier": 5900, "image": "b.jpg"},
-    {"id": 7, "nom": "Diamant 7", "prix": 80000, "revenu_journalier": 8900, "image": "b.jpg"},
-    {"id": 8, "nom": "Diamand 8", "prix": 100000, "revenu_journalier":12000, "image": "b.jpg"}
+    {"id": 1, "nom": "Total 1", "prix": 4000, "revenu_journalier":  460, "image": "t.jpg"},
+    {"id": 2, "nom": "Total 2", "prix": 8000, "revenu_journalier":  980, "image": "t.jpg"},
+    {"id": 2, "nom": "Total 2", "prix": 15000, "revenu_journalier":  1600, "image": "t.jpg"},
+    {"id": 4, "nom": "Total 4", "prix": 20000, "revenu_journalier": 2100, "image": "t.jpg"},
+    {"id": 5, "nom": "Total 5", "prix": 30000, "revenu_journalier": 3400, "image": "t.jpg"},
+    {"id": 6, "nom": "Total 6", "prix": 50000, "revenu_journalier": 5900, "image": "t.jpg"},
+    {"id": 7, "nom": "Total 7", "prix": 80000, "revenu_journalier": 8900, "image": "t.jpg"},
+    {"id": 8, "nom": "Total 8", "prix": 100000, "revenu_journalier":12000, "image": "t.jpg"}
 ]
 
 
@@ -903,16 +903,16 @@ def profile_page():
 
 def get_image(montant):
     mapping = {
-        3000: "b.jpg",
-        8000: "b.jpg",
-        20000: "b.jpg",
-        40000: "b.jpg",
-        90000: "b.jpg",
-        180000: "b.jpg",
-        400000: "b.jpg",
-        800000: "b.jpg",
+        3000: "t.jpg",
+        8000: "t.jpg",
+        20000: "t.jpg",
+        40000: "t.jpg",
+        90000: "t.jpg",
+        180000: "t.jpg",
+        400000: "t.jpg",
+        800000: "t.jpg",
     }
-    return mapping.get(int(montant), "fed1.jpg")
+    return mapping.get(int(montant), "t.jpg")
 
 
 @app.route("/historique")

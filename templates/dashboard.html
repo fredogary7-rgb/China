@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard | AFRIORA</title>
+<title>Dashboard | TotalÉnergies</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -179,26 +179,24 @@ body{
   border:none;
   font-weight:600;
 }
-.telegram{ background:#229ED9; color:#fff; text-decoration:none; }
-.close-btn{ background:linear-gradient(135deg,#22c55e,#16a34a); color:#fff; }
+.telegram{ background:#229ED9; color:#fff; text-decoration:none; text-align:center; }
+.close-btn{ background:linear-gradient(135deg,#22c55e,#16a34a); color:#fff; cursor:pointer; }
 </style>
 </head>
 
 <body>
 
-<!-- 🔥 POPUP AFRIORA -->
 <div class="modal-bg" id="popup">
   <div class="modal">
-    <h2>Bienvenue sur AFRIORA 💎</h2>
-    <p>Plateforme d’investissement professionnelle nouvelle génération.</p>
+    <h2>Bienvenue sur TotalÉnergies ⚡</h2>
+    <p>Plateforme d’investissement énergétique professionnelle.</p>
     <ol>
-      <li>Bonus d'inscription : <strong>500 FCFA</strong></li>
-      <li>Retrait minimum : <strong>1 500 FCFA</strong></li>
-      <li>Commissions : <strong>25% / 3% / 2%</strong></li>
+      <li>Bonus d'inscription : <strong>1 000 FCFA</strong></li>
+      <li>Retrait minimum : <strong>1 000 FCFA</strong></li>
+      <li>Commissions : <strong>27% / 2% / 1%</strong></li>
       <li>Retrait rapide et sécurisé</li>
     </ol>
     <div class="modal-btns">
-      <a href="https://t.me/Afriora2026" class="telegram">Telegram</a>
       <button class="close-btn" onclick="closePopup()">Continuer</button>
     </div>
   </div>
@@ -207,12 +205,12 @@ body{
 <div class="app">
 
   <div class="header">
-    <h2>AFRIORA 💎</h2>
+    <h2>TotalÉnergies ⚡</h2>
     <small>{{ user.phone }}</small>
   </div>
 
   <div class="top-banner">
-    <img src="/static/images/b.jpg">
+    <img src="/static/images/t1.jpg">
   </div>
 
   <div class="card balance-main">
@@ -225,11 +223,6 @@ body{
     <strong>{{ revenu_cumule or 0 }} XOF</strong>
   </div>
 
-  <div class="stats">
-    <div class="stat"><strong>{{ user.solde_revenu or 0 }}</strong><small>Revenus</small></div>
-    <div class="stat"><strong>{{ total_users or 0 }}</strong><small>Utilisateurs</small></div>
-    <div class="stat"><strong>{{ total_invested or 0 }}</strong><small>Profils</small></div>
-  </div>
 
   <div class="actions">
     <div class="action" onclick="location.href='/deposit'"><i class="fa-wallet fa-solid"></i>Dépôt</div>
@@ -239,20 +232,17 @@ body{
   </div>
 
   <div class="bottom-banner">
-    <img src="/static/images/b.jpg">
+    <img src="/static/images/t1.jpg">
   </div>
 
 </div>
 
-<a href="/support" class="support-btn">
-  <i class="fa-solid fa-headset"></i>
-</a>
 
 <div class="bottom-nav">
   <a href="/dashboard" class="active"><i class="fa-house fa-solid"></i>Accueil</a>
-  <a href="/produits_rapide"><i class="fa-gem fa-solid"></i>Produits</a>
+  <a href="/produits_rapide"><i class="fa-bolt fa-solid"></i>Énergie</a>
   <a href="/team"><i class="fa-users fa-solid"></i>Team</a>
-</div> 
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -266,3 +256,4 @@ function closePopup(){
 
 </body>
 </html>
+

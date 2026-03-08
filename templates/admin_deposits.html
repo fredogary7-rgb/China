@@ -1,6 +1,10 @@
 <h2>Liste des dépôts</h2>
 
-<table border="1" width="100%" cellspacing="0" cellpadding="6">
+<!-- Barre de recherche -->
+<input type="text" id="searchInput" placeholder="Rechercher numéro, référence ou montant..."
+style="width:100%; padding:8px; margin-bottom:10px; border:1px solid #ccc; border-radius:5px;">
+
+<table border="1" width="100%" cellspacing="0" cellpadding="6" id="depotTable">
     <tr style="background:#f2f2f2;">
         <th>ID</th>
         <th>Numéro</th>
@@ -19,7 +23,6 @@
         <td>{{ d.reference }}</td>
         <td>{{ d.date.strftime("%d/%m/%Y %H:%M") }}</td>
 
-        <!-- Statut -->
         <td>
             {% if d.statut == "valide" %}
                 <span style="color:green; font-weight:bold;">Validé</span>
@@ -30,7 +33,6 @@
             {% endif %}
         </td>
 
-        <!-- ACTIONS -->
         <td>
             {% if d.statut != "valide" %}
                 <a href="/admin/deposits/valider/{{ d.id }}" style="color:green; font-weight:bold; margin-right:10px;">
@@ -48,5 +50,21 @@
     {% endfor %}
 </table>
 
+<script>
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    let input = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#depotTable tr");
 
+    rows.forEach((row, index) => {
+        if(index === 0) return; // ignorer l'entête
 
+        let text = row.innerText.toLowerCase();
+
+        if(text.includes(input)){
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+});
+</script>

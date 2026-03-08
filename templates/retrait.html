@@ -27,7 +27,7 @@ body{
   min-height:100vh;
   background:
     linear-gradient(rgba(5,40,25,.94),rgba(5,40,25,.94)),
-    url("/static/images/b.jpg") center/cover no-repeat fixed;
+    url("/static/images/t1.jpg") center/cover no-repeat fixed;
   color:#e6f5ef;
 }
 
@@ -229,7 +229,7 @@ input:focus{
     <!-- AMOUNT -->
     <div class="section">
       <h3>Montant du retrait</h3>
-      <input type="number" name="montant" id="montant" placeholder="Minimum 1 500 XOF" required>
+      <input type="number" name="montant" id="montant" placeholder="Minimum 1 000 XOF" required>
 
       <div class="fees">
         <span>Montant reçu</span>
@@ -256,14 +256,11 @@ input:focus{
 
   <!-- VISUAL -->
   <div class="visual">
-    <img src="/static/images/b.jpg" alt="Secure Withdrawal">
+    <img src="/static/images/t1.jpg" alt="Secure Withdrawal">
   </div>
 
 </div>
 
-<a href="/support" class="support-btn">
-  <i class="fa-solid fa-headset"></i>
-</a>
 
 <script>
 document.getElementById("montant").addEventListener("input", function () {

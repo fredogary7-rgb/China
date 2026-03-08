@@ -1,213 +1,135 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AFRIORA | Inscription</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription | TotalÉnergies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #06261b, #071a13);
+            padding: 20px;
+        }
 
-  <!-- Font pro -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+        .container { 
+            width: 100%; 
+            max-width: 400px; 
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
 
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Roboto', sans-serif;
-    }
+        .banner { width: 100%; height: 180px; overflow: hidden; margin-bottom: 20px; }
+        .banner img { width: 100%; height: 100%; object-fit: cover; }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #f2f4f7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #1f2937;
-    }
+        .content { padding: 0 25px 25px 25px; }
+        h1 { color: #e6f5ef; font-size: 22px; margin-bottom: 20px; }
 
-    .container {
-      width: 100%;
-      max-width: 420px;
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 32px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-    }
+        /* Flash Messages */
+        .flash { padding: 12px; border-radius: 10px; margin-bottom: 20px; font-size: 13px; }
+        .flash.danger { background: rgba(220, 38, 38, 0.2); color: #fca5a5; border: 1px solid #dc2626; }
+        .flash.success { background: rgba(34, 197, 94, 0.2); color: #86efac; border: 1px solid #22c55e; }
+        .flash.warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
 
-    /* Header */
-    .brand {
-      text-align: center;
-      font-size: 26px;
-      font-weight: 700;
-      color: #0f3d5e;
-      margin-bottom: 6px;
-    }
+        .input-group {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+        }
 
-    .subtitle {
-      text-align: center;
-      font-size: 14px;
-      color: #6b7280;
-      margin-bottom: 24px;
-    }
+        .input-group input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            width: 100%;
+            font-size: 15px;
+        }
 
-    h2 {
-      font-size: 18px;
-      margin-bottom: 20px;
-      text-align: center;
-      font-weight: 500;
-    }
+        .btn-register-submit {
+            width: 100%;
+            padding: 15px;
+            background: #22c55e;
+            color: #071a13;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
 
-    /* Messages */
-    .flash {
-      margin-bottom: 12px;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 13px;
-    }
-    .flash.success { background: #e6f6ee; color: #065f46; }
-    .flash.danger { background: #fdecea; color: #7f1d1d; }
-    .flash.warning { background: #fff7e6; color: #92400e; }
-
-    /* Form */
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 6px;
-      color: #374151;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 11px 12px;
-      border-radius: 6px;
-      border: 1px solid #d1d5db;
-      font-size: 14px;
-      outline: none;
-      background: #fff;
-    }
-
-    input:focus, select:focus {
-      border-color: #0f3d5e;
-      box-shadow: 0 0 0 2px rgba(15,61,94,0.15);
-    }
-
-    /* Button */
-    .btn {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      background: #0f3d5e;
-      color: #ffffff;
-      border: none;
-      border-radius: 6px;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background .2s;
-    }
-
-    .btn:hover {
-      background: #0c2f48;
-    }
-
-    /* Footer */
-    .footer {
-      margin-top: 18px;
-      text-align: center;
-      font-size: 13px;
-      color: #6b7280;
-    }
-
-    .footer a {
-      color: #0f3d5e;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    /* Support */
-    .support-btn {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      width: 50px;
-      height: 50px;
-      background: #25D366;
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      text-decoration: none;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-    }
-  </style>
+        .footer-text { color: rgba(230, 245, 239, 0.6); margin-bottom: 15px; font-size: 14px; }
+        .btn-login-link {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            color: #22c55e;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
 </head>
-
 <body>
 
 <div class="container">
-  <div class="brand">AFRIORA 💎</div>
-  <div class="subtitle">Plateforme d’investissement professionnelle</div>
-  <h2>Créer un compte</h2>
-
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, message in messages %}
-      <div class="flash {{ category }}">{{ message }}</div>
-    {% endfor %}
-  {% endwith %}
-
-  <form method="POST">
-    <div class="form-group">
-      <label>Pays</label>
-      <select name="country" required>
-        <option value="">Sélectionnez votre pays</option>
-        <option value="Benin">🇧🇯 Bénin</option>
-        <option value="Gabon">🇬🇦 Gabon</option>
-        <option value="Senegal">🇸🇳 Sénégal</option>
-        <option value="Togo">🇹🇬 Togo</option>
-        <option value="Cote d'Ivoire">🇨🇮 Côte d’Ivoire</option>
-        <option value="Cameroun">🇨🇲 Cameroun</option>
-        <option value="Niger">🇳🇪 Niger</option>
-        <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
-        <option value="Congo Brazzaville">🇨🇬 Congo Brazzaville</option>
-        <option value="Congo Kinshasa">🇨🇩 Congo Kinshasa</option>
-      </select>
+    <div class="banner">
+        <img src="static/images/t1.jpg" alt="Bannière TotalÉnergies">
     </div>
 
-    <div class="form-group">
-      <label>Numéro de téléphone</label>
-      <input type="text" name="phone" required>
+    <div class="content">
+        <h1>Créer un compte</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, msg in messages %}
+              <div class="flash {{ category }}">{{ msg }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="input-group">
+                <input type="text" name="phone" placeholder="Numéro de téléphone" required>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Mot de passe" required>
+            </div>
+            <div class="input-group">
+                <input type="password" name="confirm_password" placeholder="Confirmer le mot de passe" required>
+            </div>
+            <div class="input-group">
+                <input type="text" name="code_invitation" placeholder="Code d'invitation (Optionnel)" value="{{ code_ref }}">
+            </div>
+
+            <button type="submit" class="btn-register-submit">
+                <i class="fa-solid fa-user-plus"></i> S'inscrire
+            </button>
+        </form>
+
+        <div class="footer-text">Déjà un compte ?</div>
+        <a href="{{ url_for('connexion_page') }}" class="btn-login-link">
+            Se connecter
+        </a>
     </div>
-
-    <div class="form-group">
-      <label>Mot de passe</label>
-      <input type="password" name="password" required>
-    </div>
-
-    <div class="form-group">
-      <label>Confirmer le mot de passe</label>
-      <input type="password" name="confirm_password" required>
-    </div>
-
-    <div class="form-group">
-      <label>Code d'invitation (optionnel)</label>
-      <input type="text" name="code_invitation" value="{{ code_ref }}">
-    </div>
-
-    <button class="btn">Créer un compte</button>
-  </form>
-
-  <div class="footer">
-    Déjà inscrit ? <a href="{{ url_for('connexion_page') }}">Se connecter</a>
-  </div>
 </div>
-
-<a href="https://wa.me/22800000000" target="_blank" class="support-btn">💬</a>
 
 </body>
 </html>
+
