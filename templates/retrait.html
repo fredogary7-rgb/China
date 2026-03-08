@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Retrait | AFRIORA</title>
+<title>Retrait | </title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -15,6 +15,7 @@
   --bg:#071a13;
   --card:#0b2a20;
   --border:rgba(34,197,94,.25);
+  --error:#ef4444;
 }
 
 *{
@@ -31,14 +32,12 @@ body{
   color:#e6f5ef;
 }
 
-/* APP */
 .app{
   max-width:480px;
   margin:auto;
   padding-bottom:120px;
 }
 
-/* HEADER */
 .header{
   padding:18px 16px;
   display:flex;
@@ -47,9 +46,7 @@ body{
   background:rgba(7,26,19,.95);
   border-bottom:1px solid var(--border);
 }
-.header i{ font-size:18px; }
 
-/* HERO */
 .hero{
   margin:16px;
   background:linear-gradient(135deg,#052e1d,#064e3b);
@@ -59,18 +56,8 @@ body{
   box-shadow:0 20px 40px rgba(0,0,0,.45);
 }
 
-.hero span{
-  font-size:13px;
-  opacity:.85;
-}
+.hero h2{ margin:6px 0 0; font-size:28px; color:#dcfce7; }
 
-.hero h2{
-  margin:6px 0 0;
-  font-size:28px;
-  color:#dcfce7;
-}
-
-/* SECTION */
 .section{
   background:rgba(11,42,32,.95);
   border-radius:20px;
@@ -79,13 +66,8 @@ body{
   border:1px solid var(--border);
 }
 
-.section h3{
-  margin:0 0 12px;
-  font-size:15px;
-  color:var(--green);
-}
+.section h3{ margin:0 0 12px; font-size:15px; color:var(--green); }
 
-/* WALLET */
 .wallet{
   display:flex;
   justify-content:space-between;
@@ -94,15 +76,8 @@ body{
   border-radius:16px;
   background:#06261b;
   border:1px solid var(--border);
-  cursor:pointer;
-  transition:.2s;
 }
-.wallet:hover{
-  background:rgba(34,197,94,.12);
-}
-.wallet small{ opacity:.75; }
 
-/* INPUT */
 input{
   width:100%;
   padding:14px;
@@ -112,15 +87,7 @@ input{
   color:#fff;
   font-size:14px;
 }
-input::placeholder{
-  color:rgba(255,255,255,.6);
-}
-input:focus{
-  outline:none;
-  border-color:var(--green);
-}
 
-/* FEES */
 .fees{
   display:flex;
   justify-content:space-between;
@@ -129,7 +96,19 @@ input:focus{
   opacity:.85;
 }
 
-/* BUTTON */
+/* Alerte Horaires */
+#timeAlert {
+  display: none;
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid var(--error);
+  padding: 12px;
+  border-radius: 14px;
+  margin: 16px;
+  font-size: 13px;
+  text-align: center;
+}
+
 .btn{
   width:calc(100% - 32px);
   margin:24px 16px;
@@ -143,11 +122,14 @@ input:focus{
   cursor:pointer;
   transition:.2s;
 }
-.btn:hover{
-  box-shadow:0 15px 30px rgba(34,197,94,.45);
+
+.btn:disabled {
+  background: #374151;
+  color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
-/* RULES */
 .rules{
   margin:18px 16px;
   background:rgba(11,42,32,.9);
@@ -157,42 +139,9 @@ input:focus{
   line-height:1.6;
   border:1px solid var(--border);
 }
-.rules h4{
-  margin:0 0 8px;
-  color:var(--green);
-}
+.rules h4{ margin:0 0 8px; color:var(--green); }
 
-/* VISUAL */
-.visual{
-  margin:18px 16px;
-  border-radius:18px;
-  overflow:hidden;
-  border:1px solid var(--border);
-}
-.visual img{
-  width:100%;
-  height:140px;
-  object-fit:cover;
-  filter:brightness(.85);
-}
-
-/* SUPPORT */
-.support-btn{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  width:56px;
-  height:56px;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  font-size:24px;
-  box-shadow:0 15px 35px rgba(34,197,94,.45);
-  z-index:99;
-}
+.visual img{ width:100%; height:140px; object-fit:cover; border-radius: 18px; }
 </style>
 </head>
 
@@ -200,43 +149,43 @@ input:focus{
 
 <div class="app">
 
-  <!-- HEADER -->
   <div class="header">
-    <i class="fa-solid fa-arrow-left"></i>
-    <span>Retrait</span>
+    <i class="fa-solid fa-clock"></i>
+    <span>Retrait </span>
   </div>
 
-  <!-- HERO -->
   <div class="hero">
     <span>Solde retirable</span>
     <h2>{{ "{:,.0f}".format(solde_retraitable).replace(",", " ") }} XOF</h2>
   </div>
 
-  <form method="POST">
+  <div id="timeAlert">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    Les retraits sont ouverts uniquement de <strong>11h00 à 00h00</strong>.
+  </div>
 
-    <!-- WALLET -->
+  <form method="POST" id="withdrawForm">
+
     <div class="section">
-      <h3>Portefeuille de retrait</h3>
-      <div class="wallet" onclick="location.href='/ajouter_portefeuille'">
+      <h3>Portefeuille de réception</h3>
+      <div class="wallet">
         <div>
           <strong>{{ user.wallet_operator }}</strong><br>
           <small>{{ user.wallet_number }}</small>
         </div>
-        <i class="fa-solid fa-chevron-right"></i>
       </div>
     </div>
 
-    <!-- AMOUNT -->
     <div class="section">
       <h3>Montant du retrait</h3>
       <input type="number" name="montant" id="montant" placeholder="Minimum 1 000 XOF" required>
 
       <div class="fees">
-        <span>Montant reçu</span>
-        <span id="netAmount">0 XOF</span>
+        <span>Montant net à recevoir</span>
+        <strong id="netAmount" style="color: var(--green);">0 XOF</strong>
       </div>
       <div class="fees">
-        <span>Frais (15%)</span>
+        <span>Frais de service (15%)</span>
         <span id="feesAmount">0 XOF</span>
       </div>
     </div>
@@ -245,24 +194,22 @@ input:focus{
 
   </form>
 
-  <!-- RULES -->
   <div class="rules">
-    <h4>Informations importantes</h4>
-    • Retrait soumis à validation<br>
-    • Frais appliqués automatiquement<br>
-    • Vérifiez votre numéro Mobile Money<br>
-    • Toute erreur peut entraîner un rejet
+    <h4><i class="fa-solid fa-circle-info"></i> Horaires & Conditions</h4>
+    • Retraits disponibles : <strong>11h00 - 00h00</strong><br>
+    • Délai de traitement : 0h à 24h<br>
+    • Frais de réseau : 15% inclus<br>
+    • Vérifiez bien votre numéro avant de valider.
   </div>
 
-  <!-- VISUAL -->
-  <div class="visual">
-    <img src="/static/images/t1.jpg" alt="Secure Withdrawal">
+  <div class="visual" style="margin: 16px;">
+    <img src="/static/images/t1.jpg" alt="Secure Payment">
   </div>
 
 </div>
 
-
 <script>
+// 1. Calcul des frais
 document.getElementById("montant").addEventListener("input", function () {
   let montant = parseFloat(this.value) || 0;
   let fees = montant * 0.15;
@@ -273,6 +220,31 @@ document.getElementById("montant").addEventListener("input", function () {
   document.getElementById("feesAmount").innerText =
     fees > 0 ? fees.toLocaleString("fr-FR") + " XOF" : "0 XOF";
 });
+
+// 2. Gestion des horaires (11h - 00h)
+function checkWithdrawTime() {
+  const now = new Date();
+  const hours = now.getHours();
+  const btn = document.getElementById("withdrawBtn");
+  const alertBox = document.getElementById("timeAlert");
+
+  // Si l'heure est comprise entre 11h et 23h59 (00h exclu)
+  const isOpen = (hours >= 11 && hours < 24);
+
+  if (!isOpen) {
+    btn.disabled = true;
+    btn.innerText = "Retraits fermés";
+    alertBox.style.display = "block";
+  } else {
+    btn.disabled = false;
+    btn.innerText = "Confirmer le retrait";
+    alertBox.style.display = "none";
+  }
+}
+
+// Vérifier au chargement et toutes les minutes
+checkWithdrawTime();
+setInterval(checkWithdrawTime, 60000);
 </script>
 
 </body>
