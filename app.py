@@ -1141,7 +1141,7 @@ def retrait_page():
             flash("Montant invalide.", "danger")
             return redirect(url_for("retrait_page"))
 
-        if montant < 1500:
+        if montant < 1000:
             flash("Montant minimum : 1000 XOF.", "warning")
             return redirect(url_for("retrait_page"))
 

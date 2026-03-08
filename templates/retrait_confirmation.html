@@ -1,168 +1,223 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Confirmation de retrait</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de retrait</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<style>
-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: url("{{ url_for('static', filename='images/c.jpg') }}") no-repeat center center fixed;
-    background-size: cover;
-}
+    <style>
+        :root {
+            --green-primary: #22c55e;
+            --green-dark: #064e3b;
+            --bg-dark: #071a13;
+            --text-light: #e6f5ef;
+            --border-rgba: rgba(34, 197, 94, 0.25);
+        }
 
-/* Overlay FedEx */
-.overlay {
-    min-height: 100vh;
-    background: linear-gradient(
-        rgba(77,20,140,0.45),
-        rgba(255,102,0,0.35)
-    );
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(rgba(7, 26, 19, 0.9), rgba(7, 26, 19, 0.9)), 
+                        url("/static/images/t1.jpg") center/cover no-repeat fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-/* Carte */
-.card {
-    width: 92%;
-    max-width: 420px;
-    background: #fff;
-    border-radius: 18px;
-    padding: 35px 28px;
-    box-shadow: 0 20px 45px rgba(0,0,0,0.25);
-    text-align: center;
-}
+        .card {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(11, 42, 32, 0.95);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid var(--border-rgba);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
 
-/* Titres */
-.title {
-    font-size: 26px;
-    font-weight: 700;
-    color: #4D148C;
-}
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+        }
 
-.subtitle {
-    font-size: 14px;
-    color: #666;
-    margin-top: 5px;
-    margin-bottom: 25px;
-}
+        .logo-text span { color: var(--green-primary); }
 
-/* Icône */
-.icon {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: #28a745;
-    color: #fff;
-    font-size: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 18px;
-}
+        .subtitle {
+            font-size: 14px;
+            color: rgba(230, 245, 239, 0.7);
+            margin-bottom: 25px;
+        }
 
-/* Tableau infos */
-.info-box {
-    background: #f6f7fb;
-    border-radius: 12px;
-    padding: 18px;
-    text-align: left;
-    margin-bottom: 25px;
-}
+        .status-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid var(--green-primary);
+            color: var(--green-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+        }
 
-.row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    padding: 8px 0;
-    border-bottom: 1px solid #ddd;
-}
+        .info-box {
+            background: rgba(6, 38, 27, 0.8);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-rgba);
+        }
 
-.row:last-child { border-bottom: none; }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+            color: var(--text-light);
+        }
 
-.value { font-weight: 600; }
-.orange { color: #FF6600; }
-.green { color: #28a745; }
+        .row:last-child { border-bottom: none; }
 
-/* Boutons */
-.btn {
-    width: 100%;
-    padding: 15px;
-    font-size: 16px;
-    font-weight: 600;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-}
+        .label { opacity: 0.8; }
+        .value { font-weight: 600; }
+        .highlight-green { color: var(--green-primary); font-size: 16px; }
 
-.btn-confirm { background: linear-gradient(135deg, #4D148C, #FF6600); color: #fff; }
-.btn-back { background: #eee; color: #333; margin-top: 12px; }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
 
-/* Sécurité */
-.security { margin-top: 18px; font-size: 12px; color: #777; }
+        .btn-confirm {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            margin-bottom: 12px;
+        }
 
-/* Loader circulaire animé */
-.loader {
-  margin: 20px auto 10px auto;
-  border: 8px solid #f3f3f3;
-  border-top: 8px solid #FF6600;
-  border-radius: 50%;
-  width: 60px; height: 60px;
-  animation: spin 1s linear infinite;
-}
+        .btn-confirm:hover {
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+            transform: translateY(-2px);
+        }
 
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .btn-back {
+            background: transparent;
+            color: #e6f5ef;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-decoration: none;
+        }
 
-/* Message et succès */
-.message { text-align: center; font-size: 16px; color: #4D148C; margin-top: 12px; font-weight: 600; }
-.success { text-align: center; font-size: 16px; color: #28a745; margin-top: 12px; font-weight: 600; display:none; margin-top:10px; }
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(34, 197, 94, 0.1);
+            border-top: 4px solid var(--green-primary);
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: spin 1s linear infinite;
+        }
 
-</style>
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .loading-text { color: var(--green-primary); font-weight: 500; margin-top: 10px; }
+
+        .security-tag {
+            margin-top: 20px;
+            font-size: 12px;
+            color: rgba(230, 245, 239, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+    </style>
 </head>
 <body>
 
-<div class="overlay">
-    <div class="card">
+<div class="card">
+    <div class="logo-text">Total<span>Energies</span></div>
+    <div class="subtitle">Confirmation de la transaction</div>
 
-        <div class="title">CHINA<span style="color:#FF6600;">BOT</span></div>
-        <div class="subtitle">Confirmation de retrait</div>
-
-        <div class="icon">✓</div>
-
-        <div class="info-box">
-            <div class="row"><span>Montant demandé</span><span class="value">{{ montant }} FCFA</span></div>
-            <div class="row"><span>Taxe (15%)</span><span class="value orange">{{ taxe }} FCFA</span></div>
-            <div class="row"><span>Montant net</span><span class="value green">{{ net }} FCFA</span></div>
-            <div class="row"><span>Téléphone</span><span class="value">{{ user.phone }}</span></div>
+    {% if not submitted %}
+        <div class="status-icon">
+            <i class="fa-solid fa-receipt"></i>
         </div>
 
-        {% if not submitted %}
-            <!-- Formulaire de confirmation -->
-            <form method="POST">
-                <button class="btn btn-confirm">Confirmer le retrait</button>
-            </form>
+        <div class="info-box">
+            <div class="row">
+                <span class="label">Montant brut</span>
+                <span class="value">{{ "{:,.0f}".format(montant).replace(",", " ") }} XOF</span>
+            </div>
+            <div class="row">
+                <span class="label">Frais de réseau (15%)</span>
+                <span class="value" style="color: #fca5a5;">- {{ "{:,.0f}".format(taxe).replace(",", " ") }} XOF</span>
+            </div>
+            <div class="row" style="border-top: 1px solid var(--border-rgba); margin-top: 5px; padding-top: 15px;">
+                <span class="label">Montant net</span>
+                <span class="value highlight-green">{{ "{:,.0f}".format(net).replace(",", " ") }} XOF</span>
+            </div>
+            <div class="row">
+                <span class="label">Compte destinataire</span>
+                <span class="value">{{ user.phone }}</span>
+            </div>
+        </div>
 
-            <a href="{{ url_for('retrait_page') }}">
-                <button class="btn btn-back">Annuler</button>
-            </a>
+        <form method="POST">
+            <button type="submit" class="btn btn-confirm">
+                <i class="fa-solid fa-check-circle"></i> Confirmer le retrait
+            </button>
+        </form>
 
-            <div class="security">🔒 Transaction sécurisée</div>
-        {% else %}
-            <!-- Loader + message succès -->
-            <div class="loader"></div>
-            <div class="message">Traitement...</div>
-            <div class="success" id="successMsg">Demande envoyer !</div>
+        <a href="{{ url_for('retrait_page') }}" style="text-decoration: none;">
+            <div class="btn btn-back">Annuler la demande</div>
+        </a>
 
-            <script>
-            setTimeout(() => { document.getElementById("successMsg").style.display = "block"; }, 1000);
-            setTimeout(() => { window.location.href = "/dashboard"; }, 2000);
-            </script>
-        {% endif %}
+        <div class="security-tag">
+            <i class="fa-solid fa-shield-halved"></i> Transaction cryptée et sécurisée
+        </div>
 
-    </div>
+    {% else %}
+        <div class="loader"></div>
+        <div class="loading-text">Traitement de votre demande...</div>
+        <div id="successPart" style="display:none; margin-top: 15px;">
+            <div class="status-icon" style="background: var(--green-primary); color: #fff;">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <div style="color: var(--green-primary); font-weight: 600;">Demande envoyée avec succès !</div>
+        </div>
+
+        <script>
+            setTimeout(() => {
+                document.querySelector(".loader").style.display = "none";
+                document.querySelector(".loading-text").style.display = "none";
+                document.getElementById("successPart").style.display = "block";
+            }, 1500);
+
+            setTimeout(() => { window.location.href = "{{ url_for('dashboard_page') }}"; }, 3000);
+        </script>
+    {% endif %}
 </div>
 
 </body>
+</html>
+
