@@ -972,7 +972,7 @@ def team_page():
     referral_code = phone
     referral_link = url_for('inscription_page', _external=True) + f'?ref={referral_code}'
 
-    from sqlalchemy import func
+    from sqlalchemy import func, distinct
 
     # ----- NIVEAU 1 -----
     level1_users = User.query.filter_by(parrain=referral_code).all()
@@ -999,10 +999,33 @@ def team_page():
         level3_phones = []
         level3_count = 0
 
+    # ----- UTILISATEURS ACTIFS -----
+    level1_active = 0
+    level2_active = 0
+    level3_active = 0
+
+    if level1_phones:
+        level1_active = db.session.query(distinct(Investissement.phone)).filter(
+            Investissement.phone.in_(level1_phones),
+            Investissement.actif == True
+        ).count()
+
+    if level2_phones:
+        level2_active = db.session.query(distinct(Investissement.phone)).filter(
+            Investissement.phone.in_(level2_phones),
+            Investissement.actif == True
+        ).count()
+
+    if level3_phones:
+        level3_active = db.session.query(distinct(Investissement.phone)).filter(
+            Investissement.phone.in_(level3_phones),
+            Investissement.actif == True
+        ).count()
+
     # ----- COMMISSIONS -----
     commissions_total = float(user.solde_parrainage or 0)
 
-    # ----- DÉPÔTS DE LA TEAM (NIVEAU 1 + 2 + 3) -----
+    # ----- DEPOTS TEAM -----
     all_team_phones = level1_phones + level2_phones + level3_phones
 
     if all_team_phones:
@@ -1014,11 +1037,15 @@ def team_page():
     else:
         team_deposits = 0.0
 
-    # ----- STATISTIQUES -----
     stats = {
         "level1": level1_count,
         "level2": level2_count,
         "level3": level3_count,
+
+        "level1_active": level1_active,
+        "level2_active": level2_active,
+        "level3_active": level3_active,
+
         "commissions_total": commissions_total,
         "team_deposits": team_deposits
     }
