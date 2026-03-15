@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard | TotalÉnergies</title>
+<title>Dashboard | TotalEnergies</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -11,6 +11,7 @@
 <style>
 :root{
   --green:#22c55e;
+  --green-dark: #16a34a;
 }
 
 *{ box-sizing:border-box; font-family:'Poppins',sans-serif; }
@@ -37,15 +38,16 @@ body{
   align-items:center;
   margin-bottom:14px;
 }
-.header h2{ margin:0; font-size:20px; }
-.header small{ font-size:12px; opacity:.8; }
+.header h2{ margin:0; font-size:20px; font-weight: 700; color: var(--green); }
+.header small{ font-size:12px; opacity:.8; background: rgba(34, 197, 94, 0.1); padding: 4px 10px; border-radius: 20px; }
 
 /* BANNERS */
 .top-banner,.bottom-banner{
   width:100%;
   border-radius:18px;
   overflow:hidden;
-  box-shadow:0 20px 40px rgba(0,0,0,.5);
+  box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 .top-banner{ height:150px; margin-bottom:18px; }
 .bottom-banner{ height:110px; margin:25px 0 10px; }
@@ -62,66 +64,43 @@ body{
   padding:18px;
   margin-bottom:18px;
   border:1px solid rgba(34,197,94,.35);
-  box-shadow:0 25px 50px rgba(0,0,0,.45);
+  box-shadow:0 20px 40px rgba(0,0,0,0.4);
 }
 
 /* BALANCE */
-.balance-main span{ font-size:13px; opacity:.8; }
-.balance-main h1{ margin:6px 0; font-size:30px; color:#dcfce7; }
+.balance-main span{ font-size:13px; opacity:.8; text-transform: uppercase; letter-spacing: 1px; }
+.balance-main h1{ margin:6px 0; font-size:32px; color:#fff; font-weight: 700; }
 
 /* CUMUL */
 .cumulative{
   background:linear-gradient(135deg,#052e1d,#064e3b);
   border-left:5px solid var(--green);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.cumulative h3{ margin:0 0 6px; color:var(--green); }
-
-/* STATS */
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-.stat{
-  background:#06261b;
-  border-radius:14px;
-  padding:12px;
-  text-align:center;
-}
-.stat strong{ color:var(--green); }
+.cumulative h3{ margin:0; font-size: 14px; color:var(--green); }
+.cumulative strong { font-size: 18px; }
 
 /* ACTIONS */
 .actions{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:14px;
+  gap:12px;
 }
 .action{
-  background:#06261b;
+  background:rgba(6,38,27,0.8);
+  border: 1px solid rgba(34, 197, 94, 0.15);
   border-radius:16px;
   padding:14px 0;
   text-align:center;
-  font-size:12px;
+  font-size:11px;
   cursor:pointer;
+  transition: 0.3s;
 }
-.action i{ display:block; font-size:22px; margin-bottom:6px; }
-
-/* SUPPORT */
-.support-btn{
-  position:fixed;
-  bottom:90px;
-  right:20px;
-  width:56px;
-  height:56px;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  font-size:24px;
-  z-index:20;
-}
+.action:active { transform: scale(0.95); background: var(--green); color: #000; }
+.action i{ display:block; font-size:22px; margin-bottom:6px; color: var(--green); }
+.action:active i { color: #000; }
 
 /* NAV */
 .bottom-nav{
@@ -131,56 +110,74 @@ body{
   transform:translateX(-50%);
   width:100%;
   max-width:480px;
-  background:rgba(7,26,19,.95);
+  background:rgba(7,26,19,.98);
   display:flex;
   justify-content:space-around;
-  padding:10px 0;
+  padding:12px 0;
+  border-top: 1px solid rgba(34, 197, 94, 0.2);
+  z-index: 100;
 }
 .bottom-nav a{
   color:#9ca3af;
-  font-size:12px;
+  font-size:11px;
   text-decoration:none;
   display:flex;
   flex-direction:column;
   align-items:center;
+  gap: 4px;
 }
-.bottom-nav a.active{ color:var(--green); }
+.bottom-nav a i { font-size: 20px; }
+.bottom-nav a.active{ color:var(--green); font-weight: 600; }
 
 /* 🔥 POPUP */
 .modal-bg{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.8);
-  backdrop-filter:blur(6px);
+  background:rgba(0,0,0,.85);
+  backdrop-filter:blur(8px);
   display:none;
   align-items:center;
   justify-content:center;
   z-index:9999;
+  padding: 20px;
 }
 .modal{
   background:#0b2a20;
-  border-radius:22px;
-  padding:22px;
-  width:90%;
-  max-width:360px;
-  border:1px solid rgba(34,197,94,.4);
+  border-radius:24px;
+  padding:25px;
+  width:100%;
+  max-width:380px;
+  border:1px solid rgba(34,197,94,0.4);
+  text-align: center;
 }
-.modal h2{ color:var(--green); margin-top:0; }
-.modal ol{ padding-left:18px; font-size:13px; }
+.modal h2{ color:var(--green); margin-top:0; font-size: 20px; }
+.modal ol{ text-align: left; padding-left: 20px; font-size:13px; line-height: 1.8; margin: 15px 0; }
 .modal-btns{
   display:flex;
+  flex-direction: column;
   gap:10px;
-  margin-top:16px;
 }
-.modal-btns a,.modal-btns button{
-  flex:1;
-  padding:12px;
-  border-radius:14px;
-  border:none;
-  font-weight:600;
+.telegram-btn{ 
+    background:#229ED9; 
+    color:#fff; 
+    text-decoration:none; 
+    padding: 12px; 
+    border-radius: 14px; 
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
-.telegram{ background:#229ED9; color:#fff; text-decoration:none; text-align:center; }
-.close-btn{ background:linear-gradient(135deg,#22c55e,#16a34a); color:#fff; cursor:pointer; }
+.close-btn{ 
+    background: linear-gradient(135deg,#22c55e,#16a34a); 
+    color:#052819; 
+    cursor:pointer; 
+    border: none;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 700;
+}
 </style>
 </head>
 
@@ -188,8 +185,8 @@ body{
 
 <div class="modal-bg" id="popup">
   <div class="modal">
-    <h2>Bienvenue sur TotalÉnergies ⚡</h2>
-    <p>Plateforme d’investissement énergétique professionnelle.</p>
+    <h2>Bienvenue sur TotalEnergies ⚡</h2>
+    <p style="font-size: 13px; opacity: 0.8;">Plateforme d’investissement énergétique professionnelle.</p>
     <ol>
       <li>Bonus d'inscription : <strong>1 000 FCFA</strong></li>
       <li>Retrait minimum : <strong>1 000 FCFA</strong></li>
@@ -197,7 +194,10 @@ body{
       <li>Retrait rapide et sécurisé</li>
     </ol>
     <div class="modal-btns">
-      <button class="close-btn" onclick="closePopup()">Continuer</button>
+      <a href="https://t.me/+Gy4eiFCl2XA5MGVk" target="_blank" class="telegram-btn">
+        <i class="fa-brands fa-telegram"></i> Rejoindre le canal Telegram
+      </a>
+      <button class="close-btn" onclick="closePopup()">Continuer vers le site</button>
     </div>
   </div>
 </div>
@@ -205,52 +205,64 @@ body{
 <div class="app">
 
   <div class="header">
-    <h2>TotalÉnergies ⚡</h2>
+    <h2>TotalEnergies ⚡</h2>
     <small>{{ user.phone }}</small>
   </div>
 
   <div class="top-banner">
-    <img src="/static/images/t1.jpg">
+    <img src="/static/images/t1.jpg" alt="Bannière">
   </div>
 
   <div class="card balance-main">
-    <span>Solde total</span>
-    <h1>{{ user.solde_total or 0 }} XOF</h1>
+    <span>Solde disponible</span>
+    <h1>{{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }} XOF</h1>
   </div>
 
   <div class="card cumulative">
     <h3>Revenus cumulés</h3>
-    <strong>{{ revenu_cumule or 0 }} XOF</strong>
+    <strong>{{ "{:,.0f}".format(revenu_cumule or 0).replace(",", " ") }} XOF</strong>
   </div>
 
-
   <div class="actions">
-    <div class="action" onclick="location.href='/deposit'"><i class="fa-wallet fa-solid"></i>Dépôt</div>
-    <div class="action" onclick="location.href='/retrait'"><i class="fa-arrow-up fa-solid"></i>Retrait</div>
-    <div class="action" onclick="location.href='/achats'"><i class="fa-chart-line fa-solid"></i>Achats</div>
-    <div class="action" onclick="location.href='/profile'"><i class="fa-user fa-solid"></i>Profil</div>
+    <div class="action" onclick="location.href='/deposit'">
+        <i class="fa-solid fa-wallet"></i>Dépôt
+    </div>
+    <div class="action" onclick="location.href='/retrait'">
+        <i class="fa-solid fa-money-bill-transfer"></i>Retrait
+    </div>
+    <div class="action" onclick="location.href='/achats'">
+        <i class="fa-solid fa-layer-group"></i>Mines
+    </div>
+    <div class="action" onclick="location.href='/profile'">
+        <i class="fa-solid fa-circle-user"></i>Profil
+    </div>
   </div>
 
   <div class="bottom-banner">
-    <img src="/static/images/t1.jpg">
+    <img src="/static/images/t1.jpg" alt="Bannière">
   </div>
 
 </div>
 
-
 <div class="bottom-nav">
-  <a href="/dashboard" class="active"><i class="fa-house fa-solid"></i>Accueil</a>
-  <a href="/produits_rapide"><i class="fa-bolt fa-solid"></i>Énergie</a>
-  <a href="/team"><i class="fa-users fa-solid"></i>Team</a>
+  <a href="/dashboard" class="active"><i class="fa-solid fa-house"></i>Accueil</a>
+  <a href="/produits_rapide"><i class="fa-solid fa-bolt-lightning"></i>Énergie</a>
+  <a href="/team"><i class="fa-solid fa-users-gear"></i>Équipe</a>
+  <a href="/profile"><i class="fa-solid fa-user-gear"></i>Paramètres</a>
 </div>
 
 <script>
+// Affichage du popup au chargement
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("popup").style.display = "flex";
+  const hasSeenPopup = sessionStorage.getItem("popupSeen");
+  if (!hasSeenPopup) {
+    document.getElementById("popup").style.display = "flex";
+  }
 });
 
 function closePopup(){
   document.getElementById("popup").style.display = "none";
+  sessionStorage.setItem("popupSeen", "true"); // Pour ne pas l'afficher à chaque clic sur l'accueil durant la session
 }
 </script>
 
