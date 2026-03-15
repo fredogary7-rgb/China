@@ -1,255 +1,369 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOPAY - Recharge</title>
-    <style>
-        :root { 
-            --orange-main: #e88e0c; 
-            --blue-header: #3498db;
-            --text-dark: #333;
-            --text-gray: #666;
-        }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #1a1a1a; margin: 0; display: flex; justify-content: center; }
-        
-        .app-container { width: 100%; max-width: 450px; background: white; min-height: 100vh; position: relative; }
-        .page { display: none; padding-bottom: 30px; animation: fadeIn 0.3s; }
-        .active { display: block; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recharge</title>
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+<style>
 
-        /* --- PAGE 1 : GRILLE --- */
-        .header-blue { background: var(--blue-header); color: white; padding: 15px; text-align: center; font-weight: bold; }
-        .grid-amounts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
-        .amount-btn { 
-            background: var(--orange-main); color: white; padding: 20px; border-radius: 8px; 
-            text-align: center; font-weight: bold; cursor: pointer; border: none; font-size: 16px; 
-        }
+:root{
+--orange-main:#e88e0c;
+--blue-header:#3498db;
+--text-gray:#666;
+}
 
-        /* --- PAGE 2 --- */
-        .gopay-header { text-align: center; padding: 40px 20px 20px; }
-        .logo-gopay { width: 80px; margin-bottom: 20px; }
-        .instruction-text { color: var(--text-gray); font-size: 14px; line-height: 1.5; padding: 0 20px; margin-bottom: 20px; }
-        .payment-info-row { font-size: 16px; font-weight: 500; margin-bottom: 20px; }
-        .orange-bold { color: var(--orange-main); font-weight: bold; }
-        
-        .selector-label { color: var(--text-gray); font-size: 14px; margin-bottom: 15px; }
-        .op-card {
-            border: 1px solid #ddd; border-radius: 10px; width: 100px; padding: 15px;
-            margin: 0 auto 20px; text-align: center; cursor: pointer;
-        }
-        .op-card.selected { border: 2px solid var(--orange-main); }
-        .op-card img { width: 40px; display: block; margin: 0 auto 5px; }
+body{
+font-family:Arial;
+background:#1a1a1a;
+margin:0;
+display:flex;
+justify-content:center;
+}
 
-        .input-phone-container { padding: 0 25px; margin-bottom: 15px; }
-        .phone-input { 
-            width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 10px; 
-            font-size: 16px; box-sizing: border-box; background: #fff;
-        }
-        .error-box { 
-            background: #fff0f0; color: #d9534f; padding: 10px; margin: 0 25px; 
-            border-radius: 5px; font-size: 11px; line-height: 1.4; border: 1px solid #ffdada;
-        }
+.app-container{
+width:100%;
+max-width:450px;
+background:white;
+min-height:100vh;
+}
 
-        .btn-confirm {
-            background: linear-gradient(to right, #e88e0c, #f3b14b);
-            color: white; width: 80%; padding: 15px; border: none; border-radius: 30px;
-            font-size: 18px; font-weight: bold; cursor: pointer; display: block; margin: 30px auto;
-        }
+.page{
+display:none;
+padding-bottom:30px;
+}
 
-        /* --- PAGE 3 --- */
-        .page3-content { padding: 20px; position: relative; }
-        .page3-content::before {
-            content: ""; position: absolute; left: 35px; top: 70px; bottom: 40px;
-            border-left: 2px dashed #ccc; z-index: 1;
-        }
-        .section-step { position: relative; z-index: 2; margin-bottom: 35px; padding-left: 45px; }
-        .icon-circle {
-            position: absolute; left: -22px; width: 35px; height: 35px;
-            background: #d0d7de; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        }
-        .card-info { background: #f8f9fa; border-radius: 12px; padding: 15px; margin: 15px 0; }
-        .label-small { color: #888; font-size: 12px; font-weight: bold; margin-top: 8px; }
-        .val-orange-big { color: var(--orange-main); font-size: 22px; font-weight: bold; display: flex; justify-content: space-between; }
-        
-        .btn-pay-ussd { 
-            display: block; background: var(--orange-main); color: white; 
-            text-align: center; text-decoration: none; padding: 15px; 
-            border-radius: 30px; font-weight: bold; font-size: 18px; margin: 15px 0;
-        }
+.active{
+display:block;
+}
 
-        /* MODAL DE CHARGEMENT */
-        #loading-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;
-            color: white; text-align: center; flex-direction: column;
-        }
-        .spinner {
-            width: 40px; height: 40px; border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--orange-main); border-radius: 50%;
-            animation: spin 1s linear infinite; margin-bottom: 15px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+.header-blue{
+background:var(--blue-header);
+color:white;
+padding:15px;
+text-align:center;
+font-weight:bold;
+}
+
+.grid-amounts{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px;
+padding:20px;
+}
+
+.amount-btn{
+background:var(--orange-main);
+color:white;
+padding:20px;
+border-radius:8px;
+font-weight:bold;
+border:none;
+cursor:pointer;
+font-size:16px;
+}
+
+.gopay-header{
+text-align:center;
+padding:30px 20px;
+}
+
+.logo-gopay{
+width:70px;
+margin-bottom:10px;
+}
+
+.instruction-text{
+font-size:14px;
+color:var(--text-gray);
+}
+
+.selector{
+padding:0 25px;
+margin-top:10px;
+}
+
+.selector select{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:1px solid #ddd;
+margin-top:8px;
+}
+
+.phone-box{
+padding:0 25px;
+margin-top:15px;
+}
+
+.phone-input{
+width:100%;
+padding:14px;
+border-radius:10px;
+border:1px solid #ddd;
+}
+
+.btn-confirm{
+background:linear-gradient(to right,#e88e0c,#f3b14b);
+color:white;
+width:80%;
+padding:15px;
+border:none;
+border-radius:30px;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+display:block;
+margin:30px auto;
+}
+
+.page3{
+padding:20px;
+}
+
+.card-info{
+background:#f8f9fa;
+border-radius:12px;
+padding:15px;
+margin:15px 0;
+}
+
+.label-small{
+font-size:12px;
+color:#777;
+}
+
+.val-orange{
+color:var(--orange-main);
+font-size:22px;
+font-weight:bold;
+}
+
+.btn-pay{
+display:block;
+background:var(--orange-main);
+color:white;
+text-align:center;
+padding:15px;
+border-radius:30px;
+font-size:18px;
+font-weight:bold;
+text-decoration:none;
+margin-top:20px;
+}
+
+#loading{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+justify-content:center;
+align-items:center;
+color:white;
+font-size:18px;
+}
+
+</style>
 </head>
+
 <body>
 
-<div id="loading-overlay">
-    <div class="spinner"></div>
-    <p id="loading-text">Vérification du paiement en cours...</p>
-</div>
+<div id="loading">Traitement...</div>
 
 <div class="app-container">
 
-    <div id="page1" class="page active">
-        <div class="header-blue">Recharge</div>
-        <div class="grid-amounts">
-            <button class="amount-btn" onclick="selectAmount(4000)">4000</button>
-            <button class="amount-btn" onclick="selectAmount(8000)">8000</button>
-            <button class="amount-btn" onclick="selectAmount(12000)">12000</button>
-            <button class="amount-btn" onclick="selectAmount(21000)">21000</button>
-            <button class="amount-btn" onclick="selectAmount(40000)">40000</button>
-            <button class="amount-btn" onclick="selectAmount(100000)">100000</button>
-            <button class="amount-btn" onclick="selectAmount(150000)">150000</button>
-            <button class="amount-btn" onclick="selectAmount(250000)">250000</button>
-            <button class="amount-btn" onclick="selectAmount(500000)">500000</button>
-        </div>
-    </div>
+<!-- PAGE 1 -->
 
-    <div id="page2" class="page">
-        <div class="gopay-header">
-            <img src="static/images/g.png" alt="GOPAY" class="logo-gopay">
-            <p class="instruction-text">
-                Veuillez remplir votre mode de paiement et le compte de paiement réel que vous utiliserez pour effectuer le paiement.
-            </p>
-            <div class="payment-info-row">
-                Montant de paiement: <span class="orange-bold" id="p2-amt">XOF 0</span>
-            </div>
-            
-            <p class="selector-label">Veuillez sélectionner un mode de paiement</p>
-            <div class="op-card selected">
-                <div style="background:#ff6600; color:white; font-size:10px; padding:2px; margin-bottom:5px;">orange</div>
-                <span style="font-size:12px; font-weight:bold;">ORANGE</span>
-            </div>
-        </div>
+<div id="page1" class="page active">
 
-        <div class="input-phone-container">
-            <input type="text" class="phone-input" value="+226xxxxxxxx">
-        </div>
+<div class="header-blue">Recharge</div>
 
-        <div class="error-box">
-            ⚠️ Veuillez remplir votre compte de paiement avec précision. Un remplissage incorrect peut entraîner la perte des fonds transférés.
-        </div>
+<div class="grid-amounts">
 
-        <button class="btn-confirm" onclick="showPage('page3')">Confirmer &rarr;</button>
-    </div>
+<button class="amount-btn" onclick="selectAmount(4000)">4000</button>
+<button class="amount-btn" onclick="selectAmount(8000)">8000</button>
+<button class="amount-btn" onclick="selectAmount(12000)">12000</button>
+<button class="amount-btn" onclick="selectAmount(21000)">21000</button>
+<button class="amount-btn" onclick="selectAmount(40000)">40000</button>
+<button class="amount-btn" onclick="selectAmount(100000)">100000</button>
+<button class="amount-btn" onclick="selectAmount(150000)">150000</button>
+<button class="amount-btn" onclick="selectAmount(250000)">250000</button>
+<button class="amount-btn" onclick="selectAmount(500000)">500000</button>
 
-    <div id="page3" class="page">
-        <div class="page3-content">
-            <div class="section-step">
-                <div class="icon-circle">💳</div>
-                <h3 style="margin:0;">Copiez ce compte</h3>
-                <p style="font-size:13px; color:#666;">Copiez ce compte <span style="color:red; font-weight:bold;">ORANGE</span> et effectuez le paiement</p>
-                
-                <div class="card-info">
-                    <div class="label-small">Montant total payable:</div>
-                    <div class="val-orange-big" id="p3-amt">XOF 0</div>
+</div>
 
-                    <div class="label-small">ORANGE Compte:</div>
-                    <div class="val-orange-big">
-                        <span>56024325</span>
-                        <span style="cursor:pointer" onclick="copyText('56024325')">📋</span>
-                    </div>
+</div>
 
-                    <div class="label-small">Nom du compte:</div>
-                    <div class="val-orange-big" style="font-size: 16px; line-height: 1.2;">MOHAMED AKANBI</div>
-                </div>
+<!-- PAGE 2 -->
 
-                <a id="ussd-link" href="#" class="btn-pay-ussd">Cliquez pour payer</a>
-                <div id="ussd-code-display" style="text-align:center; color:var(--orange-main); font-weight:bold; font-size:14px;">*144*2*1*...#</div>
-            </div>
+<div id="page2" class="page">
 
-            <div class="section-step">
-                <div class="icon-circle">🔄</div>
-                <h3 style="margin:0;">Paiement achevé?</h3>
-                <p style="font-size:12px; color:#666;">Cliquez sur <span style="color:red; font-weight:bold;">"Rafraîchir"</span> pour vérifier s'il réussit</p>
-                
-                <div class="card-info" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div class="label-small">Montant payé:</div>
-                        <div style="font-weight:bold; color:#ccc; font-size:18px;" id="p3-paid">XOF 0</div>
-                    </div>
-                    <button onclick="refreshStatus()" style="background:var(--orange-main); color:white; border:none; padding:10px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Rafraîchir</button>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="gopay-header">
+
+<img src="/static/images/g.png" class="logo-gopay">
+
+<p class="instruction-text">
+Veuillez remplir les informations de paiement
+</p>
+
+<div>
+Montant : <b id="amountDisplay">0</b> FCFA
+</div>
+
+</div>
+
+<div class="selector">
+
+<label>Pays</label>
+
+<select id="country">
+
+<option value="Burkina Faso">Burkina Faso</option>
+<option value="Togo">Togo</option>
+<option value="Benin">Bénin</option>
+<option value="Cameroun">Cameroun</option>
+<option value="Cote dIvoire">Côte d'Ivoire</option>
+
+</select>
+
+</div>
+
+<div class="selector">
+
+<label>Opérateur</label>
+
+<select id="operator">
+
+<option value="ORANGE">Orange Money</option>
+<option value="MTN">MTN Money</option>
+<option value="MOOV">Moov Money</option>
+
+</select>
+
+</div>
+
+<div class="phone-box">
+
+<input class="phone-input" id="phone" placeholder="Numéro de paiement">
+
+</div>
+
+<button class="btn-confirm" onclick="goToPayment()">Continuer</button>
+
+</div>
+
+<!-- PAGE 3 -->
+
+<div id="page3" class="page">
+
+<div class="page3">
+
+<h3>Informations paiement</h3>
+
+<div class="card-info">
+
+<div class="label-small">Montant</div>
+<div class="val-orange" id="amountFinal"></div>
+
+</div>
+
+<a id="payBtn" class="btn-pay">Payer maintenant</a>
+
+</div>
+
+</div>
+
 </div>
 
 <script>
-    let amountSelected = 0;
-    const MERCHANT = "56024325";
 
-    function selectAmount(amt) {
-        amountSelected = amt;
-        document.getElementById('p2-amt').innerText = "XOF " + amt;
-        document.getElementById('p3-amt').innerText = "XOF " + amt;
-        document.getElementById('p3-paid').innerText = "XOF " + amt;
-        
-        const code = `*144*2*1*${MERCHANT}*${amt}`;
-        document.getElementById('ussd-link').href = "tel:" + code + "%23";
-        document.getElementById('ussd-code-display').innerText = code + "#";
+let amountSelected=0;
 
-        showPage('page2');
-    }
+function selectAmount(amount){
 
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        window.scrollTo(0,0);
-    }
+amountSelected=amount;
 
-    function copyText(t) {
-        navigator.clipboard.writeText(t);
-        alert("Copié dans le presse-papier !");
-    }
+document.getElementById("amountDisplay").innerText=amount;
 
-    // Nouvelle fonction pour le bouton rafraîchir
+showPage("page2");
 
-function refreshStatus() {
-    const overlay = document.getElementById('loading-overlay');
-    overlay.style.display = 'flex';
+}
 
-    const phone = document.querySelector(".phone-input").value;
+function showPage(id){
 
-    const data = new URLSearchParams();
-    data.append("montant", amountSelected);
-    data.append("phone", phone);
-    data.append("country", "Togo");
-    data.append("operator", "ORANGE");
-    data.append("fullname", "Paiement Client");
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 
-    fetch("/deposit", {
-        method: "POST",
-        body: data
-    })
-    .then(res => res.json())
-    .then(data => {
+document.getElementById(id).classList.add("active");
 
-        overlay.style.display = 'none';
+}
 
-        if(data.error){
-            alert(data.error);
-        }else{
-            alert("Votre demande de dépôt a été envoyée. En attente de validation.");
-        }
+function goToPayment(){
 
-    })
-    .catch(() => {
-        overlay.style.display = 'none';
-        alert("Erreur serveur.");
-    });
+const phone=document.getElementById("phone").value;
+const country=document.getElementById("country").value;
+const operator=document.getElementById("operator").value;
+
+if(phone==""){
+alert("Entrez le numéro de paiement");
+return;
+}
+
+document.getElementById("amountFinal").innerText=amountSelected+" FCFA";
+
+document.getElementById("payBtn").onclick=function(){
+
+createDeposit(phone,country,operator);
+
+};
+
+showPage("page3");
+
+}
+
+function createDeposit(phone,country,operator){
+
+document.getElementById("loading").style.display="flex";
+
+const data=new URLSearchParams();
+
+data.append("montant",amountSelected);
+data.append("phone",phone);
+data.append("country",country);
+data.append("operator",operator);
+data.append("fullname","Paiement Client");
+
+fetch("/deposit",{
+method:"POST",
+body:data
+})
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("loading").style.display="none";
+
+if(data.error){
+
+alert(data.error);
+
+}else{
+
+window.location.href=data.url;
+
+}
+
+})
+
+.catch(()=>{
+
+document.getElementById("loading").style.display="none";
+
+alert("Erreur serveur");
+
+});
+
 }
 
 </script>

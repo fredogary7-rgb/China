@@ -509,25 +509,21 @@ def create_deposit():
     except ValueError:
         return jsonify({"error": "Montant invalide"}), 400
 
+    # Récupération des données dynamiques envoyées par le JS
     phone_paiement = request.form.get("phone")
     country = request.form.get("country")
     operator = request.form.get("operator")
-    fullname = request.form.get("fullname")
+    fullname = request.form.get("fullname", "Utilisateur")
 
     if montant < 3000:
         return jsonify({"error": "Montant minimum 3000 FCFA"}), 400
 
-    if not all([phone_paiement, country, operator, fullname]):
+    if not all([phone_paiement, country, operator]):
         return jsonify({"error": "Tous les champs sont requis"}), 400
 
-    # 🔗 Lien MoneyFusion
-    payment_link = (
-        f"https://sendavapay.com/pay/SPY9YV3ZM72"
-    )
-
-    # 💾 SAUVEGARDE DU DEPOT
+    # Sauvegarde dans la base de données
     depot = Depot(
-        phone=phone,                  # téléphone du compte utilisateur
+        phone=phone,
         phone_paiement=phone_paiement,
         fullname=fullname,
         operator=operator,
@@ -539,7 +535,12 @@ def create_deposit():
     db.session.add(depot)
     db.session.commit()
 
+    # Lien vers ta plateforme de paiement externe
+    payment_link = "https://westpay.cloud/link/p715d545mmrhplpe"
+
     return jsonify({"url": payment_link})
+
+
 
 @app.route("/boutique")
 def boutique_page():
