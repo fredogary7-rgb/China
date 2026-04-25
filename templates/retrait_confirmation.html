@@ -3,25 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmation de retrait</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Confirmation de retrait | Emirates</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
         :root {
-            --green-primary: #22c55e;
-            --green-dark: #064e3b;
-            --bg-dark: #071a13;
-            --text-light: #e6f5ef;
-            --border-rgba: rgba(34, 197, 94, 0.25);
+            --primary: #5D5FEF;
+            --primary-dark: #4749D4;
+            --bg-page: #F4F7FE;
+            --white: #ffffff;
+            --text-dark: #1A202C;
+            --text-muted: #718096;
+            --danger: #FF4D4F;
+            --success: #22c55e;
         }
 
         body {
             margin: 0;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
-            background: linear-gradient(rgba(7, 26, 19, 0.9), rgba(7, 26, 19, 0.9)), 
-                        url("/static/images/t1.jpg") center/cover no-repeat fixed;
+            background-color: var(--bg-page);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -31,179 +33,197 @@
         .card {
             width: 100%;
             max-width: 400px;
-            background: rgba(11, 42, 32, 0.95);
-            border-radius: 24px;
-            padding: 30px;
-            border: 1px solid var(--border-rgba);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            background: var(--white);
+            border-radius: 30px;
+            padding: 35px 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
             text-align: center;
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,0,0,0.02);
         }
 
-        .logo-text {
-            font-size: 24px;
-            font-weight: 700;
-            color: #fff;
+        .brand {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-dark);
             margin-bottom: 5px;
+            letter-spacing: -0.5px;
         }
 
-        .logo-text span { color: var(--green-primary); }
+        .brand span { color: var(--primary); }
 
         .subtitle {
-            font-size: 14px;
-            color: rgba(230, 245, 239, 0.7);
-            margin-bottom: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .status-icon {
-            width: 70px;
-            height: 70px;
-            background: rgba(34, 197, 94, 0.1);
-            border: 2px solid var(--green-primary);
-            color: var(--green-primary);
-            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            background: rgba(93, 95, 239, 0.08);
+            color: var(--primary);
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
-            margin: 0 auto 20px;
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+            font-size: 32px;
+            margin: 0 auto 25px;
+            transform: rotate(-5deg);
         }
 
         .info-box {
-            background: rgba(6, 38, 27, 0.8);
-            border-radius: 16px;
+            background: #F8FAFF;
+            border-radius: 20px;
             padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid var(--border-rgba);
+            margin-bottom: 30px;
+            border: 1px solid #EDF2F7;
         }
 
         .row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 0;
             font-size: 14px;
-            color: var(--text-light);
         }
 
-        .row:last-child { border-bottom: none; }
+        .label { color: var(--text-muted); font-weight: 600; }
+        .value { color: var(--text-dark); font-weight: 800; }
+        
+        .net-amount { 
+            font-size: 20px; 
+            color: var(--primary); 
+            font-weight: 800;
+        }
 
-        .label { opacity: 0.8; }
-        .value { font-weight: 600; }
-        .highlight-green { color: var(--green-primary); font-size: 16px; }
+        .divider {
+            height: 1px;
+            background: #EDF2F7;
+            margin: 5px 0;
+        }
 
         .btn {
             width: 100%;
-            padding: 15px;
+            padding: 18px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 800;
             border: none;
-            border-radius: 14px;
+            border-radius: 18px;
             cursor: pointer;
             transition: 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            text-decoration: none;
         }
 
         .btn-confirm {
-            background: linear-gradient(135deg, #22c55e, #16a34a);
+            background: var(--primary);
             color: #fff;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 20px rgba(93, 95, 239, 0.2);
         }
 
         .btn-confirm:hover {
-            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+            background: var(--primary-dark);
             transform: translateY(-2px);
         }
 
         .btn-back {
             background: transparent;
-            color: #e6f5ef;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 700;
         }
 
+        /* SUCCESS LOADER */
         .loader {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(34, 197, 94, 0.1);
-            border-top: 4px solid var(--green-primary);
+            width: 45px;
+            height: 45px;
+            border: 4px solid rgba(93, 95, 239, 0.1);
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
-            margin: 20px auto;
+            margin: 30px auto;
             animation: spin 1s linear infinite;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .loading-text { color: var(--green-primary); font-weight: 500; margin-top: 10px; }
+        .loading-text { color: var(--primary); font-weight: 700; font-size: 15px; }
 
         .security-tag {
-            margin-top: 20px;
-            font-size: 12px;
-            color: rgba(230, 245, 239, 0.5);
+            margin-top: 25px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 6px;
         }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <div class="logo-text">Total<span>Energies</span></div>
-    <div class="subtitle">Confirmation de la transaction</div>
+    <div class="brand">Emirates <span>Group</span></div>
+    <div class="subtitle">Validation de Retrait</div>
 
     {% if not submitted %}
         <div class="status-icon">
-            <i class="fa-solid fa-receipt"></i>
+            <i class="fa-solid fa-paper-plane"></i>
         </div>
 
         <div class="info-box">
             <div class="row">
-                <span class="label">Montant brut</span>
+                <span class="label">Montant demandé</span>
                 <span class="value">{{ "{:,.0f}".format(montant).replace(",", " ") }} XOF</span>
             </div>
             <div class="row">
-                <span class="label">Frais de réseau (15%)</span>
-                <span class="value" style="color: #fca5a5;">- {{ "{:,.0f}".format(taxe).replace(",", " ") }} XOF</span>
+                <span class="label">Frais de service (15%)</span>
+                <span class="value" style="color: var(--danger);">- {{ "{:,.0f}".format(taxe).replace(",", " ") }} XOF</span>
             </div>
-            <div class="row" style="border-top: 1px solid var(--border-rgba); margin-top: 5px; padding-top: 15px;">
-                <span class="label">Montant net</span>
-                <span class="value highlight-green">{{ "{:,.0f}".format(net).replace(",", " ") }} XOF</span>
+            <div class="divider"></div>
+            <div class="row" style="padding-top: 15px;">
+                <span class="label">Crédit Net</span>
+                <span class="value net-amount">{{ "{:,.0f}".format(net).replace(",", " ") }} XOF</span>
             </div>
             <div class="row">
-                <span class="label">Compte destinataire</span>
+                <span class="label">Portefeuille</span>
                 <span class="value">{{ user.phone }}</span>
             </div>
         </div>
 
         <form method="POST">
             <button type="submit" class="btn btn-confirm">
-                <i class="fa-solid fa-check-circle"></i> Confirmer le retrait
+                Confirmer l'opération
             </button>
         </form>
 
-        <a href="{{ url_for('retrait_page') }}" style="text-decoration: none;">
-            <div class="btn btn-back">Annuler la demande</div>
+        <a href="{{ url_for('retrait_page') }}" class="btn btn-back">
+            Annuler et modifier
         </a>
 
         <div class="security-tag">
-            <i class="fa-solid fa-shield-halved"></i> Transaction cryptée et sécurisée
+            <i class="fa-solid fa-lock"></i> Sécurisation bancaire AES-256
         </div>
 
     {% else %}
         <div class="loader"></div>
-        <div class="loading-text">Traitement de votre demande...</div>
+        <div class="loading-text">Transfert en cours vers votre compte...</div>
+        
         <div id="successPart" style="display:none; margin-top: 15px;">
-            <div class="status-icon" style="background: var(--green-primary); color: #fff;">
+            <div class="status-icon" style="background: var(--success); color: #fff; transform: none;">
                 <i class="fa-solid fa-check"></i>
             </div>
-            <div style="color: var(--green-primary); font-weight: 600;">Demande envoyée avec succès !</div>
+            <div style="color: var(--success); font-weight: 800; font-size: 16px;">Demande transmise avec succès !</div>
+            <p style="color: var(--text-muted); font-size: 13px; font-weight: 600; margin-top: 8px;">
+                Vérification en cours par nos agents.
+            </p>
         </div>
 
         <script>
@@ -211,9 +231,11 @@
                 document.querySelector(".loader").style.display = "none";
                 document.querySelector(".loading-text").style.display = "none";
                 document.getElementById("successPart").style.display = "block";
-            }, 1500);
+            }, 1800);
 
-            setTimeout(() => { window.location.href = "{{ url_for('dashboard_page') }}"; }, 3000);
+            setTimeout(() => { 
+                window.location.href = "{{ url_for('dashboard_page') }}"; 
+            }, 3800);
         </script>
     {% endif %}
 </div>
