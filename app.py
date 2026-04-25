@@ -703,14 +703,14 @@ def nous_page():
 
 
 PRODUITS_VIP = [
-    {"id": 1, "nom": "Total 1", "prix": 4000, "revenu_journalier":  400, "image": "e.jpg"},
-    {"id": 2, "nom": "Total 2", "prix": 8000, "revenu_journalier":  800, "image": "e.jpg"},
-    {"id": 3, "nom": "Total 3", "prix": 10000, "revenu_journalier":  1000, "image": "e.jpg"},
-    {"id": 4, "nom": "Total 4", "prix": 15000, "revenu_journalier": 1500, "image": "e.jpg"},
-    {"id": 5, "nom": "Total 5", "prix": 20000, "revenu_journalier": 2000, "image": "e.jpg"},
-    {"id": 6, "nom": "Total 6", "prix": 50000, "revenu_journalier": 5000, "image": "e.jpg"},
-    {"id": 7, "nom": "Total 7", "prix": 10000, "revenu_journalier": 10000, "image": "e.jpg"},
-    {"id": 8, "nom": "Total 8", "prix": 200000, "revenu_journalier": 20000, "image": "e.jpg"}
+    {"id": 1, "nom": "Fly 1", "prix": 4000, "revenu_journalier":  400, "image": "e.jpg"},
+    {"id": 2, "nom": "Fly 2", "prix": 8000, "revenu_journalier":  800, "image": "e.jpg"},
+    {"id": 3, "nom": "Fly 3", "prix": 10000, "revenu_journalier":  1000, "image": "e.jpg"},
+    {"id": 4, "nom": "Fly 4", "prix": 15000, "revenu_journalier": 1500, "image": "e.jpg"},
+    {"id": 5, "nom": "Fly 5", "prix": 20000, "revenu_journalier": 2000, "image": "e.jpg"},
+    {"id": 6, "nom": "Fly 6", "prix": 50000, "revenu_journalier": 5000, "image": "e.jpg"},
+    {"id": 7, "nom": "Fly 7", "prix": 10000, "revenu_journalier": 10000, "image": "e.jpg"},
+    {"id": 8, "nom": "Fly 8", "prix": 200000, "revenu_journalier": 20000, "image": "e.jpg"}
 ]
 
 def credit_user_revenu(user, montant=1000):
