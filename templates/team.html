@@ -3,128 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Équipe | Total</title>
+<title>Équipe | Emirates</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 :root{
-  --green:#22c55e;
-  --green-dark:#064e3b;
-  --bg:#071a13;
-  --card:#0b2a20;
-  --border:rgba(34,197,94,.25);
-  --text:#e6f5ef;
+  --primary: #5D5FEF;
+  --primary-light: rgba(93, 95, 239, 0.1);
+  --bg-page: #F4F7FE;
+  --white: #ffffff;
+  --text-dark: #1A202C;
+  --text-muted: #718096;
+  --accent: #FFD700;
 }
 
-*{
-  box-sizing:border-box;
-  font-family:'Poppins',sans-serif;
-}
+*{ box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
 
 body{
   margin:0;
   min-height:100vh;
-  background:
-    linear-gradient(rgba(6,30,20,.95),rgba(6,30,20,.95)),
-    url("/static/images/t.jpg") center/cover no-repeat fixed;
-  color:var(--text);
+  background-color: var(--bg-page);
+  color: var(--text-dark);
 }
 
 /* APP */
 .app{
   max-width:480px;
   margin:auto;
-  padding-bottom:120px;
+  padding: 20px 16px 120px;
 }
 
-/* COMMISSION */
+/* COMMISSION BOX */
 .commission-box{
-  margin:16px;
-  padding:18px;
-  border-radius:22px;
-  background:linear-gradient(145deg,#052e1d,#064e3b);
-  border:1px solid var(--border);
+  padding:25px;
+  border-radius:30px;
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.02);
   display:flex;
   justify-content:space-between;
   align-items:center;
-  box-shadow:0 20px 45px rgba(0,0,0,.45);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+  margin-bottom: 20px;
 }
 
 .commission-box h2{
   margin:0;
-  font-size:14px;
-  letter-spacing:.5px;
-  opacity:.85;
+  font-size:12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 700;
 }
 
 .amount{
-  font-size:26px;
-  font-weight:700;
-  margin-top:6px;
-  color:#d1fae5;
+  font-size:24px;
+  font-weight:800;
+  margin-top:5px;
+  color: var(--primary);
 }
 
 .commission-box img{
-  width:76px;
-  height:76px;
-  border-radius:16px;
+  width:60px;
+  height:60px;
+  border-radius:18px;
   object-fit:cover;
-  box-shadow:0 10px 25px rgba(34,197,94,.35);
+  box-shadow: 0 8px 15px var(--primary-light);
 }
 
-/* INVITE */
+/* INVITE BOX */
 .invite-box{
-  margin:16px;
-  padding:14px;
-  border-radius:18px;
-  background:rgba(11,42,32,.95);
-  border:1px solid var(--border);
+  padding:15px;
+  border-radius:20px;
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.02);
   display:flex;
   justify-content:space-between;
   align-items:center;
+  margin-bottom: 25px;
 }
 
 .invite-left{
   display:flex;
-  gap:10px;
+  gap:12px;
   align-items:center;
   overflow:hidden;
+  flex: 1;
 }
 
 .invite-left i{
-  color:var(--green);
-  font-size:20px;
+  color: var(--primary);
+  font-size:18px;
+  background: var(--primary-light);
+  padding: 10px;
+  border-radius: 12px;
 }
 
 .invite-text{
   font-size:12px;
+  font-weight: 600;
+  color: var(--text-muted);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  max-width:220px;
 }
 
 .copy-btn{
-  background:linear-gradient(135deg,#22c55e,#16a34a);
+  background: var(--primary);
   border:none;
   color:#fff;
-  padding:8px 14px;
-  border-radius:12px;
+  padding:10px 18px;
+  border-radius:14px;
   font-size:13px;
+  font-weight: 800;
   cursor:pointer;
   transition:.2s;
+  box-shadow: 0 4px 12px rgba(93, 95, 239, 0.2);
 }
 
-.copy-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 25px rgba(34,197,94,.45);
-}
+.copy-btn:active{ transform:scale(0.95); }
 
-/* SECTION */
+/* SECTION TITLE */
 .section-title{
-  margin:18px 16px 8px;
+  margin:0 5px 15px;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -132,103 +134,98 @@ body{
 
 .section-title h3{
   margin:0;
-  font-size:16px;
-  letter-spacing:.4px;
+  font-size:17px;
+  font-weight: 800;
+  color: var(--text-dark);
 }
 
 .section-title a{
   font-size:12px;
   text-decoration:none;
-  opacity:.7;
-  color:var(--text);
+  font-weight: 700;
+  color: var(--primary);
 }
 
-/* LEVEL CARD */
+/* LEVEL CARDS */
 .level-card{
-  margin:16px;
-  padding:18px;
-  border-radius:22px;
-  background:rgba(11,42,32,.95);
-  border:1px solid var(--border);
+  padding:20px;
+  border-radius:26px;
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.02);
+  margin-bottom: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.01);
 }
 
 .level-header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:14px;
+  margin-bottom:18px;
 }
 
 .level-header h4{
   margin:0;
   font-size:15px;
-  letter-spacing:.3px;
+  font-weight: 800;
+  color: var(--text-dark);
 }
 
 .badge{
-  width:44px;
-  height:44px;
-  border-radius:50%;
+  width:40px;
+  height:40px;
+  border-radius:12px;
   object-fit:cover;
-  box-shadow:0 6px 18px rgba(34,197,94,.4);
 }
 
-/* STATS */
 .level-stats{
   display:flex;
   justify-content:space-between;
-  text-align:center;
+  background: var(--bg-page);
+  padding: 15px;
+  border-radius: 18px;
 }
 
-.stat{
-  flex:1;
-}
+.stat{ flex:1; text-align: center; }
 
 .stat strong{
   display:block;
   font-size:18px;
-  color:#d1fae5;
+  font-weight: 800;
+  color: var(--text-dark);
 }
 
 .stat span{
-  font-size:11px;
-  opacity:.75;
+  font-size:10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
-/* BONUS */
+/* BONUS CARD */
 .bonus-card{
-  margin:16px;
-  padding:18px;
-  border-radius:22px;
-  background:rgba(11,42,32,.95);
-  border:1px solid var(--border);
+  margin-top: 25px;
+  padding:22px;
+  border-radius:26px;
+  background: linear-gradient(135deg, var(--primary), #4a4cd9);
+  color: #fff;
   font-size:13px;
   line-height:1.6;
+  box-shadow: 0 15px 30px rgba(93, 95, 239, 0.2);
 }
 
 .bonus-title{
-  font-size:15px;
-  font-weight:600;
-  margin-bottom:10px;
-  color:#d1fae5;
+  font-size:16px;
+  font-weight:800;
+  margin-bottom:12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* SUPPORT */
-.support-btn{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  width:56px;
-  height:56px;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:#fff;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:24px;
-  text-decoration:none;
-  box-shadow:0 12px 30px rgba(34,197,94,.55);
+.bonus-card p {
+    margin: 5px 0;
+    opacity: 0.9;
+    font-weight: 500;
 }
 </style>
 </head>
@@ -237,92 +234,87 @@ body{
 
 <div class="app">
 
-  <!-- COMMISSION -->
   <div class="commission-box">
     <div>
       <h2>Commissions totales</h2>
       <div class="amount">{{ stats.commissions_total }} XOF</div>
     </div>
-    <img src="/static/images/t1.jpg" alt="Total">
+    <img src="/static/images/e.jpg" alt="Emirates">
   </div>
 
-  <!-- INVITE -->
   <div class="invite-box">
     <div class="invite-left">
-      <i class="fa-solid fa-gem"></i>
+      <i class="fa-solid fa-link"></i>
       <div class="invite-text" id="refLink">{{ referral_link }}</div>
     </div>
     <button class="copy-btn" onclick="copyLink()">Copier</button>
   </div>
 
-  <!-- LEVELS -->
   <div class="section-title">
-    <h3>Structure de l’équipe</h3>
-    <a href="#">Voir détails</a>
+    <h3>Structure d'Équipe</h3>
+    <a href="#">Détails</a>
   </div>
 
-  <!-- LEVEL 1 -->
   <div class="level-card">
     <div class="level-header">
-      <h4>Niveau Total I</h4>
-      <img src="/static/images/t1.jpg" class="badge">
+      <h4>Niveau I (Principal)</h4>
+      <img src="/static/images/e1.jpg" class="badge">
     </div>
     <div class="level-stats">
-      <div class="stat"><strong>27%</strong><span>Commission</span></div>
+      <div class="stat"><strong>27%</strong><span>Bonus</span></div>
       <div class="stat"><strong>{{ stats.level1 }}</strong><span>Membres</span></div>
       <div class="stat"><strong>{{ stats.level1_active }}</strong><span>Actifs</span></div>
     </div>
   </div>
 
-  <!-- LEVEL 2 -->
   <div class="level-card">
     <div class="level-header">
-      <h4>Niveau Total II</h4>
-      <img src="/static/images/t2.jpg" class="badge">
+      <h4>Niveau II (Affiliés)</h4>
+      <img src="/static/images/e2.jpg" class="badge">
     </div>
     <div class="level-stats">
-      <div class="stat"><strong>2%</strong><span>Commission</span></div>
+      <div class="stat"><strong>2%</strong><span>Bonus</span></div>
       <div class="stat"><strong>{{ stats.level2 }}</strong><span>Membres</span></div>
       <div class="stat"><strong>{{ stats.level2_active }}</strong><span>Actifs</span></div>
     </div>
   </div>
 
-  <!-- LEVEL 3 -->
   <div class="level-card">
     <div class="level-header">
-      <h4>Niveau Total III</h4>
-      <img src="/static/images/t3.jpg" class="badge">
+      <h4>Niveau III (Réseau)</h4>
+      <img src="/static/images/e3.jpg" class="badge">
     </div>
     <div class="level-stats">
-      <div class="stat"><strong>1%</strong><span>Commission</span></div>
+      <div class="stat"><strong>1%</strong><span>Bonus</span></div>
       <div class="stat"><strong>{{ stats.level3 }}</strong><span>Membres</span></div>
       <div class="stat"><strong>{{ stats.level3_active }}</strong><span>Actifs</span></div>
     </div>
   </div>
 
-  <!-- BONUS -->
   <div class="bonus-card">
-    <div class="bonus-title">Programme de récompenses Total</div>
+    <div class="bonus-title">
+        <i class="fa-solid fa-gift"></i>
+        Programme Emirates Rewards
+    </div>
     <p>
-      AFRIORA récompense la croissance de votre réseau.
-      Les commissions sont versées automatiquement dès l’activation des investissements
-      par les membres de votre équipe.
+      Emirates valorise la croissance de votre réseau. Recevez des commissions instantanées dès l'activation des packs par vos partenaires.
     </p>
-    <p>
-      Les bonus sont calculés par niveau et crédités en temps réel sur votre solde.
+    <p style="font-weight: 800; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; margin-top: 10px;">
+        Gagnez jusqu'à 30% de commission totale.
     </p>
   </div>
 
 </div>
 
-
 <script>
 function copyLink(){
   const text=document.getElementById("refLink").innerText;
   navigator.clipboard.writeText(text);
-  alert("Lien de parrainage copié");
+  // Style de notification plus moderne qu'une simple alerte si tu veux, mais je garde l'alert pour rester fidèle au fonctionnement
+  alert("Lien de parrainage copié avec succès !");
 }
 </script>
 
 </body>
 </html>
+

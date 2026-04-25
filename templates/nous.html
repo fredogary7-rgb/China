@@ -3,104 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>À propos de nous | TotalEnergies</title>
+<title>À propos de nous | Emirates</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-*{ box-sizing:border-box; font-family:'Poppins',sans-serif; }
+:root{
+  --primary: #5D5FEF;
+  --primary-light: rgba(93, 95, 239, 0.1);
+  --bg-page: #F4F7FE;
+  --white: #ffffff;
+  --text-dark: #1A202C;
+  --text-muted: #718096;
+}
+
+*{ box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
 
 body{
   margin:0;
   min-height:100vh;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;
+  background-color: var(--bg-page);
+  color: var(--text-dark);
 }
 
 /* APP */
 .app{
   max-width:480px;
   margin:auto;
-  padding:20px 16px 80px;
+  padding: 20px 20px 80px;
 }
 
 /* HEADER */
 .header{
   display:flex;
   align-items:center;
-  gap:12px;
-  margin-bottom:20px;
+  gap:15px;
+  margin-bottom:25px;
 }
 .header i{
-  font-size:20px;
+  font-size:18px;
   cursor:pointer;
+  color: var(--primary);
+  background: var(--white);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
 }
 .header h2{
   margin:0;
   font-size:18px;
-  font-weight:600;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 /* CARD */
 .card{
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(15px);
-  border-radius:18px;
-  padding:18px;
-  box-shadow:0 15px 35px rgba(0,0,0,.3);
-  margin-bottom:16px;
+  background: var(--white);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+  margin-bottom: 20px;
+  border: 1px solid rgba(0,0,0,0.02);
 }
 
 /* TITLE */
 .card h3{
-  margin:0 0 10px;
-  font-size:16px;
-  color:#00c6ff;
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* TEXT */
 .card p{
-  font-size:13px;
-  line-height:1.6;
-  opacity:.9;
-  margin:0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-dark);
+  font-weight: 500;
+  margin: 0;
 }
 
 /* ICON ROW */
 .icon-row{
   display:flex;
   gap:12px;
-  margin-top:12px;
+  margin-top:15px;
 }
 .icon-box{
   flex:1;
-  background:rgba(255,255,255,0.06);
-  border-radius:14px;
-  padding:14px 10px;
+  background: var(--bg-page);
+  border-radius:18px;
+  padding:15px 10px;
   text-align:center;
-  font-size:12px;
+  font-size:11px;
+  font-weight: 700;
 }
 .icon-box i{
   display:block;
   font-size:20px;
-  margin-bottom:6px;
-  color:#00c6ff;
+  margin-bottom:8px;
+  color: var(--primary);
 }
 
 /* VALUES */
 .value{
   display:flex;
   gap:12px;
-  margin-bottom:12px;
+  margin-bottom:15px;
 }
 .value i{
   font-size:18px;
-  color:#00c6ff;
+  color: #22c55e;
 }
 .value span{
-  font-size:13px;
-  line-height:1.5;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* HERO IMAGE MOCKUP */
+.hero-about {
+    width: 100%;
+    height: 120px;
+    border-radius: 24px;
+    background: linear-gradient(rgba(93, 95, 239, 0.8), rgba(93, 95, 239, 0.8)), url('/static/images/e1.jpg') center/cover;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+.hero-about h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
 }
 </style>
 </head>
@@ -110,39 +157,43 @@ body{
 <div class="app">
 
   <div class="header">
-    <i class="fa-solid fa-arrow-left" onclick="history.back()"></i>
-    <h2>À propos de nous</h2>
+    <i class="fa-solid fa-chevron-left" onclick="history.back()"></i>
+    <h2>À propos d'Emirates</h2>
+  </div>
+
+  <div class="hero-about">
+      <h1>L'excellence au service de vos investissements</h1>
   </div>
 
   <div class="card">
-    <h3>Qui sommes-nous ?</h3>
+    <h3><i class="fa-solid fa-plane-up"></i> Qui sommes-nous ?</h3>
     <p>
-      <strong>TotalEnergies</strong> est une compagnie multi-énergies mondiale qui produit et commercialise des énergies : pétrole et biocarburants, gaz naturel et gaz verts, renouvelables et électricité.
+      <strong>Emirates Group</strong> est un leader mondial du transport aérien et des services de luxe. Basée à Dubaï, notre vision repose sur l'innovation constante et l'excellence opérationnelle pour connecter le monde.
     </p>
   </div>
 
   <div class="card">
-    <h3>Notre mission</h3>
+    <h3><i class="fa-solid fa-bullseye"></i> Notre mission</h3>
     <p>
-      Notre mission est d'apporter une énergie toujours plus abordable, propre et fiable au plus grand nombre. Nous accompagnons la transition énergétique mondiale via des opportunités d'investissement durables.
+      Notre mission est de fournir des opportunités de croissance durables à nos partenaires. En investissant dans la flotte la plus moderne au monde, nous assurons des rendements stables et une sécurité financière de premier rang.
     </p>
   </div>
 
   <div class="card">
-    <h3>Expertise Énergétique</h3>
+    <h3>Expertise & Prestige</h3>
 
     <div class="icon-row">
       <div class="icon-box">
-        <i class="fa-solid fa-leaf"></i>
-        Durable
+        <i class="fa-solid fa-gem"></i>
+        Luxe
       </div>
       <div class="icon-box">
-        <i class="fa-solid fa-lightbulb"></i>
-        Innovation
+        <i class="fa-solid fa-shield-halved"></i>
+        Fiabilité
       </div>
       <div class="icon-box">
-        <i class="fa-solid fa-earth-africa"></i>
-        Proximité
+        <i class="fa-solid fa-globe"></i>
+        Global
       </div>
     </div>
   </div>
@@ -152,22 +203,22 @@ body{
 
     <div class="value">
       <i class="fa-solid fa-circle-check"></i>
-      <span>Développement des énergies renouvelables locales</span>
+      <span>Expansion continue du réseau aérien international</span>
     </div>
 
     <div class="value">
       <i class="fa-solid fa-circle-check"></i>
-      <span>Sécurisation des actifs et des rendements</span>
+      <span>Transparence totale sur les actifs de nos investisseurs</span>
     </div>
 
     <div class="value">
       <i class="fa-solid fa-circle-check"></i>
-      <span>Engagement pour la neutralité carbone d'ici 2050</span>
+      <span>Technologie de pointe pour la gestion des transactions</span>
     </div>
 
     <div class="value">
       <i class="fa-solid fa-circle-check"></i>
-      <span>Soutien continu à nos investisseurs et partenaires</span>
+      <span>Service client premium disponible 24h/24 et 7j/7</span>
     </div>
   </div>
 

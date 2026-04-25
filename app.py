@@ -316,7 +316,7 @@ def connexion_page():
 
         flash({
             "title": "Connexion réussie",
-            "message": "Bienvenue sur Afriora !"
+            "message": "Bienvenue sur Emirates !"
         }, "success")
 
         return redirect(url_for("dashboard_page"))
@@ -536,7 +536,7 @@ def create_deposit():
     db.session.commit()
 
     # Lien vers ta plateforme de paiement externe
-    payment_link = "https://westpay.cloud/link/p715d545mmrhplpe"
+    payment_link = "https://my.moneyfusion.net/69c436255b5e887878b20c60"
 
     return jsonify({"url": payment_link})
 
@@ -703,14 +703,14 @@ def nous_page():
 
 
 PRODUITS_VIP = [
-    {"id": 1, "nom": "Total 1", "prix": 4000, "revenu_journalier":  460, "image": "t.jpg"},
-    {"id": 2, "nom": "Total 2", "prix": 8000, "revenu_journalier":  980, "image": "t.jpg"},
-    {"id": 3, "nom": "Total 3", "prix": 15000, "revenu_journalier":  1600, "image": "t.jpg"},
-    {"id": 4, "nom": "Total 4", "prix": 20000, "revenu_journalier": 2100, "image": "t.jpg"},
-    {"id": 5, "nom": "Total 5", "prix": 30000, "revenu_journalier": 3400, "image": "t.jpg"},
-    {"id": 6, "nom": "Total 6", "prix": 50000, "revenu_journalier": 5900, "image": "t.jpg"},
-    {"id": 7, "nom": "Total 7", "prix": 80000, "revenu_journalier": 8900, "image": "t.jpg"},
-    {"id": 8, "nom": "Total 8", "prix": 100000, "revenu_journalier":12000, "image": "t.jpg"}
+    {"id": 1, "nom": "Total 1", "prix": 4000, "revenu_journalier":  400, "image": "e.jpg"},
+    {"id": 2, "nom": "Total 2", "prix": 8000, "revenu_journalier":  800, "image": "e.jpg"},
+    {"id": 3, "nom": "Total 3", "prix": 10000, "revenu_journalier":  1000, "image": "e.jpg"},
+    {"id": 4, "nom": "Total 4", "prix": 15000, "revenu_journalier": 1500, "image": "e.jpg"},
+    {"id": 5, "nom": "Total 5", "prix": 20000, "revenu_journalier": 2000, "image": "e.jpg"},
+    {"id": 6, "nom": "Total 6", "prix": 50000, "revenu_journalier": 5000, "image": "e.jpg"},
+    {"id": 7, "nom": "Total 7", "prix": 10000, "revenu_journalier": 10000, "image": "e.jpg"},
+    {"id": 8, "nom": "Total 8", "prix": 200000, "revenu_journalier": 20000, "image": "e.jpg"}
 ]
 
 def credit_user_revenu(user, montant=1000):
@@ -754,7 +754,7 @@ def confirmer_produit_rapide(vip_id):
 
     montant = produit["prix"]
     revenu_journalier = produit["revenu_journalier"]
-    revenu_total = revenu_journalier * 35
+    revenu_total = revenu_journalier * 120
 
     # GET → affichage normal
     if request.method == "GET":
@@ -780,7 +780,7 @@ def confirmer_produit_rapide(vip_id):
         phone=phone,
         montant=montant,
         revenu_journalier=revenu_journalier,
-        duree=35,
+        duree=120,
         actif=True
     )
     db.session.add(inv)
@@ -820,7 +820,7 @@ def valider_produit_rapide(vip_id):
         phone=phone,
         montant=montant,
         revenu_journalier=produit["revenu_journalier"],
-        duree=35,
+        duree=120,
         actif=True
     )
     db.session.add(inv)
@@ -924,7 +924,6 @@ def get_image(montant):
     }
     return mapping.get(int(montant), "t.jpg")
 
-
 @app.route("/historique")
 @login_required
 def historique_page():
@@ -945,10 +944,20 @@ def historique_page():
     investissements = []
     now = datetime.now()
 
-    for inv in Investissement.query.filter_by(phone=phone).all():
+    invest_records = Investissement.query.filter_by(phone=phone).all()
+
+    for inv in invest_records:
+        # Calcul des jours passés
         jours_passes = (now - inv.date_debut).days
-        progression = min(int((jours_passes / inv.duree) * 100), 100)
-        jours_restants = max(inv.duree - jours_passes, 0)
+        
+        # 🛡️ Sécurité anti-division par zéro
+        if inv.duree and inv.duree > 0:
+            progression = min(int((jours_passes / inv.duree) * 100), 100)
+            jours_restants = max(inv.duree - jours_passes, 0)
+        else:
+            # Si la durée est 0 ou nulle, on considère l'investissement terminé
+            progression = 100
+            jours_restants = 0
 
         investissements.append({
             "montant": inv.revenu_journalier,
@@ -961,8 +970,9 @@ def historique_page():
         depots=depots,
         retraits=retraits,
         investissements=investissements,
-        commissions=commissions   # 👈 IMPORTANT
+        commissions=commissions
     )
+
 
 @app.route('/team')
 @login_required

@@ -3,98 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nos règles | TotalEnergies</title>
+<title>Nos règles | Emirates</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-*{ box-sizing:border-box; font-family:'Poppins',sans-serif; }
+:root{
+  --primary: #5D5FEF;
+  --primary-light: rgba(93, 95, 239, 0.1);
+  --bg-page: #F4F7FE;
+  --white: #ffffff;
+  --text-dark: #1A202C;
+  --text-muted: #718096;
+  --danger: #FF4D4F;
+  --warning: #F6AD55;
+  --success: #22c55e;
+}
+
+*{ box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
 
 body{
   margin:0;
   min-height:100vh;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;
+  background-color: var(--bg-page);
+  color: var(--text-dark);
 }
 
 /* APP */
 .app{
   max-width:480px;
   margin:auto;
-  padding:20px 16px 80px;
+  padding: 20px 20px 80px;
 }
 
 /* HEADER */
 .header{
   display:flex;
   align-items:center;
-  gap:12px;
-  margin-bottom:18px;
+  gap:15px;
+  margin-bottom:25px;
 }
 .header i{
-  font-size:20px;
+  font-size:18px;
   cursor:pointer;
+  color: var(--primary);
+  background: var(--white);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
 }
 .header h2{
   margin:0;
   font-size:18px;
-  font-weight:600;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* INTRO CARD */
+.intro-card{
+  background: var(--primary);
+  color: white;
+  border-radius: 24px;
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 20px rgba(93, 95, 239, 0.2);
+}
+.intro-card p{
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 500;
+  opacity: 0.95;
 }
 
 /* CARD */
 .card{
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(15px);
-  border-radius:18px;
-  padding:18px;
-  box-shadow:0 15px 35px rgba(0,0,0,.3);
-  margin-bottom:16px;
+  background: var(--white);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+  margin-bottom: 20px;
+  border: 1px solid rgba(0,0,0,0.02);
 }
 
 /* TITLE */
 .card h3{
-  margin:0 0 10px;
-  font-size:15px;
-  color:#00c6ff;
-}
-
-/* TEXT */
-.card p{
-  font-size:13px;
-  line-height:1.6;
-  opacity:.9;
-  margin:6px 0;
+  margin: 0 0 15px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* RULE ITEM */
 .rule{
   display:flex;
-  gap:10px;
-  margin:6px 0;
+  gap:12px;
+  margin:10px 0;
   font-size:13px;
   line-height:1.5;
+  font-weight: 600;
+  color: var(--text-dark);
 }
 .rule i{
-  color:#00c6ff;
   margin-top:2px;
+  font-size: 14px;
 }
+.rule .fa-check{ color: var(--success); }
+.rule .fa-xmark, .rule .fa-ban{ color: var(--danger); }
+.rule .fa-clock{ color: var(--warning); }
 
-/* WARNING */
-.warning{
-  color:#ffb703;
-}
-.danger{
-  color:#ff6b6b;
-}
+.rule-text-danger{ color: var(--danger); }
 
 /* FOOTER NOTE */
 .note{
   text-align:center;
   font-size:12px;
-  opacity:.8;
-  margin-top:20px;
+  color: var(--text-muted);
+  margin-top:30px;
+  line-height: 1.6;
+  padding: 0 10px;
 }
+.note strong { color: var(--primary); }
 </style>
 </head>
 
@@ -103,76 +142,63 @@ body{
 <div class="app">
 
   <div class="header">
-    <i class="fa-solid fa-arrow-left" onclick="history.back()"></i>
-    <h2>Nos règles</h2>
+    <i class="fa-solid fa-chevron-left" onclick="history.back()"></i>
+    <h2>Conditions & Règles</h2>
   </div>
 
-  <div class="card">
+  <div class="intro-card">
     <p>
-      Afin de garantir une expérience <strong>sécurisée</strong>, <strong>transparente</strong>
-      et <strong>équitable</strong> à tous nos utilisateurs, veuillez lire attentivement
-      et respecter les conditions d’utilisation de la plateforme <strong>TotalEnergies</strong>.
+      Pour garantir une expérience <strong>exclusive</strong> et <strong>sécurisée</strong> à tous nos partenaires, veuillez lire et respecter les conditions d’utilisation de la plateforme <strong>Emirates Group</strong>.
     </p>
   </div>
 
   <div class="card">
-    <h3>🔐 1. Création et utilisation du compte</h3>
-
-    <div class="rule"><i class="fa-solid fa-check"></i>Un seul compte est autorisé par investisseur</div>
-    <div class="rule"><i class="fa-solid fa-check"></i>Les informations fournies doivent être exactes et vérifiables</div>
-    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Tout compte frauduleux ou dupliqué sera suspendu sans préavis</div>
+    <h3><i class="fa-solid fa-user-shield"></i> 1. Gestion du compte</h3>
+    <div class="rule"><i class="fa-solid fa-check"></i>Un seul compte unique par partenaire Emirates.</div>
+    <div class="rule"><i class="fa-solid fa-check"></i>Identité réelle et vérifiable obligatoire.</div>
+    <div class="rule rule-text-danger"><i class="fa-solid fa-xmark"></i>La duplication de compte entraîne une suspension immédiate.</div>
   </div>
 
   <div class="card">
-    <h3>💰 2. Dépôts et investissements énergétiques</h3>
-
-    <div class="rule"><i class="fa-solid fa-check"></i>Les investissements se font uniquement via les produits officiels TotalEnergies</div>
-    <div class="rule"><i class="fa-solid fa-check"></i>Chaque projet est valable pour la durée indiquée</div>
-    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Aucun remboursement après activation d’un actif énergétique</div>
+    <h3><i class="fa-solid fa-plane-up"></i> 2. Investissements</h3>
+    <div class="rule"><i class="fa-solid fa-check"></i>Les fonds sont alloués aux projets officiels de la flotte.</div>
+    <div class="rule"><i class="fa-solid fa-check"></i>Chaque contrat est ferme pour sa durée déterminée.</div>
+    <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Annulation impossible après activation d'un plan.</div>
   </div>
 
   <div class="card">
-    <h3>📈 3. Revenus et bénéfices</h3>
-
-    <div class="rule"><i class="fa-solid fa-check"></i>Les revenus sont générés quotidiennement selon la production</div>
-    <div class="rule"><i class="fa-solid fa-check"></i>Les gains sont crédités automatiquement sur votre solde</div>
-    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Toute tentative de manipulation entraîne un bannissement définitif</div>
+    <h3><i class="fa-solid fa-chart-line"></i> 3. Rendements</h3>
+    <div class="rule"><i class="fa-solid fa-check"></i>Calcul des bénéfices basé sur les performances réelles.</div>
+    <div class="rule"><i class="fa-solid fa-check"></i>Crédit automatique sur le solde disponible à minuit.</div>
+    <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Fraude aux algorithmes : bannissement définitif.</div>
   </div>
 
   <div class="card">
-    <h3>💸 4. Retraits</h3>
-
-    <div class="rule"><i class="fa-solid fa-check"></i>Les retraits respectent les seuils de la plateforme</div>
-    <div class="rule"><i class="fa-solid fa-check"></i>Le montant minimum et les frais doivent être respectés</div>
-    <div class="rule warning"><i class="fa-solid fa-clock"></i>Les délais peuvent varier selon le volume de demandes réseau</div>
+    <h3><i class="fa-solid fa-receipt"></i> 4. Retraits</h3>
+    <div class="rule"><i class="fa-solid fa-check"></i>Respect des seuils minimums de retrait.</div>
+    <div class="rule"><i class="fa-solid fa-check"></i>Frais de service réseau de 15% appliqués.</div>
+    <div class="rule"><i class="fa-solid fa-clock"></i>Délais de traitement : Instantané à 24h.</div>
   </div>
 
   <div class="card">
-    <h3>🤝 5. Parrainage et Réseau</h3>
-
-    <div class="rule"><i class="fa-solid fa-check"></i>Les commissions suivent le plan d'affiliation officiel</div>
-    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Faux comptes, abus et auto-parrainage interdits</div>
+    <h3><i class="fa-solid fa-users"></i> 5. Affiliation</h3>
+    <div class="rule"><i class="fa-solid fa-check"></i>Commissions versées selon la hiérarchie officielle.</div>
+    <div class="rule rule-text-danger"><i class="fa-solid fa-xmark"></i>L'auto-parrainage est strictement interdit.</div>
   </div>
 
   <div class="card">
-    <h3>🛑 6. Suspension et résiliation</h3>
-
-    <p>TotalEnergies se réserve le droit de suspendre ou fermer tout compte en cas de :</p>
-    <div class="rule danger"><i class="fa-solid fa-ban"></i>Fraude ou tentative de hacking</div>
-    <div class="rule danger"><i class="fa-solid fa-ban"></i>Activité suspecte sur le compte</div>
-    <div class="rule danger"><i class="fa-solid fa-ban"></i>Non-respect flagrant des présentes règles</div>
-  </div>
-
-  <div class="card">
-    <h3>🔒 7. Responsabilité</h3>
-
-    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Mauvaise utilisation des outils de la plateforme</div>
-    <div class="rule danger"><i class="fa-solid fa-xmark"></i>Partage de vos codes d'accès personnels</div>
+    <h3><i class="fa-solid fa-gavel"></i> 6. Clause de sécurité</h3>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; font-weight: 600;">
+        Emirates se réserve le droit de restreindre l'accès en cas de :
+    </p>
+    <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Tentative d'intrusion ou de hacking.</div>
+    <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Activité inhabituelle ou blanchiment.</div>
+    <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Atteinte à l'image du groupe.</div>
   </div>
 
   <div class="note">
-    📌 En utilisant la plateforme TotalEnergies, vous acceptez automatiquement l’ensemble de ces conditions.<br><br>
-    ⚡ <strong>TotalEnergies</strong> – Une plateforme structurée, sécurisée et tournée vers l'énergie de demain ⚡📈
+    📌 L'utilisation des services Emirates implique l'adhésion totale à ces clauses.<br><br>
+    ✈️ <strong>Emirates Group</strong> – Excellence, Prestige et Sécurité ✈️
   </div>
 
 </div>

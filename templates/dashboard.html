@@ -3,32 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard | TotalEnergies</title>
+<title>Dashboard | Emirates</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 :root{
-  --green:#22c55e;
-  --green-dark: #16a34a;
+  --primary: #5D5FEF;
+  --primary-light: rgba(93, 95, 239, 0.1);
+  --bg-page: #F4F7FE;
+  --white: #ffffff;
+  --text-dark: #1A202C;
+  --text-muted: #718096;
 }
 
-*{ box-sizing:border-box; font-family:'Poppins',sans-serif; }
+*{ box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
 
 body{
   margin:0;
   min-height:100vh;
-  background:
-    linear-gradient(rgba(5,40,25,.92),rgba(5,40,25,.92)),
-    url("/static/images/diamond-bg.jpg") center/cover no-repeat fixed;
-  color:#e6f5ef;
+  background-color: var(--bg-page);
+  color: var(--text-dark);
 }
 
 .app{
   max-width:480px;
   margin:auto;
-  padding:16px 16px 150px;
+  padding: 20px 20px 180px;
 }
 
 /* HEADER */
@@ -36,51 +38,52 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:14px;
+  margin-bottom:20px;
 }
-.header h2{ margin:0; font-size:20px; font-weight: 700; color: var(--green); }
-.header small{ font-size:12px; opacity:.8; background: rgba(34, 197, 94, 0.1); padding: 4px 10px; border-radius: 20px; }
+.header h2{ margin:0; font-size:18px; font-weight: 800; color: var(--text-dark); letter-spacing: -0.5px; }
+.header small{ font-size:12px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 6px 12px; border-radius: 12px; }
 
 /* BANNERS */
-.top-banner,.bottom-banner{
+.top-banner, .bottom-banner{
   width:100%;
-  border-radius:18px;
+  border-radius:24px;
   overflow:hidden;
-  box-shadow:0 10px 30px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  background: #000;
 }
-.top-banner{ height:150px; margin-bottom:18px; }
-.bottom-banner{ height:110px; margin:25px 0 10px; }
-.top-banner img,.bottom-banner img{
+.top-banner{ height:160px; margin-bottom:20px; }
+.bottom-banner{ height:120px; margin:25px 0 20px; }
+.top-banner img, .bottom-banner img{
   width:100%;
   height:100%;
   object-fit:cover;
 }
 
-/* CARD */
+/* CARDS */
 .card{
-  background:rgba(11,42,32,.95);
-  border-radius:18px;
-  padding:18px;
-  margin-bottom:18px;
-  border:1px solid rgba(34,197,94,.35);
-  box-shadow:0 20px 40px rgba(0,0,0,0.4);
+  background: var(--white);
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+  border: 1px solid rgba(0,0,0,0.03);
 }
 
 /* BALANCE */
-.balance-main span{ font-size:13px; opacity:.8; text-transform: uppercase; letter-spacing: 1px; }
-.balance-main h1{ margin:6px 0; font-size:32px; color:#fff; font-weight: 700; }
+.balance-main span{ font-size:12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700;}
+.balance-main h1{ margin: 8px 0 0; font-size: 30px; color: var(--text-dark); font-weight: 800; }
 
 /* CUMUL */
 .cumulative{
-  background:linear-gradient(135deg,#052e1d,#064e3b);
-  border-left:5px solid var(--green);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: linear-gradient(135deg, #1A202C, #2D3748);
+  color: white;
+  border: none;
 }
-.cumulative h3{ margin:0; font-size: 14px; color:var(--green); }
-.cumulative strong { font-size: 18px; }
+.cumulative h3{ margin:0; font-size: 13px; font-weight: 600; opacity: 0.8; }
+.cumulative strong { font-size: 18px; font-weight: 700; color: #fff; }
 
 /* ACTIONS */
 .actions{
@@ -89,95 +92,81 @@ body{
   gap:12px;
 }
 .action{
-  background:rgba(6,38,27,0.8);
-  border: 1px solid rgba(34, 197, 94, 0.15);
-  border-radius:16px;
-  padding:14px 0;
+  background: var(--white);
+  border-radius: 20px;
+  padding: 15px 0;
   text-align:center;
-  font-size:11px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dark);
   cursor:pointer;
   transition: 0.3s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
 }
-.action:active { transform: scale(0.95); background: var(--green); color: #000; }
-.action i{ display:block; font-size:22px; margin-bottom:6px; color: var(--green); }
-.action:active i { color: #000; }
+.action:active { transform: scale(0.95); background: var(--primary); color: #fff; }
+.action i{ display:block; font-size:20px; margin-bottom:8px; color: var(--primary); }
+.action:active i { color: #fff; }
 
-/* NAV */
+/* SECTION AVANTAGES */
+.advantages-section{ margin-top: 25px; }
+.advantages-section h3 { font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 15px; }
+.advantages-list { display: flex; flex-direction: column; gap: 12px; }
+.advantage-item {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.015);
+    border: 1px solid rgba(0,0,0,0.02);
+}
+.adv-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--primary-light); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+}
+.adv-text b { display: block; font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
+.adv-text span { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+
+/* NAV FLOTTANTE */
 .bottom-nav{
   position:fixed;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:100%;
-  max-width:480px;
-  background:rgba(7,26,19,.98);
-  display:flex;
-  justify-content:space-around;
-  padding:12px 0;
-  border-top: 1px solid rgba(34, 197, 94, 0.2);
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  background: #1A202C;
+  display: flex;
+  justify-content: space-around;
+  padding: 14px 10px;
+  border-radius: 25px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
   z-index: 100;
 }
 .bottom-nav a{
-  color:#9ca3af;
-  font-size:11px;
-  text-decoration:none;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap: 4px;
-}
-.bottom-nav a i { font-size: 20px; }
-.bottom-nav a.active{ color:var(--green); font-weight: 600; }
-
-/* 🔥 POPUP */
-.modal-bg{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.85);
-  backdrop-filter:blur(8px);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-  padding: 20px;
-}
-.modal{
-  background:#0b2a20;
-  border-radius:24px;
-  padding:25px;
-  width:100%;
-  max-width:380px;
-  border:1px solid rgba(34,197,94,0.4);
-  text-align: center;
-}
-.modal h2{ color:var(--green); margin-top:0; font-size: 20px; }
-.modal ol{ text-align: left; padding-left: 20px; font-size:13px; line-height: 1.8; margin: 15px 0; }
-.modal-btns{
-  display:flex;
+  color: #718096;
+  font-size: 10px;
+  text-decoration: none;
+  display: flex;
   flex-direction: column;
-  gap:10px;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
 }
-.telegram-btn{ 
-    background:#229ED9; 
-    color:#fff; 
-    text-decoration:none; 
-    padding: 12px; 
-    border-radius: 14px; 
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.close-btn{ 
-    background: linear-gradient(135deg,#22c55e,#16a34a); 
-    color:#052819; 
-    cursor:pointer; 
-    border: none;
-    padding: 12px;
-    border-radius: 14px;
-    font-weight: 700;
-}
+.bottom-nav a i { font-size: 18px; }
+.bottom-nav a.active{ color: #fff; }
+
+/* POPUP */
+.modal-bg{ position:fixed; inset:0; background: rgba(26, 32, 44, 0.9); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+.modal{ background: var(--white); border-radius: 30px; padding: 30px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.1); }
+.modal h2{ color: var(--text-dark); margin-top:0; font-size: 20px; font-weight: 800; }
+.modal ol{ text-align: left; padding-left: 20px; font-size: 14px; color: var(--text-muted); line-height: 1.8; margin: 20px 0; }
+.modal-btns{ display: flex; flex-direction: column; gap: 12px; }
+.telegram-btn{ background: #0088cc; color: #fff; text-decoration: none; padding: 14px; border-radius: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.close-btn{ background: var(--primary); color: #fff; cursor: pointer; border: none; padding: 14px; border-radius: 16px; font-weight: 800; }
 </style>
 </head>
 
@@ -185,19 +174,19 @@ body{
 
 <div class="modal-bg" id="popup">
   <div class="modal">
-    <h2>Bienvenue sur TotalEnergies ⚡</h2>
-    <p style="font-size: 13px; opacity: 0.8;">Plateforme d’investissement énergétique professionnelle.</p>
+    <h2>Bienvenue sur Emirates ✈️</h2>
+    <p style="font-size: 14px; color: var(--text-muted);">Votre partenaire de croissance numérique.</p>
     <ol>
-      <li>Bonus d'inscription : <strong>1 000 FCFA</strong></li>
-      <li>Retrait minimum : <strong>1 000 FCFA</strong></li>
-      <li>Commissions : <strong>27% / 2% / 1%</strong></li>
-      <li>Retrait rapide et sécurisé</li>
+      <li>Bonus de bienvenue : <strong>1 000 FCFA</strong></li>
+      <li>Seuil de retrait : <strong>1 000 FCFA</strong></li>
+      <li>Commissions parrainage : <strong>Jusqu'à 30%</strong></li>
+      <li>Support 24/7 disponible</li>
     </ol>
     <div class="modal-btns">
-      <a href="https://t.me/+Gy4eiFCl2XA5MGVk" target="_blank" class="telegram-btn">
-        <i class="fa-brands fa-telegram"></i> Rejoindre le canal Telegram
+      <a href="https://t.me/+bPwFrneBJz42YWY0" target="_blank" class="telegram-btn">
+        <i class="fa-brands fa-telegram"></i> Canal Officiel
       </a>
-      <button class="close-btn" onclick="closePopup()">Continuer vers le site</button>
+      <button class="close-btn" onclick="closePopup()">Découvrir</button>
     </div>
   </div>
 </div>
@@ -205,12 +194,12 @@ body{
 <div class="app">
 
   <div class="header">
-    <h2>TotalEnergies ⚡</h2>
+    <h2>EMIRATES</h2>
     <small>{{ user.phone }}</small>
   </div>
 
   <div class="top-banner">
-    <img src="/static/images/t1.jpg" alt="Bannière">
+    <img src="/static/images/e.jpg" alt="Bannière Haut">
   </div>
 
   <div class="card balance-main">
@@ -224,45 +213,55 @@ body{
   </div>
 
   <div class="actions">
-    <div class="action" onclick="location.href='/deposit'">
-        <i class="fa-solid fa-wallet"></i>Dépôt
-    </div>
-    <div class="action" onclick="location.href='/retrait'">
-        <i class="fa-solid fa-money-bill-transfer"></i>Retrait
-    </div>
-    <div class="action" onclick="location.href='/achats'">
-        <i class="fa-solid fa-layer-group"></i>Mines
-    </div>
-    <div class="action" onclick="location.href='/profile'">
-        <i class="fa-solid fa-circle-user"></i>Profil
-    </div>
+    <div class="action" onclick="location.href='/deposit'"><i class="fa-solid fa-wallet"></i>Dépôt</div>
+    <div class="action" onclick="location.href='/retrait'"><i class="fa-solid fa-money-bill-trend-up"></i>Retrait</div>
+    <div class="action" onclick="location.href='/achats'"><i class="fa-solid fa-gem"></i>Projets</div>
+    <div class="action" onclick="location.href='/profile'"><i class="fa-solid fa-user-ninja"></i>Profil</div>
   </div>
 
   <div class="bottom-banner">
-    <img src="/static/images/t1.jpg" alt="Bannière">
+    <img src="/static/images/e4.jpg" alt="Bannière Bas">
+  </div>
+
+  <div class="advantages-section">
+    <h3>Vos Avantages Emirates</h3>
+    <div class="advantages-list">
+        <div class="advantage-item">
+            <div class="adv-icon"><i class="fa-solid fa-plane-arrival"></i></div>
+            <div class="adv-text"><b>Welcome Bonus</b><span>1 000 XOF offerts à l'inscription</span></div>
+        </div>
+        <div class="advantage-item">
+            <div class="adv-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div class="adv-text"><b>Retraits Rapides</b><span>Paiements instantanés sur Mobile Money</span></div>
+        </div>
+        <div class="advantage-item">
+            <div class="adv-icon"><i class="fa-solid fa-network-wired"></i></div>
+            <div class="adv-text"><b>Commissions Réseau</b><span>Jusqu'à 3 niveaux de parrainage</span></div>
+        </div>
+        <div class="advantage-item">
+            <div class="adv-icon"><i class="fa-solid fa-headset"></i></div>
+            <div class="adv-text"><b>Support d'Élite</b><span>Équipe dédiée à votre succès 24/7</span></div>
+        </div>
+    </div>
   </div>
 
 </div>
 
 <div class="bottom-nav">
-  <a href="/dashboard" class="active"><i class="fa-solid fa-house"></i>Accueil</a>
-  <a href="/produits_rapide"><i class="fa-solid fa-bolt-lightning"></i>Énergie</a>
-  <a href="/team"><i class="fa-solid fa-users-gear"></i>Équipe</a>
-  <a href="/profile"><i class="fa-solid fa-user-gear"></i>Paramètres</a>
+  <a href="/dashboard" class="active"><i class="fa-solid fa-grid-2"></i>Accueil</a>
+  <a href="/produits_rapide"><i class="fa-solid fa-plane-up"></i>Investir</a>
+  <a href="/team"><i class="fa-solid fa-share-nodes"></i>Réseau</a>
+  <a href="/profile"><i class="fa-solid fa-sliders"></i>Réglages</a>
 </div>
 
 <script>
-// Affichage du popup au chargement
+// Affiche le popup à chaque chargement de la page sans exception
 document.addEventListener("DOMContentLoaded", () => {
-  const hasSeenPopup = sessionStorage.getItem("popupSeen");
-  if (!hasSeenPopup) {
-    document.getElementById("popup").style.display = "flex";
-  }
+  document.getElementById("popup").style.display = "flex";
 });
 
 function closePopup(){
   document.getElementById("popup").style.display = "none";
-  sessionStorage.setItem("popupSeen", "true"); // Pour ne pas l'afficher à chaque clic sur l'accueil durant la session
 }
 </script>
 

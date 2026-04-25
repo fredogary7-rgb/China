@@ -3,145 +3,218 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Retrait | </title>
+<title>Retrait | Emirates</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 :root{
-  --green:#22c55e;
-  --green-dark:#064e3b;
-  --bg:#071a13;
-  --card:#0b2a20;
-  --border:rgba(34,197,94,.25);
-  --error:#ef4444;
+  --primary: #5D5FEF;
+  --primary-light: rgba(93, 95, 239, 0.1);
+  --bg-page: #F4F7FE;
+  --white: #ffffff;
+  --text-dark: #1A202C;
+  --text-muted: #718096;
+  --error: #FF4D4F;
+  --success: #22c55e;
 }
 
-*{
-  box-sizing:border-box;
-  font-family:'Poppins',sans-serif;
-}
+*{ box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
 
 body{
   margin:0;
   min-height:100vh;
-  background:
-    linear-gradient(rgba(5,40,25,.94),rgba(5,40,25,.94)),
-    url("/static/images/t1.jpg") center/cover no-repeat fixed;
-  color:#e6f5ef;
+  background-color: var(--bg-page);
+  color: var(--text-dark);
 }
 
 .app{
   max-width:480px;
   margin:auto;
-  padding-bottom:120px;
+  padding: 20px 20px 120px;
 }
 
+/* HEADER */
 .header{
-  padding:18px 16px;
   display:flex;
   align-items:center;
-  gap:10px;
-  background:rgba(7,26,19,.95);
-  border-bottom:1px solid var(--border);
+  gap:15px;
+  margin-bottom:25px;
+}
+.header i{
+  font-size:18px;
+  color: var(--primary);
+  background: var(--white);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+.header span{
+  font-size:18px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
+/* HERO CARD */
 .hero{
-  margin:16px;
-  background:linear-gradient(135deg,#052e1d,#064e3b);
-  border-radius:22px;
-  padding:22px;
-  border:1px solid var(--border);
-  box-shadow:0 20px 40px rgba(0,0,0,.45);
+  background: var(--white);
+  border-radius: 30px;
+  padding: 25px;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,0.02);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+  margin-bottom: 25px;
+  background: linear-gradient(135deg, var(--white), #f9faff);
+}
+.hero span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.hero h2{ 
+  margin: 10px 0 0; 
+  font-size: 32px; 
+  font-weight: 800;
+  color: var(--primary); 
 }
 
-.hero h2{ margin:6px 0 0; font-size:28px; color:#dcfce7; }
-
+/* SECTIONS */
 .section{
-  background:rgba(11,42,32,.95);
-  border-radius:20px;
-  padding:18px;
-  margin:18px 16px 0;
-  border:1px solid var(--border);
+  background: var(--white);
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.01);
+  border: 1px solid rgba(0,0,0,0.02);
 }
 
-.section h3{ margin:0 0 12px; font-size:15px; color:var(--green); }
+.section h3{ 
+  margin: 0 0 15px; 
+  font-size: 14px; 
+  font-weight: 800;
+  color: var(--text-dark); 
+}
 
-.wallet{
+.wallet-box{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  padding:14px;
-  border-radius:16px;
-  background:#06261b;
-  border:1px solid var(--border);
+  gap: 15px;
+  padding:15px;
+  border-radius:18px;
+  background: var(--bg-page);
+  border: 1px dashed var(--primary);
+}
+.wallet-box i {
+  font-size: 20px;
+  color: var(--primary);
 }
 
 input{
   width:100%;
-  padding:14px;
-  border-radius:14px;
-  background:#06261b;
-  border:1px solid var(--border);
-  color:#fff;
-  font-size:14px;
+  padding:16px;
+  border-radius:16px;
+  background: var(--bg-page);
+  border: 1px solid #E2E8F0;
+  color: var(--text-dark);
+  font-size: 16px;
+  font-weight: 700;
+  outline: none;
+  transition: 0.3s;
+}
+input:focus { border-color: var(--primary); background: var(--white); }
+
+.fees-container {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #edf2f7;
 }
 
-.fees{
+.fee-row{
   display:flex;
   justify-content:space-between;
   font-size:13px;
-  margin-top:10px;
-  opacity:.85;
+  margin-bottom: 8px;
+  font-weight: 600;
 }
+.fee-row .label { color: var(--text-muted); }
+.fee-row .val { color: var(--text-dark); }
 
-/* Alerte Horaires */
+/* ALERTE HORAIRES */
 #timeAlert {
   display: none;
-  background: rgba(239, 68, 68, 0.15);
-  color: #fca5a5;
-  border: 1px solid var(--error);
-  padding: 12px;
-  border-radius: 14px;
-  margin: 16px;
+  background: rgba(255, 77, 79, 0.08);
+  color: var(--error);
+  border: 1px solid rgba(255, 77, 79, 0.1);
+  padding: 15px;
+  border-radius: 18px;
+  margin-bottom: 20px;
   font-size: 13px;
   text-align: center;
+  font-weight: 600;
 }
 
-.btn{
-  width:calc(100% - 32px);
-  margin:24px 16px;
-  padding:15px;
-  border-radius:28px;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  border:none;
-  color:#fff;
-  font-size:15px;
-  font-weight:600;
-  cursor:pointer;
-  transition:.2s;
+.btn-withdraw{
+  width: 100%;
+  padding: 18px;
+  border-radius: 20px;
+  background: var(--primary);
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 10px 20px rgba(93, 95, 239, 0.2);
 }
 
-.btn:disabled {
-  background: #374151;
-  color: #9ca3af;
+.btn-withdraw:disabled {
+  background: #CBD5E0;
+  color: #fff;
   cursor: not-allowed;
   box-shadow: none;
 }
 
-.rules{
-  margin:18px 16px;
-  background:rgba(11,42,32,.9);
-  border-radius:18px;
-  padding:16px;
-  font-size:13px;
-  line-height:1.6;
-  border:1px solid var(--border);
+.rules-box{
+  background: var(--primary-light);
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 25px;
 }
-.rules h4{ margin:0 0 8px; color:var(--green); }
+.rules-box h4{ 
+    margin: 0 0 12px; 
+    color: var(--primary); 
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.rules-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.8;
+    color: var(--text-dark);
+    opacity: 0.8;
+}
 
-.visual img{ width:100%; height:140px; object-fit:cover; border-radius: 18px; }
+.visual img{ 
+    width: 100%; 
+    height: 120px; 
+    object-fit: cover; 
+    border-radius: 24px;
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
 </style>
 </head>
 
@@ -150,90 +223,95 @@ input{
 <div class="app">
 
   <div class="header">
-    <i class="fa-solid fa-clock"></i>
-    <span>Retrait </span>
+    <i class="fa-solid fa-chevron-left" onclick="location.href='/dashboard'"></i>
+    <span>Retrait de fonds</span>
   </div>
 
   <div class="hero">
-    <span>Solde retirable</span>
+    <span>Solde disponible</span>
     <h2>{{ "{:,.0f}".format(solde_retraitable).replace(",", " ") }} XOF</h2>
   </div>
 
   <div id="timeAlert">
-    <i class="fa-solid fa-circle-exclamation"></i>
-    Les retraits sont ouverts uniquement de <strong>11h00 à 00h00</strong>.
+    <i class="fa-solid fa-circle-exclamation"></i>&nbsp;
+    Retraits ouverts de <strong>10h00 à 00h00</strong>.
   </div>
 
   <form method="POST" id="withdrawForm">
 
     <div class="section">
-      <h3>Portefeuille de réception</h3>
-      <div class="wallet">
+      <h3>Compte de réception</h3>
+      <div class="wallet-box">
+        <i class="fa-solid fa-building-columns"></i>
         <div>
-          <strong>{{ user.wallet_operator }}</strong><br>
-          <small>{{ user.wallet_number }}</small>
+          <strong style="font-size: 14px;">{{ user.wallet_operator }} Money</strong><br>
+          <small style="color: var(--text-muted); font-weight: 700;">{{ user.wallet_number }}</small>
         </div>
       </div>
     </div>
 
     <div class="section">
-      <h3>Montant du retrait</h3>
-      <input type="number" name="montant" id="montant" placeholder="Minimum 1 000 XOF" required>
+      <h3>Montant à retirer</h3>
+      <input type="number" name="montant" id="montant" placeholder="Min. 1 000 XOF" required>
 
-      <div class="fees">
-        <span>Montant net à recevoir</span>
-        <strong id="netAmount" style="color: var(--green);">0 XOF</strong>
-      </div>
-      <div class="fees">
-        <span>Frais de service (15%)</span>
-        <span id="feesAmount">0 XOF</span>
+      <div class="fees-container">
+        <div class="fee-row">
+            <span class="label">Frais de service (15%)</span>
+            <span class="val" id="feesAmount">0 XOF</span>
+        </div>
+        <div class="fee-row" style="margin-top: 5px;">
+            <span class="label" style="color: var(--text-dark); font-weight: 800;">Montant Net</span>
+            <span class="val" id="netAmount" style="color: var(--success); font-weight: 800; font-size: 15px;">0 XOF</span>
+        </div>
       </div>
     </div>
 
-    <button class="btn" id="withdrawBtn" type="submit">Confirmer le retrait</button>
+    <button class="btn-withdraw" id="withdrawBtn" type="submit">Confirmer le retrait</button>
 
   </form>
 
-  <div class="rules">
-    <h4><i class="fa-solid fa-circle-info"></i> Horaires & Conditions</h4>
-    • Retraits disponibles : <strong>11h00 - 00h00</strong><br>
-    • Délai de traitement : 0h à 24h<br>
-    • Frais de réseau : 15% inclus<br>
-    • Vérifiez bien votre numéro avant de valider.
+  <div class="rules-box">
+    <h4><i class="fa-solid fa-shield-halved"></i> Sécurité & Délais</h4>
+    <ul class="rules-list">
+        <li>• Horaires : <strong>10:00 — 00:00</strong></li>
+        <li>• Traitement : Instantané à 24h</li>
+        <li>• Frais de réseau : 15% déduits</li>
+        <li>• Statut : Votre compte est éligible au retrait</li>
+    </ul>
   </div>
 
-  <div class="visual" style="margin: 16px;">
-    <img src="/static/images/t1.jpg" alt="Secure Payment">
+  <div class="visual">
+    <img src="/static/images/e1.jpg" alt="Secure Withdrawal">
   </div>
 
 </div>
 
 <script>
-// 1. Calcul des frais
+// 1. Calcul des frais automatique
 document.getElementById("montant").addEventListener("input", function () {
   let montant = parseFloat(this.value) || 0;
   let fees = montant * 0.15;
   let net = montant - fees;
 
   document.getElementById("netAmount").innerText =
-    net > 0 ? net.toLocaleString("fr-FR") + " XOF" : "0 XOF";
+    net > 0 ? net.toLocaleString("fr-FR").replace(/\s/g, ' ') + " XOF" : "0 XOF";
   document.getElementById("feesAmount").innerText =
-    fees > 0 ? fees.toLocaleString("fr-FR") + " XOF" : "0 XOF";
+    fees > 0 ? fees.toLocaleString("fr-FR").replace(/\s/g, ' ') + " XOF" : "0 XOF";
 });
 
-// 2. Gestion des horaires (11h - 00h)
+// 2. Gestion des horaires (10h - 00h)
 function checkWithdrawTime() {
   const now = new Date();
   const hours = now.getHours();
   const btn = document.getElementById("withdrawBtn");
   const alertBox = document.getElementById("timeAlert");
 
-  // Si l'heure est comprise entre 11h et 23h59 (00h exclu)
-  const isOpen = (hours >= 11 && hours < 24);
+  // Ouvert entre 10h inclus et 00h exclu
+  const isOpen = (hours >= 10 && hours < 24);
 
   if (!isOpen) {
     btn.disabled = true;
-    btn.innerText = "Retraits fermés";
+    btn.innerText = "Guichet fermé";
     alertBox.style.display = "block";
   } else {
     btn.disabled = false;
@@ -242,10 +320,10 @@ function checkWithdrawTime() {
   }
 }
 
-// Vérifier au chargement et toutes les minutes
 checkWithdrawTime();
 setInterval(checkWithdrawTime, 60000);
 </script>
 
 </body>
 </html>
+
