@@ -3,96 +3,169 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mes investissements</title>
+<title>Mes Investissements | Emirates</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-*{box-sizing:border-box;font-family:'Poppins',sans-serif;}
+:root{
+  --primary: #5D5FEF;
+  --bg-page: #F4F7FE;
+  --white: #ffffff;
+  --text-dark: #1A202C;
+  --text-muted: #718096;
+  --success: #22c55e;
+  --warning: #F6AD55;
+}
+
+*{ box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
+
 body{
   margin:0;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;
+  min-height:100vh;
+  background-color: var(--bg-page);
+  color: var(--text-dark);
 }
+
 .app{
   max-width:480px;
   margin:auto;
-  padding:24px 16px 90px;
+  padding: 30px 20px 100px;
 }
 
 /* HEADER */
 .header{
   text-align:center;
-  margin-bottom:20px;
+  margin-bottom:30px;
+}
+.header i {
+    font-size: 40px;
+    color: var(--primary);
+    margin-bottom: 10px;
 }
 .header h2{
   margin:0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 .header small{
-  opacity:.85;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 13px;
 }
 
-/* CARD */
+/* CARD INVESTISSEMENT */
 .card{
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(14px);
-  border-radius:18px;
-  padding:16px;
-  box-shadow:0 20px 40px rgba(0,0,0,.35);
-  margin-bottom:16px;
+  background: var(--white);
+  border-radius: 28px;
+  padding: 22px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+  margin-bottom: 20px;
+  border: 1px solid rgba(0,0,0,0.02);
+  position: relative;
+  overflow: hidden;
 }
 
-/* ROW */
+/* DECO STRIPE */
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 6px; height: 100%;
+    background: var(--primary);
+}
+
 .row{
   display:flex;
   justify-content:space-between;
-  margin-bottom:8px;
-  font-size:14px;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 14px;
 }
-.row strong{
-  color:#00c6ff;
+
+.row .label {
+    color: var(--text-muted);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.row .val {
+    font-weight: 800;
+    color: var(--text-dark);
 }
 
 /* PROGRESS */
 .progress-box{
-  margin-top:12px;
+  margin: 20px 0 15px;
 }
-.progress-bar{
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+.progress-bar-bg{
   width:100%;
-  height:10px;
-  background:rgba(255,255,255,.15);
+  height:8px;
+  background: #EDF2F7;
   border-radius:10px;
   overflow:hidden;
 }
-.progress{
+.progress-fill{
   height:100%;
-  background:linear-gradient(135deg,#00c6ff,#0072ff);
-  width:0%;
+  background: var(--primary);
+  border-radius: 10px;
+  transition: width 1s ease-in-out;
 }
 
-/* STATUS */
-.status{
-  margin-top:10px;
-  font-size:13px;
-}
-.active{
-  color:#00ff99;
-}
-.finished{
-  color:#ffae00;
+/* STATUS BADGE */
+.status-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #F7FAFC;
 }
 
-/* EMPTY */
+.badge {
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.active-badge{
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--success);
+}
+.finished-badge{
+  background: rgba(246, 173, 85, 0.1);
+  color: var(--warning);
+}
+
+/* EMPTY STATE */
 .empty{
   text-align:center;
-  opacity:.8;
-  margin-top:60px;
+  padding: 60px 20px;
+  background: var(--white);
+  border-radius: 30px;
+  border: 1px dashed #CBD5E0;
 }
 .empty i{
   font-size:50px;
-  margin-bottom:10px;
-  color:#00c6ff;
+  margin-bottom:15px;
+  color: #CBD5E0;
+}
+.empty p {
+    font-weight: 700;
+    color: var(--text-muted);
 }
 </style>
 </head>
@@ -102,8 +175,9 @@ body{
 <div class="app">
 
   <div class="header">
-    <h2>📦 Mes investissements</h2>
-    <small>Suivi en temps réel</small>
+    <i class="fa-solid fa-plane-departure"></i>
+    <h2>Mes Investissements</h2>
+    <small>Suivi de votre flotte active</small>
   </div>
 
   {% if investissements %}
@@ -111,33 +185,36 @@ body{
     <div class="card">
 
       <div class="row">
-        <span>Montant investi</span>
-        <strong>{{ inv.montant }} XOF</strong>
+        <span class="label"><i class="fa-solid fa-vault"></i> Capital</span>
+        <span class="val">{{ inv.montant }} XOF</span>
       </div>
 
       <div class="row">
-        <span>Revenu journalier</span>
-        <strong>{{ inv.revenu_journalier }} XOF</strong>
+        <span class="label"><i class="fa-solid fa-chart-line"></i> Profit / jour</span>
+        <span class="val" style="color: var(--success);">+ {{ inv.revenu_journalier }} XOF</span>
       </div>
 
       <div class="row">
-        <span>Jours restants</span>
-        <strong>{{ inv.jours_restants }}</strong>
+        <span class="label"><i class="fa-solid fa-calendar-day"></i> Temps restant</span>
+        <span class="val">{{ inv.jours_restants }} jours</span>
       </div>
 
       <div class="progress-box">
-        <div class="progress-bar">
-          <div class="progress" style="width:{{ inv.progression }}%"></div>
+        <div class="progress-header">
+            <span>Progression</span>
+            <span>{{ inv.progression }}%</span>
         </div>
-        <small>{{ inv.progression }} % complété</small>
+        <div class="progress-bar-bg">
+          <div class="progress-fill" style="width:{{ inv.progression }}%"></div>
+        </div>
       </div>
 
-      <div class="status">
-        Statut :
-        {% if inv.actif and inv.jours_restants > 0 %}
-          <strong class="active">Actif</strong>
+      <div class="status-container">
+        <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">État du contrat :</span>
+        {% if inv.jours_restants > 0 %}
+          <span class="badge active-badge">En cours</span>
         {% else %}
-          <strong class="finished">Terminé</strong>
+          <span class="badge finished-badge">Clôturé</span>
         {% endif %}
       </div>
 
@@ -146,7 +223,7 @@ body{
   {% else %}
     <div class="empty">
       <i class="fa-solid fa-box-open"></i>
-      <p>Aucun investissement pour le moment</p>
+      <p>Aucun plan de vol actif pour le moment.</p>
     </div>
   {% endif %}
 
@@ -154,3 +231,4 @@ body{
 
 </body>
 </html>
+
