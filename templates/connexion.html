@@ -298,30 +298,30 @@ body {
     <p>Connectez-vous à votre espace</p>
   </div>
 
-  <div class="auth-card">
-    <h2>Bienvenue 👋</h2>
+  <div class="auth-card card-animated animate-scale-in">
+    <h2 class="animate-fade-in delay-200">Bienvenue 👋</h2>
 
-    <form method="POST" action="/connexion">
-      <div class="form-group">
+    <form method="POST" action="/connexion" class="animate-fade-in delay-300">
+      <div class="form-group animate-fade-in delay-500">
         <label>Numéro de téléphone</label>
         <div class="input-wrapper">
           <i class="fa-solid fa-phone"></i>
-          <input type="tel" name="phone" placeholder="Votre numéro" required>
+          <input type="tel" name="phone" placeholder="Votre numéro" required class="focus-ring">
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group animate-fade-in delay-500">
         <label>Mot de passe</label>
         <div class="input-wrapper">
           <i class="fa-solid fa-lock"></i>
-          <input type="password" name="password" placeholder="Votre mot de passe" required>
-          <button type="button" class="password-toggle" onclick="togglePassword(this)">
+          <input type="password" name="password" placeholder="Votre mot de passe" required class="focus-ring">
+          <button type="button" class="password-toggle hover-lift" onclick="togglePassword(this)">
             <i class="fa-solid fa-eye"></i>
           </button>
         </div>
       </div>
 
-      <div class="form-options">
+      <div class="form-options animate-fade-in delay-500">
         <label class="remember-me">
           <input type="checkbox" name="remember">
           Se souvenir de moi
@@ -329,22 +329,22 @@ body {
         <a href="#" class="forgot-link">Mot de passe oublié ?</a>
       </div>
 
-      <button type="submit" class="btn-submit">
+      <button type="submit" class="btn-submit btn-animated animate-fade-in delay-500">
         <i class="fa-solid fa-right-to-bracket"></i>
         Se connecter
       </button>
     </form>
 
-    <div class="divider">
+    <div class="divider animate-fade-in delay-500">
       <span>ou continuer avec</span>
     </div>
 
-    <div class="social-buttons">
-      <button class="social-btn">
+    <div class="social-buttons animate-fade-in delay-500">
+      <button class="social-btn hover-lift">
         <i class="fa-brands fa-google" style="color: #DB4437;"></i>
         Google
       </button>
-      <button class="social-btn">
+      <button class="social-btn hover-lift">
         <i class="fa-brands fa-apple"></i>
         Apple
       </button>

@@ -48,6 +48,7 @@ TokenFlow.init = function() {
 
   // Initialize components
   this.initCharts();
+  this.initEnhancedFeatures();
   this.initSidebar();
   this.initNotifications();
   this.initModals();
@@ -645,6 +646,291 @@ TokenFlow.startLiveUpdates = function() {
       this.updateRevenueDisplay();
     }
   }, 30000); // Update every 30 seconds
+};
+
+// ============================================
+// FLUID ANIMATIONS SYSTEM
+// ============================================
+TokenFlow.Animations = {
+  // Smooth scroll to element
+  scrollTo: function(element, offset = 0) {
+    const target = typeof element === 'string' ? document.querySelector(element) : element;
+    if (!target) return;
+
+    const targetPosition = target.offsetTop - offset;
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
+    });
+  },
+
+  // Animate number counting
+  animateNumber: function(element, start, end, duration = 1000, formatter = null) {
+    if (!element) return;
+
+    const startTime = performance.now();
+    const difference = end - start;
+
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Easing function (ease-out)
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+      const currentValue = start + (difference * easedProgress);
+      const displayValue = formatter ? formatter(currentValue) : Math.round(currentValue);
+
+      element.textContent = displayValue;
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  },
+
+  // Stagger animation for multiple elements
+  staggerAnimate: function(elements, animationClass, delay = 100) {
+    elements.forEach((element, index) => {
+      setTimeout(() => {
+        element.classList.add(animationClass);
+      }, index * delay);
+    });
+  },
+
+  // Pulse animation
+  pulse: function(element, duration = 500) {
+    element.style.animation = `pulse ${duration}ms ease-in-out`;
+    setTimeout(() => {
+      element.style.animation = '';
+    }, duration);
+  },
+
+  // Shake animation for errors
+  shake: function(element, duration = 500) {
+    element.style.animation = `shake ${duration}ms ease-in-out`;
+    setTimeout(() => {
+      element.style.animation = '';
+    }, duration);
+  },
+
+  // Bounce animation
+  bounce: function(element, duration = 500) {
+    element.style.animation = `bounce ${duration}ms ease-in-out`;
+    setTimeout(() => {
+      element.style.animation = '';
+    }, duration);
+  },
+
+  // Fade in with slide
+  fadeInSlide: function(element, direction = 'up', duration = 600) {
+    const directions = {
+      up: 'translateY(20px)',
+      down: 'translateY(-20px)',
+      left: 'translateX(20px)',
+      right: 'translateX(-20px)'
+    };
+
+    element.style.opacity = '0';
+    element.style.transform = directions[direction];
+    element.style.transition = `all ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+
+    requestAnimationFrame(() => {
+      element.style.opacity = '1';
+      element.style.transform = 'translate(0, 0)';
+    });
+  },
+
+  // Morphing loader
+  createLoader: function(container, size = 40) {
+    const loader = document.createElement('div');
+    loader.className = 'morphing-loader';
+    loader.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      border: 3px solid var(--border-color);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: morphing-spin 1s linear infinite;
+      margin: 0 auto;
+    `;
+
+    if (container) {
+      container.innerHTML = '';
+      container.appendChild(loader);
+    }
+
+    return loader;
+  },
+
+  // Success checkmark animation
+  showSuccess: function(element) {
+    const checkmark = document.createElement('div');
+    checkmark.innerHTML = '✓';
+    checkmark.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      color: var(--success);
+      font-size: 24px;
+      font-weight: bold;
+      animation: checkmark-pop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    `;
+
+    element.style.position = 'relative';
+    element.appendChild(checkmark);
+
+    setTimeout(() => {
+      checkmark.remove();
+    }, 1000);
+  },
+
+  // Ripple effect for buttons
+  createRipple: function(event, element) {
+    const ripple = document.createElement('div');
+    const rect = element.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+
+    ripple.style.cssText = `
+      position: absolute;
+      width: ${size}px;
+      height: ${size}px;
+      left: ${x}px;
+      top: ${y}px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple-effect 0.6s linear;
+      pointer-events: none;
+    `;
+
+    element.style.position = 'relative';
+    element.style.overflow = 'hidden';
+    element.appendChild(ripple);
+
+    setTimeout(() => {
+      ripple.remove();
+    }, 600);
+  }
+};
+
+// Add CSS animations to document head
+const animationStyles = `
+  @keyframes morphing-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+  }
+
+  @keyframes checkmark-pop {
+    0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); }
+    50% { transform: translate(-50%, -50%) scale(1.2) rotate(180deg); }
+    100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); }
+  }
+
+  @keyframes ripple-effect {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-on-scroll.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .loading-skeleton {
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--border-color) 50%, var(--bg-card) 75%);
+    background-size: 200px 100%;
+    animation: loading-shimmer 1.5s infinite;
+  }
+
+  @keyframes loading-shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: calc(200px + 100%) 0; }
+  }
+`;
+
+const styleSheet = document.createElement('style');
+styleSheet.textContent = animationStyles;
+document.head.appendChild(styleSheet);
+
+// Initialize scroll animations
+TokenFlow.initScrollAnimations = function() {
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+      }
+    });
+  }, observerOptions);
+
+  // Observe elements with scroll animation classes
+  document.querySelectorAll('.animate-on-scroll, .scroll-fade-in').forEach(el => {
+    observer.observe(el);
+  });
+
+  this.observers.push(observer);
+};
+
+// Enhanced button interactions
+TokenFlow.enhanceButtons = function() {
+  document.querySelectorAll('.btn-primary, .btn-secondary, .action-item').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      this.Animations.createRipple(e, btn);
+    });
+  });
+};
+
+// Initialize enhanced features
+TokenFlow.initEnhancedFeatures = function() {
+  this.initScrollAnimations();
+  this.enhanceButtons();
+
+  // Animate numbers on page load
+  document.querySelectorAll('[data-animate-number]').forEach(el => {
+    const target = parseInt(el.dataset.animateNumber);
+    this.Animations.animateNumber(el, 0, target, 1500, (num) => Math.round(num).toLocaleString('fr-FR'));
+  });
+
+  // Add loading states to forms
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', (e) => {
+      const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Traitement...';
+      }
+    });
+  });
 };
 
 // ============================================
