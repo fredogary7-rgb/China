@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="app-container">
-  <header class="top-header">
+  <header class="top-header animate-fade-in">
     <div class="brand">
       <a href="/dashboard" style="display: flex; align-items: center; gap: 8px;">
         <i class="fa-solid fa-arrow-left" style="color: var(--text-secondary); font-size: 18px;"></i>
@@ -12,41 +12,41 @@
       <div class="brand-logo">T</div>
       <span class="brand-name">TokenFlow</span>
     </div>
-    <button class="icon-btn" onclick="toggleDarkMode()">
+    <button class="icon-btn animate-scale-in delay-200" onclick="toggleDarkMode()">
       <i class="fa-solid fa-moon"></i>
     </button>
   </header>
 
-  <div class="glass-card text-center mb-3" style="padding: 32px 20px;">
-    <div class="sidebar-avatar" style="width: 80px; height: 80px; margin: 0 auto 16px; font-size: 32px;">
+  <div class="glass-card text-center mb-3 card-animated scroll-fade-in" style="padding: 32px 20px;">
+    <div class="sidebar-avatar animate-scale-in delay-300" style="width: 80px; height: 80px; margin: 0 auto 16px; font-size: 32px;">
       {{ user.phone[0] }}
     </div>
-    <h3 style="font-size: 20px; font-weight: 800; color: var(--text-primary);">{{ user.phone }}</h3>
-    <div class="vip-badge gold" style="margin-top: 8px;">
+    <h3 style="font-size: 20px; font-weight: 800; color: var(--text-primary);" class="animate-fade-in delay-500">{{ user.phone }}</h3>
+    <div class="vip-badge gold animate-fade-in delay-500" style="margin-top: 8px;">
       <i class="fa-solid fa-crown"></i> Membre Gold
     </div>
   </div>
 
-  <div class="actions-grid mb-3">
-    <a href="/deposit" class="action-item">
+  <div class="actions-grid mb-3 scroll-fade-in">
+    <a href="/deposit" class="action-item hover-lift animate-fade-in delay-100">
       <div class="action-icon deposit"><i class="fa-solid fa-wallet"></i></div>
       <span class="action-label">Recharger</span>
     </a>
-    <a href="/retrait" class="action-item">
+    <a href="/retrait" class="action-item hover-lift animate-fade-in delay-200">
       <div class="action-icon withdraw"><i class="fa-solid fa-money-bill-transfer"></i></div>
       <span class="action-label">Retirer</span>
     </a>
-    <a href="/team" class="action-item">
+    <a href="/team" class="action-item hover-lift animate-fade-in delay-300">
       <div class="action-icon invest"><i class="fa-solid fa-users"></i></div>
       <span class="action-label">Réseau</span>
     </a>
-    <a href="/achats" class="action-item">
+    <a href="/achats" class="action-item hover-lift animate-fade-in delay-500">
       <div class="action-icon history"><i class="fa-solid fa-briefcase"></i></div>
       <span class="action-label">Invests</span>
     </a>
   </div>
 
-  <div class="transactions-card">
+  <div class="transactions-card scroll-fade-in">
     <a href="/historique" class="transaction-item">
       <div class="transaction-left">
         <div class="transaction-icon info"><i class="fa-solid fa-receipt"></i></div>

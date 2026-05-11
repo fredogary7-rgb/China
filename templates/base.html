@@ -25,6 +25,221 @@
     {% block extra_css %}{% endblock %}
     
     <style>
+        /* ===== ANIMATIONS FLUIDES GLOBALES ===== */
+        
+        /* Animations d'entrée */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes slideInBottom {
+            from {
+                opacity: 0;
+                transform: translateY(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Transitions fluides pour tous les éléments */
+        * {
+            transition: all var(--transition-fast) ease;
+        }
+        
+        /* Animations de chargement */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+        
+        .loading-shimmer {
+            background: linear-gradient(90deg, var(--bg-card) 25%, var(--border-color) 50%, var(--bg-card) 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        /* Animations de hover améliorées */
+        .hover-lift {
+            transition: all var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px var(--shadow-hover);
+        }
+        
+        .hover-scale {
+            transition: transform var(--transition-fast) ease;
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Animations de focus */
+        .focus-ring:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+        
+        /* Animations de scroll */
+        .scroll-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .scroll-fade-in.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Animations stagger pour les listes */
+        .stagger-item {
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .stagger-item:nth-child(1) { animation-delay: 0.1s; }
+        .stagger-item:nth-child(2) { animation-delay: 0.2s; }
+        .stagger-item:nth-child(3) { animation-delay: 0.3s; }
+        .stagger-item:nth-child(4) { animation-delay: 0.4s; }
+        .stagger-item:nth-child(5) { animation-delay: 0.5s; }
+        .stagger-item:nth-child(6) { animation-delay: 0.6s; }
+        
+        /* Animations pour les boutons */
+        .btn-animated {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-animated::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-animated:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* Animations pour les cartes */
+        .card-animated {
+            transition: all var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-animated:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px var(--shadow-hover);
+        }
+        
+        /* Animations pour les inputs */
+        .input-animated {
+            position: relative;
+        }
+        
+        .input-animated input:focus + .input-border {
+            transform: scaleX(1);
+        }
+        
+        .input-border {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition-normal) ease;
+        }
+        
+        /* Animations de chargement pour les modals */
+        .modal-animated {
+            animation: scaleIn 0.3s ease-out;
+        }
+        
+        /* Animations pour les notifications */
+        .notification-slide-in {
+            animation: slideInBottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Classes utilitaires d'animation */
+        .animate-fade-in { animation: fadeInUp 0.6s ease; }
+        .animate-fade-left { animation: fadeInLeft 0.6s ease; }
+        .animate-fade-right { animation: fadeInRight 0.6s ease; }
+        .animate-scale-in { animation: scaleIn 0.4s ease; }
+        .animate-pulse { animation: pulse 2s infinite; }
+        
+        /* Délais d'animation */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-500 { animation-delay: 0.5s; }
+        
         /* Page-specific overrides */
         {% block page_styles %}{% endblock %}
     </style>
@@ -58,6 +273,184 @@
     <script src="{{ url_for('static', filename='js/fintech.js') }}"></script>
     
     <!-- Page-specific JavaScript -->
-    {% block extra_js %}{% endblock %}
+    {% block extra_js %}
+    <script>
+        // ===== ANIMATIONS FLUIDES JAVASCRIPT =====
+        
+        // Initialisation des animations
+        document.addEventListener('DOMContentLoaded', function() {
+            initFluidAnimations();
+            initScrollAnimations();
+            initHoverEffects();
+            initLoadingStates();
+        });
+        
+        // Animations d'entrée fluides
+        function initFluidAnimations() {
+            // Animation des éléments au chargement
+            const animatedElements = document.querySelectorAll('.animate-fade-in, .animate-fade-left, .animate-fade-right, .animate-scale-in');
+            animatedElements.forEach((el, index) => {
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.animationPlayState = 'running';
+                }, index * 100);
+            });
+            
+            // Animation des cartes avec stagger
+            const cards = document.querySelectorAll('.product-card, .glass-card, .stat-card');
+            cards.forEach((card, index) => {
+                card.classList.add('stagger-item');
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        }
+        
+        // Animations de scroll
+        function initScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                    }
+                });
+            }, observerOptions);
+            
+            // Observer tous les éléments avec scroll-fade-in
+            document.querySelectorAll('.scroll-fade-in').forEach(el => {
+                observer.observe(el);
+            });
+            
+            // Animation des sections au scroll
+            const sections = document.querySelectorAll('.section-header, .balance-bar, .info-banner');
+            sections.forEach(section => {
+                section.classList.add('scroll-fade-in');
+                observer.observe(section);
+            });
+        }
+        
+        // Effets de hover améliorés
+        function initHoverEffects() {
+            // Ajouter les classes de hover aux éléments appropriés
+            document.querySelectorAll('.product-card, .glass-card, .btn-primary, .btn-secondary').forEach(el => {
+                if (!el.classList.contains('hover-lift') && !el.classList.contains('hover-scale')) {
+                    el.classList.add('hover-lift');
+                }
+            });
+            
+            // Animation des boutons
+            document.querySelectorAll('.btn-primary, .btn-secondary').forEach(btn => {
+                btn.classList.add('btn-animated');
+            });
+            
+            // Animation des inputs
+            document.querySelectorAll('input, select, textarea').forEach(input => {
+                if (!input.closest('.input-animated')) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'input-animated';
+                    input.parentNode.insertBefore(wrapper, input);
+                    wrapper.appendChild(input);
+                    
+                    const border = document.createElement('div');
+                    border.className = 'input-border';
+                    wrapper.appendChild(border);
+                }
+            });
+        }
+        
+        // États de chargement
+        function initLoadingStates() {
+            // Animation de chargement pour les boutons
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.btn-primary, .btn-secondary');
+                if (btn && !btn.classList.contains('loading')) {
+                    btn.classList.add('loading');
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + btn.textContent.trim();
+                    
+                    // Simuler un délai de chargement (à remplacer par la vraie logique)
+                    setTimeout(() => {
+                        btn.classList.remove('loading');
+                        btn.innerHTML = btn.innerHTML.replace('<i class="fa-solid fa-spinner fa-spin"></i> ', '');
+                    }, 2000);
+                }
+            });
+        }
+        
+        // Fonction pour animer les éléments dynamiquement
+        window.FluidAnimations = {
+            fadeIn: function(element, delay = 0) {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, delay);
+            },
+            
+            slideIn: function(element, direction = 'up', delay = 0) {
+                const transforms = {
+                    up: 'translateY(30px)',
+                    down: 'translateY(-30px)',
+                    left: 'translateX(30px)',
+                    right: 'translateX(-30px)'
+                };
+                
+                element.style.opacity = '0';
+                element.style.transform = transforms[direction] || transforms.up;
+                element.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, delay);
+            },
+            
+            scaleIn: function(element, delay = 0) {
+                element.style.opacity = '0';
+                element.style.transform = 'scale(0.9)';
+                element.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'scale(1)';
+                }, delay);
+            },
+            
+            pulse: function(element, duration = 1000) {
+                element.style.animation = `pulse ${duration}ms infinite`;
+            }
+        };
+        
+        // Animation des modals
+        const originalOpenModal = window.TokenFlow?.openModal;
+        if (originalOpenModal) {
+            window.TokenFlow.openModal = function(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.add('modal-animated');
+                }
+                return originalOpenModal.call(this, modalId);
+            };
+        }
+        
+        // Animation des toasts
+        const originalShowToast = window.showToast;
+        if (originalShowToast) {
+            window.showToast = function(message, type = 'info') {
+                const toast = originalShowToast.call(this, message, type);
+                if (toast) {
+                    toast.classList.add('notification-slide-in');
+                }
+                return toast;
+            };
+        }
+    </script>
+    {% endblock %}
 </body>
 </html>

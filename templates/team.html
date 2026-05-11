@@ -447,7 +447,7 @@
 {% block content %}
 <div class="app-container">
   <!-- Header -->
-  <header class="top-header">
+  <header class="top-header animate-fade-in">
     <div class="brand">
       <a href="/dashboard" style="display: flex; align-items: center; gap: 8px;">
         <i class="fa-solid fa-arrow-left" style="color: var(--text-secondary); font-size: 18px;"></i>
@@ -455,7 +455,7 @@
       <div class="brand-logo">T</div>
       <span class="brand-name">TokenFlow</span>
     </div>
-    <button class="icon-btn" onclick="toggleDarkMode()" aria-label="Mode sombre">
+    <button class="icon-btn animate-scale-in delay-200" onclick="toggleDarkMode()" aria-label="Mode sombre">
       <i class="fa-solid fa-moon"></i>
     </button>
   </header>
@@ -471,21 +471,21 @@
   </div>
 
   <!-- Referral Hero Card -->
-  <div class="referral-hero">
-    <h2>🎁 Invitez & Gagnez</h2>
-    <p>Partagez votre lien et recevez jusqu'à 30% de commission sur les dépôts de vos filleuls</p>
+  <div class="referral-hero card-animated scroll-fade-in">
+    <h2 class="animate-fade-in delay-100">🎁 Invitez & Gagnez</h2>
+    <p class="animate-fade-in delay-200">Partagez votre lien et recevez jusqu'à 30% de commission sur les dépôts de vos filleuls</p>
     
-    <div class="referral-link-container">
+    <div class="referral-link-container animate-fade-in delay-300">
       <i class="fa-solid fa-link"></i>
       <span class="referral-link-text" id="referralLink">{{ referral_link }}</span>
-      <button class="copy-link-btn" onclick="copyReferralLink()">Copier</button>
+      <button class="copy-link-btn hover-lift animate-scale-in delay-500" onclick="copyReferralLink()">Copier</button>
     </div>
 
-    <div class="share-buttons">
-      <button class="share-btn whatsapp" onclick="shareOnWhatsApp()">
+    <div class="share-buttons animate-fade-in delay-500">
+      <button class="share-btn whatsapp hover-lift" onclick="shareOnWhatsApp()">
         <i class="fa-brands fa-whatsapp"></i> WhatsApp
       </button>
-      <button class="share-btn telegram" onclick="shareOnTelegram()">
+      <button class="share-btn telegram hover-lift" onclick="shareOnTelegram()">
         <i class="fa-brands fa-telegram"></i> Telegram
       </button>
     </div>

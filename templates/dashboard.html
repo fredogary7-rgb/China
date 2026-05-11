@@ -116,36 +116,36 @@
 <div class="app-container">
 
   <!-- Top Header -->
-  <header class="top-header">
+  <header class="top-header animate-fade-in">
     <div class="brand">
       <div class="brand-logo">E</div>
       <span class="brand-name">TokenFlow</span>
     </div>
     <div class="header-actions">
-      <button class="icon-btn" id="notificationBtn" onclick="toggleNotifications()" aria-label="Notifications">
+      <button class="icon-btn animate-scale-in delay-100" id="notificationBtn" onclick="toggleNotifications()" aria-label="Notifications">
         <i class="fa-solid fa-bell"></i>
         <span class="badge"></span>
       </button>
-      <button class="icon-btn" id="darkModeBtn" onclick="toggleDarkMode()" aria-label="Mode sombre">
+      <button class="icon-btn animate-scale-in delay-200" id="darkModeBtn" onclick="toggleDarkMode()" aria-label="Mode sombre">
         <i class="fa-solid fa-moon"></i>
       </button>
-      <button class="icon-btn" id="sidebarBtn" onclick="toggleSidebar()" aria-label="Menu">
+      <button class="icon-btn animate-scale-in delay-300" id="sidebarBtn" onclick="toggleSidebar()" aria-label="Menu">
         <i class="fa-solid fa-bars"></i>
       </button>
     </div>
   </header>
 
   <!-- Wallet Card -->
-  <section class="wallet-section">
-    <div class="wallet-card">
+  <section class="wallet-section scroll-fade-in">
+    <div class="wallet-card card-animated">
       <div class="wallet-card-content">
         <div class="wallet-label">Solde disponible</div>
         <div class="wallet-balance-row">
           <div>
-            <span class="wallet-balance" id="mainBalance">{{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }}</span>
-            <span class="wallet-currency" id="walletCurrency">XOF</span>
+            <span class="wallet-balance animate-fade-in delay-200" id="mainBalance">{{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }}</span>
+            <span class="wallet-currency animate-fade-in delay-300" id="walletCurrency">XOF</span>
           </div>
-          <button class="wallet-toggle" id="toggleBalance" onclick="toggleBalanceVisibility()" aria-label="Masquer le solde">
+          <button class="wallet-toggle animate-scale-in delay-500" id="toggleBalance" onclick="toggleBalanceVisibility()" aria-label="Masquer le solde">
             <i class="fa-solid fa-eye-slash"></i>
           </button>
         </div>
@@ -170,26 +170,26 @@
   </section>
 
   <!-- Quick Actions -->
-  <nav class="actions-grid" aria-label="Actions rapides">
-    <a href="/deposit" class="action-item">
+  <nav class="actions-grid scroll-fade-in" aria-label="Actions rapides">
+    <a href="/deposit" class="action-item hover-lift animate-fade-in delay-100">
       <div class="action-icon deposit">
         <i class="fa-solid fa-wallet"></i>
       </div>
       <span class="action-label">Dépôt</span>
     </a>
-    <a href="/retrait" class="action-item">
+    <a href="/retrait" class="action-item hover-lift animate-fade-in delay-200">
       <div class="action-icon withdraw">
         <i class="fa-solid fa-money-bill-transfer"></i>
       </div>
       <span class="action-label">Retrait</span>
     </a>
-    <a href="/produits_rapide" class="action-item">
+    <a href="/produits_rapide" class="action-item hover-lift animate-fade-in delay-300">
       <div class="action-icon invest">
         <i class="fa-solid fa-rocket"></i>
       </div>
       <span class="action-label">Investir</span>
     </a>
-    <a href="/historique" class="action-item">
+    <a href="/historique" class="action-item hover-lift animate-fade-in delay-500">
       <div class="action-icon history">
         <i class="fa-solid fa-chart-line"></i>
       </div>
@@ -198,18 +198,18 @@
   </nav>
 
   <!-- Stats Row -->
-  <div class="section-header">
+  <div class="section-header scroll-fade-in">
     <h3 class="section-title"><i class="fa-solid fa-chart-pie"></i> Aperçu</h3>
   </div>
-  <div class="stats-row">
-    <div class="stat-card">
+  <div class="stats-row scroll-fade-in">
+    <div class="stat-card card-animated animate-fade-left delay-100">
       <div class="stat-icon users">
         <i class="fa-solid fa-users"></i>
       </div>
       <div class="stat-value">{{ "{:,.0f}".format(total_users or 0).replace(",", " ") }}</div>
       <div class="stat-label">Utilisateurs</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card card-animated animate-fade-right delay-200">
       <div class="stat-icon invested">
         <i class="fa-solid fa-sack-dollar"></i>
       </div>
@@ -219,10 +219,10 @@
   </div>
 
   <!-- Chart -->
-  <div class="section-header">
+  <div class="section-header scroll-fade-in">
     <h3 class="section-title"><i class="fa-solid fa-chart-area"></i> Graphique de trading</h3>
   </div>
-  <div class="chart-card">
+  <div class="chart-card card-animated scroll-fade-in">
     <div class="chart-header">
       <div>
         <span class="chart-small-title">Aperçu du marché</span>
@@ -238,11 +238,11 @@
   </div>
 
   <!-- Active Investments -->
-  <div class="section-header">
+  <div class="section-header scroll-fade-in">
     <h3 class="section-title"><i class="fa-solid fa-briefcase"></i> Investissements</h3>
     <a href="/achats" class="section-link">Voir tout <i class="fa-solid fa-chevron-right"></i></a>
   </div>
-  <div class="investments-card">
+  <div class="investments-card scroll-fade-in">
     {% if user.investissements_actifs and user.investissements_actifs|length > 0 %}
       {% for inv in user.investissements_actifs %}
       <div class="investment-item">

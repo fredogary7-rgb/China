@@ -360,7 +360,7 @@
 {% block content %}
 <div class="app-container">
   <!-- Header -->
-  <header class="top-header">
+  <header class="top-header animate-fade-in">
     <div class="brand">
       <a href="/dashboard" style="display: flex; align-items: center; gap: 8px;">
         <i class="fa-solid fa-arrow-left" style="color: var(--text-secondary); font-size: 18px;"></i>
@@ -368,29 +368,29 @@
       <div class="brand-logo">T</div>
       <span class="brand-name">TokenFlow</span>
     </div>
-    <button class="icon-btn" onclick="toggleDarkMode()" aria-label="Mode sombre">
+    <button class="icon-btn animate-scale-in delay-200" onclick="toggleDarkMode()" aria-label="Mode sombre">
       <i class="fa-solid fa-moon"></i>
     </button>
   </header>
 
   <!-- Title -->
-  <div style="margin-bottom: 24px;">
-    <h1 style="font-size: 24px; font-weight: 900; color: var(--text-primary); margin-bottom: 8px;">
+  <div style="margin-bottom: 24px;" class="scroll-fade-in">
+    <h1 style="font-size: 24px; font-weight: 900; color: var(--text-primary); margin-bottom: 8px;" class="animate-fade-in delay-100">
       Retrait de fonds
     </h1>
-    <p style="font-size: 14px; color: var(--text-muted);">
+    <p style="font-size: 14px; color: var(--text-muted);" class="animate-fade-in delay-200">
       Transférez vos gains vers votre portefeuille
     </p>
   </div>
 
   <!-- Balance Cards -->
-  <div class="balance-cards">
-    <div class="balance-card primary">
+  <div class="balance-cards scroll-fade-in">
+    <div class="balance-card primary card-animated animate-fade-left delay-100">
       <div class="label">Solde retirable</div>
       <div class="value">{{ "{:,.0f}".format(solde_retraitable or 0).replace(",", " ") }} XOF</div>
       <div class="sub">Parrainage + Revenus</div>
     </div>
-    <div class="balance-card">
+    <div class="balance-card card-animated animate-fade-right delay-200">
       <div class="label">Solde total</div>
       <div class="value">{{ "{:,.0f}".format(solde_total or 0).replace(",", " ") }} XOF</div>
       <div class="sub">Disponible</div>
@@ -398,13 +398,13 @@
   </div>
 
   <!-- Wallet Info -->
-  <div class="section-label">
+  <div class="section-label scroll-fade-in">
     <i class="fa-solid fa-wallet"></i>
     Portefeuille enregistré
   </div>
   
-  <div class="wallet-info">
-    <div class="icon">
+  <div class="wallet-info card-animated scroll-fade-in">
+    <div class="icon animate-scale-in delay-300">
       <i class="fa-solid fa-credit-card"></i>
     </div>
     <div class="details">
@@ -415,13 +415,13 @@
       <div class="label">Numéro</div>
       <div class="value">{{ user.wallet_number or '---' }}</div>
     </div>
-    <a href="/ajouter_portefeuille" class="edit-btn" title="Modifier">
+    <a href="/ajouter_portefeuille" class="edit-btn hover-lift animate-scale-in delay-500" title="Modifier">
       <i class="fa-solid fa-pen"></i>
     </a>
   </div>
 
   <!-- Withdrawal Form -->
-  <form method="POST" action="/retrait" id="withdrawalForm">
+  <form method="POST" action="/retrait" id="withdrawalForm" class="scroll-fade-in">
     <div class="section-label">
       <i class="fa-solid fa-money-bill-transfer"></i>
       Montant du retrait
