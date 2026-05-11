@@ -12,6 +12,39 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, text, distinct
 
+TRANSLATIONS = {
+    "fr": {
+        "welcome": "Bienvenue",
+        "login": "Connexion",
+        "logout": "Déconnexion",
+        "dashboard": "Tableau de bord",
+        "profile": "Profil",
+        "deposit": "Dépôt",
+        "withdraw": "Retrait",
+        "invest": "Investir",
+        "referral": "Parrainage",
+        "support": "Support",
+        "balance": "Solde",
+        "transactions": "Transactions",
+        "settings": "Paramètres"
+    },
+    "en": {
+        "welcome": "Welcome",
+        "login": "Login",
+        "logout": "Logout",
+        "dashboard": "Dashboard",
+        "profile": "Profile",
+        "deposit": "Deposit",
+        "withdraw": "Withdraw",
+        "invest": "Invest",
+        "referral": "Referral",
+        "support": "Support",
+        "balance": "Balance",
+        "transactions": "Transactions",
+        "settings": "Settings"
+    }
+}
+
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = "ma_cle_ultra_secrete"
 

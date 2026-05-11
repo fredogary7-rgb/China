@@ -339,29 +339,223 @@
   border-color: var(--primary);
 }
 
-/* Info banner */
-.info-banner {
+/* Currency selector */
+.currency-selector {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-bottom: 20px;
   padding: 16px;
-  background: var(--info-light);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  backdrop-filter: blur(12px);
+}
+
+.currency-selector .label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.currency-selector .label i {
+  color: var(--primary);
+}
+
+.currency-selector select {
+  padding: 8px 12px;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  margin-bottom: 24px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-width: 80px;
 }
 
-.info-banner i {
-  color: var(--info);
-  font-size: 18px;
-  flex-shrink: 0;
+.currency-selector select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
-.info-banner p {
-  font-size: 13px;
+.currency-selector select:hover {
+  border-color: var(--primary);
+}
+
+/* Advanced filters */
+.advanced-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.advanced-filters .filter-tab {
+  padding: 8px 16px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  font-size: 12px;
+  font-weight: 600;
   color: var(--text-secondary);
-  line-height: 1.5;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(12px);
+}
+
+.advanced-filters .filter-tab:hover,
+.advanced-filters .filter-tab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Product price with conversion */
+.product-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.product-price .main-price {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.product-price .converted-price {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+.product-price span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Quick actions */
+.quick-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.quick-action-btn {
+  padding: 8px 12px;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.quick-action-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.quick-action-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Investment calculator */
+.investment-calculator {
+  padding: 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  margin-bottom: 20px;
+  backdrop-filter: blur(12px);
+}
+
+.calculator-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.calculator-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
   margin: 0;
+}
+
+.calculator-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.calculator-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.calculator-input label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.calculator-input input {
+  padding: 8px 12px;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.calculator-input input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.calculator-result {
+  padding: 12px;
+  background: var(--success-light);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.calculator-result .label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.calculator-result .value {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--success);
 }
 {% endblock %}
 
@@ -448,13 +642,63 @@
     </a>
   </div>
 
-  <!-- Filter Tabs -->
-  <div class="filter-tabs">
-    <div class="filter-tab active" onclick="filterProducts('all', this)">Tous</div>
-    <div class="filter-tab" onclick="filterProducts('starter', this)">Starter</div>
-    <div class="filter-tab" onclick="filterProducts('gold', this)">Gold</div>
-    <div class="filter-tab" onclick="filterProducts('platinum', this)">Platinum</div>
-    <div class="filter-tab" onclick="filterProducts('diamond', this)">Diamond</div>
+  <!-- Currency Selector -->
+  <div class="currency-selector">
+    <div class="label">
+      <i class="fa-solid fa-money-bill-wave"></i>
+      Affichage des prix
+    </div>
+    <select id="currencySelect" onchange="changeCurrency()">
+      <option value="XOF">Franc CFA (XOF)</option>
+      <option value="USD">Dollar US (USD)</option>
+      <option value="EUR">Euro (EUR)</option>
+    </select>
+  </div>
+
+  <!-- Advanced Filters -->
+  <div class="advanced-filters">
+    <div class="filter-tab active" onclick="filterByPrice('all', this)">Tous les prix</div>
+    <div class="filter-tab" onclick="filterByPrice('low', this)">0 - 15K XOF</div>
+    <div class="filter-tab" onclick="filterByPrice('medium', this)">15K - 50K XOF</div>
+    <div class="filter-tab" onclick="filterByPrice('high', this)">50K+ XOF</div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <button class="quick-action-btn" onclick="sortProducts('price')">
+      <i class="fa-solid fa-sort-amount-down"></i> Prix
+    </button>
+    <button class="quick-action-btn" onclick="sortProducts('roi')">
+      <i class="fa-solid fa-chart-line"></i> ROI
+    </button>
+    <button class="quick-action-btn" onclick="toggleCalculator()">
+      <i class="fa-solid fa-calculator"></i> Calculateur
+    </button>
+    <button class="quick-action-btn" onclick="toggleComparison()">
+      <i class="fa-solid fa-balance-scale"></i> Comparer
+    </button>
+  </div>
+
+  <!-- Investment Calculator (hidden by default) -->
+  <div class="investment-calculator" id="investmentCalculator" style="display: none;">
+    <div class="calculator-header">
+      <i class="fa-solid fa-calculator" style="color: var(--primary);"></i>
+      <h3>Calculateur d'investissement</h3>
+    </div>
+    <div class="calculator-inputs">
+      <div class="calculator-input">
+        <label>Montant</label>
+        <input type="number" id="calcAmount" placeholder="10000" value="10000">
+      </div>
+      <div class="calculator-input">
+        <label>Durée (jours)</label>
+        <input type="number" id="calcDays" placeholder="120" value="120">
+      </div>
+    </div>
+    <div class="calculator-result">
+      <div class="label">Revenus estimés</div>
+      <div class="value" id="calcResult">0 XOF</div>
+    </div>
   </div>
 
   <!-- Info Banner -->
@@ -478,13 +722,16 @@
           {{ tier|upper }}
         </div>
         <div class="product-name">{{ p.nom }}</div>
-        <div class="product-price">{{ "{:,.0f}".format(p.prix).replace(",", " ") }} <span>XOF</span></div>
+        <div class="product-price">
+          <div class="main-price" data-xof="{{ p.prix }}">{{ "{:,.0f}".format(p.prix).replace(",", " ") }} <span>XOF</span></div>
+          <div class="converted-price" id="converted-{{ p.id }}"></div>
+        </div>
       </div>
       
       <div class="product-body">
         <div class="product-stats">
           <div class="product-stat">
-            <span class="value profit">+{{ "{:,.0f}".format(p.revenu_journalier).replace(",", " ") }}</span>
+            <span class="value profit" data-xof="{{ p.revenu_journalier }}">+{{ "{:,.0f}".format(p.revenu_journalier).replace(",", " ") }}</span>
             <span class="label">/jour</span>
           </div>
           <div class="product-stat">
@@ -492,7 +739,7 @@
             <span class="label">jours</span>
           </div>
           <div class="product-stat">
-            <span class="value">+{{ "{:,.0f}".format(p.revenu_journalier * 120).replace(",", " ") }}</span>
+            <span class="value" data-xof="{{ p.revenu_journalier * 120 }}">+{{ "{:,.0f}".format(p.revenu_journalier * 120).replace(",", " ") }}</span>
             <span class="label">total</span>
           </div>
         </div>
@@ -524,41 +771,256 @@
 
 {% block extra_js %}
 <script>
+// Taux de conversion (approximatifs, à mettre à jour régulièrement)
+const EXCHANGE_RATES = {
+  XOF: 1,           // Franc CFA
+  USD: 0.0015,      // 1 XOF = 0.0015 USD
+  EUR: 0.0014       // 1 XOF = 0.0014 EUR
+};
+
+const CURRENCY_SYMBOLS = {
+  XOF: 'XOF',
+  USD: '$',
+  EUR: '€'
+};
+
+let currentCurrency = 'XOF';
+let selectedProducts = new Set();
+
+// Fonction de conversion de devise
+function convertCurrency(amount, fromCurrency = 'XOF', toCurrency = currentCurrency) {
+  if (fromCurrency === toCurrency) return amount;
+  const amountInXOF = amount / EXCHANGE_RATES[fromCurrency];
+  return Math.round(amountInXOF * EXCHANGE_RATES[toCurrency]);
+}
+
+// Mise à jour de l'affichage des prix
+function updatePrices() {
+  // Mise à jour des prix principaux
+  document.querySelectorAll('.main-price').forEach(priceEl => {
+    const xofAmount = parseInt(priceEl.dataset.xof);
+    const converted = convertCurrency(xofAmount, 'XOF', currentCurrency);
+
+    if (currentCurrency === 'XOF') {
+      priceEl.innerHTML = `${xofAmount.toLocaleString('fr-FR').replace(/\s/g, ' ')} <span>XOF</span>`;
+    } else {
+      priceEl.innerHTML = `${converted.toLocaleString('fr-FR')} <span>${CURRENCY_SYMBOLS[currentCurrency]}</span>`;
+    }
+  });
+
+  // Mise à jour des prix convertis
+  document.querySelectorAll('.converted-price').forEach(convertedEl => {
+    const productId = convertedEl.id.replace('converted-', '');
+    const mainPriceEl = document.querySelector(`.main-price[data-xof]`);
+    if (mainPriceEl) {
+      const xofAmount = parseInt(mainPriceEl.dataset.xof);
+      const converted = convertCurrency(xofAmount, 'XOF', currentCurrency === 'XOF' ? 'USD' : currentCurrency);
+
+      if (currentCurrency === 'XOF') {
+        convertedEl.textContent = `≈ ${converted} ${CURRENCY_SYMBOLS['USD']}`;
+      } else {
+        convertedEl.textContent = `≈ ${convertCurrency(xofAmount, 'XOF', 'XOF').toLocaleString('fr-FR').replace(/\s/g, ' ')} XOF`;
+      }
+    }
+  });
+
+  // Mise à jour des statistiques
+  document.querySelectorAll('.product-stat .value[data-xof]').forEach(statEl => {
+    const xofAmount = parseInt(statEl.dataset.xof);
+    const converted = convertCurrency(xofAmount, 'XOF', currentCurrency);
+
+    if (currentCurrency === 'XOF') {
+      statEl.textContent = statEl.textContent.startsWith('+') ?
+        `+${xofAmount.toLocaleString('fr-FR').replace(/\s/g, ' ')}` :
+        xofAmount.toLocaleString('fr-FR').replace(/\s/g, ' ');
+    } else {
+      statEl.textContent = statEl.textContent.startsWith('+') ?
+        `+${converted.toLocaleString('fr-FR')}` :
+        converted.toLocaleString('fr-FR');
+    }
+  });
+}
+
+// Changement de devise
+function changeCurrency() {
+  const select = document.getElementById('currencySelect');
+  currentCurrency = select.value;
+  updatePrices();
+
+  // Sauvegarde dans localStorage
+  localStorage.setItem('preferredCurrency', currentCurrency);
+}
+
+// Chargement de la devise préférée
+function loadPreferredCurrency() {
+  const saved = localStorage.getItem('preferredCurrency');
+  if (saved && ['XOF', 'USD', 'EUR'].includes(saved)) {
+    currentCurrency = saved;
+    document.getElementById('currencySelect').value = saved;
+    updatePrices();
+  }
+}
+
+// Filtrage par prix
+function filterByPrice(range, element) {
+  document.querySelectorAll('.advanced-filters .filter-tab').forEach(tab => tab.classList.remove('active'));
+  element.classList.add('active');
+
+  const cards = document.querySelectorAll('.product-card');
+  cards.forEach(card => {
+    const priceEl = card.querySelector('.main-price');
+    const xofPrice = parseInt(priceEl.dataset.xof);
+    let show = true;
+
+    switch(range) {
+      case 'low':
+        show = xofPrice < 15000;
+        break;
+      case 'medium':
+        show = xofPrice >= 15000 && xofPrice < 50000;
+        break;
+      case 'high':
+        show = xofPrice >= 50000;
+        break;
+      default:
+        show = true;
+    }
+
+    card.style.display = show ? 'block' : 'none';
+    if (show) {
+      card.style.animation = 'fadeIn 0.3s ease';
+    }
+  });
+}
+
+// Tri des produits
+function sortProducts(criteria) {
+  const grid = document.querySelector('.products-grid');
+  const cards = Array.from(document.querySelectorAll('.product-card'));
+
+  cards.sort((a, b) => {
+    if (criteria === 'price') {
+      const priceA = parseInt(a.querySelector('.main-price').dataset.xof);
+      const priceB = parseInt(b.querySelector('.main-price').dataset.xof);
+      return priceA - priceB;
+    } else if (criteria === 'roi') {
+      const roiA = parseFloat(a.querySelector('.roi-bar-header .value').textContent.replace('%', ''));
+      const roiB = parseFloat(b.querySelector('.roi-bar-header .value').textContent.replace('%', ''));
+      return roiB - roiA; // ROI décroissant
+    }
+    return 0;
+  });
+
+  cards.forEach(card => grid.appendChild(card));
+}
+
+// Calculateur d'investissement
+function toggleCalculator() {
+  const calculator = document.getElementById('investmentCalculator');
+  calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
+
+  if (calculator.style.display === 'block') {
+    updateCalculator();
+  }
+}
+
+function updateCalculator() {
+  const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
+  const days = parseFloat(document.getElementById('calcDays').value) || 120;
+
+  // Calcul basé sur un ROI moyen de 120% sur 120 jours (1% par jour)
+  const dailyReturn = amount * 0.01;
+  const totalReturn = dailyReturn * days;
+
+  const resultEl = document.getElementById('calcResult');
+  resultEl.textContent = `${Math.round(totalReturn).toLocaleString('fr-FR')} ${CURRENCY_SYMBOLS[currentCurrency]}`;
+}
+
+// Mode comparaison
+function toggleComparison() {
+  const cards = document.querySelectorAll('.product-card');
+  const isComparisonMode = document.querySelector('.product-card.selected');
+
+  if (isComparisonMode) {
+    // Quitter le mode comparaison
+    cards.forEach(card => {
+      card.classList.remove('selected');
+      card.querySelector('.product-actions').style.display = 'flex';
+    });
+    selectedProducts.clear();
+  } else {
+    // Entrer en mode comparaison
+    cards.forEach(card => {
+      card.classList.add('comparison-mode');
+      card.addEventListener('click', (e) => {
+        if (!e.target.closest('.product-actions')) {
+          toggleProductSelection(card);
+        }
+      });
+    });
+  }
+}
+
+function toggleProductSelection(card) {
+  const productId = card.querySelector('.btn-buy').href.split('/').pop();
+
+  if (selectedProducts.has(productId)) {
+    selectedProducts.delete(productId);
+    card.classList.remove('selected');
+  } else if (selectedProducts.size < 3) {
+    selectedProducts.add(productId);
+    card.classList.add('selected');
+  }
+
+  updateComparisonDisplay();
+}
+
+function updateComparisonDisplay() {
+  // TODO: Implémenter l'affichage de comparaison détaillée
+  console.log('Produits sélectionnés:', Array.from(selectedProducts));
+}
+
+// Fonctions existantes modifiées
 function showProductDetails(name, price, daily, tier, roi, id) {
   const modal = document.getElementById('productDetailModal');
   const header = document.getElementById('modalHeader');
   const badge = document.getElementById('modalBadge');
-  
+
   // Personnalisation des couleurs selon le Tier
   let gradient = 'linear-gradient(135deg, #6366F1, #8B5CF6)';
   let icon = 'fa-crown';
-  
+
   if (tier === 'starter') { gradient = 'linear-gradient(135deg, #64748B, #475569)'; icon = 'fa-seedling'; }
   if (tier === 'gold') { gradient = 'linear-gradient(135deg, #F59E0B, #D97706)'; icon = 'fa-medal'; }
   if (tier === 'platinum') { gradient = 'linear-gradient(135deg, #3B82F6, #2563EB)'; icon = 'fa-gem'; }
-  
+
   header.style.background = gradient;
   badge.innerHTML = `<i class="fa-solid ${icon}"></i> ${tier.toUpperCase()}`;
-  
+
+  // Conversion des prix selon la devise actuelle
+  const displayPrice = currentCurrency === 'XOF' ? price : convertCurrency(price, 'XOF', currentCurrency);
+  const displayDaily = currentCurrency === 'XOF' ? daily : convertCurrency(daily, 'XOF', currentCurrency);
+  const displayTotal = currentCurrency === 'XOF' ? (daily * 120) : convertCurrency(daily * 120, 'XOF', currentCurrency);
+
   // Remplissage des données
   document.getElementById('modalName').textContent = name;
-  document.getElementById('modalPrice').textContent = price.toLocaleString('fr-FR') + ' XOF';
-  document.getElementById('modalDaily').textContent = '+' + daily.toLocaleString('fr-FR');
-  document.getElementById('modalTotal').textContent = '+' + (daily * 120).toLocaleString('fr-FR');
-  
+  document.getElementById('modalPrice').textContent = displayPrice.toLocaleString('fr-FR') + ' ' + CURRENCY_SYMBOLS[currentCurrency];
+  document.getElementById('modalDaily').textContent = '+' + displayDaily.toLocaleString('fr-FR');
+  document.getElementById('modalTotal').textContent = '+' + displayTotal.toLocaleString('fr-FR');
+
   const roiVal = parseFloat(roi);
   document.getElementById('modalROI').textContent = '+' + roiVal.toFixed(0) + '%';
   document.getElementById('modalROIFill').style.width = Math.min(roiVal / 10, 100) + '%';
-  
+
   // Lien vers la confirmation
   document.getElementById('modalBuyBtn').href = `/produits_rapide/confirmer/${id}`;
-  
+
   TokenFlow.openModal('productDetailModal');
 }
 
 function filterProducts(tier, element) {
   // Update active tab
-  document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.filter-tabs .filter-tab').forEach(tab => tab.classList.remove('active'));
   element.classList.add('active');
 
   // Filter products
@@ -573,14 +1035,77 @@ function filterProducts(tier, element) {
   });
 }
 
-// Add fadeIn animation
+// Événements pour le calculateur
+document.getElementById('calcAmount').addEventListener('input', updateCalculator);
+document.getElementById('calcDays').addEventListener('input', updateCalculator);
+
+// Animation fadeIn
 const style = document.createElement('style');
 style.textContent = `
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  .product-card.comparison-mode .product-actions {
+    display: none;
+  }
+
+  .product-card.selected {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-glow);
+    position: relative;
+  }
+
+  .product-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 10;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+    .currency-selector {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .currency-selector select {
+      width: 100%;
+    }
+
+    .advanced-filters {
+      flex-wrap: wrap;
+    }
+
+    .quick-actions {
+      flex-wrap: wrap;
+    }
+
+    .calculator-inputs {
+      grid-template-columns: 1fr;
+    }
+  }
 `;
 document.head.appendChild(style);
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() {
+  loadPreferredCurrency();
+  updatePrices();
+});
 </script>
 {% endblock %}
