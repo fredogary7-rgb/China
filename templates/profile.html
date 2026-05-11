@@ -1,308 +1,107 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profil | Emirates</title>
+{% extends "base.html" %}
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+{% block title %}Mon Profil | TokenFlow Premium{% endblock %}
 
-<style>
-:root{
-  --primary: #5D5FEF;
-  --primary-light: rgba(93, 95, 239, 0.1);
-  --bg-page: #F4F7FE;
-  --white: #ffffff;
-  --text-dark: #1A202C;
-  --text-muted: #718096;
-  --danger: #FF4D4F;
-}
-
-*{ box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
-
-body{
-  margin:0;
-  min-height:100vh;
-  background-color: var(--bg-page);
-  color: var(--text-dark);
-}
-
-/* APP CONTAINER */
-.app{
-  max-width:480px;
-  margin:auto;
-  padding: 20px 20px 120px;
-}
-
-/* HEADER */
-.header{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  margin-bottom:25px;
-}
-.header i{
-  font-size:18px;
-  cursor:pointer;
-  color: var(--primary);
-  background: var(--white);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-}
-.header h2{
-  margin:0;
-  font-size:18px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-
-/* PROFILE CARD */
-.profile-card{
-  background: var(--white);
-  border-radius: 30px;
-  padding: 30px 20px;
-  text-align: center;
-  border: 1px solid rgba(0,0,0,0.02);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-  margin-bottom: 25px;
-}
-
-.avatar-wrapper {
-    position: relative;
-    width: 90px;
-    height: 90px;
-    margin: 0 auto 15px;
-}
-
-.avatar{
-  width: 100%;
-  height: 100%;
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary);
-  font-size: 32px;
-  color: #fff;
-  box-shadow: 0 10px 20px rgba(93, 95, 239, 0.3);
-}
-
-.badge-status {
-    position: absolute;
-    bottom: -5px;
-    right: -5px;
-    background: #22c55e;
-    color: white;
-    width: 28px;
-    height: 28px;
-    border-radius: 10px;
-    border: 4px solid var(--white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-}
-
-.profile-card h3{
-  margin: 10px 0 5px;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--text-dark);
-}
-
-.profile-card small{
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-/* QUICK ACTIONS */
-.quick-actions{
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 15px;
-  margin-bottom: 25px;
-}
-
-.quick{
-  background: var(--white);
-  border-radius: 20px;
-  padding: 20px 15px;
-  text-align: center;
-  border: 1px solid rgba(0,0,0,0.02);
-  cursor: pointer;
-  transition: 0.2s;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.01);
-}
-
-.quick:active{ transform: scale(0.95); }
-
-.quick i{
-  font-size: 22px;
-  color: var(--primary);
-  margin-bottom: 8px;
-  display: block;
-}
-
-.quick span{
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-dark);
-}
-
-/* MENU LIST */
-.menu-container{
-  background: var(--white);
-  border-radius: 24px;
-  overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.02);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.01);
-}
-
-.menu-item{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 20px;
-  color: var(--text-dark);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
-  border-bottom: 1px solid #F4F7FE;
-  transition: 0.2s;
-}
-
-.menu-item:last-child{ border-bottom: none; }
-.menu-item:active { background-color: #F8FAFC; }
-
-.menu-info{
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.menu-info i{
-  color: var(--primary);
-  font-size: 18px;
-  width: 20px;
-  text-align: center;
-}
-
-.chevron {
-    color: #CBD5E0;
-    font-size: 12px;
-}
-
-/* LOGOUT */
-.logout-btn{
-  margin-top: 25px;
-  background: rgba(255, 77, 79, 0.08);
-  color: var(--danger);
-  text-align: center;
-  padding: 18px;
-  border-radius: 20px;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-weight: 700;
-  font-size: 14px;
-  border: 1px solid rgba(255, 77, 79, 0.1);
-  transition: 0.2s;
-}
-
-.logout-btn:active{ background: rgba(255, 77, 79, 0.15); }
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-  <div class="header">
-    <i class="fa-solid fa-chevron-left" onclick="location.href='/dashboard'"></i>
-    <h2>Mon Profil</h2>
-  </div>
-
-  <div class="profile-card">
-    <div class="avatar-wrapper">
-        <div class="avatar">
-          <i class="fa-solid fa-user-tie"></i>
-        </div>
-        <div class="badge-status">
-            <i class="fa-solid fa-check"></i>
-        </div>
+{% block content %}
+<div class="app-container">
+  <header class="top-header">
+    <div class="brand">
+      <a href="/dashboard" style="display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-arrow-left" style="color: var(--text-secondary); font-size: 18px;"></i>
+      </a>
+      <div class="brand-logo">T</div>
+      <span class="brand-name">TokenFlow</span>
     </div>
-    <h3>{{ user.phone }}</h3>
-    <small>Membre Emirates Premium</small>
-  </div>
+    <button class="icon-btn" onclick="toggleDarkMode()">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+  </header>
 
-  <div class="quick-actions">
-    <div class="quick" onclick="location.href='/deposit'">
-      <i class="fa-solid fa-wallet"></i>
-      <span>Recharger</span>
+  <div class="glass-card text-center mb-3" style="padding: 32px 20px;">
+    <div class="sidebar-avatar" style="width: 80px; height: 80px; margin: 0 auto 16px; font-size: 32px;">
+      {{ user.phone[0] }}
     </div>
-    <div class="quick" onclick="location.href='/retrait'">
-      <i class="fa-solid fa-hand-holding-dollar"></i>
-      <span>Retirer</span>
+    <h3 style="font-size: 20px; font-weight: 800; color: var(--text-primary);">{{ user.phone }}</h3>
+    <div class="vip-badge gold" style="margin-top: 8px;">
+      <i class="fa-solid fa-crown"></i> Membre Gold
     </div>
   </div>
 
-  <div class="menu-container">
-    <a href="/historique" class="menu-item">
-      <div class="menu-info">
-        <i class="fa-solid fa-receipt"></i>
-        <span>Historique des transactions</span>
-      </div>
-      <i class="fa-solid fa-chevron-right chevron"></i>
+  <div class="actions-grid mb-3">
+    <a href="/deposit" class="action-item">
+      <div class="action-icon deposit"><i class="fa-solid fa-wallet"></i></div>
+      <span class="action-label">Recharger</span>
     </a>
-
-    <a href="/nous" class="menu-item">
-      <div class="menu-info">
-        <i class="fa-solid fa-circle-info"></i>
-        <span>À propos d'Emirates</span>
-      </div>
-      <i class="fa-solid fa-chevron-right chevron"></i>
+    <a href="/retrait" class="action-item">
+      <div class="action-icon withdraw"><i class="fa-solid fa-money-bill-transfer"></i></div>
+      <span class="action-label">Retirer</span>
     </a>
-
-    <a href="/rules" class="menu-item">
-      <div class="menu-info">
-        <i class="fa-solid fa-file-shield"></i>
-        <span>Conditions & règles</span>
-      </div>
-      <i class="fa-solid fa-chevron-right chevron"></i>
+    <a href="/team" class="action-item">
+      <div class="action-icon invest"><i class="fa-solid fa-users"></i></div>
+      <span class="action-label">Réseau</span>
     </a>
-
-    <a href="https://t.me/Emirates_agent01?text=Salut%20Emirates%20Service%20Client" target="_blank" class="menu-item">
-      <div class="menu-info">
-        <i class="fa-brands fa-whatsapp"></i>
-        <span>Service Client Telegram</span>
-      </div>
-      <i class="fa-solid fa-chevron-right chevron"></i>
-    </a>
-
-    <a href="https://whatsapp.com/channel/0029Vb7ch7aJkK7EmCeivu2z" target="_blank" class="menu-item">
-      <div class="menu-info">
-        <i class="fa-solid fa-users-viewfinder"></i>
-        <span>Communauté Emirates</span>
-      </div>
-      <i class="fa-solid fa-chevron-right chevron"></i>
+    <a href="/achats" class="action-item">
+      <div class="action-icon history"><i class="fa-solid fa-briefcase"></i></div>
+      <span class="action-label">Invests</span>
     </a>
   </div>
 
-  <a href="/logout" class="logout-btn">
-    <i class="fa-solid fa-power-off"></i> Se déconnecter
+  <div class="transactions-card">
+    <a href="/historique" class="transaction-item">
+      <div class="transaction-left">
+        <div class="transaction-icon info"><i class="fa-solid fa-receipt"></i></div>
+        <div class="transaction-info"><b>Historique financier</b><span>Dépôts, retraits et gains</span></div>
+      </div>
+      <i class="fa-solid fa-chevron-right text-muted"></i>
+    </a>
+
+    <a href="/nous" class="transaction-item">
+      <div class="transaction-left">
+        <div class="transaction-icon info"><i class="fa-solid fa-circle-info"></i></div>
+        <div class="transaction-info"><b>À propos de nous</b><span>Notre vision et sécurité</span></div>
+      </div>
+      <i class="fa-solid fa-chevron-right text-muted"></i>
+    </a>
+
+    <a href="/rules" class="transaction-item">
+      <div class="transaction-left">
+        <div class="transaction-icon info"><i class="fa-solid fa-file-shield"></i></div>
+        <div class="transaction-info"><b>Conditions d'utilisation</b><span>Règles et conformité</span></div>
+      </div>
+      <i class="fa-solid fa-chevron-right text-muted"></i>
+    </a>
+
+    <a href="/support" class="transaction-item">
+      <div class="transaction-left">
+        <div class="transaction-icon info"><i class="fa-solid fa-headset"></i></div>
+        <div class="transaction-info"><b>Aide & Support</b><span>Chat en ligne 24/7</span></div>
+      </div>
+      <i class="fa-solid fa-chevron-right text-muted"></i>
+    </a>
+  </div>
+
+  <a href="/logout" class="btn-primary" style="display: block; text-align: center; background: var(--danger-gradient); margin-top: 24px; text-decoration: none;">
+    <i class="fa-solid fa-power-off"></i> Déconnexion sécurisée
   </a>
-
 </div>
 
-</body>
-</html>
-
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+  <a href="/dashboard" class="nav-item">
+    <i class="fa-solid fa-house"></i>
+    <span>Accueil</span>
+  </a>
+  <a href="/produits_rapide" class="nav-item">
+    <i class="fa-solid fa-rocket"></i>
+    <span>Investir</span>
+  </a>
+  <a href="/team" class="nav-item">
+    <i class="fa-solid fa-users"></i>
+    <span>Réseau</span>
+  </a>
+  <a href="/profile" class="nav-item active">
+    <i class="fa-solid fa-user"></i>
+    <span>Profil</span>
+  </a>
+</nav>
+{% endblock %}

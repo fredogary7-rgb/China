@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI Assistant | TokenFlow</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --primary: #6366F1;
+  --primary-light: rgba(99, 102, 241, 0.1);
+  --bg-page: #F1F5F9;
+  --white: #FFFFFF;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --border-color: rgba(148, 163, 184, 0.2);
+  --user-msg-bg: #6366F1;
+  --ai-msg-bg: #F1F5F9;
+}
+
+* { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+body {
+  margin: 0;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.chat-header {
+  background: var(--white);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.back-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: var(--bg-page);
+  color: var(--text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-info {
+  flex: 1;
+}
+
+.header-info h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.header-info span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.ai-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+}
+
+/* Chat Messages */
+.chat-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message {
+  display: flex;
+  gap: 12px;
+  max-width: 85%;
+  animation: messageIn 0.3s ease;
+}
+
+@keyframes messageIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message.ai {
+  align-self: flex-start;
+}
+
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.message.ai .message-avatar {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  color: white;
+}
+
+.message.user .message-avatar {
+  background: var(--text-muted);
+  color: white;
+}
+
+.message-content {
+  padding: 14px 18px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.message.ai .message-content {
+  background: var(--ai-msg-bg);
+  border-bottom-left-radius: 4px;
+  color: var(--text-primary);
+}
+
+.message.user .message-content {
+  background: var(--user-msg-bg);
+  border-bottom-right-radius: 4px;
+  color: white;
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+  0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+  30% { opacity: 1; transform: scale(1); }
+}
+
+/* Quick Questions */
+.quick-questions {
+  padding: 0 20px 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.quick-btn {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  background: var(--white);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.quick-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Input Area */
+.input-area {
+  background: var(--white);
+  padding: 12px 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-top: 1px solid var(--border-color);
+}
+
+.input-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  background: var(--bg-page);
+}
+
+.input-wrapper input:focus {
+  border-color: var(--primary);
+}
+
+.send-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.send-btn:hover {
+  transform: scale(1.05);
+}
+
+.send-btn:active {
+  transform: scale(0.95);
+}
+
+/* Welcome message */
+.welcome-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  margin: 20px;
+}
+
+.welcome-card .ai-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  margin: 0 auto 16px;
+  font-size: 28px;
+}
+
+.welcome-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.welcome-card p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+</style>
+</head>
+<body>
+
+<div class="chat-header">
+  <button class="back-btn" onclick="history.back()">
+    <i class="fa-solid fa-chevron-left"></i>
+  </button>
+  <div class="ai-avatar">
+    <i class="fa-solid fa-robot"></i>
+  </div>
+  <div class="header-info">
+    <h2>TokenFlow AI</h2>
+    <span>Assistant intelligent 24/7</span>
+  </div>
+</div>
+
+<div class="chat-container" id="chatContainer">
+  <div class="welcome-card">
+    <div class="ai-avatar">
+      <i class="fa-solid fa-robot"></i>
+    </div>
+    <h3>Bonjour ! 👋</h3>
+    <p>Je suis l'assistant IA de TokenFlow. Posez-moi toutes vos questions sur la plateforme, les investissements, les retraits, le parrainage, etc.</p>
+  </div>
+</div>
+
+<div class="quick-questions">
+  <button class="quick-btn" onclick="sendQuick('Comment fonctionne TokenFlow ?')">Comment ça marche ?</button>
+  <button class="quick-btn" onclick="sendQuick('Comment retirer mes gains ?')">Retrait des gains</button>
+  <button class="quick-btn" onclick="sendQuick('Quels sont les plans d\'investissement ?')">Plans d'investissement</button>
+  <button class="quick-btn" onclick="sendQuick('Comment fonctionne le parrainage ?')">Parrainage</button>
+</div>
+
+<div class="input-area">
+  <div class="input-wrapper">
+    <input type="text" id="messageInput" placeholder="Posez votre question..." onkeypress="handleKeyPress(event)">
+  </div>
+  <button class="send-btn" onclick="sendMessage()">
+    <i class="fa-solid fa-paper-plane"></i>
+  </button>
+</div>
+
+<script>
+// Base de connaissances pour l'IA
+const knowledgeBase = {
+  greetings: {
+    keywords: ['bonjour', 'salut', 'coucou', 'hello', 'hi'],
+    responses: [
+      'Bonjour ! 👋 Comment puis-je vous aider aujourd\'hui ?',
+      'Salut ! Je suis là pour répondre à toutes vos questions sur TokenFlow.',
+      'Hello ! Bienvenue sur TokenFlow. Que puis-je faire pour vous ?'
+    ]
+  },
+  howItWorks: {
+    keywords: ['comment', 'fonctionne', 'marche', 'utilise', 'utiliser'],
+    responses: [
+      'TokenFlow fonctionne en 3 étapes simples :\n\n1️⃣ Inscrivez-vous avec votre numéro de téléphone\n2️⃣ Effectuez un dépôt minimum de 3000 FCFA\n3️⃣ Choisissez un plan d\'investissement et commencez à gagner !\n\nNos plans offrent des rendements journaliers allant jusqu\'à 10%.'
+    ]
+  },
+  withdrawal: {
+    keywords: ['retrait', 'retirer', 'gains', 'argent', 'payer'],
+    responses: [
+      'Pour retirer vos gains :\n\n1. Allez dans la section "Retrait"\n2. Configurez votre portefeuille Mobile Money\n3. Entrez le montant (minimum 1000 FCFA)\n4. Confirmez la transaction\n\n⏱️ Les retraits sont traités en 24-48h.'
+    ]
+  },
+  investment: {
+    keywords: ['investissement', 'plan', 'investir', 'pack', 'vip'],
+    responses: [
+      'TokenFlow propose 8 plans d\'investissement :\n\n🥉 Fly 1 : 4 000 FCFA → 400 FCFA/jour\n🥈 Fly 2 : 8 000 FCFA → 800 FCFA/jour\n🥇 Fly 3 : 10 000 FCFA → 1 000 FCFA/jour\n💎 Fly 4 : 15 000 FCFA → 1 500 FCFA/jour\n🏆 Fly 5 : 20 000 FCFA → 2 000 FCFA/jour\n👑 Fly 6 : 50 000 FCFA → 5 000 FCFA/jour\n⭐ Fly 7 : 100 000 FCFA → 10 000 FCFA/jour\n🚀 Fly 8 : 200 000 FCFA → 20 000 FCFA/jour\n\nDurée : 120 jours. Rendement total jusqu\'à 1200% !'
+    ]
+  },
+  referral: {
+    keywords: ['parrainage', 'parrain', 'filleul', 'commission', 'réseau'],
+    responses: [
+      'Le programme de parrainage TokenFlow vous permet de gagner :\n\n🥇 Niveau 1 : 27% sur les dépôts de vos filleuls directs\n🥈 Niveau 2 : 2% sur les dépôts des filleuls de niveau 2\n🥉 Niveau 3 : 1% sur les dépôts des filleuls de niveau 3\n\nPartagez votre lien de parrainage et construisez votre équipe !'
+    ]
+  },
+  deposit: {
+    keywords: ['dépôt', 'deposer', 'ajouter', 'fonds', 'charger'],
+    responses: [
+      'Pour déposer des fonds :\n\n1. Allez dans "Dépôt"\n2. Choisissez le montant (min. 3000 FCFA)\n3. Sélectionnez votre pays et opérateur Mobile Money\n4. Validez le paiement\n\nVotre solde sera crédité automatiquement après confirmation.'
+    ]
+  },
+  bonus: {
+    keywords: ['bonus', 'cadeau', 'gratuit', 'offre', 'promotion'],
+    responses: [
+      '🎁 Bonus de bienvenue TokenFlow :\n\n• 1 000 FCFA offerts à l\'inscription\n• Pas de dépôt requis pour commencer\n• Seuil de retrait : 1 000 FCFA\n\nProfitez-en pour découvrir la plateforme sans risque !'
+    ]
+  },
+  security: {
+    keywords: ['sécurité', 'sécurisé', 'fiable', 'confiance', 'arnaque'],
+    responses: [
+      'TokenFlow est une plateforme 100% sécurisée :\n\n✅ Technologie blockchain\n✅ Cryptage SSL 256-bit\n✅ Équipe vérifiée et transparente\n✅ Paiements automatiques garantis\n✅ Support client 24/7\n\nDes milliers d\'utilisateurs nous font confiance !'
+    ]
+  },
+  support: {
+    keywords: ['support', 'aide', 'contact', 'contacter', 'problème'],
+    responses: [
+      'Notre équipe support est disponible 24/7 :\n\n📧 Via le chat de support dans l\'application\n📱 Telegram : @TokenFlow_support\n🌐 Canal officiel : t.me/TokenFlow\n\nNous répondons généralement en moins de 2 heures !'
+    ]
+  },
+  thanks: {
+    keywords: ['merci', 'remercie', 'super', 'génial', 'excellent'],
+    responses: [
+      'Avec plaisir ! 😊 N\'hésitez pas si vous avez d\'autres questions.',
+      'Je suis là pour ça ! Bonne continuation sur TokenFlow ! 🚀',
+      'Ravi d\'avoir pu vous aider ! 💜'
+    ]
+  },
+  default: {
+    responses: [
+      'Je suis une IA spécialisée dans TokenFlow. Je peux vous aider avec :\n• Les investissements\n• Les retraits\n• Le parrainage\n• Les dépôts\n• La sécurité\n\nPosez-moi une question précise ! 😊',
+      'Je n\'ai pas compris votre question. Pouvez-vous reformuler ou choisir une question rapide ci-dessous ? 🤔',
+      'Hmm, je ne suis pas sûr de comprendre. Essayez une autre formulation ou cliquez sur les boutons de questions rapides ! 💭'
+    ]
+  }
+};
+
+function getAIResponse(message) {
+  const lowerMsg = message.toLowerCase();
+  
+  for (const [category, data] of Object.entries(knowledgeBase)) {
+    if (category === 'default') continue;
+    if (data.keywords.some(keyword => lowerMsg.includes(keyword))) {
+      return data.responses[Math.floor(Math.random() * data.responses.length)];
+    }
+  }
+  
+  return knowledgeBase.default.responses[Math.floor(Math.random() * knowledgeBase.default.responses.length)];
+}
+
+function addMessage(text, isUser = false) {
+  const container = document.getElementById('chatContainer');
+  
+  // Remove welcome card if exists
+  const welcome = container.querySelector('.welcome-card');
+  if (welcome) welcome.remove();
+  
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+  messageDiv.innerHTML = `
+    <div class="message-avatar">
+      <i class="fa-solid ${isUser ? 'fa-user' : 'fa-robot'}"></i>
+    </div>
+    <div class="message-content">${text.replace(/\n/g, '<br>')}</div>
+  `;
+  
+  container.appendChild(messageDiv);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping() {
+  const container = document.getElementById('chatContainer');
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'message ai';
+  typingDiv.id = 'typingMessage';
+  typingDiv.innerHTML = `
+    <div class="message-avatar">
+      <i class="fa-solid fa-robot"></i>
+    </div>
+    <div class="message-content">
+      <div class="typing-indicator">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  `;
+  container.appendChild(typingDiv);
+  container.scrollTop = container.scrollHeight;
+}
+
+function sendMessage() {
+  const input = document.getElementById('messageInput');
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  addMessage(message, true);
+  input.value = '';
+  
+  // Show typing indicator
+  showTyping();
+  
+  // Simulate AI response delay
+  setTimeout(() => {
+    const typingMsg = document.getElementById('typingMessage');
+    if (typingMsg) typingMsg.remove();
+    
+    const response = getAIResponse(message);
+    addMessage(response);
+  }, 1000 + Math.random() * 1000);
+}
+
+function sendQuick(question) {
+  const input = document.getElementById('messageInput');
+  input.value = question;
+  sendMessage();
+}
+
+function handleKeyPress(event) {
+  if (event.key === 'Enter') {
+    sendMessage();
+  }
+}
+</script>
+
+</body>
+</html>

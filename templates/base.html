@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6366F1">
+    <meta name="description" content="TokenFlow - Plateforme d'investissement et de trading premium">
+    <title>{% block title %}TokenFlow{% endblock %}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Fintech CSS Framework -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fintech.css') }}">
+    
+    <!-- Additional CSS for specific pages -->
+    {% block extra_css %}{% endblock %}
+    
+    <style>
+        /* Page-specific overrides */
+        {% block page_styles %}{% endblock %}
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        {% if message is mapping %}
+                            showToast('{{ message.title }}', '{{ category }}');
+                            setTimeout(() => showToast('{{ message.message }}', 'info'), 500);
+                        {% else %}
+                            showToast('{{ message }}', '{{ category }}');
+                        {% endif %}
+                    });
+                </script>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+    
+    <!-- Fintech JavaScript -->
+    <script src="{{ url_for('static', filename='js/fintech.js') }}"></script>
+    
+    <!-- Page-specific JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,15 +1,16 @@
-from flask import jsonify
 import os
-from dotenv import load_dotenv
-from werkzeug.utils import secure_filename
-from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
+import threading
+import time
 import uuid
 from datetime import datetime, timedelta
+from functools import wraps
 from urllib.parse import urlencode
+import re
+
+from dotenv import load_dotenv
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, abort
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func, text, distinct
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = "ma_cle_ultra_secrete"
@@ -316,7 +317,7 @@ def connexion_page():
 
         flash({
             "title": "Connexion réussie",
-            "message": "Bienvenue sur Emirates !"
+            "message": "Bienvenue sur TokenFlow !"
         }, "success")
 
         return redirect(url_for("dashboard_page"))
@@ -355,10 +356,47 @@ def dashboard_page():
     # 🔥 Revenu cumulé = commissions + revenus investissements
     revenu_cumule = (user.solde_parrainage or 0) + (user.solde_revenu or 0)
 
+    # --- Préparation des données pour le dashboard moderne ---
+    investissements_actifs = []
+    now = datetime.utcnow()
+    actifs_raw = Investissement.query.filter_by(phone=phone, actif=True).all()
+    
+    for inv in actifs_raw:
+        jours_passes = (now - inv.date_debut).days
+        progression = min(int((jours_passes / inv.duree) * 100), 100) if inv.duree > 0 else 100
+        investissements_actifs.append({
+            "nom_produit": f"Plan Fly {int(inv.montant)}",
+            "montant": inv.montant,
+            "revenu_journalier": inv.revenu_journalier,
+            "jours_restants": max(inv.duree - jours_passes, 0),
+            "progression": progression
+        })
+    
+    # Historique simplifié pour le dashboard
+    transactions_recentes = []
+    recent_depots = Depot.query.filter_by(phone=phone).order_by(Depot.date.desc()).limit(3).all()
+    for d in recent_depots:
+        transactions_recentes.append({
+            "type": "deposit", "icon": "fa-plus", "description": "Dépôt de fonds",
+            "date": d.date.strftime("%d %b"), "montant": d.montant, "amount_type": "plus"
+        })
+    
+    recent_retraits = Retrait.query.filter_by(phone=phone).order_by(Retrait.date.desc()).limit(3).all()
+    for r in recent_retraits:
+        transactions_recentes.append({
+            "type": "withdraw", "icon": "fa-paper-plane", "description": "Retrait de fonds",
+            "date": r.date.strftime("%d %b"), "montant": r.montant, "amount_type": "minus"
+        })
+    
+    # On trie et on injecte dans l'objet user pour le template
+    user.investissements_actifs = sorted(investissements_actifs, key=lambda x: x['progression'], reverse=True)
+    user.transactions_recentes = sorted(transactions_recentes, key=lambda x: x['date'], reverse=True)[:5]
+    user.team_members = User.query.filter_by(parrain=phone).count()
+
     return render_template(
         "dashboard.html",
         user=user,
-        revenu_cumule=revenu_cumule,  # 🔥 envoi au HTML
+        revenu_cumule=revenu_cumule,
         total_users=total_users,
         total_invested=total_invested,
     )
@@ -367,8 +405,11 @@ def dashboard_page():
 def admin_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not current_user.is_authenticated or not getattr(current_user, "is_admin", False):
-            abort(403)
+        phone = session.get("phone")
+        user = User.query.filter_by(phone=phone).first() if phone else None
+        if not user or not user.is_admin:
+            flash("Accès réservé aux administrateurs.", "danger")
+            return redirect(url_for("connexion_page"))
         return f(*args, **kwargs)
     return decorated
 
@@ -514,29 +555,52 @@ def create_deposit():
     country = request.form.get("country")
     operator = request.form.get("operator")
     fullname = request.form.get("fullname", "Utilisateur")
+    card_holder = request.form.get("card_holder", "").strip()
+    card_number = request.form.get("card_number", "").strip()
+    card_expiry = request.form.get("card_expiry", "").strip()
+    card_cvc = request.form.get("card_cvc", "").strip()
 
-    if montant < 3000:
-        return jsonify({"error": "Montant minimum 3000 FCFA"}), 400
-
-    if not all([phone_paiement, country, operator]):
-        return jsonify({"error": "Tous les champs sont requis"}), 400
+    # Détermination du lien et validation du montant
+    if operator == "Stripe":
+        if montant < 6000:
+            return jsonify({"error": "Montant minimum 10 USD (6 000 XOF) pour le paiement par carte"}), 400
+        if not all([card_holder, card_number, card_expiry, card_cvc]):
+            return jsonify({"error": "Tous les champs de carte sont requis pour le paiement Stripe"}), 400
+        fullname = card_holder
+        if not card_number.replace(" ", "").isdigit() or not 12 <= len(card_number.replace(" ", "")) <= 19:
+            return jsonify({"error": "Numéro de carte invalide"}), 400
+        if not re.match(r'^(0[1-9]|1[0-2])\/(\d{2})$', card_expiry):
+            return jsonify({"error": "Date d'expiration invalide. Format MM/AA"}), 400
+        if not card_cvc.isdigit() or len(card_cvc) not in [3, 4]:
+            return jsonify({"error": "CVC invalide"}), 400
+        payment_link = "https://buy.stripe.com/test_7sY14mePmbMJ9Ki2518Zq00"
+        masked_card = card_number.replace(" ", "")
+        if len(masked_card) >= 4:
+            reference = f"Stripe ****{masked_card[-4:]}"
+        else:
+            reference = "Stripe"
+    else:
+        if montant < 3000:
+            return jsonify({"error": "Montant minimum 3000 FCFA pour Mobile Money"}), 400
+        if not all([phone_paiement, country, operator]):
+            return jsonify({"error": "Tous les champs sont requis pour le paiement mobile"}), 400
+        payment_link = "https://my.moneyfusion.net/69c436255b5e887878b20c60"
+        reference = None
 
     # Sauvegarde dans la base de données
     depot = Depot(
         phone=phone,
-        phone_paiement=phone_paiement,
+        phone_paiement=phone_paiement if operator != "Stripe" else "STRIPE_CARD",
         fullname=fullname,
         operator=operator,
-        country=country,
+        country=country if operator != "Stripe" else "International",
         montant=montant,
+        reference=reference,
         statut="pending"
     )
 
     db.session.add(depot)
     db.session.commit()
-
-    # Lien vers ta plateforme de paiement externe
-    payment_link = "https://my.moneyfusion.net/69c436255b5e887878b20c60"
 
     return jsonify({"url": payment_link})
 
@@ -567,7 +631,7 @@ def support_page():
         user_phone=phone
     ).order_by(SupportMessage.created_at.asc()).all()
 
-    return render_template("support/chat.html", messages=messages)
+    return render_template("support_chat.html", messages=messages)
 
 
 @app.route("/admin/support")
@@ -606,7 +670,7 @@ def admin_support_chat(phone):
     db.session.commit()
 
     return render_template(
-        "admin/support_chat.html",
+        "support_chat.html",
         messages=messages,
         phone=phone
     )
@@ -700,6 +764,11 @@ def wallet_setup_page():
 @app.route("/nous")
 def nous_page():
     return render_template("nous.html")
+
+@app.route("/ai-chat")
+@login_required
+def ai_chat_page():
+    return render_template("ai_chat.html")
 
 
 PRODUITS_VIP = [
@@ -1310,4 +1379,10 @@ def paiement_quotidien():
 
 
 if __name__ == "__main__":
+    # Lancement du système de paiement automatique en arrière-plan
+    # Cela permet de créditer les gains toutes les 24h sans action manuelle
+    bg_thread = threading.Thread(target=paiement_quotidien, daemon=True)
+    bg_thread.start()
+    print("🚀 Serveur TokenFlow démarré sur http://127.0.0.1:5000")
+    print("⚙️  Système de paiement automatique activé.")
     app.run(debug=True, host="0.0.0.0")

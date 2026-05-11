@@ -1,215 +1,380 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion | Emirates</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #5D5FEF;
-            --bg-page: #F4F7FE;
-            --white: #ffffff;
-            --text-dark: #1A202C;
-            --text-muted: #718096;
-            --success: #27AE60;
-            --danger: #EB5757;
-        }
+{% extends "base.html" %}
 
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+{% block title %}Connexion | TokenFlow{% endblock %}
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--bg-page);
-            padding: 20px;
-        }
+{% block page_styles %}
+/* Full page trading-themed background */
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
 
-        .container {
-            width: 100%;
-            max-width: 420px;
-            background: var(--white);
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.02);
-        }
+/* Auth Container */
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+}
 
-        /* Bannière Image Emirates mise à jour */
-        .banner { 
-            width: 100%; 
-            height: 180px; 
-            position: relative;
-            background: #1e1e1e; /* Fond de secours */
-        }
-        
-        .banner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* L'image couvrira toute la zone sans être déformée */
-        }
+/* Logo & Header */
+.auth-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
 
-        /* Overlay optionnel pour faire ressortir le texte si tu veux en rajouter sur l'image */
-        .banner-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.3));
-        }
+.auth-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 28px;
+  font-weight: 900;
+  margin: 0 auto 16px;
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
 
-        .content { padding: 30px; }
-        
-        h1 { 
-            color: var(--text-dark); 
-            font-size: 22px; 
-            font-weight: 800; 
-            margin-bottom: 8px; 
-            text-align: center;
-        }
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-            text-align: center;
-            margin-bottom: 25px;
-            display: block;
-        }
+.auth-header h1 {
+  font-size: 24px;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 8px;
+}
 
-        .flash { padding: 12px 15px; border-radius: 12px; margin-bottom: 20px; font-size: 13px; font-weight: 600; text-align: center; }
-        .flash.danger { background: #FFF5F5; color: var(--danger); border: 1px solid #FED7D7; }
-        .flash.success { background: #F0FFF4; color: var(--success); border: 1px solid #C6F6D5; }
+.auth-header p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
 
-        .input-group {
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            border-radius: 14px;
-            margin-bottom: 16px;
-            padding: 2px 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: 0.3s;
-        }
-        .input-group:focus-within {
-            border-color: var(--primary);
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
-        }
+/* Form Card */
+.auth-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-2xl);
+  padding: 32px 24px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+}
 
-        .input-group i { color: var(--primary); font-size: 16px; width: 20px; text-align: center; }
+.auth-card h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  text-align: center;
+}
 
-        .input-group input, .input-group select {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text-dark);
-            width: 100%;
-            padding: 12px 0;
-            font-size: 14px;
-            font-weight: 600;
-        }
+/* Form Groups */
+.form-group {
+  margin-bottom: 20px;
+}
 
-        .btn-login-submit {
-            width: 100%;
-            padding: 16px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 800;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 10px 20px rgba(93, 95, 239, 0.2);
-            transition: 0.3s;
-        }
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
-        .btn-login-submit:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 12px 25px rgba(93, 95, 239, 0.3);
-        }
+.form-group .input-wrapper {
+  position: relative;
+}
 
-        .footer-box {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #EDF2F7;
-            text-align: center;
-        }
-        .footer-text { color: var(--text-muted); font-size: 14px; font-weight: 500; margin-bottom: 12px; }
-        
-        .btn-register-link {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 14px;
-            display: inline-block;
-        }
-    </style>
-</head>
-<body>
+.form-group .input-wrapper i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 16px;
+  pointer-events: none;
+}
 
-<div class="container">
-    <div class="banner">
-        <img src="{{ url_for('static', filename='images/e2.jpg') }}" alt="Emirates">
-        <div class="banner-overlay"></div>
-    </div>
+.form-group input {
+  width: 100%;
+  padding: 14px 16px 14px 46px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+}
 
-    <div class="content">
-        <h1>Bon retour</h1>
-        <span class="subtitle">Accédez à votre espace membre</span>
+.form-group input:focus {
+  border-color: var(--primary);
+  background: var(--bg-card-solid);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, msg in messages %}
-              <div class="flash {{ category }}">{{ msg }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+.form-group input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
 
-        <form method="POST">
-            <div class="input-group">
-                <i class="fa-solid fa-earth-africa"></i>
-                <select name="pays" required>
-                    <option value="" disabled selected>Choisir mon pays</option>
-                    <option value="Bénin">🇧🇯 Bénin</option>
-                    <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
-                    <option value="Cameroun">🇨🇲 Cameroun</option>
-                    <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
-                    <option value="Gabon">🇬🇦 Gabon</option>
-                    <option value="Guinée">🇬🇳 Guinée</option>
-                    <option value="Mali">🇲🇱 Mali</option>
-                    <option value="Niger">🇳🇪 Niger</option>
-                    <option value="Sénégal">🇸🇳 Sénégal</option>
-                    <option value="Togo">🇹🇬 Togo</option>
-                </select>
-            </div>
+/* Password toggle */
+.password-toggle {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+}
 
-            <div class="input-group">
-                <i class="fa-solid fa-phone"></i>
-                <input type="tel" name="phone" placeholder="Numéro de téléphone" required>
-            </div>
+.password-toggle:hover {
+  color: var(--primary);
+}
 
-            <div class="input-group">
-                <i class="fa-solid fa-lock"></i>
-                <input type="password" name="password" placeholder="Mot de passe" required>
-            </div>
+/* Remember & Forgot */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
 
-            <button type="submit" class="btn-login-submit">
-                Se connecter
-            </button>
-        </form>
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
 
-        <div class="footer-box">
-            <div class="footer-text">Nouveau sur Emirates ?</div>
-            <a href="{{ url_for('inscription_page') }}" class="btn-register-link">
-                Créer un compte gratuitement
-            </a>
+.remember-me input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.forgot-link {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* Submit Button */
+.btn-submit {
+  width: 100%;
+  padding: 16px;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 8px 24px var(--primary-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px var(--primary-glow);
+}
+
+.btn-submit:active {
+  transform: scale(0.98);
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.divider span {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Social Login */
+.social-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.social-btn {
+  padding: 12px;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.social-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* Footer */
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.auth-footer a {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Security badge */
+.security-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.security-badge i {
+  color: var(--success);
+}
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-header">
+    <div class="auth-logo">T</div>
+    <h1>TokenFlow</h1>
+    <p>Connectez-vous à votre espace</p>
+  </div>
+
+  <div class="auth-card">
+    <h2>Bienvenue 👋</h2>
+
+    <form method="POST" action="/connexion">
+      <div class="form-group">
+        <label>Numéro de téléphone</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-phone"></i>
+          <input type="tel" name="phone" placeholder="Votre numéro" required>
         </div>
+      </div>
+
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" name="password" placeholder="Votre mot de passe" required>
+          <button type="button" class="password-toggle" onclick="togglePassword(this)">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox" name="remember">
+          Se souvenir de moi
+        </label>
+        <a href="#" class="forgot-link">Mot de passe oublié ?</a>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <i class="fa-solid fa-right-to-bracket"></i>
+        Se connecter
+      </button>
+    </form>
+
+    <div class="divider">
+      <span>ou continuer avec</span>
     </div>
+
+    <div class="social-buttons">
+      <button class="social-btn">
+        <i class="fa-brands fa-google" style="color: #DB4437;"></i>
+        Google
+      </button>
+      <button class="social-btn">
+        <i class="fa-brands fa-apple"></i>
+        Apple
+      </button>
+    </div>
+
+    <div class="security-badge">
+      <i class="fa-solid fa-shield-halved"></i>
+      Connexion sécurisée et cryptée
+    </div>
+  </div>
+
+  <div class="auth-footer">
+    Pas encore de compte ? <a href="/inscription">S'inscrire</a>
+  </div>
 </div>
+{% endblock %}
 
-</body>
-</html>
-
+{% block extra_js %}
+<script>
+function togglePassword(btn) {
+  const input = btn.parentElement.querySelector('input');
+  const icon = btn.querySelector('i');
+  
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'fa-solid fa-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'fa-solid fa-eye';
+  }
+}
+</script>
+{% endblock %}

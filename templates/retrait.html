@@ -1,329 +1,518 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Retrait | Emirates</title>
+{% extends "base.html" %}
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+{% block title %}Retrait | TokenFlow{% endblock %}
 
-<style>
-:root{
-  --primary: #5D5FEF;
-  --primary-light: rgba(93, 95, 239, 0.1);
-  --bg-page: #F4F7FE;
-  --white: #ffffff;
-  --text-dark: #1A202C;
-  --text-muted: #718096;
-  --error: #FF4D4F;
-  --success: #22c55e;
+{% block page_styles %}
+/* Trading-themed background - uses CSS gradients from fintech.css */
+
+/* Balance cards */
+.balance-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-*{ box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
-
-body{
-  margin:0;
-  min-height:100vh;
-  background-color: var(--bg-page);
-  color: var(--text-dark);
+.balance-card {
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  backdrop-filter: blur(12px);
 }
 
-.app{
-  max-width:480px;
-  margin:auto;
-  padding: 20px 20px 120px;
+.balance-card.primary {
+  background: var(--secondary-gradient);
+  color: white;
+  border: none;
 }
 
-/* HEADER */
-.header{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  margin-bottom:25px;
+.balance-card .label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+  margin-bottom: 8px;
 }
-.header i{
-  font-size:18px;
-  color: var(--primary);
-  background: var(--white);
-  width: 40px;
-  height: 40px;
+
+.balance-card .value {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.balance-card .sub {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+/* Wallet info */
+.wallet-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  margin-bottom: 24px;
+  backdrop-filter: blur(12px);
+}
+
+.wallet-info .icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: var(--primary-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-}
-.header span{
-  font-size:18px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  font-size: 24px;
+  color: white;
+  flex-shrink: 0;
 }
 
-/* HERO CARD */
-.hero{
-  background: var(--white);
-  border-radius: 30px;
-  padding: 25px;
-  text-align: center;
-  border: 1px solid rgba(0,0,0,0.02);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-  margin-bottom: 25px;
-  background: linear-gradient(135deg, var(--white), #f9faff);
+.wallet-info .details {
+  flex: 1;
 }
-.hero span {
-  font-size: 13px;
-  font-weight: 700;
+
+.wallet-info .details .label {
+  font-size: 11px;
   color: var(--text-muted);
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
-.hero h2{ 
-  margin: 10px 0 0; 
-  font-size: 32px; 
+
+.wallet-info .details .value {
+  font-size: 16px;
   font-weight: 800;
-  color: var(--primary); 
+  color: var(--text-primary);
+  margin-top: 4px;
 }
 
-/* SECTIONS */
-.section{
-  background: var(--white);
-  border-radius: 24px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.01);
-  border: 1px solid rgba(0,0,0,0.02);
-}
-
-.section h3{ 
-  margin: 0 0 15px; 
-  font-size: 14px; 
-  font-weight: 800;
-  color: var(--text-dark); 
-}
-
-.wallet-box{
-  display:flex;
-  align-items:center;
-  gap: 15px;
-  padding:15px;
-  border-radius:18px;
+.wallet-info .edit-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   background: var(--bg-page);
-  border: 1px dashed var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+  transition: all var(--transition-fast);
 }
-.wallet-box i {
-  font-size: 20px;
+
+.wallet-info .edit-btn:hover {
+  background: var(--primary-light);
   color: var(--primary);
 }
 
-input{
-  width:100%;
-  padding:16px;
-  border-radius:16px;
-  background: var(--bg-page);
-  border: 1px solid #E2E8F0;
-  color: var(--text-dark);
-  font-size: 16px;
-  font-weight: 700;
-  outline: none;
-  transition: 0.3s;
-}
-input:focus { border-color: var(--primary); background: var(--white); }
-
-.fees-container {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #edf2f7;
+/* Amount input */
+.amount-input-wrapper {
+  position: relative;
+  margin-bottom: 24px;
 }
 
-.fee-row{
-  display:flex;
-  justify-content:space-between;
-  font-size:13px;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-.fee-row .label { color: var(--text-muted); }
-.fee-row .val { color: var(--text-dark); }
-
-/* ALERTE HORAIRES */
-#timeAlert {
-  display: none;
-  background: rgba(255, 77, 79, 0.08);
-  color: var(--error);
-  border: 1px solid rgba(255, 77, 79, 0.1);
-  padding: 15px;
-  border-radius: 18px;
-  margin-bottom: 20px;
-  font-size: 13px;
-  text-align: center;
-  font-weight: 600;
+.amount-input-wrapper .currency {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-muted);
+  pointer-events: none;
 }
 
-.btn-withdraw{
+.amount-input-wrapper input {
   width: 100%;
-  padding: 18px;
-  border-radius: 20px;
-  background: var(--primary);
-  border: none;
-  color: #fff;
+  padding: 20px 20px 20px 50px;
+  font-size: 28px;
+  font-weight: 900;
+  background: var(--bg-card);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.amount-input-wrapper input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+.amount-input-wrapper input::placeholder {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Quick amounts */
+.quick-amounts {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.quick-amount {
+  flex: 1;
+  padding: 10px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.quick-amount:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* Fee breakdown */
+.fee-breakdown {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border-light);
+}
+
+.fee-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.fee-row .label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.fee-row .value {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.fee-row.total {
+  border-top: 1px solid var(--border-light);
+  margin-top: 8px;
+  padding-top: 16px;
+}
+
+.fee-row.total .label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.fee-row.total .value {
+  font-size: 18px;
+  color: var(--success);
+}
+
+/* Info cards */
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--info-light);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  margin-bottom: 16px;
+}
+
+.info-card i {
+  color: var(--info);
   font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.info-card p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.info-card.success {
+  background: var(--success-light);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.info-card.success i {
+  color: var(--success);
+}
+
+/* Section label */
+.section-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-label i {
+  color: var(--primary);
+}
+
+/* Form card */
+.form-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 32px var(--shadow-color);
+}
+
+.input-group {
+  margin-bottom: 18px;
+}
+
+.input-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-group label i {
+  color: var(--primary);
+  font-size: 11px;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color: var(--primary);
+  background: var(--bg-card-solid);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* Submit button */
+.btn-submit {
+  width: 100%;
+  padding: 16px;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 15px;
   font-weight: 800;
   cursor: pointer;
-  transition: 0.3s;
-  box-shadow: 0 10px 20px rgba(93, 95, 239, 0.2);
+  transition: all var(--transition-fast);
+  box-shadow: 0 8px 24px var(--primary-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.btn-withdraw:disabled {
-  background: #CBD5E0;
-  color: #fff;
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px var(--primary-glow);
+}
+
+.btn-submit:active {
+  transform: scale(0.98);
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
-  box-shadow: none;
+  transform: none;
 }
+{% endblock %}
 
-.rules-box{
-  background: var(--primary-light);
-  border-radius: 20px;
-  padding: 20px;
-  margin-top: 25px;
-}
-.rules-box h4{ 
-    margin: 0 0 12px; 
-    color: var(--primary); 
-    font-size: 14px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.rules-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.8;
-    color: var(--text-dark);
-    opacity: 0.8;
-}
+{% block content %}
+<div class="app-container">
+  <!-- Header -->
+  <header class="top-header">
+    <div class="brand">
+      <a href="/dashboard" style="display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-arrow-left" style="color: var(--text-secondary); font-size: 18px;"></i>
+      </a>
+      <div class="brand-logo">T</div>
+      <span class="brand-name">TokenFlow</span>
+    </div>
+    <button class="icon-btn" onclick="toggleDarkMode()" aria-label="Mode sombre">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+  </header>
 
-.visual img{ 
-    width: 100%; 
-    height: 120px; 
-    object-fit: cover; 
-    border-radius: 24px;
-    margin-top: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-  <div class="header">
-    <i class="fa-solid fa-chevron-left" onclick="location.href='/dashboard'"></i>
-    <span>Retrait de fonds</span>
+  <!-- Title -->
+  <div style="margin-bottom: 24px;">
+    <h1 style="font-size: 24px; font-weight: 900; color: var(--text-primary); margin-bottom: 8px;">
+      Retrait de fonds
+    </h1>
+    <p style="font-size: 14px; color: var(--text-muted);">
+      Transférez vos gains vers votre portefeuille
+    </p>
   </div>
 
-  <div class="hero">
-    <span>Solde disponible</span>
-    <h2>{{ "{:,.0f}".format(solde_retraitable).replace(",", " ") }} XOF</h2>
+  <!-- Balance Cards -->
+  <div class="balance-cards">
+    <div class="balance-card primary">
+      <div class="label">Solde retirable</div>
+      <div class="value">{{ "{:,.0f}".format(solde_retraitable or 0).replace(",", " ") }} XOF</div>
+      <div class="sub">Parrainage + Revenus</div>
+    </div>
+    <div class="balance-card">
+      <div class="label">Solde total</div>
+      <div class="value">{{ "{:,.0f}".format(solde_total or 0).replace(",", " ") }} XOF</div>
+      <div class="sub">Disponible</div>
+    </div>
   </div>
 
-  <div id="timeAlert">
-    <i class="fa-solid fa-circle-exclamation"></i>&nbsp;
-    Retraits ouverts de <strong>10h00 à 00h00</strong>.
+  <!-- Wallet Info -->
+  <div class="section-label">
+    <i class="fa-solid fa-wallet"></i>
+    Portefeuille enregistré
+  </div>
+  
+  <div class="wallet-info">
+    <div class="icon">
+      <i class="fa-solid fa-credit-card"></i>
+    </div>
+    <div class="details">
+      <div class="label">Opérateur</div>
+      <div class="value">{{ user.wallet_operator or 'Non configuré' }}</div>
+    </div>
+    <div class="details">
+      <div class="label">Numéro</div>
+      <div class="value">{{ user.wallet_number or '---' }}</div>
+    </div>
+    <a href="/ajouter_portefeuille" class="edit-btn" title="Modifier">
+      <i class="fa-solid fa-pen"></i>
+    </a>
   </div>
 
-  <form method="POST" id="withdrawForm">
+  <!-- Withdrawal Form -->
+  <form method="POST" action="/retrait" id="withdrawalForm">
+    <div class="section-label">
+      <i class="fa-solid fa-money-bill-transfer"></i>
+      Montant du retrait
+    </div>
 
-    <div class="section">
-      <h3>Compte de réception</h3>
-      <div class="wallet-box">
-        <i class="fa-solid fa-building-columns"></i>
-        <div>
-          <strong style="font-size: 14px;">{{ user.wallet_operator }} Money</strong><br>
-          <small style="color: var(--text-muted); font-weight: 700;">{{ user.wallet_number }}</small>
-        </div>
+    <div class="amount-input-wrapper">
+      <span class="currency">XOF</span>
+      <input type="number" name="montant" id="montant" placeholder="0" min="1000" max="{{ solde_retraitable or 0 }}" required>
+    </div>
+
+    <!-- Quick amounts -->
+    <div class="quick-amounts">
+      <div class="quick-amount" onclick="setAmount(5000)">5 000</div>
+      <div class="quick-amount" onclick="setAmount(10000)">10 000</div>
+      <div class="quick-amount" onclick="setAmount(25000)">25 000</div>
+      <div class="quick-amount" onclick="setAmount({{ solde_retraitable or 0 }})">Max</div>
+    </div>
+
+    <!-- Fee Breakdown -->
+    <div class="fee-breakdown">
+      <div class="fee-row">
+        <span class="label">Montant demandé</span>
+        <span class="value" id="requestedAmount">0 XOF</span>
+      </div>
+      <div class="fee-row">
+        <span class="label">Frais (15%)</span>
+        <span class="value" id="feeAmount" style="color: var(--danger);">- 0 XOF</span>
+      </div>
+      <div class="fee-row total">
+        <span class="label">Net à recevoir</span>
+        <span class="value" id="netAmount" style="color: var(--success);">0 XOF</span>
       </div>
     </div>
 
-    <div class="section">
-      <h3>Montant à retirer</h3>
-      <input type="number" name="montant" id="montant" placeholder="Min. 1 000 XOF" required>
-
-      <div class="fees-container">
-        <div class="fee-row">
-            <span class="label">Frais de service (15%)</span>
-            <span class="val" id="feesAmount">0 XOF</span>
-        </div>
-        <div class="fee-row" style="margin-top: 5px;">
-            <span class="label" style="color: var(--text-dark); font-weight: 800;">Montant Net</span>
-            <span class="val" id="netAmount" style="color: var(--success); font-weight: 800; font-size: 15px;">0 XOF</span>
-        </div>
-      </div>
+    <!-- Info Cards -->
+    <div class="info-card">
+      <i class="fa-solid fa-circle-info"></i>
+      <p>
+        <b>Minimum:</b> 1 000 XOF • 
+        <b>Délai:</b> 24-48h ouvrables • 
+        Les retraits sont traités du lundi au vendredi.
+      </p>
     </div>
 
-    <button class="btn-withdraw" id="withdrawBtn" type="submit">Confirmer le retrait</button>
+    <div class="info-card success">
+      <i class="fa-solid fa-shield-check"></i>
+      <p>
+        Vos fonds sont sécurisés. Tous les retraits sont vérifiés manuellement pour votre sécurité.
+      </p>
+    </div>
 
+    <button type="submit" class="btn-submit" id="submitBtn" disabled>
+      <i class="fa-solid fa-paper-plane"></i>
+      Confirmer le retrait
+    </button>
   </form>
-
-  <div class="rules-box">
-    <h4><i class="fa-solid fa-shield-halved"></i> Sécurité & Délais</h4>
-    <ul class="rules-list">
-        <li>• Horaires : <strong>10:00 — 00:00</strong></li>
-        <li>• Traitement : Instantané à 24h</li>
-        <li>• Frais de réseau : 15% déduits</li>
-        <li>• Statut : Votre compte est éligible au retrait</li>
-    </ul>
-  </div>
-
-  <div class="visual">
-    <img src="/static/images/e1.jpg" alt="Secure Withdrawal">
-  </div>
-
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-// 1. Calcul des frais automatique
-document.getElementById("montant").addEventListener("input", function () {
-  let montant = parseFloat(this.value) || 0;
-  let fees = montant * 0.15;
-  let net = montant - fees;
+const maxAmount = {{ solde_retraitable or 0 }};
+const minAmount = 1000;
+const feeRate = 0.15;
 
-  document.getElementById("netAmount").innerText =
-    net > 0 ? net.toLocaleString("fr-FR").replace(/\s/g, ' ') + " XOF" : "0 XOF";
-  document.getElementById("feesAmount").innerText =
-    fees > 0 ? fees.toLocaleString("fr-FR").replace(/\s/g, ' ') + " XOF" : "0 XOF";
-});
+function setAmount(amount) {
+  document.getElementById('montant').value = amount;
+  updateFeeBreakdown();
+}
 
-// 2. Gestion des horaires (10h - 00h)
-function checkWithdrawTime() {
-  const now = new Date();
-  const hours = now.getHours();
-  const btn = document.getElementById("withdrawBtn");
-  const alertBox = document.getElementById("timeAlert");
-
-  // Ouvert entre 10h inclus et 00h exclu
-  const isOpen = (hours >= 10 && hours < 24);
-
-  if (!isOpen) {
-    btn.disabled = true;
-    btn.innerText = "Guichet fermé";
-    alertBox.style.display = "block";
+function updateFeeBreakdown() {
+  const montant = parseFloat(document.getElementById('montant').value) || 0;
+  const fee = Math.round(montant * feeRate);
+  const net = montant - fee;
+  
+  document.getElementById('requestedAmount').textContent = montant.toLocaleString('fr-FR') + ' XOF';
+  document.getElementById('feeAmount').textContent = '- ' + fee.toLocaleString('fr-FR') + ' XOF';
+  document.getElementById('netAmount').textContent = net.toLocaleString('fr-FR') + ' XOF';
+  
+  // Enable/disable submit button
+  const submitBtn = document.getElementById('submitBtn');
+  if (montant >= minAmount && montant <= maxAmount) {
+    submitBtn.disabled = false;
   } else {
-    btn.disabled = false;
-    btn.innerText = "Confirmer le retrait";
-    alertBox.style.display = "none";
+    submitBtn.disabled = true;
   }
 }
 
-checkWithdrawTime();
-setInterval(checkWithdrawTime, 60000);
+document.getElementById('montant').addEventListener('input', updateFeeBreakdown);
+
+// Initialize
+updateFeeBreakdown();
 </script>
-
-</body>
-</html>
-
+{% endblock %}

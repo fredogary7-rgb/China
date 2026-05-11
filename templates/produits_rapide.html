@@ -1,262 +1,586 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Produits rapides | Emirates</title>
+{% extends "base.html" %}
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+{% block title %}Investir | TokenFlow{% endblock %}
 
-<style>
-:root{
-  --primary: #5D5FEF;
-  --primary-light: rgba(93, 95, 239, 0.1);
-  --bg-page: #F4F7FE;
-  --white: #ffffff;
-  --text-dark: #1A202C;
-  --text-muted: #718096;
-  --accent-gold: #FFD700;
+{% block page_styles %}
+/* Trading-themed background - uses CSS gradients from fintech.css */
+
+/* VIP Products Grid */
+.products-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-*{ box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
-
-body{
-  margin:0;
-  min-height:100vh;
-  background-color: var(--bg-page);
-  color: var(--text-dark);
+/* Product Card */
+.product-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 16px var(--shadow-color);
+  transition: all var(--transition-normal);
+  backdrop-filter: blur(12px);
 }
 
-/* APP CONTAINER */
-.app{
-  max-width:480px;
-  margin:auto;
-  padding: 20px 20px 120px;
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px var(--shadow-hover);
 }
 
-/* HEADER */
-.header{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  margin-bottom:20px;
-}
-.header i{
-  font-size:20px;
-  cursor:pointer;
-  color: var(--primary);
-  background: var(--white);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-}
-.header h2{
-  margin:0;
-  font-size:18px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-
-/* HERO BANNER */
-.hero{
-  width:100%;
-  height:150px;
-  border-radius:24px;
-  overflow:hidden;
-  margin-bottom:20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  position:relative;
-  background: #000;
-}
-.hero img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  opacity: 0.8;
-}
-.hero-content{
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-  padding:15px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.8));
-}
-.hero-content span{
-  font-size:14px;
-  font-weight:700;
-  color:#fff;
-  display: block;
-}
-
-/* BALANCE INFO */
-.info{
-  background: var(--white);
-  padding: 16px 20px;
-  border-radius: 20px;
-  margin-bottom: 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-  border: 1px solid rgba(0,0,0,0.02);
-}
-.info div {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-.info span{
-  color: var(--primary);
-  font-weight: 800;
-  font-size: 16px;
-}
-
-/* GRID PRODUCTS */
-.products{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:15px;
-}
-
-/* PRODUCT CARD */
-.card{
-  background: var(--white);
-  border-radius: 24px;
-  padding: 12px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.02);
-  border: 1px solid rgba(0,0,0,0.03);
-  display: flex;
-  flex-direction: column;
-  transition: 0.3s ease;
-}
-.card:active {
-  transform: scale(0.96);
-}
-
-.card img{
-  width:100%;
-  height:100px;
-  object-fit:cover;
-  border-radius:18px;
-  margin-bottom:12px;
-}
-
-.card h3{
-  margin:0;
-  font-size:14px;
-  font-weight:800;
-  color: var(--text-dark);
-  line-height: 1.3;
-  height: 36px; /* Pour aligner les titres sur 2 lignes */
+.product-header {
+  padding: 20px;
+  position: relative;
   overflow: hidden;
 }
 
-.price{
-  font-size:15px;
-  margin: 8px 0 2px;
-  color: var(--primary);
-  font-weight: 800;
+.product-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  filter: blur(30px);
 }
 
-.revenu{
-  font-size:11px;
-  color: var(--text-muted);
+.product-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.product-badge.starter {
+  background: rgba(148, 163, 184, 0.2);
+  color: var(--text-secondary);
+}
+
+.product-badge.gold {
+  background: rgba(255, 215, 0, 0.2);
+  color: #FFD700;
+}
+
+.product-badge.platinum {
+  background: rgba(185, 242, 255, 0.2);
+  color: #B9F2FF;
+}
+
+.product-badge.diamond {
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--primary);
+}
+
+.product-name {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.product-price {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.product-price span {
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom:12px;
+  color: var(--text-muted);
+}
+
+.product-body {
+  padding: 20px;
+}
+
+.product-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.product-stat {
+  text-align: center;
+  padding: 12px 8px;
+  background: var(--bg-page);
+  border-radius: var(--radius-md);
+}
+
+.product-stat .value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: block;
+}
+
+.product-stat .label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.product-stat .value.profit {
+  color: var(--success);
+}
+
+.product-stat .value.duration {
+  color: var(--secondary);
+}
+
+/* ROI Bar */
+.roi-bar {
+  margin-bottom: 20px;
+}
+
+.roi-bar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.roi-bar-header .label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.roi-bar-header .value {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--success);
+}
+
+.roi-progress {
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.roi-fill {
+  height: 100%;
+  background: var(--success-gradient);
+  border-radius: 10px;
+  transition: width 0.8s ease;
+}
+
+/* Product Actions */
+.product-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-details {
+  flex: 1;
+  padding: 12px;
+  background: var(--bg-page);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-details:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-buy {
+  flex: 2;
+  padding: 12px;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.btn-buy:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+.btn-buy:active {
+  transform: scale(0.98);
+}
+
+/* Balance display */
+.balance-bar {
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  border: 1px solid var(--border-light);
+  backdrop-filter: blur(12px);
 }
-.revenu i { color: #22c55e; }
 
-/* INVEST BUTTON */
-.card a{
-  margin-top:auto;
-  text-decoration:none;
-  text-align:center;
-  padding:12px 0;
+.balance-bar .info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.balance-bar .icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: 18px;
+}
+
+.balance-bar .details .label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.balance-bar .details .value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.balance-bar .action {
+  padding: 8px 16px;
   background: var(--primary);
-  border-radius:14px;
-  color: #ffffff;
-  font-size:13px;
-  font-weight:800;
-  transition: 0.2s;
-  box-shadow: 0 5px 15px rgba(93, 95, 239, 0.2);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all var(--transition-fast);
 }
 
-.card a:active {
-    background: #4a4cd9;
+.balance-bar .action:hover {
+  background: var(--primary);
+  filter: brightness(1.1);
 }
 
-/* BADGE VIP / RAPIDE */
-.badge-fast {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: var(--accent-gold);
-    color: #000;
-    font-size: 9px;
-    font-weight: 800;
-    padding: 4px 8px;
-    border-radius: 8px;
-    text-transform: uppercase;
+/* Section header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
-</style>
-</head>
 
-<body>
+.section-header h2 {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-<div class="app">
+.section-header h2 i {
+  color: var(--primary);
+}
 
-  <div class="header">
-    <i class="fa-solid fa-arrow-left" onclick="location.href='/dashboard'"></i>
-    <h2>Produits rapides</h2>
-  </div>
+.section-header p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
 
-  <div class="hero">
-    <img src="/static/images/e1.jpg" alt="Emirates Investment">
-    <div class="hero-content">
-        <span>Opportunités à rendement rapide</span>
+/* Filter tabs */
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.filter-tab {
+  padding: 10px 20px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(12px);
+}
+
+.filter-tab:hover,
+.filter-tab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Info banner */
+.info-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--info-light);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  margin-bottom: 24px;
+}
+
+.info-banner i {
+  color: var(--info);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.info-banner p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+  <!-- Modal de Détails du Produit -->
+  <div class="modal-backdrop" id="productDetailModal">
+    <div class="modal" style="max-width: 400px; text-align: left; padding: 0; overflow: hidden;">
+      <div id="modalHeader" style="padding: 24px; color: white;">
+        <div class="product-badge" id="modalBadge" style="margin-bottom: 12px; background: rgba(255,255,255,0.2); color: white;"></div>
+        <h2 id="modalName" style="margin: 0; color: white; font-size: 24px; font-weight: 900;"></h2>
+        <div id="modalPrice" style="font-size: 20px; font-weight: 700; opacity: 0.9;"></div>
+      </div>
+      <div style="padding: 24px;">
+        <h3 style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 16px; letter-spacing: 1px;">Analyse de rentabilité</h3>
+        <div class="product-stats" style="margin-bottom: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+          <div class="product-stat" style="text-align: center; padding: 12px 8px; background: var(--bg-page); border-radius: var(--radius-md);">
+            <span class="value profit" id="modalDaily" style="font-size: 16px; font-weight: 800; color: var(--success); display: block;"></span>
+            <span class="label" style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">/jour</span>
+          </div>
+          <div class="product-stat" style="text-align: center; padding: 12px 8px; background: var(--bg-page); border-radius: var(--radius-md);">
+            <span class="value duration" style="font-size: 16px; font-weight: 800; color: var(--secondary); display: block;">120</span>
+            <span class="label" style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">jours</span>
+          </div>
+          <div class="product-stat" style="text-align: center; padding: 12px 8px; background: var(--bg-page); border-radius: var(--radius-md);">
+            <span class="value" id="modalTotal" style="font-size: 16px; font-weight: 800; color: var(--primary); display: block;"></span>
+            <span class="label" style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">total</span>
+          </div>
+        </div>
+        
+        <div class="roi-bar" style="margin-bottom: 24px;">
+          <div class="roi-bar-header" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span class="label" style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Indice de performance (ROI)</span>
+            <span class="value" id="modalROI" style="font-size: 14px; font-weight: 800; color: var(--success);"></span>
+          </div>
+          <div class="roi-progress" style="height: 8px; background: var(--border-color); border-radius: 10px; overflow: hidden;">
+            <div class="roi-fill" id="modalROIFill" style="height: 100%; background: var(--success-gradient); border-radius: 10px; transition: width 0.8s ease;"></div>
+          </div>
+        </div>
+
+        <div class="modal-buttons" style="display: flex; gap: 12px;">
+          <button class="btn-secondary" style="flex: 1;" onclick="closeModal('productDetailModal')">Fermer</button>
+          <a id="modalBuyBtn" href="#" class="btn-primary" style="flex: 2; text-align: center; text-decoration: none; padding: 14px; font-weight: 700; border-radius: var(--radius-md);">Investir maintenant</a>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="info">
-    <div>Solde disponible</div>
-    <span>{{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }} XOF</span>
+  <!-- Header -->
+  <header class="top-header">
+    <div class="brand">
+      <a href="/dashboard" style="display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-arrow-left" style="color: var(--text-secondary); font-size: 18px;"></i>
+      </a>
+      <div class="brand-logo">T</div>
+      <span class="brand-name">TokenFlow</span>
+    </div>
+    <button class="icon-btn" onclick="toggleDarkMode()" aria-label="Mode sombre">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+  </header>
+
+  <!-- Title -->
+  <div class="section-header">
+    <div>
+      <h2><i class="fa-solid fa-rocket"></i> Investir</h2>
+      <p>Choisissez votre plan d'investissement</p>
+    </div>
   </div>
 
-  <div class="products">
-    {% for p in produits %}
-    <div class="card" style="position: relative;">
-      <div class="badge-fast">Flash</div>
-      
-      <img src="{{ url_for('static', filename='images/' ~ p.image) }}" alt="{{ p.nom }}">
-      
-      <h3>{{ p.nom }}</h3>
-      
-      <div class="price">{{ "{:,.0f}".format(p.prix or 0).replace(",", " ") }} XOF</div>
-      
-      <div class="revenu">
-          <i class="fa-solid fa-chart-line"></i>
-          + {{ "{:,.0f}".format(p.revenu_journalier or 0).replace(",", " ") }} / jour
+  <!-- Balance Bar -->
+  <div class="balance-bar">
+    <div class="info">
+      <div class="icon">
+        <i class="fa-solid fa-wallet"></i>
       </div>
+      <div class="details">
+        <div class="label">Solde disponible</div>
+        <div class="value">{{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }} XOF</div>
+      </div>
+    </div>
+    <a href="/deposit" class="action">
+      <i class="fa-solid fa-plus"></i> Déposer
+    </a>
+  </div>
 
-      <a href="{{ url_for('confirmer_produit_rapide', vip_id=p.id) }}">
-        Investir
-      </a>
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <div class="filter-tab active" onclick="filterProducts('all', this)">Tous</div>
+    <div class="filter-tab" onclick="filterProducts('starter', this)">Starter</div>
+    <div class="filter-tab" onclick="filterProducts('gold', this)">Gold</div>
+    <div class="filter-tab" onclick="filterProducts('platinum', this)">Platinum</div>
+    <div class="filter-tab" onclick="filterProducts('diamond', this)">Diamond</div>
+  </div>
+
+  <!-- Info Banner -->
+  <div class="info-banner">
+    <i class="fa-solid fa-circle-info"></i>
+    <p>
+      Tous les investissements génèrent des revenus journaliers automatiques pendant 120 jours. 
+      Le capital est restitué à l'échéance.
+    </p>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="products-grid">
+    {% for p in produits %}
+    {% set tier = 'starter' if p.prix < 15000 else 'gold' if p.prix < 50000 else 'platinum' if p.prix < 200000 else 'diamond' %}
+    {% set roi_total = (p.revenu_journalier * 120) / p.prix * 100 %}
+    <div class="product-card" data-tier="{{ tier }}">
+      <div class="product-header" style="background: {% if tier == 'starter' %}linear-gradient(135deg, #64748B, #475569){% elif tier == 'gold' %}linear-gradient(135deg, #F59E0B, #D97706){% elif tier == 'platinum' %}linear-gradient(135deg, #3B82F6, #2563EB){% else %}linear-gradient(135deg, #6366F1, #8B5CF6){% endif %};">
+        <div class="product-badge {{ tier }}">
+          {% if tier == 'starter' %}<i class="fa-solid fa-seedling"></i>{% elif tier == 'gold' %}<i class="fa-solid fa-medal"></i>{% elif tier == 'platinum' %}<i class="fa-solid fa-gem"></i>{% else %}<i class="fa-solid fa-crown"></i>{% endif %}
+          {{ tier|upper }}
+        </div>
+        <div class="product-name">{{ p.nom }}</div>
+        <div class="product-price">{{ "{:,.0f}".format(p.prix).replace(",", " ") }} <span>XOF</span></div>
+      </div>
+      
+      <div class="product-body">
+        <div class="product-stats">
+          <div class="product-stat">
+            <span class="value profit">+{{ "{:,.0f}".format(p.revenu_journalier).replace(",", " ") }}</span>
+            <span class="label">/jour</span>
+          </div>
+          <div class="product-stat">
+            <span class="value duration">120</span>
+            <span class="label">jours</span>
+          </div>
+          <div class="product-stat">
+            <span class="value">+{{ "{:,.0f}".format(p.revenu_journalier * 120).replace(",", " ") }}</span>
+            <span class="label">total</span>
+          </div>
+        </div>
+
+        <div class="roi-bar">
+          <div class="roi-bar-header">
+            <span class="label">ROI Total</span>
+            <span class="value">+{{ "%.0f"|format(roi_total) }}%</span>
+          </div>
+          <div class="roi-progress">
+            <div class="roi-fill" style="width: {{ [roi_total / 10, 100]|min }}%"></div>
+          </div>
+        </div>
+
+        <div class="product-actions">
+          <button class="btn-details" onclick="showProductDetails('{{ p.nom }}', {{ p.prix }}, {{ p.revenu_journalier }}, '{{ tier }}', '{{ roi_total }}', {{ p.id }})">
+            <i class="fa-solid fa-chart-line"></i> Détails
+          </button>
+          <a href="/produits_rapide/confirmer/{{ p.id }}" class="btn-buy">
+            <i class="fa-solid fa-bolt"></i> Investir
+          </a>
+        </div>
+      </div>
     </div>
     {% endfor %}
   </div>
-
 </div>
+{% endblock %}
 
-</body>
-</html>
+{% block extra_js %}
+<script>
+function showProductDetails(name, price, daily, tier, roi, id) {
+  const modal = document.getElementById('productDetailModal');
+  const header = document.getElementById('modalHeader');
+  const badge = document.getElementById('modalBadge');
+  
+  // Personnalisation des couleurs selon le Tier
+  let gradient = 'linear-gradient(135deg, #6366F1, #8B5CF6)';
+  let icon = 'fa-crown';
+  
+  if (tier === 'starter') { gradient = 'linear-gradient(135deg, #64748B, #475569)'; icon = 'fa-seedling'; }
+  if (tier === 'gold') { gradient = 'linear-gradient(135deg, #F59E0B, #D97706)'; icon = 'fa-medal'; }
+  if (tier === 'platinum') { gradient = 'linear-gradient(135deg, #3B82F6, #2563EB)'; icon = 'fa-gem'; }
+  
+  header.style.background = gradient;
+  badge.innerHTML = `<i class="fa-solid ${icon}"></i> ${tier.toUpperCase()}`;
+  
+  // Remplissage des données
+  document.getElementById('modalName').textContent = name;
+  document.getElementById('modalPrice').textContent = price.toLocaleString('fr-FR') + ' XOF';
+  document.getElementById('modalDaily').textContent = '+' + daily.toLocaleString('fr-FR');
+  document.getElementById('modalTotal').textContent = '+' + (daily * 120).toLocaleString('fr-FR');
+  
+  const roiVal = parseFloat(roi);
+  document.getElementById('modalROI').textContent = '+' + roiVal.toFixed(0) + '%';
+  document.getElementById('modalROIFill').style.width = Math.min(roiVal / 10, 100) + '%';
+  
+  // Lien vers la confirmation
+  document.getElementById('modalBuyBtn').href = `/produits_rapide/confirmer/${id}`;
+  
+  TokenFlow.openModal('productDetailModal');
+}
 
+function filterProducts(tier, element) {
+  // Update active tab
+  document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+  element.classList.add('active');
+
+  // Filter products
+  const cards = document.querySelectorAll('.product-card');
+  cards.forEach(card => {
+    if (tier === 'all' || card.dataset.tier === tier) {
+      card.style.display = 'block';
+      card.style.animation = 'fadeIn 0.3s ease';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// Add fadeIn animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

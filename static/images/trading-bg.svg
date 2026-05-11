@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#09121f" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e" />
+      <stop offset="100%" stop-color="#4ade80" />
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#fca5a5" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bgGrad)" />
+  <g opacity="0.25" stroke="#94a3b8" stroke-width="1">
+    <path d="M0 120 H1200" />
+    <path d="M0 220 H1200" />
+    <path d="M0 320 H1200" />
+    <path d="M0 420 H1200" />
+    <path d="M0 520 H1200" />
+    <path d="M0 620 H1200" />
+    <path d="M0 720 H1200" />
+  </g>
+  <g opacity="0.18" stroke="#2563eb" stroke-width="2">
+    <path d="M50 680 L150 560 L250 600 L350 520 L450 560 L550 480 L650 520 L750 460 L850 490 L950 420 L1050 450 L1150 360" fill="none" />
+  </g>
+  <g stroke="#94a3b8" stroke-width="2" opacity="0.2">
+    <path d="M100 730 V260" />
+    <path d="M200 730 V210" />
+    <path d="M300 730 V295" />
+    <path d="M400 730 V330" />
+    <path d="M500 730 V245" />
+    <path d="M600 730 V305" />
+    <path d="M700 730 V265" />
+    <path d="M800 730 V235" />
+    <path d="M900 730 V280" />
+    <path d="M1000 730 V240" />
+    <path d="M1100 730 V320" />
+  </g>
+  <g stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M120 700 L120 640" stroke="#4ade80" opacity="0.75" />
+    <rect x="95" y="640" width="50" height="40" rx="4" fill="url(#greenGrad)" opacity="0.9" />
+
+    <path d="M220 700 L220 580" stroke="#ef4444" opacity="0.75" />
+    <rect x="195" y="580" width="50" height="60" rx="4" fill="url(#redGrad)" opacity="0.9" />
+
+    <path d="M320 700 L320 660" stroke="#22c55e" opacity="0.75" />
+    <rect x="295" y="660" width="50" height="20" rx="4" fill="url(#greenGrad)" opacity="0.9" />
+
+    <path d="M420 700 L420 620" stroke="#ef4444" opacity="0.75" />
+    <rect x="395" y="620" width="50" height="30" rx="4" fill="url(#redGrad)" opacity="0.9" />
+
+    <path d="M520 700 L520 560" stroke="#4ade80" opacity="0.75" />
+    <rect x="495" y="560" width="50" height="60" rx="4" fill="url(#greenGrad)" opacity="0.9" />
+
+    <path d="M620 700 L620 660" stroke="#ef4444" opacity="0.75" />
+    <rect x="595" y="660" width="50" height="20" rx="4" fill="url(#redGrad)" opacity="0.9" />
+
+    <path d="M720 700 L720 620" stroke="#4ade80" opacity="0.75" />
+    <rect x="695" y="620" width="50" height="40" rx="4" fill="url(#greenGrad)" opacity="0.9" />
+
+    <path d="M820 700 L820 650" stroke="#ef4444" opacity="0.75" />
+    <rect x="795" y="650" width="50" height="30" rx="4" fill="url(#redGrad)" opacity="0.9" />
+
+    <path d="M920 700 L920 590" stroke="#4ade80" opacity="0.75" />
+    <rect x="895" y="590" width="50" height="50" rx="4" fill="url(#greenGrad)" opacity="0.9" />
+
+    <path d="M1020 700 L1020 630" stroke="#ef4444" opacity="0.75" />
+    <rect x="995" y="630" width="50" height="40" rx="4" fill="url(#redGrad)" opacity="0.9" />
+
+    <path d="M1120 700 L1120 610" stroke="#4ade80" opacity="0.75" />
+    <rect x="1095" y="610" width="50" height="50" rx="4" fill="url(#greenGrad)" opacity="0.9" />
+  </g>
+  <text x="80" y="90" fill="#e2e8f0" font-family="Plus Jakarta Sans, sans-serif" font-size="42" opacity="0.8">Graphique Bougie</text>
+</svg>

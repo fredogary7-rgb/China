@@ -1,281 +1,84 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Historique | Emirates</title>
+{% extends "base.html" %}
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+{% block title %}Historique | TokenFlow Premium{% endblock %}
 
-<style>
-:root{
-  --primary: #5D5FEF;
-  --primary-light: rgba(93, 95, 239, 0.1);
-  --bg-page: #F4F7FE;
-  --white: #ffffff;
-  --text-dark: #1A202C;
-  --text-muted: #718096;
-  --success: #22c55e;
-  --danger: #FF4D4F;
-  --warning: #F6AD55;
-  --info: #00B5D8;
-}
+{% block content %}
+<div class="app-container">
+  <header class="top-header">
+    <div class="brand">
+      <a href="/dashboard" style="display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-arrow-left" style="color: var(--text-secondary); font-size: 18px;"></i>
+      </a>
+      <div class="brand-logo">T</div>
+      <span class="brand-name">TokenFlow</span>
+    </div>
+    <button class="icon-btn" onclick="toggleDarkMode()">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+  </header>
 
-*{ box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
-
-body{
-  margin:0;
-  min-height:100vh;
-  background-color: var(--bg-page);
-  color: var(--text-dark);
-}
-
-/* APP */
-.app{
-  max-width:480px;
-  margin:auto;
-  padding: 20px 20px 100px;
-}
-
-/* HEADER */
-.header{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  margin-bottom:30px;
-}
-.header i{
-  font-size:18px;
-  cursor:pointer;
-  color: var(--primary);
-  background: var(--white);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-}
-.header h2{
-  margin:0;
-  font-size:18px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-
-/* SECTION */
-.section{
-  margin-bottom:25px;
-}
-
-.section-title{
-  font-size:13px;
-  font-weight: 800;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
-  margin-left: 5px;
-}
-
-/* CARD */
-.card{
-  background: var(--white);
-  border-radius: 20px;
-  padding: 15px;
-  margin-bottom: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.01);
-  border: 1px solid rgba(0,0,0,0.02);
-  transition: 0.2s;
-}
-
-/* ROW */
-.row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.left{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.icon{
-  width:42px;
-  height:42px;
-  border-radius:14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
-}
-
-.deposit{ background:rgba(34,197,94,0.1); color: var(--success); }
-.withdraw{ background:rgba(255,77,79,0.1); color: var(--danger); }
-.commission{ background:rgba(93,95,239,0.1); color: var(--primary); }
-.invest{ background:rgba(246,173,85,0.1); color: var(--warning); }
-
-.amount{
-  font-weight: 800;
-  font-size: 15px;
-  color: var(--text-dark);
-}
-
-.small{
-  font-size:11px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.badge-status {
-    font-size: 10px;
-    font-weight: 800;
-    padding: 4px 10px;
-    border-radius: 8px;
-    background: var(--bg-page);
-    color: var(--text-muted);
-}
-
-/* INVEST PROGRESS */
-.progress-container {
-    margin-top: 12px;
-}
-.progress-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 10px;
-    font-weight: 700;
-    margin-bottom: 5px;
-    color: var(--text-muted);
-}
-.progress{
-  background: var(--bg-page);
-  border-radius:10px;
-  height:6px;
-  overflow:hidden;
-}
-.progress-bar{
-  height:100%;
-  background: var(--primary);
-  border-radius: 10px;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-muted);
-    background: rgba(0,0,0,0.02);
-    border-radius: 15px;
-    border: 1px dashed #cbd5e0;
-}
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-  <div class="header">
-    <i class="fa-solid fa-chevron-left" onclick="history.back()"></i>
-    <h2>Tableau de bord Historique</h2>
+  <div class="section-header">
+    <h3 class="section-title"><i class="fa-solid fa-receipt"></i> Historique financier</h3>
   </div>
 
-  <div class="section">
-    <div class="section-title">Transactions Entrantes</div>
+  <div class="transactions-card">
+    <div class="section-title" style="font-size: 12px; margin-bottom: 8px; color: var(--text-muted);">Dépôts récents</div>
     {% for d in depots %}
-    <div class="card">
-      <div class="row">
-        <div class="left">
-          <div class="icon deposit"><i class="fa-solid fa-plus"></i></div>
-          <div>
-            <div class="amount">+ {{ d.montant }} XOF</div>
-            <div class="small">{{ d.date }}</div>
-          </div>
-        </div>
-        <span class="badge-status">{{ d.statut }}</span>
+    <div class="transaction-item">
+      <div class="transaction-left">
+        <div class="transaction-icon deposit"><i class="fa-solid fa-plus"></i></div>
+        <div class="transaction-info"><b>Rechargement Mobile</b><span>{{ d.date.strftime('%d %b %H:%M') if d.date else 'Date inconnue' }}</span></div>
       </div>
+      <div class="transaction-amount plus">+{{ "{:,.0f}".format(d.montant).replace(",", " ") }} XOF</div>
     </div>
     {% else %}
-      <div class="empty-state">Aucun dépôt enregistré</div>
+      <div class="empty-state"><p>Aucun dépôt</p></div>
     {% endfor %}
-  </div>
 
-  <div class="section">
-    <div class="section-title">Retraits de fonds</div>
+    <div class="section-title" style="font-size: 12px; margin: 20px 0 8px; color: var(--text-muted);">Retraits</div>
     {% for r in retraits %}
-    <div class="card">
-      <div class="row">
-        <div class="left">
-          <div class="icon withdraw"><i class="fa-solid fa-paper-plane"></i></div>
-          <div>
-            <div class="amount">- {{ r.montant }} XOF</div>
-            <div class="small">{{ r.date }}</div>
-          </div>
-        </div>
-        <span class="badge-status" style="color: var(--danger);">{{ r.statut }}</span>
+    <div class="transaction-item">
+      <div class="transaction-left">
+        <div class="transaction-icon withdraw"><i class="fa-solid fa-money-bill-transfer"></i></div>
+        <div class="transaction-info"><b>Demande de retrait</b><span>{{ r.statut }}</span></div>
       </div>
+      <div class="transaction-amount minus">-{{ "{:,.0f}".format(r.montant).replace(",", " ") }} XOF</div>
     </div>
     {% else %}
-      <div class="empty-state">Aucun retrait effectué</div>
+      <div class="empty-state"><p>Aucun retrait</p></div>
     {% endfor %}
-  </div>
 
-  <div class="section">
-    <div class="section-title">Revenus d'Affiliation</div>
+    <div class="section-title" style="font-size: 12px; margin: 20px 0 8px; color: var(--text-muted);">Commissions</div>
     {% for c in commissions %}
-    <div class="card">
-      <div class="row">
-        <div class="left">
-          <div class="icon commission"><i class="fa-solid fa-users"></i></div>
-          <div>
-            <div class="amount">+ {{ c.montant }} XOF</div>
-            <div class="small">{{ c.date }}</div>
-          </div>
-        </div>
-        <span class="badge-status" style="background: var(--primary-light); color: var(--primary);">Niveau {{ c.niveau }}</span>
+    <div class="transaction-item">
+      <div class="transaction-left">
+        <div class="transaction-icon invest" style="background: var(--secondary-light); color: var(--secondary);"><i class="fa-solid fa-share-nodes"></i></div>
+        <div class="transaction-info"><b>Commission Niveau {{ c.niveau }}</b><span>Bonus réseau</span></div>
       </div>
+      <div class="transaction-amount plus">+{{ "{:,.0f}".format(c.montant).replace(",", " ") }} XOF</div>
     </div>
     {% else %}
-      <div class="empty-state">Aucune commission générée</div>
+      <div class="empty-state"><p>Aucune commission</p></div>
     {% endfor %}
   </div>
-
-  <div class="section">
-    <div class="section-title">Plans d'Investissement</div>
-    {% for inv in investissements %}
-    <div class="card">
-      <div class="row">
-        <div class="left">
-          <div class="icon invest"><i class="fa-solid fa-plane-up"></i></div>
-          <div>
-            <div class="amount">{{ inv.montant }} XOF / jour</div>
-            <div class="small">{{ inv.jours_restants }} jours restants</div>
-          </div>
-        </div>
-        <div style="text-align: right;">
-            <div class="amount" style="font-size: 13px; color: var(--primary);">{{ inv.progression }}%</div>
-        </div>
-      </div>
-
-      <div class="progress-container">
-        <div class="progress">
-          <div class="progress-bar" style="width:{{ inv.progression }}%"></div>
-        </div>
-      </div>
-    </div>
-    {% else %}
-      <div class="empty-state">Aucun plan de vol actif</div>
-    {% endfor %}
-  </div>
-
 </div>
 
-</body>
-</html>
-
+<nav class="bottom-nav">
+  <a href="/dashboard" class="nav-item">
+    <i class="fa-solid fa-house"></i>
+    <span>Accueil</span>
+  </a>
+  <a href="/produits_rapide" class="nav-item">
+    <i class="fa-solid fa-rocket"></i>
+    <span>Investir</span>
+  </a>
+  <a href="/team" class="nav-item">
+    <i class="fa-solid fa-users"></i>
+    <span>Réseau</span>
+  </a>
+  <a href="/profile" class="nav-item active">
+    <i class="fa-solid fa-user"></i>
+    <span>Profil</span>
+  </a>
+</nav>
+{% endblock %}
