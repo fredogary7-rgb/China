@@ -835,10 +835,10 @@
       </div>
       
       <div class="pro-user-card">
-        <div class="pro-user-avatar">{{ user.phone[0] | upper }}</div>
+        <div class="pro-user-avatar">{{ (user.username or user.phone)[0] | upper }}</div>
         <div class="pro-user-info">
-          <h4>{{ user.phone[:10] }}... 
-            {% set vip = get_user_vip_level(user.phone) %}
+          <h4>{{ (user.username or user.phone)[:10] }}... 
+            {% set vip = get_user_vip_level(user.username or user.phone) %}
             {% if vip %}
             <span class="pro-vip-badge {{ vip.level_name }}">
               <i class="fa-solid fa-crown"></i> {{ vip.level_name | capitalize }}
@@ -907,7 +907,7 @@
     <!-- Top Bar -->
     <div class="pro-topbar">
       <div class="pro-topbar-left">
-        <h1>Bonjour, Trader 👋</h1>
+        <h1>Bonjour, {{ user.username or user.phone }} 👋</h1>
         <p>Voici votre aperçu financier en temps réel</p>
       </div>
       <div class="pro-topbar-right">
@@ -1128,7 +1128,7 @@
               Lien de parrainage
             </div>
             <div style="display: flex; gap: 8px; align-items: center;">
-              <input type="text" readonly value="{{ url_for('inscription_page', _external=True, ref=user.referral_code or user.phone) }}" 
+              <input type="text" readonly value="{{ url_for('inscription_page', _external=True, ref=user.referral_code or user.username or user.phone) }}"
                      style="flex: 1; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-size: 13px;">
               <button onclick="copyReferralLink()" class="pro-wallet-btn" style="padding: 10px 16px;">
                 <i class="fa-regular fa-copy"></i> Copier

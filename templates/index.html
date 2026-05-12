@@ -647,6 +647,69 @@ body::after {
     </a>
   </section>
 
+  <!-- Top Right Controls -->
+  <div class="top-controls">
+    <!-- Theme Toggle -->
+    <button class="control-btn" onclick="toggleTheme()" title="Changer le thème">
+      <i class="fa-solid fa-moon" id="themeIcon"></i>
+    </button>
+    
+    <!-- Language Selector -->
+    <div class="lang-selector">
+      <button class="control-btn lang-btn" onclick="toggleLangMenu()">
+        <i class="fa-solid fa-globe"></i>
+        <span id="currentLang">FR</span>
+      </button>
+      <div class="lang-menu" id="langMenu">
+        <button onclick="setLanguage('fr')">🇫🇷 Français</button>
+        <button onclick="setLanguage('en')">🇬🇧 English</button>
+        <button onclick="setLanguage('es')">🇪🇸 Español</button>
+        <button onclick="setLanguage('de')">🇩🇪 Deutsch</button>
+        <button onclick="setLanguage('pt')">🇧🇷 Português</button>
+      </div>
+    </div>
+    
+    <!-- Notifications -->
+    <button class="control-btn notification-btn" onclick="toggleNotifications()" title="Notifications">
+      <i class="fa-solid fa-bell"></i>
+      <span class="notification-badge" id="notifBadge">3</span>
+    </button>
+  </div>
+  
+  <!-- Notifications Panel -->
+  <div class="notifications-panel" id="notificationsPanel">
+    <div class="notif-header">
+      <h3>📬 Notifications</h3>
+      <button onclick="markAllRead()">Tout lire</button>
+    </div>
+    <div class="notif-list" id="notifList">
+      <div class="notif-item unread">
+        <div class="notif-icon success">✅</div>
+        <div class="notif-content">
+          <div class="notif-title" data-i18n="notif1_title">Dépôt confirmé</div>
+          <div class="notif-message" data-i18n="notif1_msg">Votre dépôt de 50 000 XOF a été crédité.</div>
+          <div class="notif-time">Il y a 5 min</div>
+        </div>
+      </div>
+      <div class="notif-item unread">
+        <div class="notif-icon profit">📈</div>
+        <div class="notif-content">
+          <div class="notif-title" data-i18n="notif2_title">Profit quotidien</div>
+          <div class="notif-message" data-i18n="notif2_msg">+2 500 XOF de profit sur votre investissement.</div>
+          <div class="notif-time">Il y a 1h</div>
+        </div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-icon info">🎁</div>
+        <div class="notif-content">
+          <div class="notif-title" data-i18n="notif3_title">Bonus de bienvenue</div>
+          <div class="notif-message" data-i18n="notif3_msg">1 000 XOF ont été ajoutés à votre compte.</div>
+          <div class="notif-time">Il y a 2h</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   <!-- Footer -->
   <footer class="footer">
     <p>&copy; 2024 TokenFlow Inc. Tous droits réservés.</p>
@@ -1041,5 +1104,581 @@ function handleChatKey(e) {
     font-size: 20px;
   }
 }
+
+/* ============================================
+   TOP CONTROLS - Theme, Language, Notifications
+   ============================================ */
+.top-controls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 12px;
+  z-index: 1002;
+}
+
+.control-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-primary);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(20px);
+}
+
+.control-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.lang-btn {
+  width: auto;
+  padding: 0 14px;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Language Selector */
+.lang-selector {
+  position: relative;
+}
+
+.lang-menu {
+  position: absolute;
+  top: 54px;
+  right: 0;
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-card);
+  padding: 8px;
+  min-width: 160px;
+  display: none;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.lang-menu.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+.lang-menu button {
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lang-menu button:hover {
+  background: var(--primary-glow);
+  color: var(--primary);
+}
+
+/* Notifications */
+.notification-btn {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #EF4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notifications-panel {
+  position: fixed;
+  top: 74px;
+  right: 20px;
+  width: 360px;
+  max-width: calc(100vw - 40px);
+  background: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  z-index: 1002;
+  display: none;
+  overflow: hidden;
+}
+
+.notifications-panel.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+.notif-header {
+  padding: 16px 20px;
+  background: var(--primary-gradient);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notif-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.notif-header button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.notif-header button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.notif-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notif-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-card);
+  transition: all 0.2s;
+}
+
+.notif-item:hover {
+  background: var(--bg-glass);
+}
+
+.notif-item.unread {
+  background: var(--primary-glow);
+}
+
+.notif-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.notif-icon.success { background: rgba(16, 185, 129, 0.15); }
+.notif-icon.profit { background: rgba(99, 102, 241, 0.15); }
+.notif-icon.info { background: rgba(245, 158, 11, 0.15); }
+
+.notif-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.notif-message {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.notif-time {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+body.dark-mode {
+  --bg-page: #0F172A;
+  --bg-card: rgba(30, 41, 59, 0.85);
+  --bg-card-hover: rgba(51, 65, 85, 0.95);
+  --bg-glass: rgba(51, 65, 85, 0.65);
+  --border-glow: rgba(99, 102, 241, 0.3);
+  --border-card: rgba(71, 85, 105, 0.3);
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+}
+
+body.dark-mode .hero-section,
+body.dark-mode .stat-item,
+body.dark-mode .feature-card,
+body.dark-mode .cta-section,
+body.dark-mode .footer {
+  background: var(--bg-card);
+}
+
+body.dark-mode .floating-card {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(71, 85, 105, 0.4);
+}
+
+body.dark-mode .ai-chat-window {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(71, 85, 105, 0.3);
+}
+
+body.dark-mode .message-content {
+  background: rgba(51, 65, 85, 0.8);
+}
+
+body.dark-mode .quick-replies button {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+body.dark-mode .chat-input-area input {
+  background: rgba(51, 65, 85, 0.5);
+  border-color: rgba(71, 85, 105, 0.4);
+  color: var(--text-primary);
+}
+
+body.dark-mode .float-img {
+  border-color: rgba(71, 85, 105, 0.5);
+}
+
+@media (max-width: 768px) {
+  .top-controls {
+    top: 10px;
+    right: 10px;
+    gap: 8px;
+  }
+  
+  .control-btn {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .notifications-panel {
+    top: 54px;
+    right: 10px;
+  }
+}
 </style>
+
+<script>
+// ============================================
+// THEME TOGGLE (Dark/Light Mode)
+// ============================================
+function toggleTheme() {
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  
+  const icon = document.getElementById('themeIcon');
+  icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+}
+
+// Load saved theme
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    document.getElementById('themeIcon').className = 'fa-solid fa-sun';
+  }
+});
+
+// ============================================
+// LANGUAGE SYSTEM (5 Languages)
+// ============================================
+const TRANSLATIONS = {
+  fr: {
+    hero_title: "Investissez dans l'Avenir avec TokenFlow",
+    hero_subtitle: "Plateforme d'investissement premium avec trading automatisé par IA. Rejoignez plus de 10 000 investisseurs qui génèrent des revenus passifs quotidiens.",
+    btn_start: "Commencer maintenant",
+    btn_products: "Voir les produits",
+    stats_investors: "Investisseurs",
+    stats_volume: "Volume Total",
+    stats_bots: "Bots Actifs",
+    stats_roi: "ROI Moyen",
+    features_title: "Pourquoi Choisir TokenFlow ?",
+    features_subtitle: "Une plateforme complète pour maximiser vos rendements",
+    cta_title: "Prêt à Commencer ?",
+    cta_subtitle: "Rejoignez TokenFlow aujourd'hui et commencez à générer des revenus passifs",
+    btn_create: "Créer un compte gratuit",
+    notif1_title: "Dépôt confirmé",
+    notif1_msg: "Votre dépôt de 50 000 XOF a été crédité.",
+    notif2_title: "Profit quotidien",
+    notif2_msg: "+2 500 XOF de profit sur votre investissement.",
+    notif3_title: "Bonus de bienvenue",
+    notif3_msg: "1 000 XOF ont été ajoutés à votre compte.",
+    chat_welcome: "Bonjour ! 👋 Je suis l'assistant virtuel TokenFlow. Comment puis-je vous aider aujourd'hui ?"
+  },
+  en: {
+    hero_title: "Invest in the Future with TokenFlow",
+    hero_subtitle: "Premium investment platform with AI-powered automated trading. Join over 10,000 investors generating daily passive income.",
+    btn_start: "Get Started Now",
+    btn_products: "View Products",
+    stats_investors: "Investors",
+    stats_volume: "Total Volume",
+    stats_bots: "Active Bots",
+    stats_roi: "Avg ROI",
+    features_title: "Why Choose TokenFlow?",
+    features_subtitle: "A complete platform to maximize your returns",
+    cta_title: "Ready to Start?",
+    cta_subtitle: "Join TokenFlow today and start generating passive income",
+    btn_create: "Create Free Account",
+    notif1_title: "Deposit Confirmed",
+    notif1_msg: "Your deposit of 50,000 XOF has been credited.",
+    notif2_title: "Daily Profit",
+    notif2_msg: "+2,500 XOF profit on your investment.",
+    notif3_title: "Welcome Bonus",
+    notif3_msg: "1,000 XOF has been added to your account.",
+    chat_welcome: "Hello! 👋 I'm the TokenFlow virtual assistant. How can I help you today?"
+  },
+  es: {
+    hero_title: "Invierta en el Futuro con TokenFlow",
+    hero_subtitle: "Plataforma de inversión premium con trading automatizado por IA. Únase a más de 10,000 inversores que generan ingresos pasivos diarios.",
+    btn_start: "Comenzar Ahora",
+    btn_products: "Ver Productos",
+    stats_investors: "Inversores",
+    stats_volume: "Volumen Total",
+    stats_bots: "Bots Activos",
+    stats_roi: "ROI Promedio",
+    features_title: "¿Por Qué Elegir TokenFlow?",
+    features_subtitle: "Una plataforma completa para maximizar sus rendimientos",
+    cta_title: "¿Listo para Empezar?",
+    cta_subtitle: "Únase a TokenFlow hoy y comience a generar ingresos pasivos",
+    btn_create: "Crear Cuenta Gratuita",
+    notif1_title: "Depósito Confirmado",
+    notif1_msg: "Su depósito de 50,000 XOF ha sido acreditado.",
+    notif2_title: "Beneficio Diario",
+    notif2_msg: "+2,500 XOF de beneficio en su inversión.",
+    notif3_title: "Bono de Bienvenida",
+    notif3_msg: "1,000 XOF han sido añadidos a su cuenta.",
+    chat_welcome: "¡Hola! 👋 Soy el asistente virtual de TokenFlow. ¿Cómo puedo ayudarte hoy?"
+  },
+  de: {
+    hero_title: "Investieren Sie in die Zukunft mit TokenFlow",
+    hero_subtitle: "Premium-Investmentplattform mit KI-gesteuertem automatisiertem Trading. Schließen Sie sich über 10.000 Investoren an, die täglich passive Einkünfte erzielen.",
+    btn_start: "Jetzt Starten",
+    btn_products: "Produkte Ansehen",
+    stats_investors: "Investoren",
+    stats_volume: "Gesamtvolumen",
+    stats_bots: "Aktive Bots",
+    stats_roi: "Durchschn. ROI",
+    features_title: "Warum TokenFlow Wählen?",
+    features_subtitle: "Eine komplette Plattform zur Maximierung Ihrer Renditen",
+    cta_title: "Bereit zu Starten?",
+    cta_subtitle: "Treten Sie noch heute TokenFlow bei und generieren Sie passive Einkünfte",
+    btn_create: "Kostenloses Konto Erstellen",
+    notif1_title: "Einzahlung Bestätigt",
+    notif1_msg: "Ihre Einzahlung von 50.000 XOF wurde gutgeschrieben.",
+    notif2_title: "Tagesgewinn",
+    notif2_msg: "+2.500 XOF Gewinn auf Ihre Investition.",
+    notif3_title: "Willkommensbonus",
+    notif3_msg: "1.000 XOF wurden Ihrem Konto gutgeschrieben.",
+    chat_welcome: "Hallo! 👋 Ich bin der TokenFlow virtuelle Assistent. Wie kann ich Ihnen heute helfen?"
+  },
+  pt: {
+    hero_title: "Invista no Futuro com TokenFlow",
+    hero_subtitle: "Plataforma de investimento premium com trading automatizado por IA. Junte-se a mais de 10.000 investidores que geram renda passiva diária.",
+    btn_start: "Começar Agora",
+    btn_products: "Ver Produtos",
+    stats_investors: "Investidores",
+    stats_volume: "Volume Total",
+    stats_bots: "Bots Ativos",
+    stats_roi: "ROI Médio",
+    features_title: "Por Que Escolher TokenFlow?",
+    features_subtitle: "Uma plataforma completa para maximizar seus retornos",
+    cta_title: "Pronto para Começar?",
+    cta_subtitle: "Junte-se à TokenFlow hoje e comece a gerar renda passiva",
+    btn_create: "Criar Conta Gratuita",
+    notif1_title: "Depósito Confirmado",
+    notif1_msg: "Seu depósito de 50.000 XOF foi creditado.",
+    notif2_title: "Lucro Diário",
+    notif2_msg: "+2.500 XOF de lucro em seu investimento.",
+    notif3_title: "Bônus de Boas-vindas",
+    notif3_msg: "1.000 XOF foram adicionados à sua conta.",
+    chat_welcome: "Olá! 👋 Sou o assistente virtual TokenFlow. Como posso ajudá-lo hoje?"
+  }
+};
+
+function setLanguage(lang) {
+  localStorage.setItem('language', lang);
+  applyLanguage(lang);
+  toggleLangMenu();
+}
+
+function applyLanguage(lang) {
+  const t = TRANSLATIONS[lang];
+  if (!t) return;
+  
+  document.getElementById('currentLang').textContent = lang.toUpperCase();
+  
+  // Update hero section
+  document.querySelector('.hero-content h1').textContent = t.hero_title;
+  document.querySelector('.subtitle').textContent = t.hero_subtitle;
+  
+  // Update buttons
+  const buttons = document.querySelectorAll('.btn-primary');
+  if (buttons[0]) buttons[0].innerHTML = '<i class="fa-solid fa-rocket"></i> ' + t.btn_start;
+  if (buttons[1]) buttons[1].innerHTML = '<i class="fa-solid fa-user-plus"></i> ' + t.btn_create;
+  
+  const btnSecondary = document.querySelector('.btn-secondary');
+  if (btnSecondary) btnSecondary.innerHTML = '<i class="fa-solid fa-chart-line"></i> ' + t.btn_products;
+  
+  // Update stats labels
+  const statLabels = document.querySelectorAll('.stat-item .label');
+  if (statLabels.length >= 4) {
+    statLabels[0].textContent = t.stats_investors;
+    statLabels[1].textContent = t.stats_volume;
+    statLabels[2].textContent = t.stats_bots;
+    statLabels[3].textContent = t.stats_roi;
+  }
+  
+  // Update features section
+  const sectionHeader = document.querySelector('.section-header h2');
+  if (sectionHeader) sectionHeader.textContent = t.features_title;
+  
+  const sectionSubtitle = document.querySelector('.section-header p');
+  if (sectionSubtitle) sectionSubtitle.textContent = t.features_subtitle;
+  
+  // Update CTA
+  const ctaTitle = document.querySelector('.cta-section h2');
+  if (ctaTitle) ctaTitle.textContent = t.cta_title;
+  
+  const ctaSubtitle = document.querySelector('.cta-section p');
+  if (ctaSubtitle) ctaSubtitle.textContent = t.cta_subtitle;
+  
+  // Update notifications
+  document.querySelectorAll('[data-i18n="notif1_title"]')[0]?.textContent = t.notif1_title;
+  document.querySelectorAll('[data-i18n="notif1_msg"]')[0]?.textContent = t.notif1_msg;
+  document.querySelectorAll('[data-i18n="notif2_title"]')[0]?.textContent = t.notif2_title;
+  document.querySelectorAll('[data-i18n="notif2_msg"]')[0]?.textContent = t.notif2_msg;
+  document.querySelectorAll('[data-i18n="notif3_title"]')[0]?.textContent = t.notif3_title;
+  document.querySelectorAll('[data-i18n="notif3_msg"]')[0]?.textContent = t.notif3_msg;
+  
+  // Update chat welcome message
+  const chatWelcome = document.querySelector('.message.bot .message-content');
+  if (chatWelcome) chatWelcome.textContent = t.chat_welcome;
+}
+
+function toggleLangMenu() {
+  document.getElementById('langMenu').classList.toggle('active');
+}
+
+// Load saved language
+document.addEventListener('DOMContentLoaded', () => {
+  const savedLang = localStorage.getItem('language') || 'fr';
+  applyLanguage(savedLang);
+  
+  // Close menus when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.lang-selector')) {
+      document.getElementById('langMenu').classList.remove('active');
+    }
+    if (!e.target.closest('.notification-btn') && !e.target.closest('.notifications-panel')) {
+      document.getElementById('notificationsPanel').classList.remove('active');
+    }
+  });
+});
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+function toggleNotifications() {
+  document.getElementById('notificationsPanel').classList.toggle('active');
+}
+
+function markAllRead() {
+  document.querySelectorAll('.notif-item.unread').forEach(item => {
+    item.classList.remove('unread');
+  });
+  document.getElementById('notifBadge').style.display = 'none';
+}
+
+// ============================================
+// UPDATE AI RESPONSES FOR MULTIPLE LANGUAGES
+// ============================================
+const AI_RESPONSES_MULTI = {
+  fr: {
+    'c\'est quoi tokenflow': 'TokenFlow est une plateforme d\'investissement premium qui utilise l\'intelligence artificielle pour générer des revenus passifs.',
+    'comment commencer': 'C\'est très simple ! 1️⃣ Cliquez sur "Commencer maintenant" 2️⃣ Inscrivez-vous 3️⃣ Faites un dépôt 4️⃣ Choisissez un produit 5️⃣ Laissez l\'IA travailler !',
+    'est-ce sécurisé': 'Absolument ! 🔒 TokenFlow utilise un cryptage de niveau bancaire et des cold wallets sécurisés.',
+    'frais de retrait': 'Frais fixes de 3%, minimum 15 USD, traitement en 24-48h.',
+    'default': 'Je suis l\'assistant AI TokenFlow. Posez-moi une question ! 😊'
+  },
+  en: {
+    'what is tokenflow': 'TokenFlow is a premium investment platform using AI to generate passive income.',
+    'how to start': 'Simple! 1️⃣ Click "Get Started" 2️⃣ Sign up 3️⃣ Deposit 4️⃣ Choose a product 5️⃣ Let AI work!',
+    'is it safe': 'Absolutely! 🔒 TokenFlow uses bank-level encryption and secure cold wallets.',
+    'withdrawal fees': 'Fixed 3% fees, $15 minimum, 24-48h processing.',
+    'default': 'I\'m the TokenFlow AI assistant. Ask me anything! 😊'
+  },
+  es: {
+    'qué es tokenflow': 'TokenFlow es una plataforma de inversión premium que usa IA para generar ingresos pasivos.',
+    'cómo empezar': '¡Simple! 1️⃣ Haz clic en "Comenzar" 2️⃣ Regístrate 3️⃣ Deposita 4️⃣ Elige un producto 5️⃣ ¡Deja que la IA trabaje!',
+    'es seguro': '¡Absolutamente! 🔒 TokenFlow usa cifrado bancario y cold wallets seguras.',
+    'comisiones retiro': 'Comisión fija del 3%, mínimo $15, procesamiento en 24-48h.',
+    'default': 'Soy el asistente AI de TokenFlow. ¡Pregúntame lo que sea! 😊'
+  },
+  de: {
+    'was ist tokenflow': 'TokenFlow ist eine Premium-Investmentplattform, die KI zur Generierung passiver Einkünfte nutzt.',
+    'wie anfangen': 'Einfach! 1️⃣ Klicken Sie auf "Starten" 2️⃣ Registrieren 3️⃣ Einzahlen 4️⃣ Produkt wählen 5️⃣ KI arbeiten lassen!',
+    'ist es sicher': 'Absolut! 🔒 TokenFlow verwendet Bankverschlüsselung und sichere Cold Wallets.',
+    'gebühren': 'Feste 3% Gebühren, minimum 15$, Bearbeitung in 24-48h.',
+    'default': 'Ich bin der TokenFlow AI-Assistent. Fragen Sie mich anything! 😊'
+  },
+  pt: {
+    'o que é tokenflow': 'TokenFlow é uma plataforma de investimento premium que usa IA para gerar renda passiva.',
+    'como começar': 'Simples! 1️⃣ Clique em "Começar" 2️⃣ Cadastre-se 3️⃣ Deposite 4️⃣ Escolha um produto 5️⃣ Deixe a IA trabalhar!',
+    'é seguro': 'Absolutamente! 🔒 TokenFlow usa criptografia bancária e cold wallets seguras.',
+    'taxas saque': 'Taxa fixa de 3%, mínimo $15, processamento em 24-48h.',
+    'default': 'Sou o assistente AI TokenFlow. Pergunte-me qualquer coisa! 😊'
+  }
+};
+
+// Override getAIResponse to use multi-language
+function getAIResponse(question) {
+  const currentLang = localStorage.getItem('language') || 'fr';
+  const responses = AI_RESPONSES_MULTI[currentLang] || AI_RESPONSES_MULTI.fr;
+  const lowerQ = question.toLowerCase().trim();
+  
+  for (const [keyword, response] of Object.entries(responses)) {
+    if (lowerQ.includes(keyword) || lowerQ.includes(keyword.split(' ')[0])) {
+      return response;
+    }
+  }
+  
+  return responses.default;
+}
+</script>
 {% endblock %}

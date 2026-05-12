@@ -1,107 +1,322 @@
 {% extends "base.html" %}
 
-{% block title %}Mon Profil | TokenFlow Premium{% endblock %}
+{% block title %}Mon Profil | TokenFlow{% endblock %}
+
+{% block page_styles %}
+.profile-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white;
+  margin: 0 auto 16px;
+  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4);
+}
+
+.profile-name {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.profile-phone {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.profile-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+/* Stats Cards */
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.profile-stat {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  border: 1px solid var(--border-card);
+}
+
+.profile-stat .stat-value {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.profile-stat .stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.quick-action {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid var(--border-card);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.quick-action:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px var(--primary-glow);
+  border-color: var(--primary);
+}
+
+.quick-action i {
+  font-size: 24px;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.quick-action span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Menu Section */
+.menu-section {
+  background: var(--bg-card);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border-card);
+  margin-bottom: 24px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border-card);
+  transition: all 0.2s;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:hover {
+  background: var(--bg-glass);
+}
+
+.menu-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-item i {
+  width: 20px;
+  color: var(--primary);
+  font-size: 16px;
+}
+
+.menu-item .badge {
+  background: #EF4444;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Logout */
+.logout-btn {
+  display: block;
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  text-align: center;
+  padding: 16px;
+  border-radius: 16px;
+  text-decoration: none;
+  font-weight: 700;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  transition: all 0.3s;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Referral Code */
+.referral-section {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid var(--border-card);
+  margin-bottom: 24px;
+}
+
+.referral-section h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.referral-code {
+  background: var(--primary-glow);
+  border: 2px dashed var(--primary);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+{% endblock %}
 
 {% block content %}
 <div class="app-container">
-  <header class="top-header animate-fade-in">
-    <div class="brand">
-      <a href="/dashboard" style="display: flex; align-items: center; gap: 8px;">
-        <i class="fa-solid fa-arrow-left" style="color: var(--text-secondary); font-size: 18px;"></i>
-      </a>
-      <div class="brand-logo">T</div>
-      <span class="brand-name">TokenFlow</span>
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <i class="fa-solid fa-user"></i>
     </div>
-    <button class="icon-btn animate-scale-in delay-200" onclick="toggleDarkMode()">
-      <i class="fa-solid fa-moon"></i>
-    </button>
-  </header>
+    <h1 class="profile-name">{{ user.username or user.phone }}</h1>
+    <p class="profile-phone">{{ user.username or user.phone }}</p>
+    <span class="profile-badge">✓ Compte vérifié</span>
+  </div>
 
-  <div class="glass-card text-center mb-3 card-animated scroll-fade-in" style="padding: 32px 20px;">
-    <div class="sidebar-avatar animate-scale-in delay-300" style="width: 80px; height: 80px; margin: 0 auto 16px; font-size: 32px;">
-      {{ user.phone[0] }}
+  <!-- Stats -->
+  <div class="profile-stats">
+    <div class="profile-stat">
+      <div class="stat-value">{{ "{:,.0f}".format(user.solde_total|default(0)|int).replace(",", " ") }} XOF</div>
+      <div class="stat-label">Solde total</div>
     </div>
-    <h3 style="font-size: 20px; font-weight: 800; color: var(--text-primary);" class="animate-fade-in delay-500">{{ user.phone }}</h3>
-    <div class="vip-badge gold animate-fade-in delay-500" style="margin-top: 8px;">
-      <i class="fa-solid fa-crown"></i> Membre Gold
+    <div class="profile-stat">
+      <div class="stat-value" style="color: var(--success);">{{ "{:,.0f}".format((user.solde_parrainage|default(0) + user.solde_revenu|default(0))|int).replace(",", " ") }} XOF</div>
+      <div class="stat-label">Revenus</div>
     </div>
   </div>
 
-  <div class="actions-grid mb-3 scroll-fade-in">
-    <a href="/deposit" class="action-item hover-lift animate-fade-in delay-100">
-      <div class="action-icon deposit"><i class="fa-solid fa-wallet"></i></div>
-      <span class="action-label">Recharger</span>
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <div class="quick-action" onclick="location.href='/deposit'">
+      <i class="fa-solid fa-plus-circle"></i>
+      <span>Dépôt</span>
+    </div>
+    <div class="quick-action" onclick="location.href='/retrait'">
+      <i class="fa-solid fa-money-bill-transfer"></i>
+      <span>Retrait</span>
+    </div>
+  </div>
+
+  <!-- Referral Code -->
+  <div class="referral-section">
+    <h3><i class="fa-solid fa-gift"></i> Code de parrainage</h3>
+    <div class="referral-code">{{ user.referral_code or 'N/A' }}</div>
+    <p style="font-size: 13px; color: var(--text-muted); text-align: center;">
+      Partagez ce code et gagnez 27% de commission
+    </p>
+  </div>
+
+  <!-- Menu -->
+  <div class="menu-section">
+    <a href="/historique" class="menu-item">
+      <div class="menu-item-left">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Historique des transactions</span>
+      </div>
+      <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 12px;"></i>
     </a>
-    <a href="/retrait" class="action-item hover-lift animate-fade-in delay-200">
-      <div class="action-icon withdraw"><i class="fa-solid fa-money-bill-transfer"></i></div>
-      <span class="action-label">Retirer</span>
+
+    <a href="/team" class="menu-item">
+      <div class="menu-item-left">
+        <i class="fa-solid fa-users"></i>
+        <span>Mon réseau</span>
+      </div>
+      <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 12px;"></i>
     </a>
-    <a href="/team" class="action-item hover-lift animate-fade-in delay-300">
-      <div class="action-icon invest"><i class="fa-solid fa-users"></i></div>
-      <span class="action-label">Réseau</span>
+
+    <a href="/support" class="menu-item">
+      <div class="menu-item-left">
+        <i class="fa-solid fa-headset"></i>
+        <span>Support</span>
+      </div>
+      <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 12px;"></i>
     </a>
-    <a href="/achats" class="action-item hover-lift animate-fade-in delay-500">
-      <div class="action-icon history"><i class="fa-solid fa-briefcase"></i></div>
-      <span class="action-label">Invests</span>
+
+    <a href="/nous" class="menu-item">
+      <div class="menu-item-left">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>À propos de TokenFlow</span>
+      </div>
+      <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 12px;"></i>
+    </a>
+
+    <a href="/rules" class="menu-item">
+      <div class="menu-item-left">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <span>Conditions & règles</span>
+      </div>
+      <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 12px;"></i>
+    </a>
+
+    <a href="https://t.me/+ldwbAgOaYeFkNjc0" target="_blank" class="menu-item">
+      <div class="menu-item-left">
+        <i class="fa-brands fa-telegram"></i>
+        <span>Canal Telegram</span>
+      </div>
+      <i class="fa-solid fa-external-link-alt" style="color: var(--text-muted); font-size: 12px;"></i>
+    </a>
+
+    <a href="https://whatsapp.com/channel/0029Vb7rkEz96H4RMEtshl36" target="_blank" class="menu-item">
+      <div class="menu-item-left">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span>Canal WhatsApp</span>
+      </div>
+      <i class="fa-solid fa-external-link-alt" style="color: var(--text-muted); font-size: 12px;"></i>
     </a>
   </div>
 
-  <div class="transactions-card scroll-fade-in">
-    <a href="/historique" class="transaction-item">
-      <div class="transaction-left">
-        <div class="transaction-icon info"><i class="fa-solid fa-receipt"></i></div>
-        <div class="transaction-info"><b>Historique financier</b><span>Dépôts, retraits et gains</span></div>
-      </div>
-      <i class="fa-solid fa-chevron-right text-muted"></i>
-    </a>
-
-    <a href="/nous" class="transaction-item">
-      <div class="transaction-left">
-        <div class="transaction-icon info"><i class="fa-solid fa-circle-info"></i></div>
-        <div class="transaction-info"><b>À propos de nous</b><span>Notre vision et sécurité</span></div>
-      </div>
-      <i class="fa-solid fa-chevron-right text-muted"></i>
-    </a>
-
-    <a href="/rules" class="transaction-item">
-      <div class="transaction-left">
-        <div class="transaction-icon info"><i class="fa-solid fa-file-shield"></i></div>
-        <div class="transaction-info"><b>Conditions d'utilisation</b><span>Règles et conformité</span></div>
-      </div>
-      <i class="fa-solid fa-chevron-right text-muted"></i>
-    </a>
-
-    <a href="/support" class="transaction-item">
-      <div class="transaction-left">
-        <div class="transaction-icon info"><i class="fa-solid fa-headset"></i></div>
-        <div class="transaction-info"><b>Aide & Support</b><span>Chat en ligne 24/7</span></div>
-      </div>
-      <i class="fa-solid fa-chevron-right text-muted"></i>
-    </a>
-  </div>
-
-  <a href="/logout" class="btn-primary" style="display: block; text-align: center; background: var(--danger-gradient); margin-top: 24px; text-decoration: none;">
-    <i class="fa-solid fa-power-off"></i> Déconnexion sécurisée
+  <!-- Logout -->
+  <a href="/logout" class="logout-btn">
+    <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
   </a>
 </div>
-
-<!-- Bottom Navigation -->
-<nav class="bottom-nav">
-  <a href="/dashboard" class="nav-item">
-    <i class="fa-solid fa-house"></i>
-    <span>Accueil</span>
-  </a>
-  <a href="/produits_rapide" class="nav-item">
-    <i class="fa-solid fa-rocket"></i>
-    <span>Investir</span>
-  </a>
-  <a href="/team" class="nav-item">
-    <i class="fa-solid fa-users"></i>
-    <span>Réseau</span>
-  </a>
-  <a href="/profile" class="nav-item active">
-    <i class="fa-solid fa-user"></i>
-    <span>Profil</span>
-  </a>
-</nav>
 {% endblock %}

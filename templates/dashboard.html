@@ -1375,7 +1375,7 @@
     <!-- Top Bar -->
     <div class="pro-topbar">
       <div class="pro-topbar-left">
-        <h1>Bonjour, Trader 👋</h1>
+        <h1>Bonjour, {{ user.username or user.phone }} 👋</h1>
         <p>Voici votre aperçu financier en temps réel</p>
       </div>
       <div class="pro-topbar-right">
