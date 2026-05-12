@@ -340,11 +340,11 @@ body {
     </div>
 
     <div class="social-buttons">
-      <button class="social-btn">
+      <button class="social-btn" onclick="loginWithGoogle()">
         <i class="fa-brands fa-google" style="color: #DB4437;"></i>
         Google
       </button>
-      <button class="social-btn">
+      <button class="social-btn" onclick="loginWithApple()">
         <i class="fa-brands fa-apple"></i>
         Apple
       </button>
@@ -363,6 +363,9 @@ body {
 {% endblock %}
 
 {% block extra_js %}
+<!-- Google Sign-In SDK -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <script>
 function togglePassword(btn) {
   const input = btn.parentElement.querySelector('input');
@@ -375,6 +378,49 @@ function togglePassword(btn) {
     input.type = 'password';
     icon.className = 'fa-solid fa-eye';
   }
+}
+
+// Google Login
+function loginWithGoogle() {
+  // Initialize Google Sign-In
+  if (typeof google !== 'undefined' && google.accounts) {
+    google.accounts.id.initialize({
+      client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+      callback: handleGoogleResponse
+    });
+    google.accounts.id.prompt();
+  } else {
+    // Fallback: redirect to Google OAuth
+    window.location.href = '/auth/google';
+  }
+}
+
+function handleGoogleResponse(response) {
+  // Send JWT to backend for verification
+  fetch('/auth/google/callback', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ credential: response.credential })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      showToast(data.error || 'Erreur de connexion', 'error');
+    }
+  })
+  .catch(() => {
+    showToast('Erreur de connexion à Google', 'error');
+  });
+}
+
+// Apple Login
+function loginWithApple() {
+  // Redirect to Apple OAuth
+  window.location.href = '/auth/apple';
 }
 </script>
 {% endblock %}

@@ -10,6 +10,7 @@
 :root {
   --primary: #6366F1;
   --primary-light: rgba(99, 102, 241, 0.1);
+  --primary-gradient: linear-gradient(135deg, #6366F1, #8B5CF6);
   --bg-page: #F1F5F9;
   --white: #FFFFFF;
   --text-primary: #0F172A;
@@ -18,6 +19,7 @@
   --border-color: rgba(148, 163, 184, 0.2);
   --user-msg-bg: #6366F1;
   --ai-msg-bg: #F1F5F9;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -42,6 +44,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: var(--shadow);
 }
 
 .back-btn {
@@ -56,11 +59,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s;
 }
 
-.header-info {
-  flex: 1;
-}
+.back-btn:active { transform: scale(0.9); }
+
+.header-info { flex: 1; }
 
 .header-info h2 {
   margin: 0;
@@ -77,13 +81,28 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  background: var(--primary-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-size: 18px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
+
+/* Status indicator */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  border: 2px solid var(--white);
+}
+
+.status-wrapper { position: relative; }
 
 /* Chat Messages */
 .chat-container {
@@ -93,12 +112,13 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .message {
   display: flex;
   gap: 12px;
-  max-width: 85%;
+  max-width: 90%;
   animation: messageIn 0.3s ease;
 }
 
@@ -134,7 +154,7 @@ body {
 }
 
 .message.ai .message-avatar {
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  background: var(--primary-gradient);
   color: white;
 }
 
@@ -147,7 +167,8 @@ body {
   padding: 14px 18px;
   border-radius: 16px;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.6;
+  word-wrap: break-word;
 }
 
 .message.ai .message-content {
@@ -160,6 +181,28 @@ body {
   background: var(--user-msg-bg);
   border-bottom-right-radius: 4px;
   color: white;
+}
+
+/* Message links */
+.message-content a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.message.user .message-content a {
+  color: white;
+  text-decoration: underline;
+}
+
+/* Message lists */
+.message-content ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.message-content li {
+  margin: 4px 0;
 }
 
 /* Typing indicator */
@@ -187,11 +230,16 @@ body {
 
 /* Quick Questions */
 .quick-questions {
-  padding: 0 20px 16px;
+  padding: 0 20px 12px;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+
+.quick-questions::-webkit-scrollbar { display: none; }
 
 .quick-btn {
   padding: 8px 14px;
@@ -211,6 +259,8 @@ body {
   color: var(--primary);
   border-color: var(--primary);
 }
+
+.quick-btn:active { transform: scale(0.95); }
 
 /* Input Area */
 .input-area {
@@ -240,6 +290,7 @@ body {
 
 .input-wrapper input:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .send-btn {
@@ -247,7 +298,7 @@ body {
   height: 48px;
   border-radius: 50%;
   border: none;
-  background: var(--primary);
+  background: var(--primary-gradient);
   color: white;
   font-size: 18px;
   cursor: pointer;
@@ -255,15 +306,11 @@ body {
   align-items: center;
   justify-content: center;
   transition: transform 0.2s;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-.send-btn:hover {
-  transform: scale(1.05);
-}
-
-.send-btn:active {
-  transform: scale(0.95);
-}
+.send-btn:hover { transform: scale(1.05); }
+.send-btn:active { transform: scale(0.95); }
 
 /* Welcome message */
 .welcome-card {
@@ -272,6 +319,7 @@ body {
   padding: 24px;
   text-align: center;
   margin: 20px;
+  box-shadow: var(--shadow);
 }
 
 .welcome-card .ai-avatar {
@@ -294,6 +342,13 @@ body {
   color: var(--text-muted);
   line-height: 1.5;
 }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .message { max-width: 95%; }
+  .chat-container { padding: 16px; }
+  .welcome-card { margin: 16px; padding: 20px; }
+}
 </style>
 </head>
 <body>
@@ -302,12 +357,15 @@ body {
   <button class="back-btn" onclick="history.back()">
     <i class="fa-solid fa-chevron-left"></i>
   </button>
-  <div class="ai-avatar">
-    <i class="fa-solid fa-robot"></i>
+  <div class="status-wrapper">
+    <div class="ai-avatar">
+      <i class="fa-solid fa-robot"></i>
+    </div>
+    <div class="status-dot"></div>
   </div>
   <div class="header-info">
     <h2>TokenFlow AI</h2>
-    <span>Assistant intelligent 24/7</span>
+    <span>Assistant intelligent 24/7 • En ligne</span>
   </div>
 </div>
 
@@ -326,6 +384,8 @@ body {
   <button class="quick-btn" onclick="sendQuick('Comment retirer mes gains ?')">Retrait des gains</button>
   <button class="quick-btn" onclick="sendQuick('Quels sont les plans d\'investissement ?')">Plans d'investissement</button>
   <button class="quick-btn" onclick="sendQuick('Comment fonctionne le parrainage ?')">Parrainage</button>
+  <button class="quick-btn" onclick="sendQuick('Quels sont les niveaux VIP ?')">Niveaux VIP</button>
+  <button class="quick-btn" onclick="sendQuick('Dépôt minimum ?')">Dépôt minimum</button>
 </div>
 
 <div class="input-area">
@@ -338,91 +398,239 @@ body {
 </div>
 
 <script>
-// Base de connaissances pour l'IA
+// ============================================
+// BASE DE CONNAISSANCES COMPLÈTE TOKENFLOW
+// ============================================
 const knowledgeBase = {
+  // Salutations
   greetings: {
-    keywords: ['bonjour', 'salut', 'coucou', 'hello', 'hi'],
+    keywords: ['bonjour', 'salut', 'coucou', 'hello', 'hi', 'bonsoir', 'bienvenue', 'hey'],
     responses: [
-      'Bonjour ! 👋 Comment puis-je vous aider aujourd\'hui ?',
-      'Salut ! Je suis là pour répondre à toutes vos questions sur TokenFlow.',
-      'Hello ! Bienvenue sur TokenFlow. Que puis-je faire pour vous ?'
+      'Bonjour ! 👋 Comment puis-je vous aider aujourd\'hui sur TokenFlow ?',
+      'Salut ! Je suis l\'IA de TokenFlow, prête à répondre à toutes vos questions.',
+      'Hello ! Bienvenue sur TokenFlow. Que puis-je faire pour vous ? 😊',
+      'Bonsoir ! Comment allez-vous ? Je suis là pour vous aider avec TokenFlow.'
     ]
   },
+
+  // Comment ça marche
   howItWorks: {
-    keywords: ['comment', 'fonctionne', 'marche', 'utilise', 'utiliser'],
+    keywords: ['comment', 'fonctionne', 'marche', 'utilise', 'utiliser', 'débuter', 'commencer', 'inscription', 'processus', 'étapes'],
     responses: [
-      'TokenFlow fonctionne en 3 étapes simples :\n\n1️⃣ Inscrivez-vous avec votre numéro de téléphone\n2️⃣ Effectuez un dépôt minimum de 3000 FCFA\n3️⃣ Choisissez un plan d\'investissement et commencez à gagner !\n\nNos plans offrent des rendements journaliers allant jusqu\'à 10%.'
+      'TokenFlow fonctionne en 3 étapes simples :\n\n1️⃣ **Inscription** - Créez votre compte avec votre numéro de téléphone\n2️⃣ **Dépôt** - Effectuez un dépôt minimum de 3000 FCFA via Mobile Money\n3️⃣ **Investissement** - Choisissez un plan et commencez à gagner des revenus journaliers\n\nNos plans offrent des rendements de 0.8% à 2% par jour selon le produit choisi.'
     ]
   },
-  withdrawal: {
-    keywords: ['retrait', 'retirer', 'gains', 'argent', 'payer'],
+
+  // Inscription
+  registration: {
+    keywords: ['inscription', 'inscrire', 'créer compte', 'creer compte', 'nouveau', 's\'inscrire', 'register', 'sign up'],
     responses: [
-      'Pour retirer vos gains :\n\n1. Allez dans la section "Retrait"\n2. Configurez votre portefeuille Mobile Money\n3. Entrez le montant (minimum 1000 FCFA)\n4. Confirmez la transaction\n\n⏱️ Les retraits sont traités en 24-48h.'
+      'Pour vous inscrire sur TokenFlow :\n\n📱 Allez sur la page d\'inscription\n📞 Entrez votre numéro de téléphone\n🔐 Créez un mot de passe sécurisé\n🎁 Recevez 1000 FCFA de bonus de bienvenue !\n\nC\'est rapide, gratuit et sans engagement !'
     ]
   },
-  investment: {
-    keywords: ['investissement', 'plan', 'investir', 'pack', 'vip'],
-    responses: [
-      'TokenFlow propose 8 plans d\'investissement :\n\n🥉 Fly 1 : 4 000 FCFA → 400 FCFA/jour\n🥈 Fly 2 : 8 000 FCFA → 800 FCFA/jour\n🥇 Fly 3 : 10 000 FCFA → 1 000 FCFA/jour\n💎 Fly 4 : 15 000 FCFA → 1 500 FCFA/jour\n🏆 Fly 5 : 20 000 FCFA → 2 000 FCFA/jour\n👑 Fly 6 : 50 000 FCFA → 5 000 FCFA/jour\n⭐ Fly 7 : 100 000 FCFA → 10 000 FCFA/jour\n🚀 Fly 8 : 200 000 FCFA → 20 000 FCFA/jour\n\nDurée : 120 jours. Rendement total jusqu\'à 1200% !'
-    ]
-  },
-  referral: {
-    keywords: ['parrainage', 'parrain', 'filleul', 'commission', 'réseau'],
-    responses: [
-      'Le programme de parrainage TokenFlow vous permet de gagner :\n\n🥇 Niveau 1 : 27% sur les dépôts de vos filleuls directs\n🥈 Niveau 2 : 2% sur les dépôts des filleuls de niveau 2\n🥉 Niveau 3 : 1% sur les dépôts des filleuls de niveau 3\n\nPartagez votre lien de parrainage et construisez votre équipe !'
-    ]
-  },
+
+  // Dépôt
   deposit: {
-    keywords: ['dépôt', 'deposer', 'ajouter', 'fonds', 'charger'],
+    keywords: ['dépôt', 'deposer', 'ajouter', 'fonds', 'charger', 'alimenter', 'verser', 'minimum', 'maximum', 'montant'],
     responses: [
-      'Pour déposer des fonds :\n\n1. Allez dans "Dépôt"\n2. Choisissez le montant (min. 3000 FCFA)\n3. Sélectionnez votre pays et opérateur Mobile Money\n4. Validez le paiement\n\nVotre solde sera crédité automatiquement après confirmation.'
+      'Pour déposer des fonds sur TokenFlow :\n\n1. Allez dans la section **"Dépôt"**\n2. Choisissez le montant (minimum **3000 FCFA**)\n3. Sélectionnez votre pays et opérateur Mobile Money (Orange Money, MTN Money, Wave, etc.)\n4. Validez le paiement sur votre téléphone\n\n✅ Votre solde est crédité automatiquement après confirmation (généralement en quelques minutes).\n\nLes dépôts sont sécurisés et traçables.'
     ]
   },
+
+  // Retrait
+  withdrawal: {
+    keywords: ['retrait', 'retirer', 'gains', 'argent', 'payer', 'récupérer', 'recuperer', 'cash', 'withdrawal'],
+    responses: [
+      'Pour retirer vos gains TokenFlow :\n\n1. Allez dans **"Retrait"**\n2. Configurez votre portefeuille Mobile Money (si ce n\'est pas déjà fait)\n3. Entrez le montant (minimum **1000 FCFA**)\n4. Confirmez la transaction\n\n⏱️ **Délai de traitement :** 24-48 heures\n✅ **Statut :** Suivez votre retrait dans l\'historique\n\nLes retraits sont sécurisés et directement envoyés sur votre compte Mobile Money.'
+    ]
+  },
+
+  // Investissement - Plans
+  investment: {
+    keywords: ['investissement', 'plan', 'investir', 'pack', 'produit', 'projet', 'crypto', 'forex', 'gold', 'or', 'immobilier'],
+    responses: [
+      'TokenFlow propose plusieurs types d\'investissements :\n\n📈 **Crypto Starter** (6 000 - 50 000 FCFA)\n→ 1% de rendement journalier\n→ Durée : 120 jours\n\n💱 **Forex Basic** (12 000 - 100 000 FCFA)\n→ 1.2% de rendement journalier\n→ Durée : 120 jours\n\n🥇 **Gold Secure** (25 000 - 200 000 FCFA)\n→ 0.8% de rendement journalier\n→ Durée : 180 jours (plus stable)\n\n🏢 **Real Estate** (50 000 - 500 000 FCFA)\n→ 0.6% de rendement journalier\n→ Durée : 365 jours\n\n🤖 **AI Trading Pro** (100 000 - 1 000 000 FCFA)\n→ 1.5% de rendement journalier\n→ Durée : 90 jours\n\n⭐ **VIP Exclusive** (500 000 - 5 000 000 FCFA)\n→ 2% de rendement journalier\n→ Durée : 60 jours\n\nTous les revenus sont automatiquement crédités sur votre solde chaque jour !'
+    ]
+  },
+
+  // Parrainage
+  referral: {
+    keywords: ['parrainage', 'parrain', 'filleul', 'commission', 'réseau', 'réferral', 'affiliation', 'inviter', 'partager', 'lien'],
+    responses: [
+      'Le programme de parrainage TokenFlow est très avantageux :\n\n🥇 **Niveau 1 :** 27% sur les dépôts de vos filleuls directs\n🥈 **Niveau 2 :** 2% sur les dépôts des filleuls de niveau 2\n🥉 **Niveau 3 :** 1% sur les dépôts des filleuls de niveau 3\n\n💡 **Exemple :** Si votre filleul dépose 10 000 FCFA, vous recevez 2 700 FCFA de commission !\n\nPartagez votre lien de parrainage unique et construisez une équipe pour maximiser vos revenus passifs.'
+    ]
+  },
+
+  // Niveaux VIP
+  vip: {
+    keywords: ['vip', 'niveau', 'level', 'bronze', 'silver', 'gold', 'platine', 'platinum', 'diamond', 'statut', 'rang'],
+    responses: [
+      'TokenFlow propose 5 niveaux VIP avec des avantages exclusifs :\n\n🥉 **Bronze** (0 - 49 999 FCFA investis)\n→ Niveau de base\n\n🥈 **Silver** (50 000 - 199 999 FCFA)\n→ +5% de ROI\n→ +2% de bonus parrainage\n\n🥇 **Gold** (200 000 - 499 999 FCFA)\n→ +10% de ROI\n→ +5% de bonus parrainage\n→ Retraits prioritaires\n→ Support prioritaire\n\n💎 **Platinum** (500 000 - 999 999 FCFA)\n→ +15% de ROI\n→ +8% de bonus parrainage\n→ Support dédié\n→ Limite de retrait : 5M FCFA/jour\n\n👑 **Diamond** (1 000 000+ FCFA)\n→ +25% de ROI\n→ +12% de bonus parrainage\n→ Account manager dédié\n→ Retraits illimités\n\nPlus vous investissez, plus vos avantages augmentent !'
+    ]
+  },
+
+  // Bonus
   bonus: {
-    keywords: ['bonus', 'cadeau', 'gratuit', 'offre', 'promotion'],
+    keywords: ['bonus', 'cadeau', 'gratuit', 'offre', 'promotion', 'bienvenue', 'welcome', 'offert'],
     responses: [
-      '🎁 Bonus de bienvenue TokenFlow :\n\n• 1 000 FCFA offerts à l\'inscription\n• Pas de dépôt requis pour commencer\n• Seuil de retrait : 1 000 FCFA\n\nProfitez-en pour découvrir la plateforme sans risque !'
+      '🎁 **Bonus de bienvenue TokenFlow :**\n\n• **1 000 FCFA offerts** à l\'inscription\n• Pas de dépôt requis pour commencer\n• Seuil de retrait : 1 000 FCFA\n\nProfitez-en pour découvrir la plateforme sans risque ! Vous pouvez utiliser ce bonus pour faire votre premier investissement.\n\nDe plus, des promotions régulières sont organisées pour nos membres actifs !'
     ]
   },
+
+  // Sécurité
   security: {
-    keywords: ['sécurité', 'sécurisé', 'fiable', 'confiance', 'arnaque'],
+    keywords: ['sécurité', 'sécurisé', 'fiable', 'confiance', 'arnaque', 'scam', 'légitime', 'legitime', 'preuve', 'paiement'],
     responses: [
-      'TokenFlow est une plateforme 100% sécurisée :\n\n✅ Technologie blockchain\n✅ Cryptage SSL 256-bit\n✅ Équipe vérifiée et transparente\n✅ Paiements automatiques garantis\n✅ Support client 24/7\n\nDes milliers d\'utilisateurs nous font confiance !'
+      'TokenFlow est une plateforme 100% sécurisée et légitime :\n\n✅ **Technologie blockchain** - Transactions transparentes\n✅ **Cryptage SSL 256-bit** - Données protégées\n✅ **Équipe vérifiée** - Profils publics et transparents\n✅ **Paiements automatiques** - Smart contracts garantis\n✅ **Support 24/7** - Toujours là pour vous aider\n✅ **Des milliers d\'utilisateurs** satisfaits\n\nNous sommes enregistrés et opérons dans le respect des réglementations en vigueur. Votre confiance est notre priorité !'
     ]
   },
+
+  // Support
   support: {
-    keywords: ['support', 'aide', 'contact', 'contacter', 'problème'],
+    keywords: ['support', 'aide', 'contact', 'contacter', 'problème', 'souci', 'question', 'assistance', 'service client'],
     responses: [
-      'Notre équipe support est disponible 24/7 :\n\n📧 Via le chat de support dans l\'application\n📱 Telegram : @TokenFlow_support\n🌐 Canal officiel : t.me/TokenFlow\n\nNous répondons généralement en moins de 2 heures !'
+      'Notre équipe support est disponible 24h/24 et 7j/7 :\n\n📧 **Chat de support** - Dans l\'application (section Support)\n📱 **Telegram** - @TokenFlow_support\n🌐 **Canal officiel** - t.me/TokenFlow\n\n⏱️ **Temps de réponse moyen :** Moins de 2 heures\n\nPour les questions urgentes, privilégiez le chat in-app ou Telegram.'
     ]
   },
+
+  // Revenus / Gains
+  earnings: {
+    keywords: ['gains', 'revenus', 'argent', 'gagner', 'profit', 'bénéfice', 'rendement', 'roi', 'combien', 'recevoir'],
+    responses: [
+      'Sur TokenFlow, vous gagnez de l\'argent de 3 façons :\n\n1️⃣ **Investissements** - Revenus journaliers automatiques (0.8% à 2% selon le plan)\n\n2️⃣ **Parrainage** - Commissions sur les dépôts de votre réseau (jusqu\'à 27%)\n\n3️⃣ **Bonus VIP** - Rendements supplémentaires selon votre niveau\n\n💡 **Exemple concret :**\nAvec un investissement de 50 000 FCFA à 1%/jour = 500 FCFA de gains quotidiens = 15 000 FCFA/mois !\n\nTous les gains sont crédités automatiquement sur your solde et peuvent être retirés à tout moment.'
+    ]
+  },
+
+  // Délais / Temps
+  timing: {
+    keywords: ['délai', 'temps', 'durée', 'quand', 'combien de temps', 'rapide', 'vite', 'lent', 'attente'],
+    responses: [
+      'Voici les délais sur TokenFlow :\n\n⏱️ **Dépôts :** Quelques minutes après confirmation Mobile Money\n⏱️ **Retraits :** 24-48 heures de traitement\n⏱️ **Revenus d\'investissement :** Crédités automatiquement chaque jour\n⏱️ **Commissions de parrainage :** Immédiates après le dépôt du filleul\n⏱️ **Support :** Réponse en moins de 2 heures en moyenne\n\nNous faisons tout notre possible pour que les transactions soient les plus rapides possible !'
+    ]
+  },
+
+  // Mobile Money / Paiement
+  payment: {
+    keywords: ['mobile money', 'orange money', 'mtn', 'wave', 'paiement', 'payer', 'opérateur', 'pays'],
+    responses: [
+      'TokenFlow accepte les paiements via Mobile Money :\n\n📱 **Orange Money** - Disponible dans la plupart des pays africains\n📱 **MTN Mobile Money** - Large couverture\n📱 **Wave** - Sénégal, Côte d\'Ivoire, Mali, etc.\n📱 **M-Pesa** - Kenya, Tanzanie\n\n✅ **Pays supportés :** Sénégal, Côte d\'Ivoire, Mali, Burkina Faso, Cameroun, Gabon, Bénin, Togo, Guinée, et plus encore !\n\nLes transactions sont sécurisées et instantanées.'
+    ]
+  },
+
+  // Compte / Profil
+  account: {
+    keywords: ['compte', 'profil', 'modifier', 'changer', 'mot de passe', 'password', 'téléphone', 'numéro'],
+    responses: [
+      'Pour gérer your compte TokenFlow :\n\n👤 **Profil** - Section "Mon profil" pour modifier vos informations\n🔐 **Mot de passe** - Modifiable dans les paramètres de sécurité\n📱 **Numéro de téléphone** - Identifiant unique (non modifiable)\n💰 **Portefeuille** - Configurez votre Mobile Money dans "Retrait"\n\nEn cas de problème avec your compte, contactez le support.'
+    ]
+  },
+
+  // Transactions / Historique
+  transactions: {
+    keywords: ['transaction', 'historique', 'activité', 'mouvement', 'suivi', 'statut', 'pending', 'en attente'],
+    responses: [
+      'Pour consulter your historique de transactions :\n\n📊 Allez dans la section **"Historique"**\n\nVous y verrez :\n• Tous vos dépôts et retraits\n• Vos investissements actifs et terminés\n• Vos commissions de parrainage\n• Vos revenus journaliers\n\nChaque transaction a un statut : **En attente**, **Complétée**, ou **Refusée**.\n\nEn cas de transaction bloquée, contactez le support avec la référence.'
+    ]
+  },
+
+  // Merci
   thanks: {
-    keywords: ['merci', 'remercie', 'super', 'génial', 'excellent'],
+    keywords: ['merci', 'remercie', 'super', 'génial', 'excellent', 'parfait', 'top', 'bien'],
     responses: [
-      'Avec plaisir ! 😊 N\'hésitez pas si vous avez d\'autres questions.',
+      'Avec plaisir ! 😊 N\'hésitez pas si vous avez d\'autres questions sur TokenFlow.',
       'Je suis là pour ça ! Bonne continuation sur TokenFlow ! 🚀',
-      'Ravi d\'avoir pu vous aider ! 💜'
+      'Ravi d\'avoir pu vous aider ! 💜 Revenez anytime !',
+      'Merci à you ! L\'équipe TokenFlow vous souhaite une excellente journée ! 🌟'
     ]
   },
+
+  // Connexion
+  login: {
+    keywords: ['connexion', 'connecter', 'login', 'se connecter', 's\'identifier', 'entrer'],
+    responses: [
+      'Pour vous connecter à TokenFlow :\n\n1. Allez sur la page de **Connexion**\n2. Entrez votre **numéro de téléphone**\n3. Entrez your **mot de passe**\n4. Cliquez sur **Se connecter**\n\n🔒 **Mot de passe oublié ?** Contactez le support pour le réinitialiser.\n\n✅ Votre compte est sécurisé et accessible 24/7.'
+    ]
+  },
+
+  // Équipe / Team
+  team: {
+    keywords: ['équipe', 'team', 'réseau', 'membres', 'filleuls', 'groupe'],
+    responses: [
+      'Votre **équipe** (réseau de parrainage) se compose de :\n\n👥 **Niveau 1** - Vos filleuls directs (ceux qui utilisent your lien)\n👥 **Niveau 2** - Les filleuls de vos filleuls directs\n👥 **Niveau 3** - Les filleuls du niveau 2\n\nVous gagnez des commissions sur les dépôts de TOUS les membres de your réseau :\n• 27% sur le niveau 1\n• 2% sur le niveau 2\n• 1% sur le niveau 3\n\nConsultez your équipe dans la section **"Mon réseau"** pour suivre sa croissance !'
+    ]
+  },
+
+  // Réponse par défaut
   default: {
     responses: [
-      'Je suis une IA spécialisée dans TokenFlow. Je peux vous aider avec :\n• Les investissements\n• Les retraits\n• Le parrainage\n• Les dépôts\n• La sécurité\n\nPosez-moi une question précise ! 😊',
-      'Je n\'ai pas compris votre question. Pouvez-vous reformuler ou choisir une question rapide ci-dessous ? 🤔',
-      'Hmm, je ne suis pas sûr de comprendre. Essayez une autre formulation ou cliquez sur les boutons de questions rapides ! 💭'
+      'Je suis l\'IA de TokenFlow, spécialisée dans tous les aspects de la plateforme. Je peux you aider avec :\n\n• 📊 Les investissements et plans\n• 💰 Les dépôts et retraits\n• 👥 Le parrainage et commissions\n• 🏆 Les niveaux VIP\n• 🔒 La sécurité\n• 📱 L\'utilisation de la plateforme\n\nPosez-moi une question précise ou cliquez sur les boutons ci-dessous ! 😊',
+      'Je n\'ai pas compris your question. Pouvez-vous reformuler ou choisir une question rapide ? 🤔\n\nJe peux you renseigner sur : les investissements, retraits, dépôts, parrainage, VIP, bonus, etc.',
+      'Hmm, je ne suis pas sûr de comprendre. Essayez une autre formulation ou utilisez les questions rapides ! 💭\n\nExemple : "Comment retirer mes gains ?" ou "Quels sont les plans d\'investissement ?"'
+    ]
+  },
+
+  // Au revoir
+  goodbye: {
+    keywords: ['au revoir', 'bye', 'à bientôt', 'a bientot', 'ciao', 'fin', 'terminer', 'stop'],
+    responses: [
+      'Au revoir ! 👋 Merci d\'avoir utilisé TokenFlow AI. À bientôt !',
+      'À bientôt ! N\'hésitez pas à revenir si you avez d\'autres questions. 🚀',
+      'Bye ! Bonne continuation sur TokenFlow ! 💜'
+    ]
+  },
+
+  // Aide générale
+  help: {
+    keywords: ['aide', 'aider', 'help', 'assistance', 'que faire', 'comment faire'],
+    responses: [
+      'Je suis là pour you aider ! Voici ce que you pouvez me demander :\n\n📌 **"Comment fonctionne TokenFlow ?"**\n📌 **"Quels sont les plans d\'investissement ?"**\n📌 **"Comment retirer mes gains ?"**\n📌 **"Comment fonctionne le parrainage ?"**\n📌 **"Quels sont les niveaux VIP ?"**\n📌 **"Dépôt minimum ?"**\n\nOu cliquez sur les boutons de questions rapides ci-dessous ! 😊'
     ]
   }
 };
 
+// ============================================
+// FONCTIONS DE L'IA
+// ============================================
+
 function getAIResponse(message) {
-  const lowerMsg = message.toLowerCase();
+  const lowerMsg = message.toLowerCase().trim();
+  
+  // Vérifier les salutations en premier
+  if (/^(bonjour|salut|coucou|hello|hi|bonsoir|hey)\s*$/i.test(lowerMsg)) {
+    return knowledgeBase.greetings.responses[0];
+  }
+  
+  // Vérifier les au revoir
+  if (/^(au revoir|bye|à bientôt|a bientot|ciao)/i.test(lowerMsg)) {
+    return knowledgeBase.goodbye.responses[Math.floor(Math.random() * knowledgeBase.goodbye.responses.length)];
+  }
+  
+  // Recherche par mots-clés
+  let bestMatch = null;
+  let bestScore = 0;
   
   for (const [category, data] of Object.entries(knowledgeBase)) {
-    if (category === 'default') continue;
-    if (data.keywords.some(keyword => lowerMsg.includes(keyword))) {
-      return data.responses[Math.floor(Math.random() * data.responses.length)];
+    if (category === 'default' || category === 'greetings' || category === 'goodbye') continue;
+    
+    let score = 0;
+    for (const keyword of data.keywords) {
+      if (lowerMsg.includes(keyword.toLowerCase())) {
+        score++;
+      }
+    }
+    
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = data;
     }
   }
   
+  // Si on a trouvé une correspondance avec au moins 1 mot-clé
+  if (bestMatch && bestScore >= 1) {
+    return bestMatch.responses[Math.floor(Math.random() * bestMatch.responses.length)];
+  }
+  
+  // Réponse par défaut
   return knowledgeBase.default.responses[Math.floor(Math.random() * knowledgeBase.default.responses.length)];
 }
 
@@ -435,11 +643,17 @@ function addMessage(text, isUser = false) {
   
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+  
+  // Convertir le formatage Markdown simple en HTML
+  let formattedText = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+  
   messageDiv.innerHTML = `
     <div class="message-avatar">
       <i class="fa-solid ${isUser ? 'fa-user' : 'fa-robot'}"></i>
     </div>
-    <div class="message-content">${text.replace(/\n/g, '<br>')}</div>
+    <div class="message-content">${formattedText}</div>
   `;
   
   container.appendChild(messageDiv);
@@ -477,14 +691,15 @@ function sendMessage() {
   // Show typing indicator
   showTyping();
   
-  // Simulate AI response delay
+  // Simulate AI response delay (more natural)
+  const delay = 800 + Math.random() * 1200;
   setTimeout(() => {
     const typingMsg = document.getElementById('typingMessage');
     if (typingMsg) typingMsg.remove();
     
     const response = getAIResponse(message);
     addMessage(response);
-  }, 1000 + Math.random() * 1000);
+  }, delay);
 }
 
 function sendQuick(question) {
@@ -498,6 +713,12 @@ function handleKeyPress(event) {
     sendMessage();
   }
 }
+
+// Scroll to bottom on load
+window.addEventListener('load', () => {
+  const container = document.getElementById('chatContainer');
+  container.scrollTop = container.scrollHeight;
+});
 </script>
 
 </body>

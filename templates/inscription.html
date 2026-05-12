@@ -6,6 +6,8 @@
     <title>Inscription | TokenFlow</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Google Sign-In SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root {
             --primary: #5D5FEF;
@@ -31,7 +33,7 @@
 
         .container {
             width: 100%;
-            max-width: 420px;
+            max-width: 460px;
             background: var(--white);
             border-radius: 24px;
             overflow: hidden;
@@ -42,7 +44,7 @@
         /* Bannière Image TokenFlow */
         .banner { 
             width: 100%; 
-            height: 180px; 
+            height: 160px; 
             position: relative;
             background: #1e1e1e;
         }
@@ -59,24 +61,24 @@
             background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.3));
         }
 
-        .content { padding: 30px; }
+        .content { padding: 25px; }
         
         h1 { 
             color: var(--text-dark); 
-            font-size: 22px; 
+            font-size: 20px; 
             font-weight: 800; 
-            margin-bottom: 8px; 
+            margin-bottom: 6px; 
             text-align: center;
         }
         .subtitle {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             display: block;
         }
 
-        .flash { padding: 12px 15px; border-radius: 12px; margin-bottom: 20px; font-size: 13px; font-weight: 600; text-align: center; }
+        .flash { padding: 10px 15px; border-radius: 12px; margin-bottom: 15px; font-size: 13px; font-weight: 600; text-align: center; }
         .flash.danger { background: #FFF5F5; color: var(--danger); border: 1px solid #FED7D7; }
         .flash.success { background: #F0FFF4; color: var(--success); border: 1px solid #C6F6D5; }
 
@@ -84,7 +86,7 @@
             background: #F8FAFC;
             border: 1px solid #E2E8F0;
             border-radius: 14px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             padding: 2px 15px;
             display: flex;
             align-items: center;
@@ -97,7 +99,7 @@
             box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
         }
 
-        .input-group i { color: var(--primary); font-size: 16px; width: 20px; text-align: center; }
+        .input-group i { color: var(--primary); font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
 
         .input-group input, .input-group select {
             background: transparent;
@@ -105,22 +107,22 @@
             outline: none;
             color: var(--text-dark);
             width: 100%;
-            padding: 12px 0;
+            padding: 10px 0;
             font-size: 14px;
             font-weight: 600;
         }
 
         .btn-register-submit {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: var(--primary);
             color: white;
             border: none;
             border-radius: 14px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 8px;
             box-shadow: 0 10px 20px rgba(93, 95, 239, 0.2);
             transition: 0.3s;
         }
@@ -130,22 +132,86 @@
             box-shadow: 0 12px 25px rgba(93, 95, 239, 0.3);
         }
 
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #E2E8F0;
+        }
+
+        .divider span {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .social-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .social-btn {
+            padding: 10px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .social-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #EEF2FF;
+        }
+
         .footer-box {
-            margin-top: 25px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 15px;
             border-top: 1px solid #EDF2F7;
             text-align: center;
         }
-        .footer-text { color: var(--text-muted); font-size: 14px; font-weight: 500; margin-bottom: 12px; }
+        .footer-text { color: var(--text-muted); font-size: 13px; font-weight: 500; margin-bottom: 10px; }
         
         .btn-login-link {
             color: var(--primary);
             text-decoration: none;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13px;
             display: inline-block;
         }
         .btn-login-link:hover { text-decoration: underline; }
+
+        .password-toggle {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 480px) {
+            .content { padding: 20px; }
+            .social-buttons { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -169,6 +235,16 @@
         {% endwith %}
 
         <form method="POST">
+            <div class="input-group">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" name="email" placeholder="Adresse email" required>
+            </div>
+
             <div class="input-group">
                 <i class="fa-solid fa-earth-africa"></i>
                 <select name="pays" required>
@@ -194,22 +270,43 @@
             <div class="input-group">
                 <i class="fa-solid fa-lock"></i>
                 <input type="password" name="password" placeholder="Mot de passe" required>
+                <button type="button" class="password-toggle" onclick="togglePassword(this, 'password')">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
             </div>
 
             <div class="input-group">
                 <i class="fa-solid fa-circle-check"></i>
                 <input type="password" name="confirm_password" placeholder="Confirmer le mot de passe" required>
+                <button type="button" class="password-toggle" onclick="togglePassword(this, 'confirm_password')">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
             </div>
 
             <div class="input-group">
                 <i class="fa-solid fa-ticket"></i>
-                <input type="text" name="code_invitation" placeholder="Code d'invitation" value="{{ code_ref if code_ref else '' }}">
+                <input type="text" name="code_invitation" placeholder="Code d'invitation (optionnel)" value="{{ code_ref if code_ref else '' }}">
             </div>
 
             <button type="submit" class="btn-register-submit">
                 Commencer l'aventure
             </button>
         </form>
+
+        <div class="divider">
+            <span>ou s'inscrire avec</span>
+        </div>
+
+        <div class="social-buttons">
+            <button class="social-btn" onclick="signupWithGoogle()">
+                <i class="fa-brands fa-google" style="color: #DB4437;"></i>
+                Google
+            </button>
+            <button class="social-btn" onclick="signupWithApple()">
+                <i class="fa-brands fa-apple"></i>
+                Apple
+            </button>
+        </div>
 
         <div class="footer-box">
             <div class="footer-text">Vous avez déjà un compte ?</div>
@@ -220,6 +317,57 @@
     </div>
 </div>
 
+<script>
+function togglePassword(btn, inputName) {
+    const input = btn.parentElement.querySelector(`input[name="${inputName}"]`);
+    const icon = btn.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+    }
+}
+
+// Google Sign-Up
+function signupWithGoogle() {
+    if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+            client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+            callback: handleGoogleSignup
+        });
+        google.accounts.id.prompt();
+    } else {
+        window.location.href = '/auth/google?register=true';
+    }
+}
+
+function handleGoogleSignup(response) {
+    fetch('/auth/google/callback?register=true', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: response.credential })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            showToast(data.error || 'Erreur d\'inscription', 'error');
+        }
+    })
+    .catch(() => {
+        showToast('Erreur de connexion à Google', 'error');
+    });
+}
+
+// Apple Sign-Up
+function signupWithApple() {
+    window.location.href = '/auth/apple?register=true';
+}
+</script>
+
 </body>
 </html>
-

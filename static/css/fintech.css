@@ -1,6 +1,7 @@
 /* ============================================
    TOKENFLOW - Fintech Premium Design System
    Style: Binance × Revolut × Moneco
+   Version: 2.0 - Professional Trading Platform
    ============================================ */
 
 /* ============================================
@@ -56,7 +57,15 @@
   --vip-bronze: #CD7F32;
   --vip-silver: #C0C0C0;
   --vip-gold: #FFD700;
+  --vip-platinum: #E5E4E2;
   --vip-diamond: #B9F2FF;
+
+  /* Investment Categories */
+  --crypto-color: #F7931A;
+  --forex-color: #3B82F6;
+  --gold-color: #FFD700;
+  --real-estate-color: #10B981;
+  --ai-trading-color: #8B5CF6;
 
   /* Spacing & Sizing */
   --radius-sm: 12px;
@@ -82,6 +91,16 @@
 
   /* Typography */
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  
+  /* Font sizes */
+  --text-xs: 10px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 28px;
+  --text-4xl: 34px;
 }
 
 /* Dark Theme */

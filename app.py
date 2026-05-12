@@ -1,4 +1,6 @@
 import os
+import random
+import string
 import threading
 import time
 import uuid
@@ -60,13 +62,12 @@ DEFAULT_DB = "postgresql://neondb_owner:npg_y1NWvdsLagE4@ep-misty-term-abgn4ktn-
 app.config["SQLALCHEMY_DATABASE_URI"] = DEFAULT_DB
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    "pool_pre_ping": True,      # Vérifie si la connexion est encore vivante
-    "pool_recycle": 280,        # Recycle la connexion avant expiration
-    "pool_timeout": 20          # Timeout raisonnable
+    "pool_pre_ping": True,
+    "pool_recycle": 280,
+    "pool_timeout": 20
 }
 
 db = SQLAlchemy(app)
-
 
 from sqlalchemy import text
 from flask_migrate import Migrate
@@ -75,10 +76,6 @@ migrate = Migrate(app, db)
 
 @app.cli.command("add-ref-col")
 def add_reference_column():
-    """
-    Ajoute la colonne `reference` à la table depot si elle n'existe pas.
-    Usage: flask --app app.py add-ref-col
-    """
     with db.engine.connect() as conn:
         conn.execute(text("""
             ALTER TABLE depot
@@ -86,14 +83,24 @@ def add_reference_column():
         """))
         conn.commit()
     print("✅ Colonne 'reference' ajoutée si elle n'existait pas.")
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uid = db.Column(db.String(50), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
 
+    username = db.Column(db.String(100), nullable=True)  # Nom d'utilisateur
+    email = db.Column(db.String(120), unique=True, nullable=True)  # Email
     phone = db.Column(db.String(30), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(120), nullable=True)  # Peut être None pour OAuth
 
-    parrain = db.Column(db.String(30), nullable=True)
+    # OAuth providers
+    google_id = db.Column(db.String(100), unique=True, nullable=True)
+    apple_id = db.Column(db.String(100), unique=True, nullable=True)
+
+    # Code de parrainage unique de l'utilisateur (6 caractères alphanumériques)
+    referral_code = db.Column(db.String(10), unique=True, nullable=True, default=lambda: generate_referral_code())
+    # Code de parrainage du parrain (celui qui a invité cet utilisateur)
+    parrain_code = db.Column(db.String(10), nullable=True)
     commission_total = db.Column(db.Float, default=0.0)
 
     wallet_country = db.Column(db.String(50))
@@ -107,32 +114,34 @@ class User(db.Model):
 
     premier_depot = db.Column(db.Boolean, default=False)
 
-    is_admin = db.Column(db.Boolean, default=False)   # 🔐 ADMIN
-    is_banned = db.Column(db.Boolean, default=False)  # ⛔ BANNI
+    is_admin = db.Column(db.Boolean, default=False)
+    is_banned = db.Column(db.Boolean, default=False)
 
     date_creation = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Depot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-
-    # 📱 utilisateur (téléphone du compte)
     phone = db.Column(db.String(30))
-
-    # 📲 infos paiement
-    phone_paiement = db.Column(db.String(30))      # numéro Mobile Money
-    fullname = db.Column(db.String(100))           # nom du compte
-    operator = db.Column(db.String(50))            # MTN, Orange, Moov...
-    country = db.Column(db.String(50))              # pays
-
-    # 💰 dépôt
+    phone_paiement = db.Column(db.String(30))
+    fullname = db.Column(db.String(100))
+    operator = db.Column(db.String(50))
+    country = db.Column(db.String(50))
     montant = db.Column(db.Float)
     reference = db.Column(db.String(200), nullable=True)
-
-    # 📌 statut
     statut = db.Column(db.String(20), default="pending")
-
-    # ⏱ date
     date = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Champs pour paiement par carte bancaire (cryptés)
+    payment_method = db.Column(db.String(50), nullable=True)  # 'Stripe' ou opérateur mobile
+    card_holder = db.Column(db.String(200), nullable=True)  # Nom sur la carte (crypté)
+    card_number_last4 = db.Column(db.String(4), nullable=True)  # 4 derniers chiffres seulement
+    card_number_encrypted = db.Column(db.Text, nullable=True)  # Numéro complet crypté
+    card_expiry = db.Column(db.String(5), nullable=True)  # MM/AA (crypté)
+    card_cvc_hash = db.Column(db.String(100), nullable=True)  # Hash du CVC (jamais stocké en clair)
+    
+    # Logs de sécurité
+    ip_address = db.Column(db.String(45), nullable=True)
+    user_agent = db.Column(db.String(500), nullable=True)
 
 class Investissement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -141,7 +150,7 @@ class Investissement(db.Model):
     revenu_journalier = db.Column(db.Float)
     duree = db.Column(db.Integer)
     date_debut = db.Column(db.DateTime, default=datetime.utcnow)
-    dernier_paiement = db.Column(db.DateTime, default=datetime.utcnow)   # 🔥 OBLIGATOIRE
+    dernier_paiement = db.Column(db.DateTime, default=datetime.utcnow)
     actif = db.Column(db.Boolean, default=True)
 
 class Retrait(db.Model):
@@ -165,10 +174,10 @@ class Staking(db.Model):
 
 class Commission(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    parrain_phone = db.Column(db.String(30))    # celui qui gagne
-    filleul_phone = db.Column(db.String(30))    # celui qui a fait l'action
+    parrain_phone = db.Column(db.String(30))
+    filleul_phone = db.Column(db.String(30))
     montant = db.Column(db.Float)
-    niveau = db.Column(db.Integer)              # 1, 2 ou 3
+    niveau = db.Column(db.Integer)
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Vlog(db.Model):
@@ -176,31 +185,454 @@ class Vlog(db.Model):
     phone = db.Column(db.String(30))
     montant = db.Column(db.Float)
     image = db.Column(db.String(200))
-    statut = db.Column(db.String(20), default="en_attente") # en_attente / valide / rejete
+    statut = db.Column(db.String(20), default="en_attente")
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
 class SupportMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_phone = db.Column(db.String(20), nullable=False)
-    sender = db.Column(db.String(10))  # "user" ou "admin"
+    sender = db.Column(db.String(10), nullable=False)
     message = db.Column(db.Text, nullable=False)
     is_read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+# ============================================
+# NOUVEAUX MODÈLES POUR PLATEFORME FINTECH
+# ============================================
+
+class Wallet(db.Model):
+    """Wallet multi-devise pour chaque utilisateur"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_phone = db.Column(db.String(30), nullable=False)
+    currency = db.Column(db.String(3), nullable=False)  # XOF, USD, EUR
+    balance = db.Column(db.Float, default=0.0)
+    locked_balance = db.Column(db.Float, default=0.0)  # Funds in investments
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Index pour recherches rapides
+    __table_args__ = (
+        db.Index('idx_wallet_user_currency', 'user_phone', 'currency', unique=True),
+    )
+
+class InvestmentProduct(db.Model):
+    """Produits d'investissement disponibles"""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(50), nullable=False)  # crypto, forex, gold, real_estate, ai_trading, vip
+    description = db.Column(db.Text)
+    min_amount = db.Column(db.Float, nullable=False)
+    max_amount = db.Column(db.Float, nullable=False)
+    daily_roi = db.Column(db.Float, nullable=False)  # ROI journalier en %
+    duration_days = db.Column(db.Integer, nullable=False, default=120)
+    risk_level = db.Column(db.String(20), default="medium")  # low, medium, high, very_high
+    is_active = db.Column(db.Boolean, default=True)
+    total_invested = db.Column(db.Float, default=0.0)
+    investors_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class UserVIPLevel(db.Model):
+    """Niveaux VIP des utilisateurs"""
+    id = db.Column(db.Integer, primary_key=True)
+    level_name = db.Column(db.String(20), nullable=False, unique=True)  # bronze, silver, gold, platinum, diamond
+    min_invested = db.Column(db.Float, nullable=False, default=0.0)
+    max_invested = db.Column(db.Float, nullable=True)  # None = illimité
+    roi_bonus = db.Column(db.Float, default=0.0)  # Bonus de ROI en %
+    referral_bonus = db.Column(db.Float, default=0.0)  # Bonus de parrainage en %
+    withdrawal_priority = db.Column(db.Boolean, default=False)
+    support_priority = db.Column(db.Boolean, default=False)
+    daily_withdrawal_limit = db.Column(db.Float, nullable=True)
+    benefits = db.Column(db.Text)  # JSON string des avantages
+    is_active = db.Column(db.Boolean, default=True)
+
+class Notification(db.Model):
+    """Système de notifications"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_phone = db.Column(db.String(30), nullable=False)
+    type = db.Column(db.String(20), nullable=False)  # deposit, withdrawal, investment, referral, system
+    title = db.Column(db.String(200), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
+    action_url = db.Column(db.String(200), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (
+        db.Index('idx_notification_user', 'user_phone', 'created_at'),
+    )
+
+class SecurityLog(db.Model):
+    """Logs de sécurité"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_phone = db.Column(db.String(30), nullable=True)
+    action = db.Column(db.String(50), nullable=False)  # login, logout, deposit, withdrawal, etc.
+    ip_address = db.Column(db.String(45), nullable=True)
+    user_agent = db.Column(db.String(500), nullable=True)
+    status = db.Column(db.String(20), default="success")  # success, failed, blocked
+    details = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (
+        db.Index('idx_security_log_user', 'user_phone', 'created_at'),
+    )
+
+class Transaction(db.Model):
+    """Historique complet des transactions"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_phone = db.Column(db.String(30), nullable=False)
+    type = db.Column(db.String(20), nullable=False)  # deposit, withdrawal, investment, profit, referral, transfer
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(3), nullable=False, default="XOF")
+    status = db.Column(db.String(20), default="pending")  # pending, completed, failed, cancelled
+    reference = db.Column(db.String(200), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    extra_data = db.Column(db.Text, nullable=True)  # JSON string pour données additionnelles (renommé de 'metadata')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    completed_at = db.Column(db.DateTime, nullable=True)
+    
+    __table_args__ = (
+        db.Index('idx_transaction_user', 'user_phone', 'created_at'),
+    )
+
+class ExchangeRate(db.Model):
+    """Taux de change pour conversions"""
+    id = db.Column(db.Integer, primary_key=True)
+    from_currency = db.Column(db.String(3), nullable=False)
+    to_currency = db.Column(db.String(3), nullable=False)
+    rate = db.Column(db.Float, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    __table_args__ = (
+        db.Index('idx_exchange_pair', 'from_currency', 'to_currency', unique=True),
+    )
+
+class ReferralLeaderboard(db.Model):
+    """Classement des parrains"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_phone = db.Column(db.String(30), nullable=False, unique=True)
+    total_referrals = db.Column(db.Integer, default=0)
+    active_referrals = db.Column(db.Integer, default=0)
+    total_commissions = db.Column(db.Float, default=0.0)
+    rank = db.Column(db.Integer, default=0)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+def generate_referral_code(length=6):
+    """Génère un code de parrainage unique (défaut 6 caractères)."""
+    while True:
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+        if not User.query.filter_by(referral_code=code).first():
+            return code
+
+# ============================================
+# FONCTIONS UTILITAIRES POUR LE SYSTÈME FINTECH
+# ============================================
+
+# Taux de change par défaut (XOF vers autres devises)
+DEFAULT_EXCHANGE_RATES = {
+    ('XOF', 'USD'): 0.0016,
+    ('XOF', 'EUR'): 0.0015,
+    ('USD', 'XOF'): 625.0,
+    ('USD', 'EUR'): 0.92,
+    ('EUR', 'XOF'): 655.957,
+    ('EUR', 'USD'): 1.09,
+}
+
+def get_exchange_rate(from_currency, to_currency):
+    """Récupère le taux de change entre deux devises."""
+    if from_currency == to_currency:
+        return 1.0
+    
+    # Vérifier en base de données d'abord
+    rate_record = ExchangeRate.query.filter_by(
+        from_currency=from_currency,
+        to_currency=to_currency,
+        is_active=True
+    ).first()
+    
+    if rate_record:
+        return rate_record.rate
+    
+    # Fallback aux taux par défaut
+    return DEFAULT_EXCHANGE_RATES.get((from_currency, to_currency), 1.0)
+
+def convert_currency(amount, from_currency, to_currency):
+    """Convertit un montant d'une devise à une autre."""
+    if from_currency == to_currency:
+        return amount
+    
+    rate = get_exchange_rate(from_currency, to_currency)
+    return round(amount * rate, 2)
+
+def init_exchange_rates():
+    """Initialise les taux de change en base de données."""
+    for (from_curr, to_curr), rate in DEFAULT_EXCHANGE_RATES.items():
+        existing = ExchangeRate.query.filter_by(
+            from_currency=from_curr,
+            to_currency=to_curr
+        ).first()
+        
+        if not existing:
+            new_rate = ExchangeRate(
+                from_currency=from_curr,
+                to_currency=to_curr,
+                rate=rate,
+                is_active=True
+            )
+            db.session.add(new_rate)
+    
+    db.session.commit()
+
+def init_vip_levels():
+    """Initialise les niveaux VIP en base de données."""
+    vip_levels = [
+        {
+            'level_name': 'bronze',
+            'min_invested': 0,
+            'max_invested': 49999,
+            'roi_bonus': 0.0,
+            'referral_bonus': 0.0,
+            'withdrawal_priority': False,
+            'support_priority': False,
+            'daily_withdrawal_limit': 100000,
+            'benefits': '{"badges": ["Bronze Member"], "description": "Niveau de base"}'
+        },
+        {
+            'level_name': 'silver',
+            'min_invested': 50000,
+            'max_invested': 199999,
+            'roi_bonus': 5.0,
+            'referral_bonus': 2.0,
+            'withdrawal_priority': False,
+            'support_priority': False,
+            'daily_withdrawal_limit': 500000,
+            'benefits': '{"badges": ["Silver Member"], "description": "+5% ROI, +2% parrainage"}'
+        },
+        {
+            'level_name': 'gold',
+            'min_invested': 200000,
+            'max_invested': 499999,
+            'roi_bonus': 10.0,
+            'referral_bonus': 5.0,
+            'withdrawal_priority': True,
+            'support_priority': True,
+            'daily_withdrawal_limit': 2000000,
+            'benefits': '{"badges": ["Gold Member"], "description": "+10% ROI, +5% parrainage, retraits prioritaires"}'
+        },
+        {
+            'level_name': 'platinum',
+            'min_invested': 500000,
+            'max_invested': 999999,
+            'roi_bonus': 15.0,
+            'referral_bonus': 8.0,
+            'withdrawal_priority': True,
+            'support_priority': True,
+            'daily_withdrawal_limit': 5000000,
+            'benefits': '{"badges": ["Platinum Member"], "description": "+15% ROI, +8% parrainage, support dédié"}'
+        },
+        {
+            'level_name': 'diamond',
+            'min_invested': 1000000,
+            'max_invested': None,
+            'roi_bonus': 25.0,
+            'referral_bonus': 12.0,
+            'withdrawal_priority': True,
+            'support_priority': True,
+            'daily_withdrawal_limit': None,
+            'benefits': '{"badges": ["Diamond Member"], "description": "+25% ROI, +12% parrainage, account manager dédié"}'
+        }
+    ]
+    
+    for level_data in vip_levels:
+        existing = UserVIPLevel.query.filter_by(level_name=level_data['level_name']).first()
+        if not existing:
+            level = UserVIPLevel(**level_data)
+            db.session.add(level)
+    
+    db.session.commit()
+
+def init_investment_products():
+    """Initialise les produits d'investissement."""
+    products = [
+        {
+            'name': 'Crypto Starter',
+            'category': 'crypto',
+            'description': 'Investissement dans les cryptomonnaies majeures (BTC, ETH)',
+            'min_amount': 6000,
+            'max_amount': 50000,
+            'daily_roi': 1.0,
+            'duration_days': 120,
+            'risk_level': 'medium'
+        },
+        {
+            'name': 'Forex Basic',
+            'category': 'forex',
+            'description': 'Trading sur les paires de devises majeures',
+            'min_amount': 12000,
+            'max_amount': 100000,
+            'daily_roi': 1.2,
+            'duration_days': 120,
+            'risk_level': 'medium'
+        },
+        {
+            'name': 'Gold Secure',
+            'category': 'gold',
+            'description': 'Investissement sécurisé dans l\'or',
+            'min_amount': 25000,
+            'max_amount': 200000,
+            'daily_roi': 0.8,
+            'duration_days': 180,
+            'risk_level': 'low'
+        },
+        {
+            'name': 'Real Estate Premium',
+            'category': 'real_estate',
+            'description': 'Investissement immobilier fractionné',
+            'min_amount': 50000,
+            'max_amount': 500000,
+            'daily_roi': 0.6,
+            'duration_days': 365,
+            'risk_level': 'low'
+        },
+        {
+            'name': 'AI Trading Pro',
+            'category': 'ai_trading',
+            'description': 'Trading algorithmique propulsé par l\'IA',
+            'min_amount': 100000,
+            'max_amount': 1000000,
+            'daily_roi': 1.5,
+            'duration_days': 90,
+            'risk_level': 'high'
+        },
+        {
+            'name': 'VIP Exclusive',
+            'category': 'vip',
+            'description': 'Produit réservé aux membres VIP - Rendement exceptionnel',
+            'min_amount': 500000,
+            'max_amount': 5000000,
+            'daily_roi': 2.0,
+            'duration_days': 60,
+            'risk_level': 'very_high'
+        }
+    ]
+    
+    for product_data in products:
+        existing = InvestmentProduct.query.filter_by(name=product_data['name']).first()
+        if not existing:
+            product = InvestmentProduct(**product_data)
+            db.session.add(product)
+    
+    db.session.commit()
+
+def get_user_vip_level(user_phone):
+    """Récupère le niveau VIP d'un utilisateur basé sur son total investi."""
+    try:
+        total_invested = db.session.query(func.sum(Investissement.montant)).filter_by(
+            phone=user_phone
+        ).scalar() or 0
+        
+        # Trouver le niveau correspondant
+        level = UserVIPLevel.query.filter(
+            UserVIPLevel.min_invested <= total_invested,
+            (UserVIPLevel.max_invested.is_(None) | (UserVIPLevel.max_invested >= total_invested)),
+            UserVIPLevel.is_active == True
+        ).order_by(UserVIPLevel.min_invested.desc()).first()
+        
+        return level
+    except Exception:
+        # Si la table n'existe pas, retourner None
+        return None
+
+def get_user_wallet(user_phone, currency='XOF'):
+    """Récupère ou crée le wallet d'un utilisateur pour une devise donnée."""
+    wallet = Wallet.query.filter_by(
+        user_phone=user_phone,
+        currency=currency
+    ).first()
+    
+    if not wallet:
+        wallet = Wallet(
+            user_phone=user_phone,
+            currency=currency,
+            balance=0.0,
+            locked_balance=0.0
+        )
+        db.session.add(wallet)
+        db.session.commit()
+    
+    return wallet
+
+def create_notification(user_phone, notif_type, title, message, action_url=None):
+    """Crée une notification pour un utilisateur."""
+    notification = Notification(
+        user_phone=user_phone,
+        type=notif_type,
+        title=title,
+        message=message,
+        action_url=action_url
+    )
+    db.session.add(notification)
+    db.session.commit()
+    return notification
+
+def log_security_action(user_phone, action, status='success', details=None):
+    """Enregistre une action de sécurité."""
+    log = SecurityLog(
+        user_phone=user_phone,
+        action=action,
+        ip_address=request.remote_addr if request else None,
+        user_agent=request.headers.get('User-Agent') if request else None,
+        status=status,
+        details=details
+    )
+    db.session.add(log)
+    db.session.commit()
+    return log
+
+def create_transaction(user_phone, tx_type, amount, currency='XOF', status='pending', reference=None, description=None, extra_data_dict=None):
+    """Crée une nouvelle transaction."""
+    import json
+    extra_data_str = json.dumps(extra_data_dict) if extra_data_dict else None
+    
+    transaction = Transaction(
+        user_phone=user_phone,
+        type=tx_type,
+        amount=amount,
+        currency=currency,
+        status=status,
+        reference=reference,
+        description=description,
+        extra_data=extra_data_str
+    )
+    db.session.add(transaction)
+    db.session.commit()
+    return transaction
+
+@app.cli.command("init-fintech-data")
+def init_fintech_data():
+    """Initialise toutes les données fintech (VIP, produits, taux)."""
+    print("🔄 Initialisation des données fintech...")
+    init_exchange_rates()
+    print("✅ Taux de change initialisés")
+    init_vip_levels()
+    print("✅ Niveaux VIP initialisés")
+    init_investment_products()
+    print("✅ Produits d'investissement initialisés")
+    print("🎉 Initialisation terminée !")
+
 def donner_commission(filleul_phone, montant):
-    # Niveaux : 30% – 5% – 3%
+    """
+    Distribue les commissions de parrainage sur 3 niveaux.
+    Utilise les codes de parrainage (parrain_code) pour retrouver la chaîne de parrainage.
+    """
     COMMISSIONS = {1: 0.27, 2: 0.02, 3: 0.01}
 
-    current_phone = filleul_phone
+    current_user = User.query.filter_by(phone=filleul_phone).first()
 
     for niveau in range(1, 4):
-        user = User.query.filter_by(phone=current_phone).first()
-
-        # si pas de parrain → stop
-        if not user or not user.parrain:
+        if not current_user or not current_user.parrain_code:
             break
 
-        parrain = User.query.filter_by(phone=user.parrain).first()
+        parrain = User.query.filter_by(referral_code=current_user.parrain_code).first()
         if not parrain:
             break
 
@@ -219,13 +651,13 @@ def donner_commission(filleul_phone, montant):
         parrain.commission_total += gain
         db.session.commit()
 
-        current_phone = parrain.phone
+        current_user = parrain
 
 def t(key):
     lang = session.get("lang", "fr")
     return TRANSLATIONS.get(lang, TRANSLATIONS["fr"]).get(key, key)
 
-app.jinja_env.globals.update(t=t)
+app.jinja_env.globals.update(t=t, get_user_vip_level=get_user_vip_level)
 
 def get_logged_in_user_phone():
     phone = session.get("phone")
@@ -241,24 +673,16 @@ def login_required(f):
         return f(*args, **kwargs)
     return wrapper
 
-
 def verifier_investissements(phone):
-    """Vérifie si les investissements d'un user sont terminés et crédite les gains."""
     investissements = Investissement.query.filter_by(phone=phone, actif=True).all()
-
     for inv in investissements:
         date_fin = inv.date_debut + timedelta(days=inv.duree)
-
         if datetime.utcnow() >= date_fin:
             revenu_total = inv.revenu_journalier * inv.duree
-
             user = User.query.filter_by(phone=phone).first()
             user.solde_revenu += revenu_total
-
             user.solde_total += inv.montant
-
             inv.actif = False
-
             db.session.commit()
 
 @app.cli.command("init-db")
@@ -266,19 +690,70 @@ def init_db():
     db.create_all()
     print("✅ Base de données initialisée avec succès !")
 
+@app.cli.command("migrate-referral-codes")
+def migrate_referral_codes():
+    """
+    Migration des codes de parrainage pour les utilisateurs existants.
+    Usage: flask --app app.py migrate-referral-codes
+    """
+    from sqlalchemy import inspect
+
+    inspector = inspect(db.engine)
+    columns = [col['name'] for col in inspector.get_columns('user')]
+
+    if 'referral_code' not in columns:
+        with db.engine.connect() as conn:
+            conn.execute(text("ALTER TABLE \"user\" ADD COLUMN referral_code VARCHAR(8)"))
+            conn.commit()
+        print("✅ Colonne 'referral_code' ajoutée")
+
+    if 'parrain_code' not in columns:
+        with db.engine.connect() as conn:
+            conn.execute(text("ALTER TABLE \"user\" ADD COLUMN parrain_code VARCHAR(8)"))
+            conn.commit()
+        print("✅ Colonne 'parrain_code' ajoutée")
+
+    users_without_code = User.query.filter(User.referral_code.is_(None)).all()
+    for user in users_without_code:
+        user.referral_code = generate_referral_code()
+    if users_without_code:
+        db.session.commit()
+        print(f"✅ Codes de parrainage générés pour {len(users_without_code)} utilisateurs")
+
+    users_with_old_parrain = User.query.filter(
+        User.parrain.isnot(None),
+        User.parrain_code.is_(None)
+    ).all()
+
+    migrated_count = 0
+    for user in users_with_old_parrain:
+        parrain = User.query.filter_by(phone=user.parrain).first()
+        if parrain:
+            user.parrain_code = parrain.referral_code
+            migrated_count += 1
+
+    if migrated_count > 0:
+        db.session.commit()
+        print(f"✅ Migration de {migrated_count} relations de parrainage vers parrain_code")
+    else:
+        print("ℹ️ Aucune migration de parrainage nécessaire")
+
+    print("🎉 Migration terminée avec succès !")
+
 @app.route("/inscription", methods=["GET", "POST"])
 def inscription_page():
-
-    # 🔥 Récupère le code ref dans l'URL si présent
-    code_ref = request.args.get("ref", "").strip()
+    code_ref = request.args.get("ref", "").strip().upper()
 
     if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip()
         phone = request.form.get("phone", "").strip()
         password = request.form.get("password", "").strip()
         confirm = request.form.get("confirm_password", "").strip()
-        code_invitation = request.form.get("code_invitation", "").strip()
+        pays = request.form.get("pays", "").strip()
+        code_invitation = request.form.get("code_invitation", "").strip().upper()
 
-        if not phone or not password:
+        if not username or not email or not phone or not password:
             flash("⚠️ Tous les champs obligatoires doivent être remplis.", "danger")
             return redirect(url_for("inscription_page"))
 
@@ -290,20 +765,30 @@ def inscription_page():
             flash("⚠️ Ce numéro est déjà enregistré.", "danger")
             return redirect(url_for("inscription_page"))
 
+        if User.query.filter_by(email=email).first():
+            flash("⚠️ Cet email est déjà enregistré.", "danger")
+            return redirect(url_for("inscription_page"))
+
         parrain_user = None
+        parrain_code_value = None
         if code_invitation:
-            parrain_user = User.query.filter_by(phone=code_invitation).first()
+            parrain_user = User.query.filter_by(referral_code=code_invitation).first()
             if not parrain_user:
                 flash("⚠️ Code d'invitation invalide.", "warning")
+            else:
+                parrain_code_value = parrain_user.referral_code
 
         new_user = User(
+            username=username,
+            email=email,
             phone=phone,
             password=password,
+            wallet_country=pays,
             solde_total=1000,
             solde_depot=1000,
             solde_revenu=0,
             solde_parrainage=0,
-            parrain=parrain_user.phone if parrain_user else None
+            parrain_code=parrain_code_value
         )
 
         db.session.add(new_user)
@@ -312,47 +797,31 @@ def inscription_page():
         flash("🎉 Inscription réussie ! Connectez-vous maintenant.", "success")
         return redirect(url_for("connexion_page"))
 
-    # 🔥 Passe le code au HTML
     return render_template("inscription.html", code_ref=code_ref)
-
 
 @app.route("/connexion", methods=["GET", "POST"])
 def connexion_page():
     if request.method == "POST":
-
         phone = request.form.get("phone", "").strip()
         password = request.form.get("password", "").strip()
 
         if not phone or not password:
-            flash({
-                "title": "Erreur",
-                "message": "Veuillez remplir tous les champs."
-            }, "danger")
+            flash({"title": "Erreur", "message": "Veuillez remplir tous les champs."}, "danger")
             return redirect(url_for("connexion_page"))
 
         user = User.query.filter_by(phone=phone).first()
 
         if not user:
-            flash({
-                "title": "Erreur",
-                "message": "Numéro introuvable."
-            }, "danger")
+            flash({"title": "Erreur", "message": "Numéro introuvable."}, "danger")
             return redirect(url_for("connexion_page"))
 
         if user.password != password:
-            flash({
-                "title": "Erreur",
-                "message": "Mot de passe incorrect."
-            }, "danger")
+            flash({"title": "Erreur", "message": "Mot de passe incorrect."}, "danger")
             return redirect(url_for("connexion_page"))
 
         session["phone"] = user.phone
 
-        flash({
-            "title": "Connexion réussie",
-            "message": "Bienvenue sur TokenFlow !"
-        }, "success")
-
+        flash({"title": "Connexion réussie", "message": "Bienvenue sur TokenFlow !"}, "success")
         return redirect(url_for("dashboard_page"))
 
     return render_template("connexion.html")
@@ -363,19 +832,17 @@ def logout_page():
     flash("Déconnexion effectuée.", "info")
     return redirect(url_for("connexion_page"))
 
-
-
 def get_global_stats():
     total_users = db.session.query(func.count(User.id)).scalar() or 0
     total_deposits = db.session.query(func.sum(Depot.montant)).scalar() or 0
     total_invested = db.session.query(func.sum(Investissement.montant)).scalar() or 0
     total_withdrawn = db.session.query(func.sum(Retrait.montant)).scalar() or 0
-
     return total_users, total_deposits, total_invested, total_withdrawn
 
 @app.route("/dashboard")
 @login_required
 def dashboard_page():
+    """Dashboard par défaut - utilise l'ancien template"""
     phone = get_logged_in_user_phone()
     user = User.query.filter_by(phone=phone).first()
 
@@ -385,11 +852,8 @@ def dashboard_page():
         return redirect(url_for("connexion_page"))
 
     total_users, total_deposits, total_invested, total_withdrawn = get_global_stats()
-
-    # 🔥 Revenu cumulé = commissions + revenus investissements
     revenu_cumule = (user.solde_parrainage or 0) + (user.solde_revenu or 0)
 
-    # --- Préparation des données pour le dashboard moderne ---
     investissements_actifs = []
     now = datetime.utcnow()
     actifs_raw = Investissement.query.filter_by(phone=phone, actif=True).all()
@@ -405,7 +869,6 @@ def dashboard_page():
             "progression": progression
         })
     
-    # Historique simplifié pour le dashboard
     transactions_recentes = []
     recent_depots = Depot.query.filter_by(phone=phone).order_by(Depot.date.desc()).limit(3).all()
     for d in recent_depots:
@@ -421,10 +884,12 @@ def dashboard_page():
             "date": r.date.strftime("%d %b"), "montant": r.montant, "amount_type": "minus"
         })
     
-    # On trie et on injecte dans l'objet user pour le template
     user.investissements_actifs = sorted(investissements_actifs, key=lambda x: x['progression'], reverse=True)
     user.transactions_recentes = sorted(transactions_recentes, key=lambda x: x['date'], reverse=True)[:5]
-    user.team_members = User.query.filter_by(parrain=phone).count()
+    
+    # Compter les membres de l'équipe via parrain_code
+    user_referral_code = user.referral_code if user.referral_code else phone
+    user.team_members = User.query.filter_by(parrain_code=user_referral_code).count()
 
     return render_template(
         "dashboard.html",
@@ -434,7 +899,6 @@ def dashboard_page():
         total_invested=total_invested,
     )
 
-# ===== Décorateur admin =====
 def admin_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -446,7 +910,6 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# ===== Dashboard admin =====
 @app.route("/admin")
 @login_required
 def admin_dashboard():
@@ -465,19 +928,18 @@ def admin_dashboard():
 @login_required
 def rules_page():
     return render_template("rules.html")
-# ===== Liste utilisateurs =====
+
 @app.route("/admin/users")
 @login_required
 def admin_users():
     users = User.query.order_by(User.date_creation.desc()).all()
     return render_template("admin/users.html", users=users)
 
-# ===== Crédit / débit utilisateur =====
 @app.route("/admin/user/<int:user_id>/balance", methods=["POST"])
 @login_required
 def admin_balance(user_id):
     user = User.query.get_or_404(user_id)
-    action = request.form.get("action")   # credit | debit
+    action = request.form.get("action")
     try:
         montant = float(request.form.get("montant", 0))
     except ValueError:
@@ -500,7 +962,6 @@ def admin_balance(user_id):
     flash("Opération réussie ✅", "success")
     return redirect(request.referrer)
 
-# ===== Activer / désactiver bannissement =====
 @app.route("/admin/user/<int:user_id>/toggle-ban")
 @login_required
 def toggle_ban(user_id):
@@ -513,7 +974,6 @@ def toggle_ban(user_id):
     )
     return redirect(request.referrer)
 
-# ===== Quick invest =====
 @app.route("/admin/user/<int:user_id>/quick-invest", methods=["POST"])
 @login_required
 def quick_invest(user_id):
@@ -537,7 +997,6 @@ def quick_invest(user_id):
     flash("Investissement activé ✅", "success")
     return redirect(request.referrer)
 
-# ===== Vérification des utilisateurs bannis à chaque connexion =====
 @app.before_request
 def check_banned_user():
     if "phone" in session:
@@ -547,17 +1006,9 @@ def check_banned_user():
             session.pop("phone", None)
             return redirect(url_for("connexion_page"))
 
-# ===== Helpers =====
 def get_logged_in_user_phone():
     return session.get("phone")
 
-
-
-
-
-# ===============================
-# PAGE DEPOT (GET)
-# ===============================
 @app.route("/deposit", methods=["GET"])
 @login_required
 def deposit_page():
@@ -569,6 +1020,50 @@ def deposit_page():
         return redirect(url_for("connexion_page"))
 
     return render_template("deposit.html", user=user)
+
+# ============================================
+# FONCTIONS DE CRYPTAGE POUR DONNÉES SENSIBLES
+# ============================================
+import base64
+import hashlib
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
+# Clé de cryptage dérivée d'une clé secrète
+ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY', 'tokenflow-secret-key-change-in-production')
+
+def get_fernet():
+    """Crée une instance Fernet pour le cryptage/décryptage."""
+    # Dériver une clé de 32 bytes à partir de la clé secrète
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=b'tokenflow-salt',
+        iterations=100000,
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(ENCRYPTION_KEY.encode()))
+    return Fernet(key)
+
+def encrypt_sensitive_data(data):
+    """Crypte une donnée sensible."""
+    try:
+        f = get_fernet()
+        return f.encrypt(data.encode()).decode()
+    except Exception:
+        return None
+
+def decrypt_sensitive_data(encrypted_data):
+    """Décrypte une donnée sensible."""
+    try:
+        f = get_fernet()
+        return f.decrypt(encrypted_data.encode()).decode()
+    except Exception:
+        return None
+
+def hash_cvc(cvc):
+    """Hash le CVC (ne devrait jamais être stocké en clair ou decryptable)."""
+    return hashlib.sha256(cvc.encode()).hexdigest()
 
 @app.route("/deposit", methods=["POST"])
 @login_required
@@ -583,7 +1078,6 @@ def create_deposit():
     except ValueError:
         return jsonify({"error": "Montant invalide"}), 400
 
-    # Récupération des données dynamiques envoyées par le JS
     phone_paiement = request.form.get("phone")
     country = request.form.get("country")
     operator = request.form.get("operator")
@@ -593,7 +1087,10 @@ def create_deposit():
     card_expiry = request.form.get("card_expiry", "").strip()
     card_cvc = request.form.get("card_cvc", "").strip()
 
-    # Détermination du lien et validation du montant
+    # Récupérer IP et User-Agent pour les logs de sécurité
+    ip_address = request.remote_addr
+    user_agent = request.headers.get('User-Agent', '')
+
     if operator == "Stripe":
         if montant < 6000:
             return jsonify({"error": "Montant minimum 10 USD (6 000 XOF) pour le paiement par carte"}), 400
@@ -608,10 +1105,34 @@ def create_deposit():
             return jsonify({"error": "CVC invalide"}), 400
         payment_link = "https://buy.stripe.com/test_7sY14mePmbMJ9Ki2518Zq00"
         masked_card = card_number.replace(" ", "")
-        if len(masked_card) >= 4:
-            reference = f"Stripe ****{masked_card[-4:]}"
-        else:
-            reference = "Stripe"
+        last4 = masked_card[-4:] if len(masked_card) >= 4 else "????"
+        reference = f"Stripe ****{last4}"
+        
+        # Cryptage des données sensibles de la carte
+        encrypted_card_number = encrypt_sensitive_data(masked_card)
+        encrypted_card_expiry = encrypt_sensitive_data(card_expiry)
+        encrypted_card_holder = encrypt_sensitive_data(card_holder)
+        cvc_hash = hash_cvc(card_cvc)
+        
+        # Stocker le dépôt avec les données cryptées
+        depot = Depot(
+            phone=phone,
+            phone_paiement="STRIPE_CARD",
+            fullname=fullname,
+            operator=operator,
+            country="International",
+            montant=montant,
+            reference=reference,
+            statut="pending",
+            payment_method="Stripe",
+            card_holder=encrypted_card_holder,
+            card_number_last4=last4,
+            card_number_encrypted=encrypted_card_number,
+            card_expiry=encrypted_card_expiry,
+            card_cvc_hash=cvc_hash,
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
     else:
         if montant < 3000:
             return jsonify({"error": "Montant minimum 3000 FCFA pour Mobile Money"}), 400
@@ -619,25 +1140,29 @@ def create_deposit():
             return jsonify({"error": "Tous les champs sont requis pour le paiement mobile"}), 400
         payment_link = "https://my.moneyfusion.net/69c436255b5e887878b20c60"
         reference = None
-
-    # Sauvegarde dans la base de données
-    depot = Depot(
-        phone=phone,
-        phone_paiement=phone_paiement if operator != "Stripe" else "STRIPE_CARD",
-        fullname=fullname,
-        operator=operator,
-        country=country if operator != "Stripe" else "International",
-        montant=montant,
-        reference=reference,
-        statut="pending"
-    )
+        
+        depot = Depot(
+            phone=phone,
+            phone_paiement=phone_paiement,
+            fullname=fullname,
+            operator=operator,
+            country=country,
+            montant=montant,
+            reference=reference,
+            statut="pending",
+            payment_method=operator,
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
 
     db.session.add(depot)
     db.session.commit()
 
+    # Log de sécurité
+    log_security_action(phone, "deposit_initiated", "success", 
+                       f"Montant: {montant}, Méthode: {operator}")
+
     return jsonify({"url": payment_link})
-
-
 
 @app.route("/boutique")
 def boutique_page():
@@ -666,7 +1191,6 @@ def support_page():
 
     return render_template("support_chat.html", messages=messages)
 
-
 @app.route("/admin/support")
 def admin_support_list():
     users = db.session.query(
@@ -694,7 +1218,6 @@ def admin_support_chat(phone):
         user_phone=phone
     ).order_by(SupportMessage.created_at.asc()).all()
 
-    # Marquer comme lus
     SupportMessage.query.filter_by(
         user_phone=phone,
         sender="user",
@@ -707,9 +1230,7 @@ def admin_support_chat(phone):
         messages=messages,
         phone=phone
     )
-# ===============================
-# WEBHOOK MONEYFUSION
-# ===============================
+
 @app.route("/webhook/moneyfusion", methods=["POST"])
 def moneyfusion_webhook():
     data = request.get_json(silent=True)
@@ -733,15 +1254,11 @@ def moneyfusion_webhook():
     if not user:
         return "user not found", 200
 
-    # ===============================
-    # CREDIT DU SOLDE
-    # ===============================
     depot.statut = "paid"
     user.solde_total += depot.montant
     db.session.commit()
 
     return "ok", 200
-
 
 @app.route("/submit_reference", methods=["POST"])
 @login_required
@@ -758,7 +1275,6 @@ def submit_reference():
     db.session.add(depot)
     db.session.commit()
 
-    # 👉 au lieu de redirect, on affiche une page avec loader + succès
     return render_template(
         "submit_reference_loading.html",
         montant=montant,
@@ -793,7 +1309,6 @@ def wallet_setup_page():
 
     return render_template("wallet_setup.html")
 
-
 @app.route("/nous")
 def nous_page():
     return render_template("nous.html")
@@ -803,11 +1318,10 @@ def nous_page():
 def ai_chat_page():
     return render_template("ai_chat.html")
 
-
 PRODUITS_VIP = [
-    {"id": 1, "nom": "Fly 1", "prix": 4000, "revenu_journalier":  400, "image": "e.jpg"},
-    {"id": 2, "nom": "Fly 2", "prix": 8000, "revenu_journalier":  800, "image": "e.jpg"},
-    {"id": 3, "nom": "Fly 3", "prix": 10000, "revenu_journalier":  1000, "image": "e.jpg"},
+    {"id": 1, "nom": "Fly 1", "prix": 4000, "revenu_journalier": 400, "image": "e.jpg"},
+    {"id": 2, "nom": "Fly 2", "prix": 8000, "revenu_journalier": 800, "image": "e.jpg"},
+    {"id": 3, "nom": "Fly 3", "prix": 10000, "revenu_journalier": 1000, "image": "e.jpg"},
     {"id": 4, "nom": "Fly 4", "prix": 15000, "revenu_journalier": 1500, "image": "e.jpg"},
     {"id": 5, "nom": "Fly 5", "prix": 20000, "revenu_journalier": 2000, "image": "e.jpg"},
     {"id": 6, "nom": "Fly 6", "prix": 50000, "revenu_journalier": 5000, "image": "e.jpg"},
@@ -816,17 +1330,10 @@ PRODUITS_VIP = [
 ]
 
 def credit_user_revenu(user, montant=1000):
-    """
-    Crédit automatique du revenu utilisateur
-    lorsqu'un produit est acheté.
-    """
     if not hasattr(user, "user_revenu") or user.solde_revenu is None:
         user.solde_revenu = 0
-
     user.solde_revenu += montant
-# ============================
-# PAGE PRODUITS RAPIDES
-# ============================
+
 @app.route("/produits_rapide")
 @login_required
 def produits_rapide_page():
@@ -839,16 +1346,12 @@ def produits_rapide_page():
         produits=PRODUITS_VIP
     )
 
-# ============================
-# CONFIRMATION D’ACHAT (affichage + validation finale)
-# ============================
 @app.route("/produits_rapide/confirmer/<int:vip_id>", methods=["GET", "POST"])
 @login_required
 def confirmer_produit_rapide(vip_id):
     phone = get_logged_in_user_phone()
     user = User.query.filter_by(phone=phone).first()
 
-    # Produit
     produit = next((p for p in PRODUITS_VIP if p["id"] == vip_id), None)
     if not produit:
         flash("Produit introuvable.", "danger")
@@ -858,7 +1361,6 @@ def confirmer_produit_rapide(vip_id):
     revenu_journalier = produit["revenu_journalier"]
     revenu_total = revenu_journalier * 120
 
-    # GET → affichage normal
     if request.method == "GET":
         return render_template(
             "confirm_rapide.html",
@@ -868,16 +1370,13 @@ def confirmer_produit_rapide(vip_id):
             submitted=False
         )
 
-    # POST → vérifier solde
     if float(user.solde_total or 0) < montant:
         flash("Solde insuffisant.", "danger")
         return redirect(url_for("produits_rapide_page"))
 
-    # Débit
     user.solde_total -= montant
     credit_user_revenu(user, 1000)
 
-    # Création investissement
     inv = Investissement(
         phone=phone,
         montant=montant,
@@ -888,7 +1387,6 @@ def confirmer_produit_rapide(vip_id):
     db.session.add(inv)
     db.session.commit()
 
-    # POST → afficher loader + succès
     return render_template(
         "confirm_rapide.html",
         p=produit,
@@ -897,10 +1395,6 @@ def confirmer_produit_rapide(vip_id):
         submitted=True
     )
 
-# ============================
-# VALIDATION DIRECTE (ancienne route)
-# → On la garde pour compatibilité mais elle n’est plus affichée dans HTML
-# ============================
 @app.route("/produits_rapide/valider/<int:vip_id>", methods=["POST"])
 @login_required
 def valider_produit_rapide(vip_id):
@@ -973,15 +1467,12 @@ def finance_page():
     revenus_totaux = (user.solde_revenu or 0) + (user.solde_parrainage or 0)
     fortune_totale = (user.solde_depot or 0) + revenus_totaux
 
-    # 🔹 RETRAITS
     retraits = Retrait.query.filter_by(phone=phone)\
         .order_by(Retrait.date.desc()).limit(10).all()
 
-    # 🔹 DEPOTS (NOUVEAU)
     depots = Depot.query.filter_by(phone=phone)\
         .order_by(Depot.date.desc()).limit(10).all()
 
-    # 🔹 INVESTISSEMENTS ACTIFS
     actifs_raw = Investissement.query.filter_by(phone=phone, actif=True).all()
 
     actifs = []
@@ -1001,7 +1492,7 @@ def finance_page():
         revenus_totaux=revenus_totaux,
         fortune_totale=fortune_totale,
         retraits=retraits,
-        depots=depots,     # 🔥 envoyé au template
+        depots=depots,
         actifs=actifs
     )
 
@@ -1031,33 +1522,25 @@ def get_image(montant):
 def historique_page():
     phone = get_logged_in_user_phone()
 
-    # 🔹 Dépôts
     depots = Depot.query.filter_by(phone=phone).order_by(Depot.date.desc()).all()
-
-    # 🔹 Retraits
     retraits = Retrait.query.filter_by(phone=phone).order_by(Retrait.date.desc()).all()
 
-    # 🔹 Commissions reçues
     commissions = Commission.query.filter_by(
         parrain_phone=phone
     ).order_by(Commission.date.desc()).all()
 
-    # 🔹 Revenus (investissements)
     investissements = []
     now = datetime.now()
 
     invest_records = Investissement.query.filter_by(phone=phone).all()
 
     for inv in invest_records:
-        # Calcul des jours passés
         jours_passes = (now - inv.date_debut).days
         
-        # 🛡️ Sécurité anti-division par zéro
         if inv.duree and inv.duree > 0:
             progression = min(int((jours_passes / inv.duree) * 100), 100)
             jours_restants = max(inv.duree - jours_passes, 0)
         else:
-            # Si la durée est 0 ou nulle, on considère l'investissement terminé
             progression = 100
             jours_restants = 0
 
@@ -1075,44 +1558,55 @@ def historique_page():
         commissions=commissions
     )
 
-
 @app.route('/team')
 @login_required
 def team_page():
     phone = get_logged_in_user_phone()
     user = User.query.filter_by(phone=phone).first()
 
-    referral_code = phone
+    referral_code = user.referral_code if user.referral_code else phone
     referral_link = url_for('inscription_page', _external=True) + f'?ref={referral_code}'
 
     from sqlalchemy import func, distinct
 
-    # ----- NIVEAU 1 -----
-    level1_users = User.query.filter_by(parrain=referral_code).all()
+    # NIVEAU 1 (recherche par parrain_code)
+    level1_users = User.query.filter_by(parrain_code=referral_code).all()
     level1_phones = [u.phone for u in level1_users]
     level1_count = len(level1_users)
 
-    # ----- NIVEAU 2 -----
+    # NIVEAU 2
     if level1_phones:
-        level2_users = User.query.filter(User.parrain.in_(level1_phones)).all()
-        level2_phones = [u.phone for u in level2_users]
-        level2_count = len(level2_users)
+        level1_codes = [u.referral_code for u in level1_users if u.referral_code]
+        if level1_codes:
+            level2_users = User.query.filter(User.parrain_code.in_(level1_codes)).all()
+            level2_phones = [u.phone for u in level2_users]
+            level2_count = len(level2_users)
+        else:
+            level2_users = []
+            level2_phones = []
+            level2_count = 0
     else:
         level2_users = []
         level2_phones = []
         level2_count = 0
 
-    # ----- NIVEAU 3 -----
+    # NIVEAU 3
     if level2_phones:
-        level3_users = User.query.filter(User.parrain.in_(level2_phones)).all()
-        level3_phones = [u.phone for u in level3_users]
-        level3_count = len(level3_users)
+        level2_codes = [u.referral_code for u in level2_users if u.referral_code]
+        if level2_codes:
+            level3_users = User.query.filter(User.parrain_code.in_(level2_codes)).all()
+            level3_phones = [u.phone for u in level3_users]
+            level3_count = len(level3_users)
+        else:
+            level3_users = []
+            level3_phones = []
+            level3_count = 0
     else:
         level3_users = []
         level3_phones = []
         level3_count = 0
 
-    # ----- UTILISATEURS ACTIFS -----
+    # UTILISATEURS ACTIFS
     level1_active = 0
     level2_active = 0
     level3_active = 0
@@ -1135,10 +1629,8 @@ def team_page():
             Investissement.actif == True
         ).count()
 
-    # ----- COMMISSIONS -----
     commissions_total = float(user.solde_parrainage or 0)
 
-    # ----- DEPOTS TEAM -----
     all_team_phones = level1_phones + level2_phones + level3_phones
 
     if all_team_phones:
@@ -1154,11 +1646,9 @@ def team_page():
         "level1": level1_count,
         "level2": level2_count,
         "level3": level3_count,
-
         "level1_active": level1_active,
         "level2_active": level2_active,
         "level3_active": level3_active,
-
         "commissions_total": commissions_total,
         "team_deposits": team_deposits
     }
@@ -1175,7 +1665,6 @@ def admin_deposits():
     depots = Depot.query.order_by(Depot.date.desc()).all()
     return render_template("admin_deposits.html", depots=depots)
 
-
 @app.route("/admin/deposits/valider/<int:depot_id>")
 def valider_depot(depot_id):
     depot = Depot.query.get_or_404(depot_id)
@@ -1189,16 +1678,14 @@ def valider_depot(depot_id):
         flash("Ce dépôt est déjà validé.", "warning")
         return redirect("/admin/deposits")
 
-    # 🔥 VÉRIFIER SI C'EST SON PREMIER DÉPÔT VALIDÉ
     premier_depot = Depot.query.filter_by(phone=user.phone, statut="valide").first()
 
-    # 🔥 Créditer le dépôt
     user.solde_depot += depot.montant
     user.solde_total += depot.montant
     depot.statut = "valide"
 
-    # 🔥 SI C’EST SON PREMIER DÉPÔT → COMMISSIONS
-    if not premier_depot and user.parrain:
+    # SI C'EST SON PREMIER DÉPÔT → COMMISSIONS
+    if not premier_depot and user.parrain_code:
         donner_commission(user.phone, depot.montant)
 
     db.session.commit()
@@ -1210,7 +1697,6 @@ def valider_depot(depot_id):
 def rejeter_depot(depot_id):
     depot = Depot.query.get_or_404(depot_id)
 
-    # Si déjà traité
     if hasattr(depot, "statut") and depot.statut in ["valide", "rejete"]:
         flash("Ce dépôt a déjà été traité.", "warning")
         return redirect("/admin/deposits")
@@ -1254,7 +1740,7 @@ def refuser_retrait(retrait_id):
     retrait.statut = "refusé"
     db.session.commit()
 
-    flash("Retrait refusé et montant recrédité à l’utilisateur.", "warning")
+    flash("Retrait refusé et montant recrédité à l'utilisateur.", "warning")
     return redirect("/admin/retraits")
 
 @app.route("/retrait", methods=["GET", "POST"])
@@ -1267,11 +1753,9 @@ def retrait_page():
         flash("Session invalide.", "danger")
         return redirect(url_for("connexion_page"))
 
-    # Le user doit avoir configuré son portefeuille
     if not user.wallet_number:
         return redirect(url_for("wallet_setup_page"))
 
-    # ✅ Solde retirable = Parrainage + Revenus
     solde_retraitable = (user.solde_parrainage or 0) + (user.solde_revenu or 0)
 
     if request.method == "POST":
@@ -1332,10 +1816,8 @@ def retrait_confirmation_page(montant):
             user.solde_revenu -= reste
 
         db.session.commit()
-        # Indiquer au template que le retrait est soumis
         return render_template("retrait_confirmation.html", montant=montant, taxe=taxe, net=net, user=user, submitted=True)
 
-    # GET → formulaire normal
     return render_template("retrait_confirmation.html", montant=montant, taxe=taxe, net=net, user=user, submitted=False)
 
 @app.route("/cron/pay_invests")
@@ -1346,13 +1828,11 @@ def cron_pay_invests():
     total_payes = 0
 
     for inv in invests:
-        # Protéger si dernier_paiement manquant
         if not inv.dernier_paiement:
             inv.dernier_paiement = inv.date_debut
 
         diff = maintenant - inv.dernier_paiement
 
-        # 🔥 Si 24h sont passées → créditer le revenu
         if diff.total_seconds() >= 86400:
 
             user = User.query.filter_by(phone=inv.phone).first()
@@ -1362,7 +1842,6 @@ def cron_pay_invests():
 
             inv.dernier_paiement = maintenant
 
-            # Incrémenter la durée restante
             inv.duree -= 1
             if inv.duree <= 0:
                 inv.actif = False
@@ -1376,46 +1855,352 @@ from datetime import datetime, timedelta
 
 def paiement_quotidien():
     while True:
-        time.sleep(60)  # vérifie toutes les 60 secondes
+        time.sleep(60)
 
-        with app.app_context():  # 🔥 OBLIGATOIRE pour éviter l’erreur "Working outside application context"
+        with app.app_context():
 
             investissements = Investissement.query.filter_by(actif=True).all()
 
             for inv in investissements:
                 now = datetime.utcnow()
 
-                # Si jamais la colonne est vide
                 if not inv.dernier_paiement:
                     inv.dernier_paiement = inv.date_debut
 
-                # Vérifie si 24h sont passées
                 if now - inv.dernier_paiement >= timedelta(hours=24):
 
                     user = User.query.filter_by(phone=inv.phone).first()
                     if not user:
                         continue
 
-                    # 🔥 Crédit du revenu
                     user.solde_revenu = float(user.solde_revenu or 0) + inv.revenu_journalier
                     user.solde_total = float(user.solde_total or 0) + inv.revenu_journalier
 
-                    # Met à jour la date du dernier paiement
                     inv.dernier_paiement = now
 
-                    # Réduit la durée restante
                     inv.duree -= 1
                     if inv.duree <= 0:
                         inv.actif = False
 
                     db.session.commit()
 
+# ============================================
+# ROUTES OAUTH GOOGLE ET APPLE
+# ============================================
+import jwt
+import json
+from cryptography.x509 import load_pem_x509_certificate
+from cryptography.hazmat.backends import default_backend
+import requests
+
+# Configuration OAuth (à remplacer par vos vraies valeurs)
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', 'your-google-client-secret')
+APPLE_CLIENT_ID = os.getenv('APPLE_CLIENT_ID', 'com.tokenflow.web')
+APPLE_TEAM_ID = os.getenv('APPLE_TEAM_ID', 'your-team-id')
+APPLE_KEY_ID = os.getenv('APPLE_KEY_ID', 'your-key-id')
+
+@app.route("/auth/google")
+def auth_google():
+    """Redirige vers Google OAuth"""
+    redirect_uri = url_for('google_callback', _external=True)
+    params = {
+        'client_id': GOOGLE_CLIENT_ID,
+        'redirect_uri': redirect_uri,
+        'response_type': 'code',
+        'scope': 'openid email profile',
+        'access_type': 'offline',
+        'prompt': 'consent'
+    }
+    return redirect(f"https://accounts.google.com/o/oauth2/v2/auth?{urlencode(params)}")
+
+@app.route("/auth/google/callback")
+def google_callback():
+    """Callback après authentification Google"""
+    code = request.args.get('code')
+    is_register = request.args.get('register', 'false').lower() == 'true'
+    
+    if not code:
+        error = request.args.get('error', 'unknown')
+        flash(f"Erreur Google OAuth: {error}", "danger")
+        return redirect(url_for('connexion_page'))
+    
+    # Échanger le code contre un token
+    token_url = 'https://oauth2.googleapis.com/token'
+    redirect_uri = url_for('google_callback', _external=True)
+    data = {
+        'code': code,
+        'client_id': GOOGLE_CLIENT_ID,
+        'client_secret': GOOGLE_CLIENT_SECRET,
+        'redirect_uri': redirect_uri,
+        'grant_type': 'authorization_code'
+    }
+    
+    try:
+        response = requests.post(token_url, data=data)
+        tokens = response.json()
+        
+        if 'error' in tokens:
+            flash(f"Erreur token Google: {tokens.get('error')}", "danger")
+            return redirect(url_for('connexion_page'))
+        
+        # Récupérer les infos utilisateur
+        id_token = tokens.get('id_token')
+        if not id_token:
+            flash("Pas de ID token reçu", "danger")
+            return redirect(url_for('connexion_page'))
+        
+        # Décoder le JWT (sans vérification pour l'instant - à sécuriser en prod)
+        user_info = jwt.decode(id_token, options={"verify_signature": False})
+        
+        google_id = user_info.get('sub')
+        email = user_info.get('email')
+        name = user_info.get('name')
+        
+        # Vérifier si l'utilisateur existe déjà avec Google
+        user = User.query.filter_by(google_id=google_id).first()
+        
+        if user:
+            # Connexion existante
+            session['phone'] = user.phone
+            flash("✅ Connecté avec Google !", "success")
+            return redirect(url_for('dashboard_page'))
+        
+        # Vérifier si l'utilisateur existe avec cet email
+        if email:
+            user = User.query.filter_by(email=email).first()
+            if user:
+                # Lier le compte Google à l'utilisateur existant
+                user.google_id = google_id
+                db.session.commit()
+                session['phone'] = user.phone
+                flash("✅ Google lié à votre compte !", "success")
+                return redirect(url_for('dashboard_page'))
+        
+        if is_register:
+            # Création d'un nouveau compte via Google
+            phone = f"google_{google_id}"
+            # Vérifier si le phone existe déjà
+            if User.query.filter_by(phone=phone).first():
+                phone = f"google_{google_id}_{random.randint(1000, 9999)}"
+            
+            new_user = User(
+                username=name or email.split('@')[0] if email else f"user_{google_id[:8]}",
+                email=email,
+                phone=phone,
+                google_id=google_id,
+                password=None,  # Pas de mot de passe pour OAuth
+                solde_total=1000,
+                solde_depot=1000,
+                solde_revenu=0,
+                solde_parrainage=0
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            
+            session['phone'] = new_user.phone
+            flash("🎉 Compte créé avec Google !", "success")
+            return redirect(url_for('dashboard_page'))
+        else:
+            flash("⚠️ Aucun compte trouvé avec cet email. Veuillez vous inscrire.", "warning")
+            return redirect(url_for('inscription_page'))
+            
+    except Exception as e:
+        flash(f"Erreur lors de la connexion Google: {str(e)}", "danger")
+        return redirect(url_for('connexion_page'))
+
+@app.route("/auth/google/callback", methods=["POST"])
+def google_callback_json():
+    """Callback pour le SDK Google Sign-In (JWT direct)"""
+    is_register = request.args.get('register', 'false').lower() == 'true'
+    data = request.get_json()
+    credential = data.get('credential')
+    
+    if not credential:
+        return jsonify({'error': 'Pas de credential reçu'}), 400
+    
+    try:
+        # Décoder le JWT (sans vérification pour l'instant - à sécuriser en prod)
+        user_info = jwt.decode(credential, options={"verify_signature": False})
+        
+        google_id = user_info.get('sub')
+        email = user_info.get('email')
+        name = user_info.get('name')
+        
+        # Vérifier si l'utilisateur existe déjà avec Google
+        user = User.query.filter_by(google_id=google_id).first()
+        
+        if user:
+            session['phone'] = user.phone
+            return jsonify({'url': url_for('dashboard_page')})
+        
+        # Vérifier si l'utilisateur existe avec cet email
+        if email:
+            user = User.query.filter_by(email=email).first()
+            if user:
+                user.google_id = google_id
+                db.session.commit()
+                session['phone'] = user.phone
+                return jsonify({'url': url_for('dashboard_page')})
+        
+        if is_register:
+            phone = f"google_{google_id}"
+            if User.query.filter_by(phone=phone).first():
+                phone = f"google_{google_id}_{random.randint(1000, 9999)}"
+            
+            new_user = User(
+                username=name or email.split('@')[0] if email else f"user_{google_id[:8]}",
+                email=email,
+                phone=phone,
+                google_id=google_id,
+                password=None,
+                solde_total=1000,
+                solde_depot=1000,
+                solde_revenu=0,
+                solde_parrainage=0
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            
+            session['phone'] = new_user.phone
+            return jsonify({'url': url_for('dashboard_page')})
+        else:
+            return jsonify({'error': 'Compte non trouvé', 'url': url_for('inscription_page') + '?google=1'})
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route("/auth/apple")
+def auth_apple():
+    """Redirige vers Apple OAuth"""
+    redirect_uri = url_for('apple_callback', _external=True)
+    params = {
+        'client_id': APPLE_CLIENT_ID,
+        'redirect_uri': redirect_uri,
+        'response_type': 'code id_token',
+        'response_mode': 'form_post',
+        'scope': 'name email',
+        'state': 'random_state_string'
+    }
+    return redirect(f"https://appleid.apple.com/auth/authorize?{urlencode(params)}")
+
+@app.route("/auth/apple/callback", methods=["GET", "POST"])
+def apple_callback():
+    """Callback après authentification Apple"""
+    is_register = request.args.get('register', request.form.get('register', 'false')).lower() == 'true'
+    
+    # Apple envoie les données via POST
+    if request.method == 'POST':
+        code = request.form.get('code')
+        id_token = request.form.get('id_token')
+        user_data = request.form.get('user')  # JSON avec name
+    else:
+        code = request.args.get('code')
+        id_token = request.args.get('id_token')
+        user_data = request.args.get('user')
+    
+    if not code and not id_token:
+        flash("Erreur Apple OAuth: pas de code ou id_token", "danger")
+        return redirect(url_for('connexion_page'))
+    
+    try:
+        if id_token:
+            # Décoder le JWT Apple
+            user_info = jwt.decode(id_token, options={"verify_signature": False})
+        else:
+            # Échanger le code contre un token
+            token_url = 'https://appleid.apple.com/auth/token'
+            redirect_uri = url_for('apple_callback', _external=True)
+            data = {
+                'code': code,
+                'client_id': APPLE_CLIENT_ID,
+                'client_secret': generate_apple_client_secret(),
+                'redirect_uri': redirect_uri,
+                'grant_type': 'authorization_code'
+            }
+            response = requests.post(token_url, data=data)
+            tokens = response.json()
+            id_token = tokens.get('id_token')
+            if id_token:
+                user_info = jwt.decode(id_token, options={"verify_signature": False})
+            else:
+                flash("Erreur token Apple", "danger")
+                return redirect(url_for('connexion_page'))
+        
+        apple_id = user_info.get('sub')
+        email = user_info.get('email')
+        
+        # Vérifier si l'utilisateur existe déjà avec Apple
+        user = User.query.filter_by(apple_id=apple_id).first()
+        
+        if user:
+            session['phone'] = user.phone
+            flash("✅ Connecté with Apple !", "success")
+            return redirect(url_for('dashboard_page'))
+        
+        # Vérifier si l'utilisateur existe avec cet email
+        if email:
+            user = User.query.filter_by(email=email).first()
+            if user:
+                user.apple_id = apple_id
+                db.session.commit()
+                session['phone'] = user.phone
+                flash("✅ Apple lié à votre compte !", "success")
+                return redirect(url_for('dashboard_page'))
+        
+        if is_register:
+            phone = f"apple_{apple_id}"
+            if User.query.filter_by(phone=phone).first():
+                phone = f"apple_{apple_id}_{random.randint(1000, 9999)}"
+            
+            name = "Utilisateur Apple"
+            if user_data:
+                try:
+                    name_json = json.loads(user_data)
+                    name = f"{name_json.get('name', {}).get('firstName', '')} {name_json.get('name', {}).get('lastName', '')}".strip()
+                except:
+                    pass
+            
+            new_user = User(
+                username=name or email.split('@')[0] if email else f"user_{apple_id[:8]}",
+                email=email,
+                phone=phone,
+                apple_id=apple_id,
+                password=None,
+                solde_total=1000,
+                solde_depot=1000,
+                solde_revenu=0,
+                solde_parrainage=0
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            
+            session['phone'] = new_user.phone
+            flash("🎉 Compte créé avec Apple !", "success")
+            return redirect(url_for('dashboard_page'))
+        else:
+            flash("⚠️ Aucun compte trouvé. Veuillez vous inscrire.", "warning")
+            return redirect(url_for('inscription_page'))
+            
+    except Exception as e:
+        flash(f"Erreur Apple: {str(e)}", "danger")
+        return redirect(url_for('connexion_page'))
+
+def generate_apple_client_secret():
+    """Génère un client_secret pour Apple (nécessite une clé privée)"""
+    # Cette fonction nécessite la clé privée Apple
+    # Pour l'instant, retourne une valeur placeholder
+    return "apple_client_secret_placeholder"
 
 if __name__ == "__main__":
-    # Lancement du système de paiement automatique en arrière-plan
-    # Cela permet de créditer les gains toutes les 24h sans action manuelle
     bg_thread = threading.Thread(target=paiement_quotidien, daemon=True)
     bg_thread.start()
     print("🚀 Serveur TokenFlow démarré sur http://127.0.0.1:5000")
     print("⚙️  Système de paiement automatique activé.")
+    print("📝 Pour activer Google/Apple OAuth, configurez les variables d'environnement:")
+    print("   - GOOGLE_CLIENT_ID")
+    print("   - GOOGLE_CLIENT_SECRET")
+    print("   - APPLE_CLIENT_ID")
+    print("   - APPLE_TEAM_ID")
+    print("   - APPLE_KEY_ID")
     app.run(debug=True, host="0.0.0.0")
