@@ -844,6 +844,19 @@ def logout_page():
     flash("Déconnexion effectuée.", "info")
     return redirect(url_for("connexion_page"))
 
+@app.route("/")
+def index_page():
+    """Page d'accueil - redirige vers connexion si déjà connecté, sinon affiche landing page"""
+    phone = get_logged_in_user_phone()
+    if phone:
+        return redirect(url_for("dashboard_page"))
+    return render_template("index.html")
+
+@app.route("/contact")
+def contact_page():
+    """Page de contact"""
+    return render_template("contact.html")
+
 def get_global_stats():
     total_users = db.session.query(func.count(User.id)).scalar() or 0
     total_deposits = db.session.query(func.sum(Depot.montant)).scalar() or 0

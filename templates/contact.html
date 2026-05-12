@@ -1,0 +1,489 @@
+{% extends "base.html" %}
+
+{% block title %}Contact | TokenFlow{% endblock %}
+
+{% block page_styles %}
+/* ============================================
+   PAGE CONTACT PREMIUM
+   Style cohérent avec produits_rapide.html
+   ============================================ */
+
+:root {
+  /* Palette Fintech Premium - Thème Clair */
+  --bg-page: #F1F5F9;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --bg-glass: rgba(255, 255, 255, 0.65);
+  --border-glow: rgba(99, 102, 241, 0.2);
+  --border-card: rgba(148, 163, 184, 0.2);
+  
+  /* Couleurs */
+  --profit-green: #10B981;
+  --profit-green-glow: rgba(16, 185, 129, 0.15);
+  --primary: #6366F1;
+  --primary-glow: rgba(99, 102, 241, 0.15);
+  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  
+  /* Text */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+}
+
+* { 
+  box-sizing: border-box; 
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* Background animé */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Grid de fond */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: 
+    linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.page-header {
+  text-align: center;
+  padding: 48px 24px;
+  margin-bottom: 40px;
+  background: var(--bg-card);
+  border-radius: 24px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+}
+
+.page-header h1 {
+  font-size: 36px;
+  font-weight: 900;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 12px;
+}
+
+.page-header p {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ============================================
+   CONTACT CARDS
+   ============================================ */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.contact-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+}
+
+.contact-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--border-glow);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px var(--primary-glow);
+}
+
+.contact-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 32px;
+  background: var(--primary-glow);
+  color: var(--primary);
+}
+
+.contact-icon.green {
+  background: var(--profit-green-glow);
+  color: var(--profit-green);
+}
+
+.contact-icon.orange {
+  background: rgba(245, 158, 11, 0.15);
+  color: #F59E0B;
+}
+
+.contact-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.contact-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.contact-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--primary-gradient);
+  border-radius: 14px;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.contact-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+/* ============================================
+   INFO SECTION
+   ============================================ */
+.info-section {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 40px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+}
+
+.info-section h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 24px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-glass);
+  border-radius: 14px;
+  border: 1px solid var(--border-card);
+}
+
+.info-item i {
+  font-size: 20px;
+  color: var(--primary);
+  margin-top: 2px;
+}
+
+.info-item-content h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--text-primary);
+}
+
+.info-item-content p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ============================================
+   SUPPORT HOURS
+   ============================================ */
+.hours-section {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+}
+
+.hours-section h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 24px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hours-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.hours-item {
+  text-align: center;
+  padding: 20px;
+  background: var(--bg-glass);
+  border-radius: 14px;
+  border: 1px solid var(--border-card);
+}
+
+.hours-item .day {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.hours-item .time {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.hours-item .status {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.hours-item .status.open {
+  background: var(--profit-green-glow);
+  color: var(--profit-green);
+}
+
+.hours-item .status.closed {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--loss-red);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 16px;
+  }
+  
+  .page-header {
+    padding: 32px 20px;
+  }
+  
+  .page-header h1 {
+    font-size: 28px;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-grid,
+  .hours-grid {
+    grid-template-columns: 1fr;
+  }
+}
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+  
+  <!-- Header -->
+  <div class="page-header">
+    <h1>📞 Contact TokenFlow</h1>
+    <p>Notre équipe est à votre disposition pour toute question</p>
+  </div>
+
+  <!-- Contact Cards -->
+  <div class="contact-grid">
+    <!-- Téléphone -->
+    <div class="contact-card">
+      <div class="contact-icon">
+        <i class="fa-solid fa-phone"></i>
+      </div>
+      <div class="contact-label">Téléphone</div>
+      <div class="contact-value">+1 343-453-7211</div>
+      <a href="tel:+13434537211" class="contact-action">
+        <i class="fa-solid fa-phone"></i>
+        Appeler
+      </a>
+    </div>
+
+    <!-- Email -->
+    <div class="contact-card">
+      <div class="contact-icon green">
+        <i class="fa-solid fa-envelope"></i>
+      </div>
+      <div class="contact-label">Email</div>
+      <div class="contact-value">support@tokenflow.com</div>
+      <a href="mailto:support@tokenflow.com" class="contact-action">
+        <i class="fa-solid fa-paper-plane"></i>
+        Envoyer un email
+      </a>
+    </div>
+
+    <!-- Support Chat -->
+    <div class="contact-card">
+      <div class="contact-icon orange">
+        <i class="fa-solid fa-comments"></i>
+      </div>
+      <div class="contact-label">Chat en direct</div>
+      <div class="contact-value">Support 24/7</div>
+      <a href="/support" class="contact-action">
+        <i class="fa-solid fa-comment-dots"></i>
+        Démarrer le chat
+      </a>
+    </div>
+  </div>
+
+  <!-- Info Section -->
+  <div class="info-section">
+    <h2>🏢 Informations Société</h2>
+    <div class="info-grid">
+      <div class="info-item">
+        <i class="fa-solid fa-building"></i>
+        <div class="info-item-content">
+          <h3>TokenFlow Inc.</h3>
+          <p>Plateforme d'investissement et de trading en ligne</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <i class="fa-solid fa-location-dot"></i>
+        <div class="info-item-content">
+          <h3>Adresse</h3>
+          <p>123 Financial District<br>New York, NY 10001</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="info-item-content">
+          <h3>Sécurité</h3>
+          <p>Cryptage SSL 256-bit<br>Conforme RGPD</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <i class="fa-solid fa-clock"></i>
+        <div class="info-item-content">
+          <h3>Disponibilité</h3>
+          <p>Service disponible 24h/24<br>7j/7</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hours Section -->
+  <div class="hours-section">
+    <h2>🕐 Heures de Support</h2>
+    <div class="hours-grid">
+      <div class="hours-item">
+        <div class="day">Lundi - Vendredi</div>
+        <div class="time">8:00 - 20:00</div>
+        <span class="status open">Ouvert</span>
+      </div>
+      <div class="hours-item">
+        <div class="day">Samedi</div>
+        <div class="time">9:00 - 18:00</div>
+        <span class="status open">Ouvert</span>
+      </div>
+      <div class="hours-item">
+        <div class="day">Dimanche</div>
+        <div class="time">10:00 - 16:00</div>
+        <span class="status open">Ouvert</span>
+      </div>
+      <div class="hours-item">
+        <div class="day">Urgences</div>
+        <div class="time">24h/24</div>
+        <span class="status open">Toujours ouvert</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Mettre à jour le statut en temps réel
+function updateStatus() {
+  const now = new Date();
+  const day = now.getDay();
+  const hour = now.getHours();
+  
+  // Simple logic: open 8-20 on weekdays, 9-18 Saturday, 10-16 Sunday
+  let isOpen = false;
+  
+  if (day >= 1 && day <= 5) { // Mon-Fri
+    isOpen = hour >= 8 && hour < 20;
+  } else if (day === 6) { // Saturday
+    isOpen = hour >= 9 && hour < 18;
+  } else { // Sunday
+    isOpen = hour >= 10 && hour < 16;
+  }
+  
+  // Update status badges if needed
+  console.log('Support status:', isOpen ? 'Open' : 'Closed');
+}
+
+updateStatus();
+setInterval(updateStatus, 60000); // Check every minute
+</script>
+{% endblock %}
