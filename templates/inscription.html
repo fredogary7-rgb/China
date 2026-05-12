@@ -3,376 +3,737 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription | TokenFlow</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Inscription | TokenFlow - Investissez dans le futur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <!-- Google Sign-In SDK -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        :root {
-            --primary: #5D5FEF;
-            --bg-page: #F4F7FE;
-            --white: #ffffff;
-            --text-dark: #1A202C;
-            --text-muted: #718096;
-            --success: #27AE60;
-            --danger: #EB5757;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'deep-black': '#0a0a0a',
+                        'midnight-blue': '#0f172a',
+                        'tech-purple': '#7c3aed',
+                        'neon-green': '#10b981',
+                        'premium-white': '#f8fafc',
+                        'glass-bg': 'rgba(255, 255, 255, 0.05)',
+                        'glass-border': 'rgba(255, 255, 255, 0.1)',
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
         }
-
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--bg-page);
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #f8fafc;
+            overflow-x: hidden;
         }
 
-        .container {
-            width: 100%;
-            max-width: 460px;
-            background: var(--white);
+        /* Animated background */
+        .bg-gradient {
+            background: linear-gradient(135deg, #0a0a0a 0%, #0f172a 25%, #1e1b4b 50%, #0f172a 75%, #0a0a0a 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.02);
         }
 
-        /* Bannière Image TokenFlow */
-        .banner { 
-            width: 100%; 
-            height: 160px; 
-            position: relative;
-            background: linear-gradient(135deg, #5D5FEF 0%, #8B5CF6 50%, #06B6D4 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            transition: all 0.3s ease;
         }
-        
-        .banner-svg {
-            width: 100%;
-            height: 100%;
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(124, 58, 237, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+        }
+
+        /* Glow effects */
+        .glow-purple {
+            box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+        }
+
+        .glow-green {
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Animated particles */
+        .particle {
             position: absolute;
-            top: 0;
-            left: 0;
+            width: 2px;
+            height: 2px;
+            background: rgba(124, 58, 237, 0.5);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
         }
 
-        .banner-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.3));
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
         }
 
-        .content { padding: 25px; }
-        
-        h1 { 
-            color: var(--text-dark); 
-            font-size: 20px; 
-            font-weight: 800; 
-            margin-bottom: 6px; 
-            text-align: center;
-        }
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 13px;
-            text-align: center;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .flash { padding: 10px 15px; border-radius: 12px; margin-bottom: 15px; font-size: 13px; font-weight: 600; text-align: center; }
-        .flash.danger { background: #FFF5F5; color: var(--danger); border: 1px solid #FED7D7; }
-        .flash.success { background: #F0FFF4; color: var(--success); border: 1px solid #C6F6D5; }
-
+        /* Input styling */
         .input-group {
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            border-radius: 14px;
-            margin-bottom: 12px;
-            padding: 2px 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: 0.3s;
-        }
-        .input-group:focus-within {
-            border-color: var(--primary);
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
+            position: relative;
+            margin-bottom: 16px;
         }
 
-        .input-group i { color: var(--primary); font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
-
-        .input-group input, .input-group select {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text-dark);
+        .input-group input,
+        .input-group select {
             width: 100%;
-            padding: 10px 0;
+            padding: 14px 16px 14px 48px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #f8fafc;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            outline: none;
         }
 
-        .btn-register-submit {
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #7c3aed;
+            background: rgba(124, 58, 237, 0.05);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(248, 250, 252, 0.4);
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(248, 250, 252, 0.5);
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .input-group:focus-within i {
+            color: #7c3aed;
+        }
+
+        /* Button styling */
+        .btn-primary {
             width: 100%;
-            padding: 14px;
-            background: var(--primary);
+            padding: 16px;
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
             color: white;
             border: none;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 800;
-            cursor: pointer;
-            margin-top: 8px;
-            box-shadow: 0 10px 20px rgba(93, 95, 239, 0.2);
-            transition: 0.3s;
-        }
-
-        .btn-register-submit:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 12px 25px rgba(93, 95, 239, 0.3);
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 15px 0;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #E2E8F0;
-        }
-
-        .divider span {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .social-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .social-btn {
-            padding: 10px;
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
             border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-dark);
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-social {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #f8fafc;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: 0.3s;
         }
 
-        .social-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: #EEF2FF;
+        .btn-social:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(124, 58, 237, 0.5);
+            transform: translateY(-2px);
         }
 
-        .footer-box {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #EDF2F7;
+        /* Stats counter animation */
+        .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #7c3aed, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #7c3aed;
+            border-radius: 4px;
+        }
+
+        /* Flash messages */
+        .flash {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: 600;
             text-align: center;
-        }
-        .footer-text { color: var(--text-muted); font-size: 13px; font-weight: 500; margin-bottom: 10px; }
-        
-        .btn-login-link {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 13px;
-            display: inline-block;
-        }
-        .btn-login-link:hover { text-decoration: underline; }
-
-        .password-toggle {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 4px;
-            flex-shrink: 0;
+            animation: slideIn 0.3s ease;
         }
 
-        @media (max-width: 480px) {
-            .content { padding: 20px; }
-            .social-buttons { grid-template-columns: 1fr; }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .flash.danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .flash.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 28px !important;
+            }
+            .hero-subtitle {
+                font-size: 14px !important;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
         }
     </style>
 </head>
-<body>
+<body class="bg-gradient">
+    <!-- Animated particles -->
+    <div id="particles"></div>
 
-<div class="container">
-    <div class="banner">
-        <svg class="banner-svg" viewBox="0 0 400 160" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-            <!-- Background circles -->
-            <circle cx="50" cy="80" r="120" fill="rgba(255,255,255,0.05)"/>
-            <circle cx="350" cy="80" r="100" fill="rgba(255,255,255,0.03)"/>
-            <circle cx="200" cy="160" r="80" fill="rgba(255,255,255,0.04)"/>
-            
-            <!-- Flow lines -->
-            <path d="M0,80 Q100,20 200,80 T400,80" stroke="rgba(255,255,255,0.15)" stroke-width="2" fill="none"/>
-            <path d="M0,100 Q100,40 200,100 T400,100" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" fill="none"/>
-            <path d="M0,60 Q100,120 200,60 T400,60" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
-            
-            <!-- TokenFlow Logo T -->
-            <g transform="translate(170, 40)">
-                <rect x="0" y="0" width="60" height="60" rx="15" fill="rgba(255,255,255,0.2)" />
-                <text x="30" y="42" font-family="Plus Jakarta Sans, sans-serif" font-size="32" font-weight="900" fill="white" text-anchor="middle">T</text>
-            </g>
-            
-            <!-- Text -->
-            <text x="200" y="130" font-family="Plus Jakarta Sans, sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle" opacity="0.9">TokenFlow</text>
-            <text x="200" y="148" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="500" fill="rgba(255,255,255,0.7)" text-anchor="middle">Rejoignez la révolution</text>
-            
-            <!-- Decorative dots -->
-            <circle cx="80" cy="40" r="3" fill="rgba(255,255,255,0.3)"/>
-            <circle cx="320" cy="50" r="2" fill="rgba(255,255,255,0.2)"/>
-            <circle cx="120" cy="120" r="2" fill="rgba(255,255,255,0.25)"/>
-            <circle cx="280" cy="130" r="3" fill="rgba(255,255,255,0.2)"/>
-        </svg>
-        <div class="banner-overlay"></div>
-    </div>
-
-    <div class="content">
-        <h1>Créer un compte</h1>
-        <span class="subtitle">Rejoignez notre réseau de partenaires</span>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, msg in messages %}
-              <div class="flash {{ category }}">{{ msg }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-
-        <form method="POST">
-            <div class="input-group">
-                <i class="fa-solid fa-user"></i>
-                <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass" style="border-radius: 0; border-left: none; border-right: none;">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-emerald-500 flex items-center justify-center">
+                    <span class="text-white font-black text-xl">T</span>
+                </div>
+                <span class="text-white font-bold text-xl tracking-tight">TokenFlow</span>
             </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-envelope"></i>
-                <input type="email" name="email" placeholder="Adresse email" required>
+            <div class="hidden md:flex items-center gap-6">
+                <a href="#features" class="text-gray-300 hover:text-white transition">Fonctionnalités</a>
+                <a href="#stats" class="text-gray-300 hover:text-white transition">Statistiques</a>
+                <a href="#testimonials" class="text-gray-300 hover:text-white transition">Avis</a>
+                <a href="{{ url_for('connexion_page') }}" class="px-6 py-2 rounded-full border border-white/20 text-white font-semibold hover:bg-white/10 transition">
+                    Connexion
+                </a>
             </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-earth-africa"></i>
-                <select name="pays" required>
-                    <option value="" disabled selected>Choisir mon pays</option>
-                    <option value="Bénin">🇧🇯 Bénin</option>
-                    <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
-                    <option value="Cameroun">🇨🇲 Cameroun</option>
-                    <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
-                    <option value="Gabon">🇬🇦 Gabon</option>
-                    <option value="Guinée">🇬🇳 Guinée</option>
-                    <option value="Mali">🇲🇱 Mali</option>
-                    <option value="Niger">🇳🇪 Niger</option>
-                    <option value="Sénégal">🇸🇳 Sénégal</option>
-                    <option value="Togo">🇹🇬 Togo</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-phone"></i>
-                <input type="tel" name="phone" placeholder="Numéro de téléphone" required>
-            </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-lock"></i>
-                <input type="password" name="password" placeholder="Mot de passe" required>
-                <button type="button" class="password-toggle" onclick="togglePassword(this, 'password')">
-                    <i class="fa-solid fa-eye"></i>
-                </button>
-            </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-circle-check"></i>
-                <input type="password" name="confirm_password" placeholder="Confirmer le mot de passe" required>
-                <button type="button" class="password-toggle" onclick="togglePassword(this, 'confirm_password')">
-                    <i class="fa-solid fa-eye"></i>
-                </button>
-            </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-ticket"></i>
-                <input type="text" name="code_invitation" placeholder="Code d'invitation (optionnel)" value="{{ code_ref if code_ref else '' }}">
-            </div>
-
-            <button type="submit" class="btn-register-submit">
-                Commencer l'aventure
-            </button>
-        </form>
-
-        <div class="divider">
-            <span>ou s'inscrire avec</span>
         </div>
+    </nav>
 
-        <div class="social-buttons">
-            <button class="social-btn" onclick="signupWithGoogle()">
-                <i class="fa-brands fa-google" style="color: #DB4437;"></i>
-                Google
-            </button>
-            <button class="social-btn" onclick="signupWithApple()">
-                <i class="fa-brands fa-apple"></i>
-                Apple
-            </button>
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center pt-20 px-6">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+            <!-- Left: Marketing content -->
+            <div class="space-y-8">
+                <div class="space-y-4">
+                    <h1 class="hero-title text-5xl md:text-6xl font-black text-white leading-tight">
+                        Investissez <span class="bg-gradient-to-r from-violet-500 to-emerald-400 bg-clip-text text-transparent">intelligemment</span> dans le futur numérique
+                    </h1>
+                    <p class="hero-subtitle text-lg text-gray-400 max-w-lg">
+                        Rejoignez des milliers d'investisseurs qui génèrent des revenus passifs grâce à notre plateforme de trading automatisé et sécurisé.
+                    </p>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid grid grid-cols-3 gap-6">
+                    <div class="glass-card p-4 text-center">
+                        <div class="stat-number" data-target="15000">0</div>
+                        <div class="text-sm text-gray-400 mt-1">Utilisateurs actifs</div>
+                    </div>
+                    <div class="glass-card p-4 text-center">
+                        <div class="stat-number" data-target="2.5">0</div>
+                        <div class="text-sm text-gray-400 mt-1">Millions € volume</div>
+                    </div>
+                    <div class="glass-card p-4 text-center">
+                        <div class="stat-number" data-target="98">0</div>
+                        <div class="text-sm text-gray-400 mt-1">% Satisfaction</div>
+                    </div>
+                </div>
+
+                <!-- Benefits -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card p-4 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-emerald-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-semibold text-sm">Sécurité maximale</div>
+                            <div class="text-gray-400 text-xs">Cryptage bancaire</div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-violet-500/20 flex items-center justify-center">
+                            <i class="fas fa-bolt text-violet-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-semibold text-sm">Transactions rapides</div>
+                            <div class="text-gray-400 text-xs">Retraits instantanés</div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                            <i class="fas fa-coins text-blue-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-semibold text-sm">Multi-devises</div>
+                            <div class="text-gray-400 text-xs">XOF, USD, EUR</div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-amber-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-semibold text-sm">Rendements élevés</div>
+                            <div class="text-gray-400 text-xs">Jusqu'à 2% quotidien</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Registration form -->
+            <div class="glass p-8 glow-purple">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-white mb-2">Créez votre compte</h2>
+                    <p class="text-gray-400 text-sm">Commencez à investir en moins de 2 minutes</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, msg in messages %}
+                      <div class="flash {{ category }}">{{ msg }}</div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+
+                <form method="POST" class="space-y-4">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" name="email" placeholder="Adresse email" required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="input-group">
+                            <i class="fas fa-earth-africa"></i>
+                            <select name="pays" required>
+                                <option value="" disabled selected>Pays</option>
+                                <option value="Bénin">🇧🇯 Bénin</option>
+                                <option value="Burkina Faso">🇧🇫 Burkina</option>
+                                <option value="Cameroun">🇨🇲 Cameroun</option>
+                                <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
+                                <option value="Gabon">🇬🇦 Gabon</option>
+                                <option value="Guinée">🇬🇳 Guinée</option>
+                                <option value="Mali">🇲🇱 Mali</option>
+                                <option value="Niger">🇳🇪 Niger</option>
+                                <option value="Sénégal">🇸🇳 Sénégal</option>
+                                <option value="Togo">🇹🇬 Togo</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" name="phone" placeholder="Téléphone" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="password" placeholder="Mot de passe" required>
+                        <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white" onclick="togglePassword(this, 'password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-circle-check"></i>
+                        <input type="password" name="confirm_password" placeholder="Confirmer le mot de passe" required>
+                        <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white" onclick="togglePassword(this, 'confirm_password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-ticket"></i>
+                        <input type="text" name="code_invitation" placeholder="Code de parrainage (optionnel)" value="{{ code_ref if code_ref else '' }}">
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        Commencer l'aventure
+                    </button>
+                </form>
+
+                <div class="mt-6">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="flex-1 h-px bg-white/10"></div>
+                        <span class="text-gray-400 text-sm">ou s'inscrire avec</span>
+                        <div class="flex-1 h-px bg-white/10"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="btn-social" onclick="signupWithGoogle()">
+                            <i class="fab fa-google" style="color: #DB4437;"></i>
+                            Google
+                        </button>
+                        <button class="btn-social" onclick="signupWithApple()">
+                            <i class="fab fa-apple"></i>
+                            Apple
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <p class="text-gray-400 text-sm">
+                        Déjà un compte ? 
+                        <a href="{{ url_for('connexion_page') }}" class="text-violet-400 font-semibold hover:text-violet-300 transition">
+                            Se connecter
+                        </a>
+                    </p>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="footer-box">
-            <div class="footer-text">Vous avez déjà un compte ?</div>
-            <a href="{{ url_for('connexion_page') }}" class="btn-login-link">
-                Se connecter maintenant
-            </a>
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black text-white mb-4">Pourquoi choisir <span class="text-violet-400">TokenFlow</span> ?</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Une plateforme complète pour tous vos besoins d'investissement</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass-card p-6">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-violet-800 flex items-center justify-center mb-4">
+                        <i class="fas fa-robot text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Trading Automatisé</h3>
+                    <p class="text-gray-400 text-sm">Algorithmes d'IA qui analysent les marchés 24/7 pour maximiser vos rendements.</p>
+                </div>
+
+                <div class="glass-card p-6">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center mb-4">
+                        <i class="fas fa-wallet text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Multi-Paiements</h3>
+                    <p class="text-gray-400 text-sm">Mobile Money, cartes bancaires, crypto. Déposez et retirez facilement.</p>
+                </div>
+
+                <div class="glass-card p-6">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center mb-4">
+                        <i class="fas fa-users text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Parrainage Rémunéré</h3>
+                    <p class="text-gray-400 text-sm">Gagnez jusqu'à 27% de commission sur chaque filleul et leurs sous-filleuls.</p>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    </section>
 
-<script>
-function togglePassword(btn, inputName) {
-    const input = btn.parentElement.querySelector(`input[name="${inputName}"]`);
-    const icon = btn.querySelector('i');
-    
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.className = 'fa-solid fa-eye-slash';
-    } else {
-        input.type = 'password';
-        icon.className = 'fa-solid fa-eye';
-    }
-}
+    <!-- Payment Methods -->
+    <section class="py-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-black text-white mb-4">Moyens de paiement acceptés</h2>
+                <p class="text-gray-400">Déposez et retirez en toute simplicité</p>
+            </div>
 
-// Google Sign-Up - Redirection directe vers OAuth backend
-function signupWithGoogle() {
-    window.location.href = '/auth/google?register=true';
-}
+            <div class="flex flex-wrap justify-center gap-6">
+                <div class="glass-card px-8 py-4 flex items-center gap-3">
+                    <i class="fab fa-cc-visa text-3xl text-blue-400"></i>
+                    <span class="text-white font-semibold">Visa</span>
+                </div>
+                <div class="glass-card px-8 py-4 flex items-center gap-3">
+                    <i class="fab fa-cc-mastercard text-3xl text-red-400"></i>
+                    <span class="text-white font-semibold">Mastercard</span>
+                </div>
+                <div class="glass-card px-8 py-4 flex items-center gap-3">
+                    <i class="fas fa-mobile-alt text-3xl text-yellow-400"></i>
+                    <span class="text-white font-semibold">MTN MoMo</span>
+                </div>
+                <div class="glass-card px-8 py-4 flex items-center gap-3">
+                    <i class="fas fa-mobile-alt text-3xl text-orange-400"></i>
+                    <span class="text-white font-semibold">Orange Money</span>
+                </div>
+                <div class="glass-card px-8 py-4 flex items-center gap-3">
+                    <i class="fas fa-wallet text-3xl text-blue-400"></i>
+                    <span class="text-white font-semibold">Wave</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-// Apple Sign-Up
-function signupWithApple() {
-    window.location.href = '/auth/apple?register=true';
-}
-</script>
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-12 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-emerald-500 flex items-center justify-center">
+                            <span class="text-white font-black text-xl">T</span>
+                        </div>
+                        <span class="text-white font-bold text-xl">TokenFlow</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        La plateforme d'investissement nouvelle génération pour l'Afrique et au-delà.
+                    </p>
+                </div>
 
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Produits</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-white transition">Trading</a></li>
+                        <li><a href="#" class="hover:text-white transition">Staking</a></li>
+                        <li><a href="#" class="hover:text-white transition">Parrainage</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Légal</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-white transition">Conditions d'utilisation</a></li>
+                        <li><a href="#" class="hover:text-white transition">Politique de confidentialité</a></li>
+                        <li><a href="#" class="hover:text-white transition">Cookies</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-white transition">Support 24/7</a></li>
+                        <li><a href="#" class="hover:text-white transition">Telegram</a></li>
+                        <li><a href="#" class="hover:text-white transition">WhatsApp</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-500 text-sm">© 2024 TokenFlow. Tous droits réservés.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Create particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Toggle password visibility
+        function togglePassword(btn, inputName) {
+            const input = btn.parentElement.querySelector(`input[name="${inputName}"]`);
+            const icon = btn.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // Google Sign-Up
+        function signupWithGoogle() {
+            window.location.href = '/auth/google?register=true';
+        }
+
+        // Apple Sign-Up
+        function signupWithApple() {
+            window.location.href = '/auth/apple?register=true';
+        }
+
+        // Animate stats on scroll
+        function animateStats() {
+            const stats = document.querySelectorAll('.stat-number');
+            stats.forEach(stat => {
+                const target = parseFloat(stat.getAttribute('data-target'));
+                const duration = 2000;
+                const start = 0;
+                const startTime = performance.now();
+
+                function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    
+                    const current = start + (target - start) * easeProgress;
+                    
+                    if (target % 1 === 0) {
+                        stat.textContent = Math.floor(current).toLocaleString();
+                    } else {
+                        stat.textContent = current.toFixed(1);
+                    }
+
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        if (target === 2.5) {
+                            stat.textContent = target + 'M+';
+                        } else if (target === 98) {
+                            stat.textContent = target + '%';
+                        } else {
+                            stat.textContent = Math.floor(target).toLocaleString() + '+';
+                        }
+                    }
+                }
+
+                requestAnimationFrame(update);
+            });
+        }
+
+        // Trigger animations when stats are in view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateStats();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stats-grid').forEach(grid => {
+            observer.observe(grid);
+        });
+
+        // GSAP animations
+        gsap.from('.hero-title', {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            ease: 'power3.out',
+            delay: 0.2
+        });
+
+        gsap.from('.hero-subtitle', {
+            duration: 1,
+            y: 30,
+            opacity: 0,
+            ease: 'power3.out',
+            delay: 0.4
+        });
+
+        gsap.from('.glass-card', {
+            duration: 0.8,
+            y: 30,
+            opacity: 0,
+            stagger: 0.1,
+            ease: 'power3.out',
+            delay: 0.6
+        });
+
+        gsap.from('.glass', {
+            duration: 1,
+            scale: 0.95,
+            opacity: 0,
+            ease: 'power3.out',
+            delay: 0.8
+        });
+    </script>
 </body>
 </html>

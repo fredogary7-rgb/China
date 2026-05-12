@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, text, distinct
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 TRANSLATIONS = {
     "fr": {
@@ -55,6 +56,13 @@ load_dotenv()
 # Configuration pour les URL externes en production
 SERVER_NAME = os.getenv('SERVER_NAME', 'flowtoken.uk')
 PREFERRED_URL_SCHEME = os.getenv('PREFERRED_URL_SCHEME', 'https')
+
+# Appliquer ProxyFix pour gérer les en-têtes X-Forwarded-* du proxy inverse (nginx, etc.)
+# Cela permet à Flask de détecter correctement HTTPS en production
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1)
+
+# Forcer le schéma HTTPS pour la génération d'URL
+app.config['PREFERRED_URL_SCHEME'] = 'https'
 MONEYFUSION_API_KEY = os.getenv("MONEYFUSION_API_KEY")
 MONEYFUSION_API_URL = os.getenv("MONEYFUSION_API_URL")
 
@@ -1904,16 +1912,22 @@ APPLE_CLIENT_ID = os.getenv('APPLE_CLIENT_ID', 'com.tokenflow.web')
 APPLE_TEAM_ID = os.getenv('APPLE_TEAM_ID', 'your-team-id')
 APPLE_KEY_ID = os.getenv('APPLE_KEY_ID', 'your-key-id')
 
+# Redirect URI explicite pour Google OAuth (HTTPS forcée en production)
+# Cette URI doit correspondre exactement à celle configurée dans Google Cloud Console
+GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', f'https://{SERVER_NAME}/auth/google/callback')
+APPLE_REDIRECT_URI = os.getenv('APPLE_REDIRECT_URI', f'https://{SERVER_NAME}/auth/apple/callback')
+
 @app.route("/auth/google")
 def auth_google():
     """Redirige vers Google OAuth"""
-    redirect_uri = url_for('google_callback', _external=True)
+    # Utiliser le redirect_uri explicite pour éviter les problèmes HTTP/HTTPS
+    redirect_uri = GOOGLE_REDIRECT_URI
     
     # Debug: afficher les informations OAuth
     print(f"🔐 Google OAuth Debug:")
     print(f"   GOOGLE_CLIENT_ID: {GOOGLE_CLIENT_ID[:20]}...")
     print(f"   GOOGLE_CLIENT_SECRET: {GOOGLE_CLIENT_SECRET[:20]}...")
-    print(f"   Redirect URI générée: {redirect_uri}")
+    print(f"   Redirect URI (explicite): {redirect_uri}")
     print(f"   SERVER_NAME: {SERVER_NAME}")
     print(f"   PREFERRED_URL_SCHEME: {PREFERRED_URL_SCHEME}")
     
@@ -1946,7 +1960,8 @@ def google_callback():
     
     # Échanger le code contre un token
     token_url = 'https://oauth2.googleapis.com/token'
-    redirect_uri = url_for('google_callback', _external=True)
+    # Utiliser le redirect_uri explicite pour éviter les problèmes HTTP/HTTPS
+    redirect_uri = GOOGLE_REDIRECT_URI
     data = {
         'code': code,
         'client_id': GOOGLE_CLIENT_ID,
@@ -2092,7 +2107,8 @@ def google_callback_json():
 @app.route("/auth/apple")
 def auth_apple():
     """Redirige vers Apple OAuth"""
-    redirect_uri = url_for('apple_callback', _external=True)
+    # Utiliser le redirect_uri explicite pour éviter les problèmes HTTP/HTTPS
+    redirect_uri = APPLE_REDIRECT_URI
     params = {
         'client_id': APPLE_CLIENT_ID,
         'redirect_uri': redirect_uri,
@@ -2129,7 +2145,8 @@ def apple_callback():
         else:
             # Échanger le code contre un token
             token_url = 'https://appleid.apple.com/auth/token'
-            redirect_uri = url_for('apple_callback', _external=True)
+            # Utiliser le redirect_uri explicite pour éviter les problèmes HTTP/HTTPS
+            redirect_uri = APPLE_REDIRECT_URI
             data = {
                 'code': code,
                 'client_id': APPLE_CLIENT_ID,
