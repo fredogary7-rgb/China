@@ -2052,33 +2052,39 @@ def google_callback():
                 flash("✅ Google lié à votre compte !", "success")
                 return redirect(url_for('dashboard_page'))
         
-        if is_register:
-            # Création d'un nouveau compte via Google
-            phone = f"google_{google_id}"
-            # Vérifier si le phone existe déjà
-            if User.query.filter_by(phone=phone).first():
-                phone = f"google_{google_id}_{random.randint(1000, 9999)}"
-            
-            new_user = User(
-                username=name or email.split('@')[0] if email else f"user_{google_id[:8]}",
-                email=email,
-                phone=phone,
-                google_id=google_id,
-                password=None,  # Pas de mot de passe pour OAuth
-                solde_total=1000,
-                solde_depot=1000,
-                solde_revenu=0,
-                solde_parrainage=0
-            )
-            db.session.add(new_user)
-            db.session.commit()
-            
-            session['phone'] = new_user.phone
-            flash("🎉 Compte créé avec Google !", "success")
-            return redirect(url_for('dashboard_page'))
-        else:
-            flash("⚠️ Aucun compte trouvé avec cet email. Veuillez vous inscrire.", "warning")
-            return redirect(url_for('inscription_page'))
+        # Si aucun compte n'existe, on crée automatiquement un nouveau compte (inscription)
+        # Création d'un nouveau compte via Google
+        phone = f"google_{google_id}"
+        # Vérifier si le phone existe déjà
+        if User.query.filter_by(phone=phone).first():
+            phone = f"google_{google_id}_{random.randint(1000, 9999)}"
+        
+        # Vérifier le code de parrainage depuis les cookies/session
+        referral_code = request.cookies.get('referral_code') or request.args.get('ref', '').upper()
+        parrain_code_value = None
+        if referral_code:
+            parrain_user = User.query.filter_by(referral_code=referral_code).first()
+            if parrain_user:
+                parrain_code_value = parrain_user.referral_code
+        
+        new_user = User(
+            username=name or email.split('@')[0] if email else f"user_{google_id[:8]}",
+            email=email,
+            phone=phone,
+            google_id=google_id,
+            password=None,  # Pas de mot de passe pour OAuth
+            solde_total=1000,
+            solde_depot=1000,
+            solde_revenu=0,
+            solde_parrainage=0,
+            parrain_code=parrain_code_value
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        
+        session['phone'] = new_user.phone
+        flash("🎉 Compte créé avec Google ! Bienvenue sur TokenFlow.", "success")
+        return redirect(url_for('dashboard_page'))
             
     except Exception as e:
         flash(f"Erreur lors de la connexion Google: {str(e)}", "danger")
@@ -2118,29 +2124,27 @@ def google_callback_json():
                 session['phone'] = user.phone
                 return jsonify({'url': url_for('dashboard_page')})
         
-        if is_register:
-            phone = f"google_{google_id}"
-            if User.query.filter_by(phone=phone).first():
-                phone = f"google_{google_id}_{random.randint(1000, 9999)}"
-            
-            new_user = User(
-                username=name or email.split('@')[0] if email else f"user_{google_id[:8]}",
-                email=email,
-                phone=phone,
-                google_id=google_id,
-                password=None,
-                solde_total=1000,
-                solde_depot=1000,
-                solde_revenu=0,
-                solde_parrainage=0
-            )
-            db.session.add(new_user)
-            db.session.commit()
-            
-            session['phone'] = new_user.phone
-            return jsonify({'url': url_for('dashboard_page')})
-        else:
-            return jsonify({'error': 'Compte non trouvé', 'url': url_for('inscription_page') + '?google=1'})
+        # Création automatique du compte (inscription via Google)
+        phone = f"google_{google_id}"
+        if User.query.filter_by(phone=phone).first():
+            phone = f"google_{google_id}_{random.randint(1000, 9999)}"
+        
+        new_user = User(
+            username=name or email.split('@')[0] if email else f"user_{google_id[:8]}",
+            email=email,
+            phone=phone,
+            google_id=google_id,
+            password=None,
+            solde_total=1000,
+            solde_depot=1000,
+            solde_revenu=0,
+            solde_parrainage=0
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        
+        session['phone'] = new_user.phone
+        return jsonify({'url': url_for('dashboard_page')})
             
     except Exception as e:
         return jsonify({'error': str(e)}), 400
