@@ -51,6 +51,10 @@ app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = "ma_cle_ultra_secrete"
 
 load_dotenv()
+
+# Configuration pour les URL externes en production
+SERVER_NAME = os.getenv('SERVER_NAME', 'flowtoken.uk')
+PREFERRED_URL_SCHEME = os.getenv('PREFERRED_URL_SCHEME', 'https')
 MONEYFUSION_API_KEY = os.getenv("MONEYFUSION_API_KEY")
 MONEYFUSION_API_URL = os.getenv("MONEYFUSION_API_URL")
 
@@ -1904,6 +1908,21 @@ APPLE_KEY_ID = os.getenv('APPLE_KEY_ID', 'your-key-id')
 def auth_google():
     """Redirige vers Google OAuth"""
     redirect_uri = url_for('google_callback', _external=True)
+    
+    # Debug: afficher les informations OAuth
+    print(f"🔐 Google OAuth Debug:")
+    print(f"   GOOGLE_CLIENT_ID: {GOOGLE_CLIENT_ID[:20]}...")
+    print(f"   GOOGLE_CLIENT_SECRET: {GOOGLE_CLIENT_SECRET[:20]}...")
+    print(f"   Redirect URI générée: {redirect_uri}")
+    print(f"   SERVER_NAME: {SERVER_NAME}")
+    print(f"   PREFERRED_URL_SCHEME: {PREFERRED_URL_SCHEME}")
+    
+    # Vérifier si le client secret est correctement chargé
+    if GOOGLE_CLIENT_SECRET == 'your-google-client-secret' or not GOOGLE_CLIENT_SECRET:
+        print("⚠️  ERREUR: GOOGLE_CLIENT_SECRET n'est pas configuré correctement !")
+        flash("❌ Configuration OAuth incorrecte. Vérifiez GOOGLE_CLIENT_SECRET dans .env", "danger")
+        return redirect(url_for('connexion_page'))
+    
     params = {
         'client_id': GOOGLE_CLIENT_ID,
         'redirect_uri': redirect_uri,
