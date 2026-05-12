@@ -409,7 +409,7 @@
   <div class="balance-display">
     <div>
       <div class="label">Solde actuel</div>
-      <div class="value">{{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }} XOF</div>
+      <div class="value">${{ "{:,.2f}".format((user.solde_total or 0) / 600) }}</div>
     </div>
     <a href="/dashboard" style="font-size: 12px; color: var(--primary); font-weight: 700;">
       Voir détail <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i>
@@ -422,41 +422,29 @@
   </div>
   
   <div class="amount-grid">
-    <div class="amount-option" onclick="selectAmount(4000, this)">
-      <span class="amount">4 000</span>
+    <div class="amount-option" onclick="selectAmount(10, this)">
+      <span class="amount">$10</span>
       <span class="label">Starter</span>
     </div>
-    <div class="amount-option" onclick="selectAmount(8000, this)">
-      <span class="amount">8 000</span>
+    <div class="amount-option" onclick="selectAmount(20, this)">
+      <span class="amount">$20</span>
       <span class="label">Basic</span>
     </div>
-    <div class="amount-option" onclick="selectAmount(12000, this)">
-      <span class="amount">12 000</span>
+    <div class="amount-option" onclick="selectAmount(50, this)">
+      <span class="amount">$50</span>
       <span class="label">Standard</span>
     </div>
-    <div class="amount-option" onclick="selectAmount(25000, this)">
-      <span class="amount">25 000</span>
+    <div class="amount-option" onclick="selectAmount(100, this)">
+      <span class="amount">$100</span>
       <span class="label">Premium</span>
     </div>
-    <div class="amount-option" onclick="selectAmount(50000, this)">
-      <span class="amount">50 000</span>
+    <div class="amount-option" onclick="selectAmount(200, this)">
+      <span class="amount">$200</span>
       <span class="label">Gold</span>
     </div>
-    <div class="amount-option" onclick="selectAmount(100000, this)">
-      <span class="amount">100 000</span>
+    <div class="amount-option" onclick="selectAmount(500, this)">
+      <span class="amount">$500</span>
       <span class="label">VIP</span>
-    </div>
-    <div class="amount-option" onclick="selectAmount(6000, this)">
-      <span class="amount">6 000</span>
-      <span class="label">10 USD</span>
-    </div>
-    <div class="amount-option" onclick="selectAmount(12000, this)">
-      <span class="amount">12 000</span>
-      <span class="label">20 USD</span>
-    </div>
-    <div class="amount-option" onclick="selectAmount(30000, this)">
-      <span class="amount">30 000</span>
-      <span class="label">50 USD</span>
     </div>
   </div>
 
@@ -470,8 +458,8 @@
 
   <div class="form-card">
     <div class="input-group">
-      <label><i class="fa-solid fa-hashtag"></i> Montant (XOF)</label>
-      <input type="number" id="montant" placeholder="Entrez le montant" min="3000" required>
+      <label><i class="fa-solid fa-hashtag"></i> Montant (USD $)</label>
+      <input type="number" id="montant" placeholder="Entrez le montant" min="5" step="0.01" required>
     </div>
 
     <div class="input-group">
@@ -546,14 +534,14 @@
     </button>
   </div>
 
-  <div class="info-banner" style="margin-top: 20px;">
-    <i class="fa-solid fa-circle-info"></i>
-    <p>
-      <b>Minimum:</b> 3 000 XOF (Mobile) / 6 000 XOF (Carte - 10 USD) • 
-      <b>Traitement:</b> Instantané après confirmation • 
-      <b>Support:</b> 24/7 disponible
-    </p>
-  </div>
+    <div class="info-banner" style="margin-top: 20px;">
+      <i class="fa-solid fa-circle-info"></i>
+      <p>
+        <b>Minimum:</b> $5 (Mobile) / $10 (Carte) • 
+        <b>Traitement:</b> Instantané après confirmation • 
+        <b>Support:</b> 24/7 disponible
+      </p>
+    </div>
 </div>
 
 <div class="loading-overlay" id="loadingOverlay">
@@ -692,7 +680,7 @@ function updatePaymentFields() {
 }
 
 function startPayment() {
-  const montant = document.getElementById('montant').value;
+  const montantUSD = parseFloat(document.getElementById('montant').value);
   const fullname = document.getElementById('fullname').value;
   const phone = document.getElementById('phone').value;
   const cardHolder = document.getElementById('card_holder').value;
@@ -700,14 +688,17 @@ function startPayment() {
   const cardExpiry = document.getElementById('card_expiry').value;
   const cardCvc = document.getElementById('card_cvc').value;
 
-  if (!montant || !fullname) {
+  if (!montantUSD || !fullname) {
     showToast('Veuillez renseigner le montant et votre nom', 'error');
     return;
   }
 
+  // Convert USD to XOF (1 USD = 600 XOF)
+  const montantXOF = Math.round(montantUSD * 600);
+
   if (selectedOperator === 'Stripe') {
-    if (montant < 6000) {
-      showToast('Montant minimum pour carte bancaire: 6 000 XOF (10 USD)', 'error');
+    if (montantUSD < 10) {
+      showToast('Montant minimum pour carte bancaire: $10 USD', 'error');
       return;
     }
     if (!cardHolder || !cardNumber || !cardExpiry || !cardCvc) {
@@ -719,8 +710,8 @@ function startPayment() {
       showToast('Veuillez renseigner votre numéro de paiement', 'error');
       return;
     }
-    if (montant < 3000) {
-      showToast('Montant minimum: 3 000 XOF', 'error');
+    if (montantUSD < 5) {
+      showToast('Montant minimum: $5 USD', 'error');
       return;
     }
   }
@@ -728,7 +719,7 @@ function startPayment() {
   document.getElementById('loadingOverlay').classList.add('active');
 
   const data = new URLSearchParams();
-  data.append("montant", montant);
+  data.append("montant", montantXOF);
   data.append("fullname", fullname);
   data.append("phone", phone);
   data.append("country", selectedCountry);
@@ -745,7 +736,14 @@ function startPayment() {
     method: "POST",
     body: data
   })
-  .then(res => res.json())
+  .then(res => {
+    if (!res.ok) {
+      return res.text().then(text => {
+        throw new Error(text || `Erreur ${res.status}: ${res.statusText}`);
+      });
+    }
+    return res.json();
+  })
   .then(data => {
     document.getElementById('loadingOverlay').classList.remove('active');
     if (data.error) {
@@ -754,9 +752,10 @@ function startPayment() {
       window.location.href = data.url;
     }
   })
-  .catch(() => {
+  .catch((err) => {
     document.getElementById('loadingOverlay').classList.remove('active');
-    showToast('Erreur de connexion. Réessayez.', 'error');
+    showToast('Erreur: ' + err.message, 'error');
+    console.error('Erreur dépôt:', err);
   });
 }
 

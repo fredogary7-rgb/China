@@ -1,108 +1,422 @@
 {% extends "base.html" %}
 
-{% block title %}Investir | TokenFlow{% endblock %}
+{% block title %}Investir | TokenFlow Trading{% endblock %}
 
 {% block page_styles %}
-/* Trading-themed background - uses CSS gradients from fintech.css */
+/* ============================================
+   PLATEFORME FINTECH/TRADING PROFESSIONNELLE
+   Style: Binance, Bybit, Revolut Premium
+   ============================================ */
 
-/* VIP Products Grid */
-.products-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
+:root {
+  /* Palette Trading Premium */
+  --bg-dark: #0a0e1a;
+  --bg-card: rgba(15, 20, 40, 0.85);
+  --bg-card-hover: rgba(20, 28, 60, 0.95);
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  --border-glow: rgba(99, 102, 241, 0.3);
+  --border-card: rgba(255, 255, 255, 0.06);
+  
+  /* Couleurs Trading */
+  --profit-green: #00E676;
+  --profit-green-glow: rgba(0, 230, 118, 0.2);
+  --loss-red: #FF5252;
+  --loss-red-glow: rgba(255, 82, 82, 0.2);
+  
+  /* Primary */
+  --primary: #6366F1;
+  --primary-glow: rgba(99, 102, 241, 0.4);
+  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #06B6D4 100%);
+  
+  /* Text */
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  
+  /* Badges */
+  --badge-crypto: linear-gradient(135deg, #F7931A, #FFB84D);
+  --badge-forex: linear-gradient(135deg, #3B82F6, #6366F1);
+  --badge-gold: linear-gradient(135deg, #FFD700, #FFA500);
+  --badge-realestate: linear-gradient(135deg, #8B5CF6, #A78BFA);
+  --badge-ai: linear-gradient(135deg, #06B6D4, #0EA5E9);
+  --badge-vip: linear-gradient(135deg, #F59E0B, #EF4444);
+  --badge-stable: linear-gradient(135deg, #22C55E, #10B981);
 }
 
-/* Product Card */
-.product-card {
+* { 
+  box-sizing: border-box; 
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* Background animé */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Grid de fond */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ============================================
+   HEADER STATS - Live Trading Dashboard
+   ============================================ */
+.trading-header {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+  padding: 24px;
   background: var(--bg-card);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  border: 1px solid var(--border-light);
-  box-shadow: 0 4px 16px var(--shadow-color);
-  transition: all var(--transition-normal);
+  border-radius: 20px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+}
+
+.stat-card {
+  text-align: center;
+  padding: 16px;
+}
+
+.stat-card .icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  font-size: 20px;
+}
+
+.stat-card .icon.green {
+  background: var(--profit-green-glow);
+  color: var(--profit-green);
+}
+
+.stat-card .icon.purple {
+  background: var(--primary-glow);
+  color: var(--primary);
+}
+
+.stat-card .icon.cyan {
+  background: rgba(6, 182, 212, 0.2);
+  color: #06B6D4;
+}
+
+.stat-card .icon.gold {
+  background: rgba(255, 215, 0, 0.2);
+  color: #FFD700;
+}
+
+.stat-card .value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.stat-card .label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+   FILTRES & CONTROLS
+   ============================================ */
+.controls-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.search-box i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.filter-group {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s;
   backdrop-filter: blur(12px);
 }
 
-.product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px var(--shadow-hover);
+.filter-btn:hover,
+.filter-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 4px 16px var(--primary-glow);
 }
 
-.product-header {
-  padding: 20px;
-  position: relative;
+.currency-toggle {
+  display: flex;
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 4px;
+  border: 1px solid var(--border-card);
+}
+
+.currency-toggle button {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.currency-toggle button.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* ============================================
+   PRODUITS GRID - Trading Cards Premium
+   ============================================ */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.product-card {
+  background: var(--bg-card);
+  border-radius: 20px;
   overflow: hidden;
+  border: 1px solid var(--border-card);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  position: relative;
 }
 
-.product-header::before {
+.product-card::before {
   content: '';
   position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  filter: blur(30px);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary-gradient);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--border-glow);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px var(--primary-glow);
+}
+
+.product-card:hover::before {
+  opacity: 1;
+}
+
+/* Product Header avec image */
+.product-image {
+  height: 140px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  transition: transform 0.6s;
+}
+
+.product-card:hover .product-image-bg {
+  transform: scale(1.1);
+}
+
+.product-image-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(10, 14, 26, 0.9) 100%);
+}
+
+.product-icon {
+  position: relative;
+  z-index: 2;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-glow);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .product-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 6px 14px;
   border-radius: 20px;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 12px;
+  z-index: 3;
+  color: white;
 }
 
-.product-badge.starter {
-  background: rgba(148, 163, 184, 0.2);
-  color: var(--text-secondary);
-}
+.product-badge.crypto { background: var(--badge-crypto); }
+.product-badge.forex { background: var(--badge-forex); }
+.product-badge.gold { background: var(--badge-gold); color: #000; }
+.product-badge.realestate { background: var(--badge-realestate); }
+.product-badge.ai { background: var(--badge-ai); }
+.product-badge.vip { background: var(--badge-vip); }
+.product-badge.stable { background: var(--badge-stable); }
 
-.product-badge.gold {
-  background: rgba(255, 215, 0, 0.2);
-  color: #FFD700;
-}
-
-.product-badge.platinum {
-  background: rgba(185, 242, 255, 0.2);
-  color: #B9F2FF;
-}
-
-.product-badge.diamond {
-  background: rgba(99, 102, 241, 0.2);
-  color: var(--primary);
-}
-
-.product-name {
-  font-size: 20px;
-  font-weight: 900;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.product-price {
-  font-size: 28px;
-  font-weight: 900;
-  color: var(--primary);
-}
-
-.product-price span {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
+/* Product Body */
 .product-body {
   padding: 20px;
 }
 
+.product-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.product-category {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.product-price {
+  margin-bottom: 20px;
+}
+
+.price-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.price-value {
+  font-size: 28px;
+  font-weight: 900;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.price-value span {
+  font-size: 14px;
+  font-weight: 600;
+  -webkit-text-fill-color: var(--text-secondary);
+}
+
+.price-converted {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Stats Grid */
 .product-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -113,69 +427,109 @@
 .product-stat {
   text-align: center;
   padding: 12px 8px;
-  background: var(--bg-page);
-  border-radius: var(--radius-md);
+  background: var(--bg-glass);
+  border-radius: 12px;
+  border: 1px solid var(--border-card);
 }
 
 .product-stat .value {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
-  color: var(--text-primary);
   display: block;
+  margin-bottom: 2px;
+}
+
+.product-stat .value.profit {
+  color: var(--profit-green);
+  text-shadow: 0 0 20px var(--profit-green-glow);
+}
+
+.product-stat .value.duration {
+  color: var(--primary);
+}
+
+.product-stat .value.total {
+  color: var(--text-primary);
 }
 
 .product-stat .label {
   font-size: 10px;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 4px;
-}
-
-.product-stat .value.profit {
-  color: var(--success);
-}
-
-.product-stat .value.duration {
-  color: var(--secondary);
+  letter-spacing: 0.3px;
 }
 
 /* ROI Bar */
-.roi-bar {
+.roi-section {
   margin-bottom: 20px;
 }
 
-.roi-bar-header {
+.roi-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 8px;
 }
 
-.roi-bar-header .label {
+.roi-label {
   font-size: 12px;
-  font-weight: 600;
   color: var(--text-muted);
+  font-weight: 600;
 }
 
-.roi-bar-header .value {
+.roi-value {
   font-size: 14px;
   font-weight: 800;
-  color: var(--success);
+  color: var(--profit-green);
 }
 
-.roi-progress {
-  height: 8px;
-  background: var(--border-color);
+.roi-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
   overflow: hidden;
 }
 
 .roi-fill {
   height: 100%;
-  background: var(--success-gradient);
+  background: linear-gradient(90deg, var(--profit-green), #00E676);
   border-radius: 10px;
-  transition: width 0.8s ease;
+  transition: width 1s ease;
+  box-shadow: 0 0 10px var(--profit-green-glow);
 }
+
+/* Risk Indicator */
+.risk-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  background: var(--bg-glass);
+  border-radius: 12px;
+}
+
+.risk-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.risk-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.risk-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.risk-dot.filled.low { background: var(--profit-green); }
+.risk-dot.filled.medium { background: #FFB84D; }
+.risk-dot.filled.high { background: var(--loss-red); }
 
 /* Product Actions */
 .product-actions {
@@ -185,553 +539,433 @@
 
 .btn-details {
   flex: 1;
-  padding: 12px;
-  background: var(--bg-page);
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
   color: var(--text-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.3s;
+  text-decoration: none;
+  text-align: center;
 }
 
 .btn-details:hover {
   border-color: var(--primary);
   color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
 }
 
-.btn-buy {
+.btn-invest {
   flex: 2;
-  padding: 12px;
+  padding: 14px;
   background: var(--primary-gradient);
-  color: white;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 14px;
+  color: white;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  box-shadow: 0 4px 12px var(--primary-glow);
+  transition: all 0.3s;
+  text-decoration: none;
+  text-align: center;
+  box-shadow: 0 4px 20px var(--primary-glow);
 }
 
-.btn-buy:hover {
+.btn-invest:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px var(--primary-glow);
+  box-shadow: 0 8px 30px var(--primary-glow);
 }
 
-.btn-buy:active {
+.btn-invest:active {
   transform: scale(0.98);
 }
 
-/* Balance display */
+/* ============================================
+   BALANCE BAR
+   ============================================ */
 .balance-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 20px 24px;
   background: var(--bg-card);
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   margin-bottom: 24px;
-  border: 1px solid var(--border-light);
-  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
 }
 
-.balance-bar .info {
+.balance-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
-.balance-bar .icon {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-sm);
-  background: var(--primary-light);
+.balance-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--primary-glow);
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 22px;
   color: var(--primary);
-  font-size: 18px;
 }
 
-.balance-bar .details .label {
-  font-size: 11px;
+.balance-details .label {
+  font-size: 12px;
   color: var(--text-muted);
   font-weight: 600;
+  margin-bottom: 2px;
 }
 
-.balance-bar .details .value {
-  font-size: 18px;
+.balance-details .value {
+  font-size: 24px;
   font-weight: 800;
   color: var(--text-primary);
 }
 
-.balance-bar .action {
-  padding: 8px 16px;
-  background: var(--primary);
+.btn-deposit {
+  padding: 12px 24px;
+  background: var(--primary-gradient);
+  border-radius: 12px;
   color: white;
-  border-radius: var(--radius-md);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  transition: all var(--transition-fast);
-}
-
-.balance-bar .action:hover {
-  background: var(--primary);
-  filter: brightness(1.1);
-}
-
-/* Section header */
-.section-header {
+  transition: all 0.3s;
   display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-deposit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+/* ============================================
+   MODAL DETAILS PRODUIT
+   ============================================ */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-backdrop.active {
+  display: flex;
+}
+
+.modal {
+  background: var(--bg-card);
+  border-radius: 24px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--border-card);
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
 }
 
-.section-header h2 {
+.modal-header h2 {
   font-size: 20px;
-  font-weight: 900;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.section-header h2 i {
-  color: var(--primary);
-}
-
-.section-header p {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-/* Filter tabs */
-.filter-tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-
-.filter-tab {
-  padding: 10px 20px;
-  background: var(--bg-card);
-  border-radius: 20px;
-  border: 1px solid var(--border-light);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all var(--transition-fast);
-  backdrop-filter: blur(12px);
-}
-
-.filter-tab:hover,
-.filter-tab.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-/* Currency selector */
-.currency-selector {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding: 16px;
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
-  backdrop-filter: blur(12px);
-}
-
-.currency-selector .label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.currency-selector .label i {
-  color: var(--primary);
-}
-
-.currency-selector select {
-  padding: 8px 12px;
-  background: var(--bg-page);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  min-width: 80px;
-}
-
-.currency-selector select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-glow);
-}
-
-.currency-selector select:hover {
-  border-color: var(--primary);
-}
-
-/* Advanced filters */
-.advanced-filters {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-
-.advanced-filters .filter-tab {
-  padding: 8px 16px;
-  background: var(--bg-card);
-  border-radius: 16px;
-  border: 1px solid var(--border-light);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all var(--transition-fast);
-  backdrop-filter: blur(12px);
-}
-
-.advanced-filters .filter-tab:hover,
-.advanced-filters .filter-tab.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-/* Product price with conversion */
-.product-price {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-}
-
-.product-price .main-price {
-  font-size: 28px;
-  font-weight: 900;
-  color: var(--primary);
-}
-
-.product-price .converted-price {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  opacity: 0.8;
-}
-
-.product-price span {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-/* Quick actions */
-.quick-actions {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.quick-action-btn {
-  padding: 8px 12px;
-  background: var(--bg-page);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.quick-action-btn:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-.quick-action-btn.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-/* Investment calculator */
-.investment-calculator {
-  padding: 16px;
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
-  margin-bottom: 20px;
-  backdrop-filter: blur(12px);
-}
-
-.calculator-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.calculator-header h3 {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-weight: 800;
   margin: 0;
 }
 
-.calculator-inputs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
-.calculator-input {
+.modal-close:hover {
+  background: rgba(255, 82, 82, 0.2);
+  color: var(--loss-red);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+/* Performance Chart */
+.chart-placeholder {
+  height: 200px;
+  background: var(--bg-glass);
+  border-radius: 16px;
+  margin-bottom: 24px;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-card);
+  position: relative;
+  overflow: hidden;
 }
 
-.calculator-input label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.chart-line {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: var(--primary-gradient);
+  border-radius: 2px;
+  transform: rotate(-5deg);
+  transform-origin: left;
 }
 
-.calculator-input input {
-  padding: 8px 12px;
-  background: var(--bg-page);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
+/* ============================================
+   SKELETON LOADING
+   ============================================ */
+.skeleton {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.05) 25%, 
+    rgba(255,255,255,0.1) 50%, 
+    rgba(255,255,255,0.05) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 8px;
 }
 
-.calculator-input input:focus {
-  outline: none;
-  border-color: var(--primary);
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-.calculator-result {
-  padding: 12px;
-  background: var(--success-light);
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(34, 197, 94, 0.2);
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .trading-header {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-box {
+    max-width: none;
+  }
+  
+  .filter-group {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .balance-bar {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .balance-info {
+    flex-direction: column;
+  }
 }
 
-.calculator-result .label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 4px;
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.calculator-result .value {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--success);
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.5);
 }
 {% endblock %}
 
 {% block content %}
 <div class="app-container">
-  <!-- Modal de Détails du Produit -->
-  <div class="modal-backdrop" id="productDetailModal">
-    <div class="modal" style="max-width: 400px; text-align: left; padding: 0; overflow: hidden;">
-      <div id="modalHeader" style="padding: 24px; color: white;">
-        <div class="product-badge" id="modalBadge" style="margin-bottom: 12px; background: rgba(255,255,255,0.2); color: white;"></div>
-        <h2 id="modalName" style="margin: 0; color: white; font-size: 24px; font-weight: 900;"></h2>
-        <div id="modalPrice" style="font-size: 20px; font-weight: 700; opacity: 0.9;"></div>
+  <!-- Header Stats -->
+  <div class="trading-header">
+    <div class="stat-card">
+      <div class="icon green">
+        <i class="fa-solid fa-users"></i>
       </div>
-      <div style="padding: 24px;">
-        <h3 style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 16px; letter-spacing: 1px;">Analyse de rentabilité</h3>
-        <div class="product-stats" style="margin-bottom: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-          <div class="product-stat" style="text-align: center; padding: 12px 8px; background: var(--bg-page); border-radius: var(--radius-md);">
-            <span class="value profit" id="modalDaily" style="font-size: 16px; font-weight: 800; color: var(--success); display: block;"></span>
-            <span class="label" style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">/jour</span>
-          </div>
-          <div class="product-stat" style="text-align: center; padding: 12px 8px; background: var(--bg-page); border-radius: var(--radius-md);">
-            <span class="value duration" style="font-size: 16px; font-weight: 800; color: var(--secondary); display: block;">120</span>
-            <span class="label" style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">jours</span>
-          </div>
-          <div class="product-stat" style="text-align: center; padding: 12px 8px; background: var(--bg-page); border-radius: var(--radius-md);">
-            <span class="value" id="modalTotal" style="font-size: 16px; font-weight: 800; color: var(--primary); display: block;"></span>
-            <span class="label" style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">total</span>
-          </div>
-        </div>
-        
-        <div class="roi-bar" style="margin-bottom: 24px;">
-          <div class="roi-bar-header" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <span class="label" style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Indice de performance (ROI)</span>
-            <span class="value" id="modalROI" style="font-size: 14px; font-weight: 800; color: var(--success);"></span>
-          </div>
-          <div class="roi-progress" style="height: 8px; background: var(--border-color); border-radius: 10px; overflow: hidden;">
-            <div class="roi-fill" id="modalROIFill" style="height: 100%; background: var(--success-gradient); border-radius: 10px; transition: width 0.8s ease;"></div>
-          </div>
-        </div>
-
-        <div class="modal-buttons" style="display: flex; gap: 12px;">
-          <button class="btn-secondary" style="flex: 1;" onclick="closeModal('productDetailModal')">Fermer</button>
-          <a id="modalBuyBtn" href="#" class="btn-primary" style="flex: 2; text-align: center; text-decoration: none; padding: 14px; font-weight: 700; border-radius: var(--radius-md);">Investir maintenant</a>
-        </div>
+      <div class="value" id="totalInvestors">2,847</div>
+      <div class="label">Investisseurs</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon purple">
+        <i class="fa-solid fa-chart-pie"></i>
       </div>
+      <div class="value" id="totalVolume">$1.2M</div>
+      <div class="label">Volume Total</div>
     </div>
-  </div>
-
-  <!-- Header -->
-  <header class="top-header">
-    <div class="brand">
-      <a href="/dashboard" style="display: flex; align-items: center; gap: 8px;">
-        <i class="fa-solid fa-arrow-left" style="color: var(--text-secondary); font-size: 18px;"></i>
-      </a>
-      <div class="brand-logo">T</div>
-      <span class="brand-name">TokenFlow</span>
+    <div class="stat-card">
+      <div class="icon cyan">
+        <i class="fa-solid fa-robot"></i>
+      </div>
+      <div class="value" id="activeBots">156</div>
+      <div class="label">Bots Actifs</div>
     </div>
-    <button class="icon-btn" onclick="toggleDarkMode()" aria-label="Mode sombre">
-      <i class="fa-solid fa-moon"></i>
-    </button>
-  </header>
-
-  <!-- Title -->
-  <div class="section-header">
-    <div>
-      <h2><i class="fa-solid fa-rocket"></i> Investir</h2>
-      <p>Choisissez votre plan d'investissement</p>
+    <div class="stat-card">
+      <div class="icon gold">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+      <div class="value" id="avgROI">+127%</div>
+      <div class="label">ROI Moyen</div>
     </div>
   </div>
 
   <!-- Balance Bar -->
   <div class="balance-bar">
-    <div class="info">
-      <div class="icon">
+    <div class="balance-info">
+      <div class="balance-icon">
         <i class="fa-solid fa-wallet"></i>
       </div>
-      <div class="details">
+      <div class="balance-details">
         <div class="label">Solde disponible</div>
-        <div class="value">{{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }} XOF</div>
+        <div class="value" id="userBalance" data-xof="{{ user.solde_total or 0 }}">{{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }} XOF</div>
       </div>
     </div>
-    <a href="/deposit" class="action">
+    <a href="/deposit" class="btn-deposit">
       <i class="fa-solid fa-plus"></i> Déposer
     </a>
   </div>
 
-  <!-- Currency Selector -->
-  <div class="currency-selector">
-    <div class="label">
-      <i class="fa-solid fa-money-bill-wave"></i>
-      Affichage des prix
+  <!-- Controls Bar -->
+  <div class="controls-bar">
+    <div class="search-box">
+      <i class="fa-solid fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Rechercher un produit..." oninput="searchProducts()">
     </div>
-    <select id="currencySelect" onchange="changeCurrency()">
-      <option value="XOF">Franc CFA (XOF)</option>
-      <option value="USD">Dollar US (USD)</option>
-      <option value="EUR">Euro (EUR)</option>
-    </select>
-  </div>
-
-  <!-- Advanced Filters -->
-  <div class="advanced-filters">
-    <div class="filter-tab active" onclick="filterByPrice('all', this)">Tous les prix</div>
-    <div class="filter-tab" onclick="filterByPrice('low', this)">0 - 15K XOF</div>
-    <div class="filter-tab" onclick="filterByPrice('medium', this)">15K - 50K XOF</div>
-    <div class="filter-tab" onclick="filterByPrice('high', this)">50K+ XOF</div>
-  </div>
-
-  <!-- Quick Actions -->
-  <div class="quick-actions">
-    <button class="quick-action-btn" onclick="sortProducts('price')">
-      <i class="fa-solid fa-sort-amount-down"></i> Prix
-    </button>
-    <button class="quick-action-btn" onclick="sortProducts('roi')">
-      <i class="fa-solid fa-chart-line"></i> ROI
-    </button>
-    <button class="quick-action-btn" onclick="toggleCalculator()">
-      <i class="fa-solid fa-calculator"></i> Calculateur
-    </button>
-    <button class="quick-action-btn" onclick="toggleComparison()">
-      <i class="fa-solid fa-balance-scale"></i> Comparer
-    </button>
-  </div>
-
-  <!-- Investment Calculator (hidden by default) -->
-  <div class="investment-calculator" id="investmentCalculator" style="display: none;">
-    <div class="calculator-header">
-      <i class="fa-solid fa-calculator" style="color: var(--primary);"></i>
-      <h3>Calculateur d'investissement</h3>
-    </div>
-    <div class="calculator-inputs">
-      <div class="calculator-input">
-        <label>Montant</label>
-        <input type="number" id="calcAmount" placeholder="10000" value="10000">
-      </div>
-      <div class="calculator-input">
-        <label>Durée (jours)</label>
-        <input type="number" id="calcDays" placeholder="120" value="120">
-      </div>
-    </div>
-    <div class="calculator-result">
-      <div class="label">Revenus estimés</div>
-      <div class="value" id="calcResult">0 XOF</div>
+    
+    <div class="currency-toggle">
+      <button onclick="setCurrency('USD', this)">USD</button>
+      <button class="active" onclick="setCurrency('XOF', this)">XOF</button>
+      <button onclick="setCurrency('EUR', this)">EUR</button>
     </div>
   </div>
 
-  <!-- Info Banner -->
-  <div class="info-banner">
-    <i class="fa-solid fa-circle-info"></i>
-    <p>
-      Tous les investissements génèrent des revenus journaliers automatiques pendant 120 jours. 
-      Le capital est restitué à l'échéance.
-    </p>
+  <!-- Filter Tabs -->
+  <div class="filter-group">
+    <button class="filter-btn active" onclick="filterCategory('all', this)">
+      <i class="fa-solid fa-layer-group"></i> Tous
+    </button>
+    <button class="filter-btn" onclick="filterCategory('crypto', this)">
+      <i class="fa-brands fa-bitcoin"></i> Crypto
+    </button>
+    <button class="filter-btn" onclick="filterCategory('forex', this)">
+      <i class="fa-solid fa-money-bill-transfer"></i> Forex
+    </button>
+    <button class="filter-btn" onclick="filterCategory('gold', this)">
+      <i class="fa-solid fa-gem"></i> Gold
+    </button>
+    <button class="filter-btn" onclick="filterCategory('ai', this)">
+      <i class="fa-solid fa-brain"></i> AI Trading
+    </button>
+    <button class="filter-btn" onclick="filterCategory('vip', this)">
+      <i class="fa-solid fa-crown"></i> VIP
+    </button>
   </div>
 
   <!-- Products Grid -->
-  <div class="products-grid">
+  <div class="products-grid" id="productsGrid">
     {% for p in produits %}
-    {% set tier = 'starter' if p.prix < 15000 else 'gold' if p.prix < 50000 else 'platinum' if p.prix < 200000 else 'diamond' %}
-    {% set roi_total = (p.revenu_journalier * 120) / p.prix * 100 %}
-    <div class="product-card" data-tier="{{ tier }}">
-      <div class="product-header" style="background: {% if tier == 'starter' %}linear-gradient(135deg, #64748B, #475569){% elif tier == 'gold' %}linear-gradient(135deg, #F59E0B, #D97706){% elif tier == 'platinum' %}linear-gradient(135deg, #3B82F6, #2563EB){% else %}linear-gradient(135deg, #6366F1, #8B5CF6){% endif %};">
-        <div class="product-badge {{ tier }}">
-          {% if tier == 'starter' %}<i class="fa-solid fa-seedling"></i>{% elif tier == 'gold' %}<i class="fa-solid fa-medal"></i>{% elif tier == 'platinum' %}<i class="fa-solid fa-gem"></i>{% else %}<i class="fa-solid fa-crown"></i>{% endif %}
-          {{ tier|upper }}
+    {% set cat_lower = p.nom|lower %}
+    {% set category = 'crypto' if 'crypto' in cat_lower or 'btc' in cat_lower or 'bitcoin' in cat_lower else 'forex' if 'forex' in cat_lower or 'currency' in cat_lower else 'gold' if 'gold' in cat_lower or 'or' in cat_lower else 'ai' if 'ai' in cat_lower or 'bot' in cat_lower or 'auto' in cat_lower else 'vip' if 'vip' in cat_lower or 'premium' in cat_lower or 'exclusive' in cat_lower else 'stable' %}
+    {% set prix_xof = (p.prix_usd * 625)|int %}
+    {% set revenu_xof = (p.revenu_journalier_usd * 625)|int %}
+    {% set roi_total = (revenu_xof * 120) / prix_xof * 100 %}
+    {% set risk_level = 'low' if roi_total < 100 else 'medium' if roi_total < 150 else 'high' %}
+    {% set risk_dots = 1 if risk_level == 'low' else 2 if risk_level == 'medium' else 3 %}
+    
+    <div class="product-card" data-category="{{ category }}" data-name="{{ p.nom|lower }}" data-price-usd="{{ p.prix_usd }}" data-price-xof="{{ prix_xof }}" data-daily-usd="{{ p.revenu_journalier_usd }}" data-daily-xof="{{ revenu_xof }}">
+      <!-- Image Header -->
+      <div class="product-image">
+        <div class="product-image-bg" style="background-image: url('https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400');"></div>
+        <div class="product-image-overlay"></div>
+        <div class="product-icon" style="
+          {% if category == 'crypto' %}background: rgba(247, 147, 26, 0.2); border-color: rgba(247, 147, 26, 0.4); color: #F7931A;{% elif category == 'forex' %}background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.4); color: #3B82F6;{% elif category == 'gold' %}background: rgba(255, 215, 0, 0.2); border-color: rgba(255, 215, 0, 0.4); color: #FFD700;{% elif category == 'ai' %}background: rgba(6, 182, 212, 0.2); border-color: rgba(6, 182, 212, 0.4); color: #06B6D4;{% else %}background: rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.4); color: #6366F1;{% endif %}
+        ">
+          {% if category == 'crypto' %}<i class="fa-brands fa-bitcoin"></i>
+          {% elif category == 'forex' %}<i class="fa-solid fa-chart-line"></i>
+          {% elif category == 'gold' %}<i class="fa-solid fa-gem"></i>
+          {% elif category == 'ai' %}<i class="fa-solid fa-robot"></i>
+          {% else %}<i class="fa-solid fa-rocket"></i>{% endif %}
         </div>
-        <div class="product-name">{{ p.nom }}</div>
-        <div class="product-price">
-          <div class="main-price" data-xof="{{ p.prix }}">{{ "{:,.0f}".format(p.prix).replace(",", " ") }} <span>XOF</span></div>
-          <div class="converted-price" id="converted-{{ p.id }}"></div>
+        <div class="product-badge {{ category }}">
+          {% if category == 'crypto' %}CRYPTO
+          {% elif category == 'forex' %}FOREX
+          {% elif category == 'gold' %}GOLD
+          {% elif category == 'ai' %}AI TRADING
+          {% elif category == 'vip' %}VIP
+          {% else %}STABLE{% endif %}
         </div>
       </div>
-      
+
+      <!-- Body -->
       <div class="product-body">
+        <div class="product-name">{{ p.nom }}</div>
+        <div class="product-category">
+          <i class="fa-solid fa-tag"></i>
+          {% if category == 'crypto' %}Trading de cryptomonnaies
+          {% elif category == 'forex' %}Trading de devises
+          {% elif category == 'gold' %}Investissement sécurisé
+          {% elif category == 'ai' %}Trading algorithmique
+          {% elif category == 'vip' %}Produit exclusif
+          {% else %}Investissement stable{% endif %}
+        </div>
+
+        <div class="product-price">
+          <div class="price-label">Investissement minimum</div>
+          <div class="price-value" data-xof="{{ prix_xof }}" data-usd="{{ p.prix_usd }}">
+            {{ "{:,.0f}".format(prix_xof).replace(",", " ") }} <span>XOF</span>
+          </div>
+          <div class="price-converted" id="converted-{{ p.id }}"></div>
+        </div>
+
         <div class="product-stats">
           <div class="product-stat">
-            <span class="value profit" data-xof="{{ p.revenu_journalier }}">+{{ "{:,.0f}".format(p.revenu_journalier).replace(",", " ") }}</span>
+            <span class="value profit" data-xof="{{ revenu_xof }}" data-usd="{{ p.revenu_journalier_usd }}">
+              +{{ "{:,.0f}".format(revenu_xof).replace(",", " ") }}
+            </span>
             <span class="label">/jour</span>
           </div>
           <div class="product-stat">
@@ -739,26 +973,40 @@
             <span class="label">jours</span>
           </div>
           <div class="product-stat">
-            <span class="value" data-xof="{{ p.revenu_journalier * 120 }}">+{{ "{:,.0f}".format(p.revenu_journalier * 120).replace(",", " ") }}</span>
+            <span class="value total" data-xof="{{ (revenu_xof * 120)|int }}" data-usd="{{ (p.revenu_journalier_usd * 120)|round(2) }}">
+              +{{ "{:,.0f}".format((revenu_xof * 120)|int).replace(",", " ") }}
+            </span>
             <span class="label">total</span>
           </div>
         </div>
 
-        <div class="roi-bar">
-          <div class="roi-bar-header">
-            <span class="label">ROI Total</span>
-            <span class="value">+{{ "%.0f"|format(roi_total) }}%</span>
+        <div class="roi-section">
+          <div class="roi-header">
+            <span class="roi-label">ROI Total</span>
+            <span class="roi-value">+{{ "%.0f"|format(roi_total) }}%</span>
           </div>
-          <div class="roi-progress">
-            <div class="roi-fill" style="width: {{ [roi_total / 10, 100]|min }}%"></div>
+          <div class="roi-bar">
+            <div class="roi-fill" style="width: {{ [roi_total / 2, 100]|min }}%"></div>
           </div>
         </div>
 
+        <div class="risk-indicator">
+          <span class="risk-label">Risque:</span>
+          <div class="risk-dots">
+            <div class="risk-dot filled {{ 'low' if risk_dots >= 1 else '' }}"></div>
+            <div class="risk-dot filled {{ 'medium' if risk_dots >= 2 else '' }}"></div>
+            <div class="risk-dot filled {{ 'high' if risk_dots >= 3 else '' }}"></div>
+          </div>
+          <span class="risk-label" style="margin-left: auto; color: {% if risk_level == 'low' %}var(--profit-green){% elif risk_level == 'medium' %}#FFB84D{% else %}var(--loss-red){% endif %};">
+            {{ risk_level|upper }}
+          </span>
+        </div>
+
         <div class="product-actions">
-          <button class="btn-details" onclick="showProductDetails('{{ p.nom }}', {{ p.prix }}, {{ p.revenu_journalier }}, '{{ tier }}', '{{ roi_total }}', {{ p.id }})">
-            <i class="fa-solid fa-chart-line"></i> Détails
+          <button class="btn-details" onclick="showProductDetails('{{ p.nom }}', {{ prix_xof }}, {{ revenu_xof }}, '{{ category }}', '{{ roi_total }}', {{ p.id }}, '{{ risk_level }}')">
+            <i class="fa-solid fa-chart-simple"></i> Détails
           </button>
-          <a href="/produits_rapide/confirmer/{{ p.id }}" class="btn-buy">
+          <a href="/produits_rapide/confirmer/{{ p.id }}" class="btn-invest">
             <i class="fa-solid fa-bolt"></i> Investir
           </a>
         </div>
@@ -767,15 +1015,68 @@
     {% endfor %}
   </div>
 </div>
+
+<!-- Modal Details -->
+<div class="modal-backdrop" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Détails du Produit</h2>
+      <button class="modal-close" onclick="closeModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="chart-placeholder">
+        <div style="text-align: center; color: var(--text-muted);">
+          <i class="fa-solid fa-chart-area" style="font-size: 48px; margin-bottom: 12px; opacity: 0.3;"></i>
+          <div style="font-size: 14px;">Performance historique</div>
+        </div>
+        <div class="chart-line"></div>
+      </div>
+      
+      <div class="product-stats" style="margin-bottom: 20px;">
+        <div class="product-stat">
+          <span class="value profit" id="modalDaily">0</span>
+          <span class="label">Profit/jour</span>
+        </div>
+        <div class="product-stat">
+          <span class="value duration" id="modalDuration">120</span>
+          <span class="label">Durée (jours)</span>
+        </div>
+        <div class="product-stat">
+          <span class="value total" id="modalTotal">0</span>
+          <span class="label">Profit total</span>
+        </div>
+      </div>
+
+      <div class="roi-section" style="margin-bottom: 20px;">
+        <div class="roi-header">
+          <span class="roi-label">ROI Total</span>
+          <span class="roi-value" id="modalROI">0%</span>
+        </div>
+        <div class="roi-bar">
+          <div class="roi-fill" id="modalROIFill" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <button class="btn-details" style="flex: 1;" onclick="closeModal()">Fermer</button>
+        <a id="modalInvestBtn" href="#" class="btn-invest" style="flex: 2; text-align: center; padding: 14px;">
+          <i class="fa-solid fa-bolt"></i> Investir maintenant
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Taux de conversion (approximatifs, à mettre à jour régulièrement)
+// Taux de conversion
 const EXCHANGE_RATES = {
-  XOF: 1,           // Franc CFA
-  USD: 0.0015,      // 1 XOF = 0.0015 USD
-  EUR: 0.0014       // 1 XOF = 0.0014 EUR
+  XOF: 1,
+  USD: 0.0016,
+  EUR: 0.0015
 };
 
 const CURRENCY_SYMBOLS = {
@@ -785,248 +1086,58 @@ const CURRENCY_SYMBOLS = {
 };
 
 let currentCurrency = 'XOF';
-let selectedProducts = new Set();
 
-// Fonction de conversion de devise
-function convertCurrency(amount, fromCurrency = 'XOF', toCurrency = currentCurrency) {
-  if (fromCurrency === toCurrency) return amount;
-  const amountInXOF = amount / EXCHANGE_RATES[fromCurrency];
-  return Math.round(amountInXOF * EXCHANGE_RATES[toCurrency]);
+// Conversion
+function convertCurrency(amount, from = 'XOF', to = currentCurrency) {
+  if (from === to) return amount;
+  const inXOF = amount / EXCHANGE_RATES[from];
+  return Math.round(inXOF * EXCHANGE_RATES[to] * 100) / 100;
 }
 
-// Mise à jour de l'affichage des prix
-function updatePrices() {
-  // Mise à jour des prix principaux
-  document.querySelectorAll('.main-price').forEach(priceEl => {
-    const xofAmount = parseInt(priceEl.dataset.xof);
-    const converted = convertCurrency(xofAmount, 'XOF', currentCurrency);
-
-    if (currentCurrency === 'XOF') {
-      priceEl.innerHTML = `${xofAmount.toLocaleString('fr-FR').replace(/\s/g, ' ')} <span>XOF</span>`;
-    } else {
-      priceEl.innerHTML = `${converted.toLocaleString('fr-FR')} <span>${CURRENCY_SYMBOLS[currentCurrency]}</span>`;
-    }
-  });
-
-  // Mise à jour des prix convertis
-  document.querySelectorAll('.converted-price').forEach(convertedEl => {
-    const productId = convertedEl.id.replace('converted-', '');
-    const mainPriceEl = document.querySelector(`.main-price[data-xof]`);
-    if (mainPriceEl) {
-      const xofAmount = parseInt(mainPriceEl.dataset.xof);
-      const converted = convertCurrency(xofAmount, 'XOF', currentCurrency === 'XOF' ? 'USD' : currentCurrency);
-
-      if (currentCurrency === 'XOF') {
-        convertedEl.textContent = `≈ ${converted} ${CURRENCY_SYMBOLS['USD']}`;
-      } else {
-        convertedEl.textContent = `≈ ${convertCurrency(xofAmount, 'XOF', 'XOF').toLocaleString('fr-FR').replace(/\s/g, ' ')} XOF`;
-      }
-    }
-  });
-
-  // Mise à jour des statistiques
-  document.querySelectorAll('.product-stat .value[data-xof]').forEach(statEl => {
-    const xofAmount = parseInt(statEl.dataset.xof);
-    const converted = convertCurrency(xofAmount, 'XOF', currentCurrency);
-
-    if (currentCurrency === 'XOF') {
-      statEl.textContent = statEl.textContent.startsWith('+') ?
-        `+${xofAmount.toLocaleString('fr-FR').replace(/\s/g, ' ')}` :
-        xofAmount.toLocaleString('fr-FR').replace(/\s/g, ' ');
-    } else {
-      statEl.textContent = statEl.textContent.startsWith('+') ?
-        `+${converted.toLocaleString('fr-FR')}` :
-        converted.toLocaleString('fr-FR');
-    }
-  });
+function formatPrice(amount, currency = currentCurrency) {
+  if (currency === 'XOF') {
+    return amount.toLocaleString('fr-FR').replace(/\s/g, ' ') + ' ' + CURRENCY_SYMBOLS[currency];
+  }
+  return CURRENCY_SYMBOLS[currency] + convertCurrency(amount).toLocaleString('fr-FR');
 }
 
 // Changement de devise
-function changeCurrency() {
-  const select = document.getElementById('currencySelect');
-  currentCurrency = select.value;
-  updatePrices();
-
-  // Sauvegarde dans localStorage
-  localStorage.setItem('preferredCurrency', currentCurrency);
-}
-
-// Chargement de la devise préférée
-function loadPreferredCurrency() {
-  const saved = localStorage.getItem('preferredCurrency');
-  if (saved && ['XOF', 'USD', 'EUR'].includes(saved)) {
-    currentCurrency = saved;
-    document.getElementById('currencySelect').value = saved;
-    updatePrices();
-  }
-}
-
-// Filtrage par prix
-function filterByPrice(range, element) {
-  document.querySelectorAll('.advanced-filters .filter-tab').forEach(tab => tab.classList.remove('active'));
-  element.classList.add('active');
-
-  const cards = document.querySelectorAll('.product-card');
-  cards.forEach(card => {
-    const priceEl = card.querySelector('.main-price');
-    const xofPrice = parseInt(priceEl.dataset.xof);
-    let show = true;
-
-    switch(range) {
-      case 'low':
-        show = xofPrice < 15000;
-        break;
-      case 'medium':
-        show = xofPrice >= 15000 && xofPrice < 50000;
-        break;
-      case 'high':
-        show = xofPrice >= 50000;
-        break;
-      default:
-        show = true;
-    }
-
-    card.style.display = show ? 'block' : 'none';
-    if (show) {
-      card.style.animation = 'fadeIn 0.3s ease';
-    }
+function setCurrency(currency, btn) {
+  currentCurrency = currency;
+  
+  // Update toggle buttons
+  document.querySelectorAll('.currency-toggle button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  // Update all prices
+  document.querySelectorAll('.price-value').forEach(el => {
+    const xof = parseInt(el.dataset.xof);
+    el.innerHTML = formatPrice(xof) + (currency === 'XOF' ? '' : '');
   });
-}
-
-// Tri des produits
-function sortProducts(criteria) {
-  const grid = document.querySelector('.products-grid');
-  const cards = Array.from(document.querySelectorAll('.product-card'));
-
-  cards.sort((a, b) => {
-    if (criteria === 'price') {
-      const priceA = parseInt(a.querySelector('.main-price').dataset.xof);
-      const priceB = parseInt(b.querySelector('.main-price').dataset.xof);
-      return priceA - priceB;
-    } else if (criteria === 'roi') {
-      const roiA = parseFloat(a.querySelector('.roi-bar-header .value').textContent.replace('%', ''));
-      const roiB = parseFloat(b.querySelector('.roi-bar-header .value').textContent.replace('%', ''));
-      return roiB - roiA; // ROI décroissant
-    }
-    return 0;
+  
+  document.querySelectorAll('.value[data-xof]').forEach(el => {
+    const xof = parseInt(el.dataset.xof);
+    const converted = formatPrice(xof);
+    el.textContent = converted;
   });
-
-  cards.forEach(card => grid.appendChild(card));
-}
-
-// Calculateur d'investissement
-function toggleCalculator() {
-  const calculator = document.getElementById('investmentCalculator');
-  calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
-
-  if (calculator.style.display === 'block') {
-    updateCalculator();
+  
+  // Update balance
+  const balanceEl = document.getElementById('userBalance');
+  if (balanceEl) {
+    const balanceXOF = parseFloat(balanceEl.textContent.replace(/\s/g, '').replace(',', ''));
+    balanceEl.textContent = formatPrice(balanceXOF);
   }
+  
+  localStorage.setItem('preferredCurrency', currency);
 }
 
-function updateCalculator() {
-  const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
-  const days = parseFloat(document.getElementById('calcDays').value) || 120;
-
-  // Calcul basé sur un ROI moyen de 120% sur 120 jours (1% par jour)
-  const dailyReturn = amount * 0.01;
-  const totalReturn = dailyReturn * days;
-
-  const resultEl = document.getElementById('calcResult');
-  resultEl.textContent = `${Math.round(totalReturn).toLocaleString('fr-FR')} ${CURRENCY_SYMBOLS[currentCurrency]}`;
-}
-
-// Mode comparaison
-function toggleComparison() {
-  const cards = document.querySelectorAll('.product-card');
-  const isComparisonMode = document.querySelector('.product-card.selected');
-
-  if (isComparisonMode) {
-    // Quitter le mode comparaison
-    cards.forEach(card => {
-      card.classList.remove('selected');
-      card.querySelector('.product-actions').style.display = 'flex';
-    });
-    selectedProducts.clear();
-  } else {
-    // Entrer en mode comparaison
-    cards.forEach(card => {
-      card.classList.add('comparison-mode');
-      card.addEventListener('click', (e) => {
-        if (!e.target.closest('.product-actions')) {
-          toggleProductSelection(card);
-        }
-      });
-    });
-  }
-}
-
-function toggleProductSelection(card) {
-  const productId = card.querySelector('.btn-buy').href.split('/').pop();
-
-  if (selectedProducts.has(productId)) {
-    selectedProducts.delete(productId);
-    card.classList.remove('selected');
-  } else if (selectedProducts.size < 3) {
-    selectedProducts.add(productId);
-    card.classList.add('selected');
-  }
-
-  updateComparisonDisplay();
-}
-
-function updateComparisonDisplay() {
-  // TODO: Implémenter l'affichage de comparaison détaillée
-  console.log('Produits sélectionnés:', Array.from(selectedProducts));
-}
-
-// Fonctions existantes modifiées
-function showProductDetails(name, price, daily, tier, roi, id) {
-  const modal = document.getElementById('productDetailModal');
-  const header = document.getElementById('modalHeader');
-  const badge = document.getElementById('modalBadge');
-
-  // Personnalisation des couleurs selon le Tier
-  let gradient = 'linear-gradient(135deg, #6366F1, #8B5CF6)';
-  let icon = 'fa-crown';
-
-  if (tier === 'starter') { gradient = 'linear-gradient(135deg, #64748B, #475569)'; icon = 'fa-seedling'; }
-  if (tier === 'gold') { gradient = 'linear-gradient(135deg, #F59E0B, #D97706)'; icon = 'fa-medal'; }
-  if (tier === 'platinum') { gradient = 'linear-gradient(135deg, #3B82F6, #2563EB)'; icon = 'fa-gem'; }
-
-  header.style.background = gradient;
-  badge.innerHTML = `<i class="fa-solid ${icon}"></i> ${tier.toUpperCase()}`;
-
-  // Conversion des prix selon la devise actuelle
-  const displayPrice = currentCurrency === 'XOF' ? price : convertCurrency(price, 'XOF', currentCurrency);
-  const displayDaily = currentCurrency === 'XOF' ? daily : convertCurrency(daily, 'XOF', currentCurrency);
-  const displayTotal = currentCurrency === 'XOF' ? (daily * 120) : convertCurrency(daily * 120, 'XOF', currentCurrency);
-
-  // Remplissage des données
-  document.getElementById('modalName').textContent = name;
-  document.getElementById('modalPrice').textContent = displayPrice.toLocaleString('fr-FR') + ' ' + CURRENCY_SYMBOLS[currentCurrency];
-  document.getElementById('modalDaily').textContent = '+' + displayDaily.toLocaleString('fr-FR');
-  document.getElementById('modalTotal').textContent = '+' + displayTotal.toLocaleString('fr-FR');
-
-  const roiVal = parseFloat(roi);
-  document.getElementById('modalROI').textContent = '+' + roiVal.toFixed(0) + '%';
-  document.getElementById('modalROIFill').style.width = Math.min(roiVal / 10, 100) + '%';
-
-  // Lien vers la confirmation
-  document.getElementById('modalBuyBtn').href = `/produits_rapide/confirmer/${id}`;
-
-  TokenFlow.openModal('productDetailModal');
-}
-
-function filterProducts(tier, element) {
-  // Update active tab
-  document.querySelectorAll('.filter-tabs .filter-tab').forEach(tab => tab.classList.remove('active'));
-  element.classList.add('active');
-
-  // Filter products
-  const cards = document.querySelectorAll('.product-card');
-  cards.forEach(card => {
-    if (tier === 'all' || card.dataset.tier === tier) {
+// Filtrage par catégorie
+function filterCategory(category, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  document.querySelectorAll('.product-card').forEach(card => {
+    if (category === 'all' || card.dataset.category === category) {
       card.style.display = 'block';
       card.style.animation = 'fadeIn 0.3s ease';
     } else {
@@ -1035,77 +1146,94 @@ function filterProducts(tier, element) {
   });
 }
 
-// Événements pour le calculateur
-document.getElementById('calcAmount').addEventListener('input', updateCalculator);
-document.getElementById('calcDays').addEventListener('input', updateCalculator);
+// Recherche
+function searchProducts() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  
+  document.querySelectorAll('.product-card').forEach(card => {
+    const name = card.dataset.name || '';
+    if (name.includes(query) || query === '') {
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// Modal details
+function showProductDetails(name, price, daily, category, roi, id, risk) {
+  const modal = document.getElementById('productModal');
+  
+  document.getElementById('modalTitle').textContent = name;
+  document.getElementById('modalDaily').textContent = '+' + formatPrice(daily);
+  document.getElementById('modalDuration').textContent = '120';
+  document.getElementById('modalTotal').textContent = '+' + formatPrice(daily * 120);
+  document.getElementById('modalROI').textContent = '+' + roi + '%';
+  document.getElementById('modalROIFill').style.width = Math.min(roi / 2, 100) + '%';
+  document.getElementById('modalInvestBtn').href = '/produits_rapide/confirmer/' + id;
+  
+  modal.classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('productModal').classList.remove('active');
+}
+
+// Fermer modal avec Echap
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Fermer modal en cliquant dehors
+document.getElementById('productModal').addEventListener('click', (e) => {
+  if (e.target.id === 'productModal') closeModal();
+});
 
 // Animation fadeIn
 const style = document.createElement('style');
 style.textContent = `
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
-  .product-card.comparison-mode .product-actions {
-    display: none;
-  }
-
-  .product-card.selected {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px var(--primary-glow);
-    position: relative;
-  }
-
-  .product-card.selected::after {
-    content: '✓';
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 24px;
-    height: 24px;
-    background: var(--primary);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 700;
-    z-index: 10;
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 480px) {
-    .currency-selector {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-    }
-
-    .currency-selector select {
-      width: 100%;
-    }
-
-    .advanced-filters {
-      flex-wrap: wrap;
-    }
-
-    .quick-actions {
-      flex-wrap: wrap;
-    }
-
-    .calculator-inputs {
-      grid-template-columns: 1fr;
-    }
+  
+  .product-card {
+    animation: fadeIn 0.5s ease;
   }
 `;
 document.head.appendChild(style);
 
-// Initialisation
-document.addEventListener('DOMContentLoaded', function() {
-  loadPreferredCurrency();
-  updatePrices();
+// Charger la devise préférée
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('preferredCurrency');
+  if (saved && ['XOF', 'USD', 'EUR'].includes(saved)) {
+    currentCurrency = saved;
+    const btns = document.querySelectorAll('.currency-toggle button');
+    btns.forEach(b => {
+      b.classList.remove('active');
+      if (b.textContent === saved) b.classList.add('active');
+    });
+    setCurrency(saved, document.querySelector('.currency-toggle button.active'));
+  }
+  
+  // Animate stats
+  animateValue('totalInvestors', 0, 2847, 2000);
+  animateValue('activeBots', 0, 156, 1500);
 });
+
+function animateValue(id, start, end, duration) {
+  const obj = document.getElementById(id);
+  const range = end - start;
+  const current = start;
+  const increment = end > start ? 1 : -1;
+  const stepTime = Math.abs(Math.floor(duration / range));
+  let timer = setInterval(() => {
+    current += increment;
+    obj.textContent = current.toLocaleString();
+    if (current == end) {
+      clearInterval(timer);
+    }
+  }, Math.max(stepTime, 10));
+}
 </script>
 {% endblock %}

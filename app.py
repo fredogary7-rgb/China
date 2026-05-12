@@ -1170,9 +1170,9 @@ def create_deposit():
     db.session.add(depot)
     db.session.commit()
 
-    # Log de sécurité
-    log_security_action(phone, "deposit_initiated", "success", 
-                       f"Montant: {montant}, Méthode: {operator}")
+    # Log de sécurité (désactivé car table security_log non créée)
+    # log_security_action(phone, "deposit_initiated", "success", 
+    #                    f"Montant: {montant}, Méthode: {operator}")
 
     return jsonify({"url": payment_link})
 
@@ -1330,16 +1330,44 @@ def nous_page():
 def ai_chat_page():
     return render_template("ai_chat.html")
 
+# Taux de change (1 USD = ...)
+USD_TO_XOF = 625
+USD_TO_EUR = 0.92
+
 PRODUITS_VIP = [
-    {"id": 1, "nom": "Fly 1", "prix": 4000, "revenu_journalier": 400, "image": "e.jpg"},
-    {"id": 2, "nom": "Fly 2", "prix": 8000, "revenu_journalier": 800, "image": "e.jpg"},
-    {"id": 3, "nom": "Fly 3", "prix": 10000, "revenu_journalier": 1000, "image": "e.jpg"},
-    {"id": 4, "nom": "Fly 4", "prix": 15000, "revenu_journalier": 1500, "image": "e.jpg"},
-    {"id": 5, "nom": "Fly 5", "prix": 20000, "revenu_journalier": 2000, "image": "e.jpg"},
-    {"id": 6, "nom": "Fly 6", "prix": 50000, "revenu_journalier": 5000, "image": "e.jpg"},
-    {"id": 7, "nom": "Fly 7", "prix": 10000, "revenu_journalier": 10000, "image": "e.jpg"},
-    {"id": 8, "nom": "Fly 8", "prix": 200000, "revenu_journalier": 20000, "image": "e.jpg"}
+    # Crypto Trading (prix en USD)
+    {"id": 1, "nom": "Bitcoin Trader Pro", "prix_usd": 50, "revenu_journalier_usd": 6, "image": "crypto.jpg"},
+    {"id": 2, "nom": "Crypto Portfolio Elite", "prix_usd": 100, "revenu_journalier_usd": 14, "image": "crypto.jpg"},
+    {"id": 3, "nom": "BTC Mining Fund", "prix_usd": 200, "revenu_journalier_usd": 30, "image": "crypto.jpg"},
+    
+    # Forex Trading (prix en USD)
+    {"id": 4, "nom": "Forex Master Fund", "prix_usd": 60, "revenu_journalier_usd": 8.4, "image": "forex.jpg"},
+    {"id": 5, "nom": "Currency Trader Pro", "prix_usd": 150, "revenu_journalier_usd": 19.2, "image": "forex.jpg"},
+    
+    # Gold Investment (prix en USD)
+    {"id": 6, "nom": "Gold Reserve Fund", "prix_usd": 200, "revenu_journalier_usd": 24, "image": "gold.jpg"},
+    {"id": 7, "nom": "Gold Bullion Premium", "prix_usd": 400, "revenu_journalier_usd": 56, "image": "gold.jpg"},
+    
+    # AI Trading (prix en USD)
+    {"id": 8, "nom": "AI Trading Bot Alpha", "prix_usd": 80, "revenu_journalier_usd": 12.8, "image": "ai.jpg"},
+    {"id": 9, "nom": "AutoTrader Quantum", "prix_usd": 300, "revenu_journalier_usd": 48, "image": "ai.jpg"},
+    
+    # VIP Premium (prix en USD)
+    {"id": 10, "nom": "VIP Diamond Club", "prix_usd": 400, "revenu_journalier_usd": 72, "image": "vip.jpg"},
+    {"id": 11, "nom": "VIP Platinum Elite", "prix_usd": 800, "revenu_journalier_usd": 160, "image": "vip.jpg"},
+    {"id": 12, "nom": "VIP Exclusive Fund", "prix_usd": 2000, "revenu_journalier_usd": 440, "image": "vip.jpg"},
 ]
+
+def convertir_prix_en_usd(produit):
+    """Convertit un produit en ajoutant les prix dans toutes les devises."""
+    p = produit.copy()
+    p["prix_usd"] = produit["prix_usd"]
+    p["prix_xof"] = round(produit["prix_usd"] * USD_TO_XOF)
+    p["prix_eur"] = round(produit["prix_usd"] * USD_TO_EUR)
+    p["revenu_journalier_usd"] = produit["revenu_journalier_usd"]
+    p["revenu_journalier_xof"] = round(produit["revenu_journalier_usd"] * USD_TO_XOF)
+    p["revenu_journalier_eur"] = round(produit["revenu_journalier_usd"] * USD_TO_EUR)
+    return p
 
 def credit_user_revenu(user, montant=1000):
     if not hasattr(user, "user_revenu") or user.solde_revenu is None:
@@ -1369,14 +1397,19 @@ def confirmer_produit_rapide(vip_id):
         flash("Produit introuvable.", "danger")
         return redirect(url_for("produits_rapide_page"))
 
-    montant = produit["prix"]
-    revenu_journalier = produit["revenu_journalier"]
+    # Conversion USD vers XOF (1 USD = 625 XOF)
+    montant_usd = produit["prix_usd"]
+    montant = int(montant_usd * USD_TO_XOF)  # Prix en XOF
+    revenu_journalier_usd = produit["revenu_journalier_usd"]
+    revenu_journalier = int(revenu_journalier_usd * USD_TO_XOF)  # Revenu en XOF
     revenu_total = revenu_journalier * 120
 
     if request.method == "GET":
         return render_template(
             "confirm_rapide.html",
             p=produit,
+            montant=montant,
+            revenu_journalier=revenu_journalier,
             revenu_total=revenu_total,
             user=user,
             submitted=False
@@ -1402,6 +1435,8 @@ def confirmer_produit_rapide(vip_id):
     return render_template(
         "confirm_rapide.html",
         p=produit,
+        montant=montant,
+        revenu_journalier=revenu_journalier,
         revenu_total=revenu_total,
         user=user,
         submitted=True
