@@ -1018,8 +1018,8 @@ def check_banned_user():
             session.pop("phone", None)
             return redirect(url_for("connexion_page"))
 
-def get_logged_in_user_phone():
-    return session.get("phone")
+# La fonction get_logged_in_user_phone est déjà définie plus haut
+# Suppression de la définition dupliquée
 
 @app.route("/deposit", methods=["GET"])
 @login_required
