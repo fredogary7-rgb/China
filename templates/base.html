@@ -269,6 +269,106 @@
     <!-- Main Content -->
     {% block content %}{% endblock %}
     
+    <!-- Global Currency Preference System -->
+    <script>
+    // ============================================
+    // SYSTÈME DE DEVISE GLOBALE
+    // Synchronisation automatique entre toutes les pages
+    // ============================================
+    window.TokenFlow = window.TokenFlow || {};
+    
+    // Taux de change
+    const EXCHANGE_RATES = {
+        XOF: 1,
+        USD: 0.0016,
+        EUR: 0.00147
+    };
+    
+    const CURRENCY_SYMBOLS = {
+        XOF: ' XOF',
+        USD: '$',
+        EUR: '€'
+    };
+    
+    // Récupérer la devise préférée (défaut: XOF)
+    window.TokenFlow.getPreferredCurrency = function() {
+        return localStorage.getItem('preferredCurrency') || 'XOF';
+    };
+    
+    // Définir la devise préférée
+    window.TokenFlow.setPreferredCurrency = function(currency) {
+        if (['XOF', 'USD', 'EUR'].includes(currency)) {
+            localStorage.setItem('preferredCurrency', currency);
+            // Déclencher un événement pour mettre à jour les autres onglets
+            window.dispatchEvent(new Event('storage'));
+        }
+    };
+    
+    // Convertir un montant XOF vers la devise préférée
+    window.TokenFlow.convertFromXOF = function(amountXOF, targetCurrency) {
+        targetCurrency = targetCurrency || window.TokenFlow.getPreferredCurrency();
+        if (targetCurrency === 'XOF') return amountXOF;
+        return Math.round(amountXOF * EXCHANGE_RATES[targetCurrency] * 100) / 100;
+    };
+    
+    // Convertir un montant de la devise préférée vers XOF
+    window.TokenFlow.convertToXOF = function(amount, fromCurrency) {
+        fromCurrency = fromCurrency || window.TokenFlow.getPreferredCurrency();
+        if (fromCurrency === 'XOF') return amount;
+        return Math.round(amount / EXCHANGE_RATES[fromCurrency]);
+    };
+    
+    // Formater un montant avec la devise préférée
+    window.TokenFlow.formatCurrency = function(amountXOF, options = {}) {
+        const currency = options.currency || window.TokenFlow.getPreferredCurrency();
+        const converted = window.TokenFlow.convertFromXOF(amountXOF, currency);
+        const symbol = CURRENCY_SYMBOLS[currency];
+        
+        if (currency === 'XOF') {
+            return Math.round(converted).toLocaleString('fr-FR').replace(/\s/g, ' ') + symbol;
+        }
+        
+        // Pour USD et EUR, on garde 2 décimales
+        return symbol + converted.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+    
+    // Mettre à jour tous les éléments avec data-xof
+    window.TokenFlow.updateAllCurrencies = function() {
+        const currency = window.TokenFlow.getPreferredCurrency();
+        
+        // Mettre à jour tous les éléments avec data-xof
+        document.querySelectorAll('[data-xof]').forEach(el => {
+            const xof = parseFloat(el.dataset.xof);
+            if (!isNaN(xof)) {
+                el.textContent = window.TokenFlow.formatCurrency(xof);
+            }
+        });
+        
+        // Mettre à jour les boutons de toggle
+        document.querySelectorAll('.currency-toggle button').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.currency === currency);
+        });
+        
+        // Déclencher un événement personnalisé
+        document.dispatchEvent(new CustomEvent('currencyChanged', { detail: { currency } }));
+    };
+    
+    // Écouter les changements de devise depuis d'autres onglets
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'preferredCurrency') {
+            window.TokenFlow.updateAllCurrencies();
+        }
+    });
+    
+    // Initialiser au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        // Appliquer la devise préférée au chargement
+        setTimeout(() => {
+            window.TokenFlow.updateAllCurrencies();
+        }, 100);
+    });
+    </script>
+    
     <!-- Fintech JavaScript -->
     <script src="{{ url_for('static', filename='js/fintech.js') }}"></script>
     

@@ -9,29 +9,29 @@
    ============================================ */
 
 :root {
-  /* Palette Trading Premium */
-  --bg-dark: #0a0e1a;
-  --bg-card: rgba(15, 20, 40, 0.85);
-  --bg-card-hover: rgba(20, 28, 60, 0.95);
-  --bg-glass: rgba(255, 255, 255, 0.03);
-  --border-glow: rgba(99, 102, 241, 0.3);
-  --border-card: rgba(255, 255, 255, 0.06);
+  /* Palette Fintech Premium - Thème Clair */
+  --bg-page: #F1F5F9;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --bg-glass: rgba(255, 255, 255, 0.65);
+  --border-glow: rgba(99, 102, 241, 0.2);
+  --border-card: rgba(148, 163, 184, 0.2);
   
   /* Couleurs Trading */
-  --profit-green: #00E676;
-  --profit-green-glow: rgba(0, 230, 118, 0.2);
-  --loss-red: #FF5252;
-  --loss-red-glow: rgba(255, 82, 82, 0.2);
+  --profit-green: #10B981;
+  --profit-green-glow: rgba(16, 185, 129, 0.15);
+  --loss-red: #EF4444;
+  --loss-red-glow: rgba(239, 68, 68, 0.15);
   
   /* Primary */
   --primary: #6366F1;
-  --primary-glow: rgba(99, 102, 241, 0.4);
-  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #06B6D4 100%);
+  --primary-glow: rgba(99, 102, 241, 0.15);
+  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
   
   /* Text */
-  --text-primary: #F1F5F9;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
   
   /* Badges */
   --badge-crypto: linear-gradient(135deg, #F7931A, #FFB84D);
@@ -52,7 +52,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg-dark);
+  background: var(--bg-page);
   color: var(--text-primary);
   overflow-x: hidden;
 }
@@ -63,9 +63,8 @@ body::before {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: 
-    radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -76,8 +75,8 @@ body::after {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background-image: 
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
   background-size: 60px 60px;
   pointer-events: none;
   z-index: 0;
@@ -877,9 +876,9 @@ body::after {
     </div>
     
     <div class="currency-toggle">
-      <button onclick="setCurrency('USD', this)">USD</button>
-      <button class="active" onclick="setCurrency('XOF', this)">XOF</button>
-      <button onclick="setCurrency('EUR', this)">EUR</button>
+      <button data-currency="USD" onclick="setCurrency('USD', this)">USD</button>
+      <button data-currency="XOF" onclick="setCurrency('XOF', this)">XOF</button>
+      <button data-currency="EUR" onclick="setCurrency('EUR', this)">EUR</button>
     </div>
   </div>
 
@@ -1026,6 +1025,13 @@ body::after {
       </button>
     </div>
     <div class="modal-body">
+      <!-- Prix d'investissement -->
+      <div id="modalPrice" style="margin-bottom: 20px; padding: 16px; background: var(--bg-glass); border-radius: 12px; border: 1px solid var(--border-card);">
+        <span style="font-size: 12px; color: var(--text-muted);">Investissement minimum</span>
+        <span style="font-size: 24px; font-weight: 900; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">--</span>
+      </div>
+      
+      <!-- Performance Chart -->
       <div class="chart-placeholder">
         <div style="text-align: center; color: var(--text-muted);">
           <i class="fa-solid fa-chart-area" style="font-size: 48px; margin-bottom: 12px; opacity: 0.3;"></i>
@@ -1034,6 +1040,7 @@ body::after {
         <div class="chart-line"></div>
       </div>
       
+      <!-- Statistiques -->
       <div class="product-stats" style="margin-bottom: 20px;">
         <div class="product-stat">
           <span class="value profit" id="modalDaily">0</span>
@@ -1048,10 +1055,23 @@ body::after {
           <span class="label">Profit total</span>
         </div>
       </div>
+      
+      <!-- Profit mensuel -->
+      <div id="modalMonthly" style="margin-bottom: 16px; padding: 14px; background: var(--bg-glass); border-radius: 12px; border: 1px solid var(--border-card); display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 12px; color: var(--text-muted);">Profit/mois</span>
+        <span style="font-size: 18px; font-weight: 800; color: var(--profit-green);">--</span>
+      </div>
+      
+      <!-- Niveau de risque -->
+      <div id="modalRisk" style="margin-bottom: 16px; padding: 14px; background: var(--bg-glass); border-radius: 12px; border: 1px solid var(--border-card); display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 12px; color: var(--text-muted);">Risque</span>
+        <span style="font-size: 16px; font-weight: 800; color: var(--text-primary);">--</span>
+      </div>
 
+      <!-- ROI Section -->
       <div class="roi-section" style="margin-bottom: 20px;">
         <div class="roi-header">
-          <span class="roi-label">ROI Total</span>
+          <span class="roi-label">ROI Total (120 jours)</span>
           <span class="roi-value" id="modalROI">0%</span>
         </div>
         <div class="roi-bar">
@@ -1059,8 +1079,11 @@ body::after {
         </div>
       </div>
 
+      <!-- Action Buttons -->
       <div style="display: flex; gap: 12px;">
-        <button class="btn-details" style="flex: 1;" onclick="closeModal()">Fermer</button>
+        <button class="btn-details" style="flex: 1;" onclick="closeModal()">
+          <i class="fa-solid fa-xmark"></i> Fermer
+        </button>
         <a id="modalInvestBtn" href="#" class="btn-invest" style="flex: 2; text-align: center; padding: 14px;">
           <i class="fa-solid fa-bolt"></i> Investir maintenant
         </a>
@@ -1160,19 +1183,98 @@ function searchProducts() {
   });
 }
 
-// Modal details
+// Modal details - Affichage en temps réel avec toutes les informations
 function showProductDetails(name, price, daily, category, roi, id, risk) {
   const modal = document.getElementById('productModal');
+  const currency = window.TokenFlow?.getPreferredCurrency() || currentCurrency;
   
-  document.getElementById('modalTitle').textContent = name;
+  // Titre avec badge de catégorie
+  const categoryLabels = {
+    crypto: 'CRYPTO TRADING',
+    forex: 'FOREX TRADING', 
+    gold: 'GOLD INVESTMENT',
+    ai: 'AI TRADING',
+    vip: 'VIP PREMIUM',
+    stable: 'STABLE'
+  };
+  
+  const categoryIcons = {
+    crypto: 'fa-brands fa-bitcoin',
+    forex: 'fa-solid fa-chart-line',
+    gold: 'fa-solid fa-gem',
+    ai: 'fa-solid fa-robot',
+    vip: 'fa-solid fa-crown',
+    stable: 'fa-solid fa-shield-halved'
+  };
+  
+  // Mise à jour de l'en-tête du modal
+  document.getElementById('modalTitle').innerHTML = `
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <i class="${categoryIcons[category] || 'fa-solid fa-rocket'}" style="font-size: 24px; color: var(--primary);"></i>
+      <div>
+        <div style="font-size: 18px; font-weight: 800;">${name}</div>
+        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">${categoryLabels[category] || category}</div>
+      </div>
+    </div>
+  `;
+  
+  // Prix d'investissement
+  const priceEl = document.getElementById('modalPrice');
+  if (priceEl) {
+    priceEl.innerHTML = `
+      <span style="font-size: 12px; color: var(--text-muted);">Investissement minimum</span>
+      <span style="font-size: 24px; font-weight: 900; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${formatPrice(price)}</span>
+    `;
+  }
+  
+  // Statistiques
   document.getElementById('modalDaily').textContent = '+' + formatPrice(daily);
   document.getElementById('modalDuration').textContent = '120';
   document.getElementById('modalTotal').textContent = '+' + formatPrice(daily * 120);
+  
+  // ROI
   document.getElementById('modalROI').textContent = '+' + roi + '%';
   document.getElementById('modalROIFill').style.width = Math.min(roi / 2, 100) + '%';
+  
+  // Niveau de risque
+  const riskEl = document.getElementById('modalRisk');
+  if (riskEl) {
+    const riskLabels = { low: 'FAIBLE', medium: 'MOYEN', high: 'ÉLEVÉ' };
+    const riskColors = { low: 'var(--profit-green)', medium: '#FFB84D', high: 'var(--loss-red)' };
+    riskEl.innerHTML = `
+      <span style="font-size: 12px; color: var(--text-muted);">Risque</span>
+      <span style="font-size: 16px; font-weight: 800; color: ${riskColors[risk] || 'var(--text-primary)'}">${riskLabels[risk] || risk.toUpperCase()}</span>
+    `;
+  }
+  
+  // Profit mensuel estimé
+  const monthlyEl = document.getElementById('modalMonthly');
+  if (monthlyEl) {
+    monthlyEl.innerHTML = `
+      <span style="font-size: 12px; color: var(--text-muted);">Profit/mois</span>
+      <span style="font-size: 18px; font-weight: 800; color: var(--profit-green);">+${formatPrice(daily * 30)}</span>
+    `;
+  }
+  
+  // Bouton d'investissement
   document.getElementById('modalInvestBtn').href = '/produits_rapide/confirmer/' + id;
   
+  // Animation d'ouverture
   modal.classList.add('active');
+  
+  // Animation des chiffres
+  setTimeout(() => {
+    const stats = modal.querySelectorAll('.value');
+    stats.forEach((stat, i) => {
+      stat.style.opacity = '0';
+      stat.style.transform = 'translateY(10px)';
+      setTimeout(() => {
+        stat.style.transition = 'all 0.3s ease';
+        stat.style.opacity = '1';
+        stat.style.transform = 'translateY(0)';
+      }, i * 100);
+    });
+  }, 100);
 }
 
 function closeModal() {

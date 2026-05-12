@@ -1335,27 +1335,31 @@ USD_TO_XOF = 625
 USD_TO_EUR = 0.92
 
 PRODUITS_VIP = [
-    # Crypto Trading (prix en USD)
-    {"id": 1, "nom": "Bitcoin Trader Pro", "prix_usd": 50, "revenu_journalier_usd": 6, "image": "crypto.jpg"},
-    {"id": 2, "nom": "Crypto Portfolio Elite", "prix_usd": 100, "revenu_journalier_usd": 14, "image": "crypto.jpg"},
-    {"id": 3, "nom": "BTC Mining Fund", "prix_usd": 200, "revenu_journalier_usd": 30, "image": "crypto.jpg"},
+    # Crypto Trading (prix en USD) - ROI: 0.8% à 1.2% par jour
+    {"id": 1, "nom": "Bitcoin Trader Pro", "prix_usd": 50, "revenu_journalier_usd": 0.50, "image": "crypto.jpg"},
+    {"id": 2, "nom": "Crypto Portfolio Elite", "prix_usd": 100, "revenu_journalier_usd": 1.00, "image": "crypto.jpg"},
+    {"id": 3, "nom": "BTC Mining Fund", "prix_usd": 200, "revenu_journalier_usd": 2.20, "image": "crypto.jpg"},
     
-    # Forex Trading (prix en USD)
-    {"id": 4, "nom": "Forex Master Fund", "prix_usd": 60, "revenu_journalier_usd": 8.4, "image": "forex.jpg"},
-    {"id": 5, "nom": "Currency Trader Pro", "prix_usd": 150, "revenu_journalier_usd": 19.2, "image": "forex.jpg"},
+    # Forex Trading (prix en USD) - ROI: 0.6% à 1% par jour
+    {"id": 4, "nom": "Forex Master Fund", "prix_usd": 60, "revenu_journalier_usd": 0.48, "image": "forex.jpg"},
+    {"id": 5, "nom": "Currency Trader Pro", "prix_usd": 150, "revenu_journalier_usd": 1.35, "image": "forex.jpg"},
     
-    # Gold Investment (prix en USD)
-    {"id": 6, "nom": "Gold Reserve Fund", "prix_usd": 200, "revenu_journalier_usd": 24, "image": "gold.jpg"},
-    {"id": 7, "nom": "Gold Bullion Premium", "prix_usd": 400, "revenu_journalier_usd": 56, "image": "gold.jpg"},
+    # Gold Investment (prix en USD) - ROI: 0.4% à 0.7% par jour (sûr)
+    {"id": 6, "nom": "Gold Reserve Fund", "prix_usd": 200, "revenu_journalier_usd": 1.20, "image": "gold.jpg"},
+    {"id": 7, "nom": "Gold Bullion Premium", "prix_usd": 400, "revenu_journalier_usd": 2.80, "image": "gold.jpg"},
     
-    # AI Trading (prix en USD)
-    {"id": 8, "nom": "AI Trading Bot Alpha", "prix_usd": 80, "revenu_journalier_usd": 12.8, "image": "ai.jpg"},
-    {"id": 9, "nom": "AutoTrader Quantum", "prix_usd": 300, "revenu_journalier_usd": 48, "image": "ai.jpg"},
+    # AI Trading (prix en USD) - ROI: 0.9% à 1.1% par jour
+    {"id": 8, "nom": "AI Starter Bot", "prix_usd": 10, "revenu_journalier_usd": 0.10, "image": "ai.jpg"},
+    {"id": 9, "nom": "AI Trading Bot Alpha", "prix_usd": 80, "revenu_journalier_usd": 0.72, "image": "ai.jpg"},
+    {"id": 13, "nom": "AI Basic Trader", "prix_usd": 25, "revenu_journalier_usd": 0.24, "image": "ai.jpg"},
+    {"id": 14, "nom": "AI Pro Assistant", "prix_usd": 50, "revenu_journalier_usd": 0.48, "image": "ai.jpg"},
+    {"id": 15, "nom": "AutoTrader Quantum", "prix_usd": 300, "revenu_journalier_usd": 3.30, "image": "ai.jpg"},
+    {"id": 16, "nom": "AI Elite System", "prix_usd": 500, "revenu_journalier_usd": 5.75, "image": "ai.jpg"},
     
-    # VIP Premium (prix en USD)
-    {"id": 10, "nom": "VIP Diamond Club", "prix_usd": 400, "revenu_journalier_usd": 72, "image": "vip.jpg"},
-    {"id": 11, "nom": "VIP Platinum Elite", "prix_usd": 800, "revenu_journalier_usd": 160, "image": "vip.jpg"},
-    {"id": 12, "nom": "VIP Exclusive Fund", "prix_usd": 2000, "revenu_journalier_usd": 440, "image": "vip.jpg"},
+    # VIP Premium (prix en USD) - ROI: 1% à 1.5% par jour (le plus élevé)
+    {"id": 10, "nom": "VIP Diamond Club", "prix_usd": 400, "revenu_journalier_usd": 4.80, "image": "vip.jpg"},
+    {"id": 11, "nom": "VIP Platinum Elite", "prix_usd": 800, "revenu_journalier_usd": 10.40, "image": "vip.jpg"},
+    {"id": 12, "nom": "VIP Exclusive Fund", "prix_usd": 2000, "revenu_journalier_usd": 28.00, "image": "vip.jpg"},
 ]
 
 def convertir_prix_en_usd(produit):
@@ -1803,6 +1807,7 @@ def retrait_page():
     if not user.wallet_number:
         return redirect(url_for("wallet_setup_page"))
 
+    # Solde retirable = parrainage + revenu SEULEMENT (pas le depot)
     solde_retraitable = (user.solde_parrainage or 0) + (user.solde_revenu or 0)
 
     if request.method == "POST":
@@ -1812,8 +1817,9 @@ def retrait_page():
             flash("Montant invalide.", "danger")
             return redirect(url_for("retrait_page"))
 
-        if montant < 1000:
-            flash("Montant minimum : 1000 XOF.", "warning")
+        # Minimum 15 USD = environ 9 375 XOF
+        if montant < 9375:
+            flash("Montant minimum : 15 USD (9 375 XOF).", "warning")
             return redirect(url_for("retrait_page"))
 
         if montant > solde_retraitable:
