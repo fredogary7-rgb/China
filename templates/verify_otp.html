@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification OTP - TokenFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .otp-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            color: white;
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .lock-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .lock-icon i {
+            font-size: 36px;
+            color: white;
+        }
+
+        h1 {
+            color: #0F172A;
+            font-size: 24px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #64748B;
+            font-size: 14px;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .otp-input-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .otp-input {
+            width: 56px;
+            height: 64px;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #0F172A;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .otp-input:focus {
+            border-color: #6366F1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .otp-input::placeholder {
+            color: #CBD5E1;
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .verify-btn:active {
+            transform: translateY(0);
+        }
+
+        .resend-section {
+            color: #64748B;
+            font-size: 14px;
+        }
+
+        .resend-link {
+            color: #6366F1;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .resend-link:hover {
+            text-decoration: underline;
+        }
+
+        .resend-link.disabled {
+            color: #94A3B8;
+            cursor: not-allowed;
+        }
+
+        .timer {
+            color: #6366F1;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748B;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 24px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #6366F1;
+        }
+
+        .back-link i {
+            font-size: 12px;
+        }
+
+        .flash-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flash-success {
+            background: #DCFCE7;
+            color: #166534;
+            border: 1px solid #BBF7D0;
+        }
+
+        .flash-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
+        .flash-warning {
+            background: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #FDE68A;
+        }
+
+        .flash-info {
+            background: #DBEAFE;
+            color: #1E40AF;
+            border: 1px solid #BFDBFE;
+        }
+
+        @media (max-width: 480px) {
+            .otp-container {
+                padding: 32px 24px;
+            }
+
+            .otp-input {
+                width: 48px;
+                height: 56px;
+                font-size: 20px;
+            }
+
+            .lock-icon {
+                width: 64px;
+                height: 64px;
+            }
+
+            .lock-icon i {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="otp-container">
+        <div class="lock-icon">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+
+        <h1>Code de vérification</h1>
+        <p class="subtitle">
+            {% if action == 'inscription' %}
+                Entrez le code OTP à 6 chiffres envoyé à votre email pour compléter votre inscription.
+            {% else %}
+                Entrez le code OTP à 6 chiffres envoyé à votre email pour vous connecter.
+            {% endif %}
+        </p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {% if category == 'success' %}
+                            <i class="fas fa-check-circle"></i>
+                        {% elif category == 'danger' %}
+                            <i class="fas fa-exclamation-circle"></i>
+                        {% elif category == 'warning' %}
+                            <i class="fas fa-exclamation-triangle"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle"></i>
+                        {% endif %}
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" id="otp-form">
+            <div class="otp-input-group">
+                <input type="text" class="otp-input" maxlength="1" data-index="0" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code">
+                <input type="text" class="otp-input" maxlength="1" data-index="1" pattern="[0-9]" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" data-index="2" pattern="[0-9]" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" data-index="3" pattern="[0-9]" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" data-index="4" pattern="[0-9]" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" data-index="5" pattern="[0-9]" inputmode="numeric">
+            </div>
+
+            <input type="hidden" name="otp" id="otp-hidden">
+
+            <button type="submit" class="verify-btn">
+                <i class="fas fa-lock"></i> Vérifier le code
+            </button>
+        </form>
+
+        <div class="resend-section">
+            <p>
+                Vous n'avez pas reçu le code ?
+                <form action="{{ url_for('resend_otp_page', action=action) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="resend-link" id="resend-btn">
+                        Renvoyer le code
+                    </button>
+                </form>
+                <span class="timer" id="timer"></span>
+            </p>
+        </div>
+
+        <a href="{{ url_for('connexion_page') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Retour à la connexion
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.otp-input');
+            const form = document.getElementById('otp-form');
+            const hiddenInput = document.getElementById('otp-hidden');
+            const resendBtn = document.getElementById('resend-btn');
+            const timerSpan = document.getElementById('timer');
+
+            // Auto-focus first input
+            inputs[0].focus();
+
+            // Handle input
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function(e) {
+                    const value = e.target.value;
+
+                    // Only allow numbers
+                    e.target.value = value.replace(/[^0-9]/g, '');
+
+                    // Move to next input
+                    if (value && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+
+                    // Check if all inputs are filled
+                    updateHiddenInput();
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    // Handle backspace
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const pasteData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+
+                    for (let i = 0; i < Math.min(pasteData.length, inputs.length); i++) {
+                        inputs[i].value = pasteData[i];
+                    }
+
+                    // Focus the last filled input or the next empty one
+                    const lastIndex = Math.min(pasteData.length, inputs.length) - 1;
+                    if (lastIndex >= 0 && lastIndex < inputs.length - 1) {
+                        inputs[lastIndex + 1].focus();
+                    } else {
+                        inputs[inputs.length - 1].focus();
+                    }
+
+                    updateHiddenInput();
+                });
+            });
+
+            function updateHiddenInput() {
+                let otp = '';
+                inputs.forEach(input => otp += input.value);
+                hiddenInput.value = otp;
+            }
+
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                let otp = '';
+                inputs.forEach(input => otp += input.value);
+
+                if (otp.length !== 6) {
+                    e.preventDefault();
+                    alert('Veuillez entrer les 6 chiffres du code OTP.');
+                    return false;
+                }
+
+                hiddenInput.value = otp;
+            });
+
+            // Resend timer
+            let countdown = 60;
+            resendBtn.classList.add('disabled');
+            resendBtn.style.pointerEvents = 'none';
+            timerSpan.textContent = `(${countdown}s)`;
+
+            const timer = setInterval(function() {
+                countdown--;
+                timerSpan.textContent = `(${countdown}s)`;
+
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    timerSpan.textContent = '';
+                    resendBtn.classList.remove('disabled');
+                    resendBtn.style.pointerEvents = 'auto';
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

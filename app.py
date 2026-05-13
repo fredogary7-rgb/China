@@ -138,6 +138,11 @@ class User(db.Model):
     email_verification_token = db.Column(db.String(200), nullable=True)
     verification_token_expires = db.Column(db.DateTime, nullable=True)
 
+    # OTP verification
+    otp_code = db.Column(db.String(6), nullable=True)
+    otp_expires = db.Column(db.DateTime, nullable=True)
+    otp_verified = db.Column(db.Boolean, default=False)
+
     date_creation = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Depot(db.Model):
@@ -773,6 +778,72 @@ def generate_verification_token():
     """Génère un token de vérification unique."""
     return secrets.token_urlsafe(32)
 
+def generate_otp():
+    """Génère un code OTP à 6 chiffres."""
+    return ''.join(random.choices(string.digits, k=6))
+
+def send_otp_email(user_email, otp_code, purpose="connexion"):
+    """Envoie un email avec le code OTP."""
+    smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+    smtp_port = int(os.getenv('SMTP_PORT', 587))
+    smtp_user = os.getenv('SMTP_USER', 'prestocashfinance0@gmail.com')
+    smtp_password = os.getenv('SMTP_PASSWORD', 'nrqe igme hdib hoji')
+    
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = f'Code de vérification TokenFlow - {purpose.capitalize()}'
+    msg['From'] = smtp_user
+    msg['To'] = user_email
+    
+    html_content = f'''
+    <html>
+    <body style="font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F1F5F9; padding: 40px;">
+        <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 900;">T</div>
+            </div>
+            <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">Code de vérification</h1>
+            <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                Votre code de vérification pour {purpose} sur TokenFlow est :
+            </p>
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="display: inline-block; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; font-size: 36px; font-weight: 900; padding: 20px 40px; border-radius: 16px; letter-spacing: 8px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);">
+                    {otp_code}
+                </div>
+            </div>
+            <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
+                Ce code est valide pendant 10 minutes. Ne le partagez avec personne.<br>
+                Si you n'avez pas demandé ce code, ignorez cet email.
+            </p>
+            <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 30px 0;">
+            <p style="color: #94A3B8; font-size: 12px; text-align: center;">
+                © 2024 TokenFlow. Tous droits réservés.
+            </p>
+        </div>
+    </body>
+    </html>
+    '''
+    
+    text_content = f'''
+    Code de vérification TokenFlow
+    
+    Votre code de vérification pour {purpose} est : {otp_code}
+    
+    Ce code est valide pendant 10 minutes. Ne le partagez avec personne.
+    '''
+    
+    msg.attach(MIMEText(text_content, 'plain'))
+    msg.attach(MIMEText(html_content, 'html'))
+    
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, user_email, msg.as_string())
+        return True
+    except Exception as e:
+        print(f"Erreur envoi OTP: {e}")
+        return False
+
 def send_verification_email(user_email, verification_token):
     """Envoie un email de vérification."""
     # Configuration SMTP (à adapter selon votre fournisseur)
@@ -990,38 +1061,278 @@ def inscription_page():
             else:
                 parrain_code_value = parrain_user.referral_code
 
-        new_user = User(
-            username=username,
-            email=email,
-            phone=phone,
-            password=password,
-            wallet_country=pays,
-            solde_total=1000,
-            solde_depot=1000,
-            solde_revenu=0,
-            solde_parrainage=0,
-            parrain_code=parrain_code_value
-        )
+        # Generate OTP for registration verification
+        otp = generate_otp()
+        otp_expires = datetime.utcnow() + timedelta(minutes=10)
 
-        db.session.add(new_user)
-        db.session.commit()
+        # Store OTP in session temporarily (user not created yet)
+        session['pending_registration'] = {
+            'username': username,
+            'email': email,
+            'phone': phone,
+            'password': password,
+            'pays': pays,
+            'parrain_code': parrain_code_value,
+            'otp': otp,
+            'otp_expires': otp_expires.isoformat()
+        }
 
-        # Generate verification token and send email
-        token = generate_verification_token()
-        new_user.email_verification_token = token
-        new_user.verification_token_expires = datetime.utcnow() + timedelta(hours=24)
-        db.session.commit()
-
-        # Send verification email
+        # Send OTP email
         try:
-            send_verification_email(email, token)
-            flash("🎉 Inscription réussie ! Un email de vérification a been envoyé à " + email + ". Vérifiez votre boîte mail.", "success")
+            send_otp_email(email, otp, "inscription")
+            flash("✅ Un code OTP a été envoyé à votre email. Veuillez le saisir pour compléter l'inscription.", "info")
         except Exception as e:
-            flash("🎉 Inscription réussie ! ⚠️ Email de vérification non envoyé (vérifiez la configuration SMTP).", "warning")
+            flash("⚠️ Erreur envoi email OTP. Essayez encore.", "warning")
+            return redirect(url_for("inscription_page"))
 
-        return redirect(url_for("connexion_page"))
+        return redirect(url_for("verify_otp_page", action="inscription"))
 
     return render_template("inscription.html", code_ref=code_ref)
+
+@app.route("/verify-otp/<action>", methods=["GET", "POST"])
+def verify_otp_page(action):
+    if action not in ["inscription", "connexion", "reset_password"]:
+        flash("Action invalide.", "danger")
+        return redirect(url_for("connexion_page"))
+
+    if request.method == "POST":
+        otp_input = request.form.get("otp", "").strip()
+
+        if not otp_input:
+            flash("Veuillez entrer le code OTP.", "danger")
+            return redirect(url_for("verify_otp_page", action=action))
+
+        if action == "inscription":
+            pending = session.get('pending_registration')
+            if not pending:
+                flash("Session expirée. Veuillez vous réinscrire.", "danger")
+                return redirect(url_for("inscription_page"))
+
+            # Check OTP
+            if otp_input != pending['otp']:
+                flash("Code OTP incorrect.", "danger")
+                return redirect(url_for("verify_otp_page", action=action))
+
+            # Check expiration
+            otp_expires = datetime.fromisoformat(pending['otp_expires'])
+            if datetime.utcnow() > otp_expires:
+                flash("Code OTP expiré. Veuillez vous réinscrire.", "danger")
+                session.pop('pending_registration', None)
+                return redirect(url_for("inscription_page"))
+
+            # Create user
+            new_user = User(
+                username=pending['username'],
+                email=pending['email'],
+                phone=pending['phone'],
+                password=pending['password'],
+                wallet_country=pending['pays'],
+                solde_total=0,
+                solde_depot=0,
+                solde_revenu=0,
+                solde_parrainage=0,
+                parrain_code=pending['parrain_code'],
+                otp_verified=True
+            )
+
+            db.session.add(new_user)
+            db.session.commit()
+
+            # Generate verification token and send email
+            token = generate_verification_token()
+            new_user.email_verification_token = token
+            new_user.verification_token_expires = datetime.utcnow() + timedelta(hours=24)
+            db.session.commit()
+
+            # Send verification email
+            try:
+                send_verification_email(pending['email'], token)
+            except:
+                pass
+
+            # Clear pending registration
+            session.pop('pending_registration', None)
+
+            flash("🎉 Inscription réussie ! Votre email a été vérifié.", "success")
+            return redirect(url_for("connexion_page"))
+
+        elif action == "connexion":
+            phone = session.get('pending_login_phone')
+            if not phone:
+                flash("Session expirée. Veuillez vous reconnecter.", "danger")
+                return redirect(url_for("connexion_page"))
+
+            user = User.query.filter_by(phone=phone).first()
+            if not user:
+                flash("Utilisateur introuvable.", "danger")
+                session.pop('pending_login_phone', None)
+                return redirect(url_for("connexion_page"))
+
+            # Check OTP
+            if not user.otp_code or otp_input != user.otp_code:
+                flash("Code OTP incorrect.", "danger")
+                return redirect(url_for("verify_otp_page", action=action))
+
+            # Check expiration
+            if user.otp_expires and datetime.utcnow() > user.otp_expires:
+                flash("Code OTP expiré. Veuillez vous reconnecter.", "danger")
+                user.otp_code = None
+                user.otp_expires = None
+                db.session.commit()
+                session.pop('pending_login_phone', None)
+                return redirect(url_for("connexion_page"))
+
+            # Clear OTP and log in
+            user.otp_code = None
+            user.otp_expires = None
+            user.otp_verified = True
+            db.session.commit()
+
+            session['phone'] = user.phone
+            session.pop('pending_login_phone', None)
+
+            flash("✅ Connexion réussie ! Bienvenue sur TokenFlow.", "success")
+            return redirect(url_for("dashboard_page"))
+
+        elif action == "reset_password":
+            reset_email = session.get('reset_email')
+            if not reset_email:
+                flash("Session expirée. Veuillez recommencer.", "danger")
+                return redirect(url_for("forgot_password_page"))
+            
+            user = User.query.filter_by(email=reset_email).first()
+            if not user:
+                flash("Utilisateur introuvable.", "danger")
+                session.pop('reset_email', None)
+                return redirect(url_for("forgot_password_page"))
+            
+            # Check OTP
+            if not user.otp_code or otp_input != user.otp_code:
+                flash("Code OTP incorrect.", "danger")
+                return redirect(url_for("verify_otp_page", action=action))
+            
+            # Check expiration
+            if user.otp_expires and datetime.utcnow() > user.otp_expires:
+                flash("Code OTP expiré. Veuillez recommencer.", "danger")
+                user.otp_code = None
+                user.otp_expires = None
+                db.session.commit()
+                session.pop('reset_email', None)
+                return redirect(url_for("forgot_password_page"))
+            
+            # OTP verified, redirect to reset password page
+            user.otp_code = None
+            user.otp_expires = None
+            db.session.commit()
+            
+            flash("✅ Code OTP vérifié ! Vous pouvez maintenant réinitialiser votre mot de passe.", "success")
+            return redirect(url_for("reset_password_page"))
+
+    return render_template("verify_otp.html", action=action)
+
+@app.route("/resend-otp/<action>", methods=["POST"])
+def resend_otp_page(action):
+    if action == "inscription":
+        pending = session.get('pending_registration')
+        if pending:
+            otp = generate_otp()
+            pending['otp'] = otp
+            pending['otp_expires'] = (datetime.utcnow() + timedelta(minutes=10)).isoformat()
+            session['pending_registration'] = pending
+            send_otp_email(pending['email'], otp, "inscription")
+            flash("✅ Nouveau code OTP envoyé !", "success")
+    elif action == "connexion":
+        phone = session.get('pending_login_phone')
+        if phone:
+            user = User.query.filter_by(phone=phone).first()
+            if user:
+                otp = generate_otp()
+                user.otp_code = otp
+                user.otp_expires = datetime.utcnow() + timedelta(minutes=10)
+                db.session.commit()
+                send_otp_email(user.email, otp, "connexion")
+                flash("✅ Nouveau code OTP envoyé !", "success")
+    return redirect(url_for("verify_otp_page", action=action))
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password_page():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        
+        if not email:
+            flash("Veuillez entrer votre email.", "danger")
+            return redirect(url_for("forgot_password_page"))
+        
+        user = User.query.filter_by(email=email).first()
+        
+        if not user:
+            flash("Aucun compte trouvé avec cet email.", "warning")
+            return redirect(url_for("forgot_password_page"))
+        
+        # Generate OTP for password reset
+        otp = generate_otp()
+        user.otp_code = otp
+        user.otp_expires = datetime.utcnow() + timedelta(minutes=10)
+        db.session.commit()
+        
+        # Store email in session for reset verification
+        session['reset_email'] = email
+        
+        # Send OTP email
+        try:
+            send_otp_email(email, otp, "réinitialisation de mot de passe")
+            flash("✅ Un code OTP a été envoyé à votre email. Veuillez le saisir pour réinitialiser votre mot de passe.", "info")
+        except Exception as e:
+            flash("⚠️ Erreur envoi email OTP. Réessayez.", "warning")
+            return redirect(url_for("forgot_password_page"))
+        
+        return redirect(url_for("verify_otp_page", action="reset_password"))
+    
+    return render_template("forgot_password.html")
+
+@app.route("/reset-password", methods=["GET", "POST"])
+def reset_password_page():
+    # Check if user has verified OTP for reset
+    reset_email = session.get('reset_email')
+    
+    if not reset_email:
+        flash("Session expirée. Veuillez recommencer la réinitialisation.", "danger")
+        return redirect(url_for("forgot_password_page"))
+    
+    user = User.query.filter_by(email=reset_email).first()
+    
+    if not user:
+        flash("Utilisateur introuvable.", "danger")
+        session.pop('reset_email', None)
+        return redirect(url_for("forgot_password_page"))
+    
+    if request.method == "POST":
+        new_password = request.form.get("new_password", "").strip()
+        confirm_password = request.form.get("confirm_password", "").strip()
+        
+        if not new_password or not confirm_password:
+            flash("Veuillez remplir tous les champs.", "danger")
+            return redirect(url_for("reset_password_page"))
+        
+        if new_password != confirm_password:
+            flash("Les mots de passe ne correspondent pas.", "danger")
+            return redirect(url_for("reset_password_page"))
+        
+        if len(new_password) < 6:
+            flash("Le mot de passe doit contenir au moins 6 caractères.", "danger")
+            return redirect(url_for("reset_password_page"))
+        
+        # Update password
+        user.password = new_password
+        db.session.commit()
+        
+        # Clear session
+        session.pop('reset_email', None)
+        
+        flash("✅ Mot de passe réinitialisé avec succès ! Vous pouvez maintenant vous connecter.", "success")
+        return redirect(url_for("connexion_page"))
+    
+    return render_template("reset_password.html")
 
 @app.route("/connexion", methods=["GET", "POST"])
 def connexion_page():
@@ -1043,10 +1354,24 @@ def connexion_page():
             flash({"title": "Erreur", "message": "Mot de passe incorrect."}, "danger")
             return redirect(url_for("connexion_page"))
 
-        session["phone"] = user.phone
+        # Generate and send OTP before login
+        otp = generate_otp()
+        user.otp_code = otp
+        user.otp_expires = datetime.utcnow() + timedelta(minutes=10)
+        db.session.commit()
 
-        flash({"title": "Connexion réussie", "message": "Bienvenue sur TokenFlow !"}, "success")
-        return redirect(url_for("dashboard_page"))
+        # Store phone in session for OTP verification
+        session['pending_login_phone'] = phone
+
+        # Send OTP email
+        try:
+            send_otp_email(user.email, otp, "connexion")
+            flash("✅ Un code OTP a been envoyé à votre email. Veuillez le saisir pour compléter la connexion.", "info")
+        except Exception as e:
+            flash("⚠️ Erreur envoi email OTP. Réessayez.", "warning")
+            return redirect(url_for("connexion_page"))
+
+        return redirect(url_for("verify_otp_page", action="connexion"))
 
     return render_template("connexion.html")
 

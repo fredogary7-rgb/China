@@ -1,18 +1,14 @@
 """
-Migration script to add email verification columns to the User table.
-Run with: python add_email_verification_columns.py
+Migration script to add OTP verification columns to the User table.
+Run with: python add_otp_columns.py
 """
-import os
-from dotenv import load_dotenv
 from sqlalchemy import create_engine, text, inspect
-
-load_dotenv()
 
 # Database URL - same as in app.py
 DATABASE_URL = "postgresql://neondb_owner:npg_y1NWvdsLagE4@ep-misty-term-abgn4ktn-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require"
 
-def add_email_verification_columns():
-    """Add email verification columns to the user table."""
+def add_otp_columns():
+    """Add OTP verification columns to the user table."""
     print("🔗 Connecting to database...")
     print(f"Database URL: {DATABASE_URL[:50]}...")
     
@@ -30,39 +26,39 @@ def add_email_verification_columns():
         print(f"📋 Existing columns: {columns}")
         
         with engine.connect() as conn:
-            # Add email_verified column
-            if 'email_verified' not in columns:
+            # Add otp_code column
+            if 'otp_code' not in columns:
                 conn.execute(text('''
                     ALTER TABLE "user" 
-                    ADD COLUMN email_verified BOOLEAN DEFAULT FALSE
+                    ADD COLUMN otp_code VARCHAR(6) NULL
                 '''))
-                print("✅ Colonne 'email_verified' ajoutée")
+                print("✅ Colonne 'otp_code' ajoutée")
             else:
-                print("ℹ️ Colonne 'email_verified' déjà existante")
+                print("ℹ️ Colonne 'otp_code' déjà existante")
             
-            # Add email_verification_token column
-            if 'email_verification_token' not in columns:
+            # Add otp_expires column
+            if 'otp_expires' not in columns:
                 conn.execute(text('''
                     ALTER TABLE "user" 
-                    ADD COLUMN email_verification_token VARCHAR(200) NULL
+                    ADD COLUMN otp_expires TIMESTAMP NULL
                 '''))
-                print("✅ Colonne 'email_verification_token' ajoutée")
+                print("✅ Colonne 'otp_expires' ajoutée")
             else:
-                print("ℹ️ Colonne 'email_verification_token' déjà existante")
+                print("ℹ️ Colonne 'otp_expires' déjà existante")
             
-            # Add verification_token_expires column
-            if 'verification_token_expires' not in columns:
+            # Add otp_verified column
+            if 'otp_verified' not in columns:
                 conn.execute(text('''
                     ALTER TABLE "user" 
-                    ADD COLUMN verification_token_expires TIMESTAMP NULL
+                    ADD COLUMN otp_verified BOOLEAN DEFAULT FALSE
                 '''))
-                print("✅ Colonne 'verification_token_expires' ajoutée")
+                print("✅ Colonne 'otp_verified' ajoutée")
             else:
-                print("ℹ️ Colonne 'verification_token_expires' déjà existante")
+                print("ℹ️ Colonne 'otp_verified' déjà existante")
             
             conn.commit()
         
-        print("🎉 Migration des colonnes de vérification email terminée !")
+        print("🎉 Migration des colonnes OTP terminée !")
         
     except Exception as e:
         print(f"❌ Error: {e}")
@@ -70,4 +66,4 @@ def add_email_verification_columns():
         traceback.print_exc()
 
 if __name__ == "__main__":
-    add_email_verification_columns()
+    add_otp_columns()
