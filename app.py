@@ -133,6 +133,11 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     is_banned = db.Column(db.Boolean, default=False)
 
+    # Email verification
+    email_verified = db.Column(db.Boolean, default=False)
+    email_verification_token = db.Column(db.String(200), nullable=True)
+    verification_token_expires = db.Column(db.DateTime, nullable=True)
+
     date_creation = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Depot(db.Model):
@@ -756,6 +761,148 @@ def migrate_referral_codes():
 
     print("🎉 Migration terminée avec succès !")
 
+# ============================================
+# EMAIL VERIFICATION FUNCTIONS
+# ============================================
+import secrets
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+def generate_verification_token():
+    """Génère un token de vérification unique."""
+    return secrets.token_urlsafe(32)
+
+def send_verification_email(user_email, verification_token):
+    """Envoie un email de vérification."""
+    # Configuration SMTP (à adapter selon votre fournisseur)
+    smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+    smtp_port = int(os.getenv('SMTP_PORT', 587))
+    smtp_user = os.getenv('SMTP_USER', 'prestocashfinance0@gmail.com')
+    smtp_password = os.getenv('SMTP_PASSWORD', 'nrqe igme hdib hoji')  # App password Google
+    
+    verification_url = url_for('verify_email_page', token=verification_token, _external=True)
+    
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = 'Vérifiez votre email - TokenFlow'
+    msg['From'] = smtp_user
+    msg['To'] = user_email
+    
+    html_content = f'''
+    <html>
+    <body style="font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F1F5F9; padding: 40px;">
+        <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 900;">T</div>
+            </div>
+            <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">Vérifiez votre adresse email</h1>
+            <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+                Merci de vous être inscrit sur <strong>TokenFlow</strong>. Pour activer votre compte, veuillez cliquer sur le bouton ci-dessous :
+            </p>
+            <div style="text-align: center; margin-bottom: 30px;">
+                <a href="{verification_url}" style="display: inline-block; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);">
+                    Vérifier mon email
+                </a>
+            </div>
+            <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
+                Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur :<br>
+                <a href="{verification_url}" style="color: #6366F1; word-break: break-all;">{verification_url}</a>
+            </p>
+            <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 30px 0;">
+            <p style="color: #94A3B8; font-size: 12px; text-align: center;">
+                Ce lien expire dans 24 heures. Si vous n'avez pas créé de compte TokenFlow, ignorez cet email.
+            </p>
+        </div>
+    </body>
+    </html>
+    '''
+    
+    text_content = f'''
+    Vérifiez votre adresse email - TokenFlow
+    
+    Merci de vous être inscrit sur TokenFlow. Pour activer votre compte, veuillez cliquer sur le lien ci-dessous :
+    
+    {verification_url}
+    
+    Ce lien expire dans 24 heures. Si vous n'avez pas créé de compte TokenFlow, ignorez cet email.
+    '''
+    
+    msg.attach(MIMEText(text_content, 'plain'))
+    msg.attach(MIMEText(html_content, 'html'))
+    
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, user_email, msg.as_string())
+        return True
+    except Exception as e:
+        print(f"Erreur envoi email: {e}")
+        return False
+
+@app.route('/verify-email/<token>')
+def verify_email_page(token):
+    """Page de vérification d'email."""
+    user = User.query.filter_by(email_verification_token=token).first()
+    
+    if not user:
+        flash("Token de vérification invalide ou expiré.", "danger")
+        return redirect(url_for('connexion_page'))
+    
+    if user.email_verified:
+        flash("Votre email est déjà vérifié.", "success")
+        return redirect(url_for('dashboard_page'))
+    
+    # Vérifier si le token a expiré (24h)
+    if user.verification_token_expires and datetime.utcnow() > user.verification_token_expires:
+        flash("Token expiré. Veuillez demander un nouveau lien de vérification.", "warning")
+        return redirect(url_for('resend_verification_page'))
+    
+    # Marquer l'email comme vérifié
+    user.email_verified = True
+    user.email_verification_token = None
+    user.verification_token_expires = None
+    db.session.commit()
+    
+    flash("✅ Email vérifié avec succès ! Votre compte est maintenant activé.", "success")
+    
+    # Connecter automatiquement l'utilisateur
+    session['phone'] = user.phone
+    return redirect(url_for('dashboard_page'))
+
+@app.route('/resend-verification')
+@login_required
+def resend_verification_page():
+    """Renvoie un email de vérification."""
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    
+    if not user:
+        flash("Utilisateur introuvable.", "danger")
+        return redirect(url_for('connexion_page'))
+    
+    if user.email_verified:
+        flash("Votre email est déjà vérifié.", "success")
+        return redirect(url_for('dashboard_page'))
+    
+    if not user.email:
+        flash("Aucun email associé à ce compte.", "warning")
+        return redirect(url_for('profile_page'))
+    
+    # Générer un nouveau token
+    token = generate_verification_token()
+    user.email_verification_token = token
+    user.verification_token_expires = datetime.utcnow() + timedelta(hours=24)
+    db.session.commit()
+    
+    # Envoyer l'email
+    if send_verification_email(user.email, token):
+        flash("✅ Un nouvel email de vérification a été envoyé.", "success")
+    else:
+        flash("❌ Erreur lors de l'envoi de l'email. Réessayez plus tard.", "danger")
+    
+    return redirect(url_for('profile_page'))
+
 @app.cli.command("add-balance-columns")
 def add_balance_columns_command():
     """
@@ -859,7 +1006,19 @@ def inscription_page():
         db.session.add(new_user)
         db.session.commit()
 
-        flash("🎉 Inscription réussie ! Connectez-vous maintenant.", "success")
+        # Generate verification token and send email
+        token = generate_verification_token()
+        new_user.email_verification_token = token
+        new_user.verification_token_expires = datetime.utcnow() + timedelta(hours=24)
+        db.session.commit()
+
+        # Send verification email
+        try:
+            send_verification_email(email, token)
+            flash("🎉 Inscription réussie ! Un email de vérification a been envoyé à " + email + ". Vérifiez votre boîte mail.", "success")
+        except Exception as e:
+            flash("🎉 Inscription réussie ! ⚠️ Email de vérification non envoyé (vérifiez la configuration SMTP).", "warning")
+
         return redirect(url_for("connexion_page"))
 
     return render_template("inscription.html", code_ref=code_ref)
