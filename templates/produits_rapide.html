@@ -1108,7 +1108,7 @@ const CURRENCY_SYMBOLS = {
   EUR: '€'
 };
 
-let currentCurrency = 'XOF';
+let currentCurrency = 'USD';
 
 // Conversion
 function convertCurrency(amount, from = 'XOF', to = currentCurrency) {
@@ -1121,7 +1121,10 @@ function formatPrice(amount, currency = currentCurrency) {
   if (currency === 'XOF') {
     return amount.toLocaleString('fr-FR').replace(/\s/g, ' ') + ' ' + CURRENCY_SYMBOLS[currency];
   }
-  return CURRENCY_SYMBOLS[currency] + convertCurrency(amount).toLocaleString('fr-FR');
+  const converted = convertCurrency(amount);
+  // Format with 2 decimal places for USD/EUR
+  const formatted = converted.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return CURRENCY_SYMBOLS[currency] + formatted;
 }
 
 // Changement de devise
@@ -1144,10 +1147,10 @@ function setCurrency(currency, btn) {
     el.textContent = converted;
   });
   
-  // Update balance
+  // Update balance - use data-xof attribute for accurate conversion
   const balanceEl = document.getElementById('userBalance');
-  if (balanceEl) {
-    const balanceXOF = parseFloat(balanceEl.textContent.replace(/\s/g, '').replace(',', ''));
+  if (balanceEl && balanceEl.dataset.xof) {
+    const balanceXOF = parseFloat(balanceEl.dataset.xof);
     balanceEl.textContent = formatPrice(balanceXOF);
   }
   
@@ -1305,18 +1308,20 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Charger la devise préférée
+// Charger la devise préférée ou USD par défaut
 document.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('preferredCurrency');
   if (saved && ['XOF', 'USD', 'EUR'].includes(saved)) {
     currentCurrency = saved;
-    const btns = document.querySelectorAll('.currency-toggle button');
-    btns.forEach(b => {
-      b.classList.remove('active');
-      if (b.textContent === saved) b.classList.add('active');
-    });
-    setCurrency(saved, document.querySelector('.currency-toggle button.active'));
   }
+  // Set active button based on current currency
+  const btns = document.querySelectorAll('.currency-toggle button');
+  btns.forEach(b => {
+    b.classList.remove('active');
+    if (b.textContent === currentCurrency) b.classList.add('active');
+  });
+  // Apply currency formatting on load
+  setCurrency(currentCurrency, document.querySelector('.currency-toggle button.active'));
   
   // Animate stats
   animateValue('totalInvestors', 0, 2847, 2000);

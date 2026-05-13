@@ -625,12 +625,12 @@ body::after {
   
   <div class="info-row">
     <div class="label"><i class="fa-solid fa-tag"></i> Prix du billet</div>
-    <div class="value">{{ "{:,.0f}".format(montant).replace(",", " ") }} XOF</div>
+    <div class="value">${{ "{:,.2f}".format(montant / 625) }} USD</div>
   </div>
   
   <div class="info-row">
     <div class="label"><i class="fa-solid fa-calendar-day"></i> Profit journalier</div>
-    <div class="value profit">+ {{ "{:,.0f}".format(revenu_journalier).replace(",", " ") }} XOF</div>
+    <div class="value profit">+ ${{ "{:,.2f}".format(revenu_journalier / 625) }} USD</div>
   </div>
   
   <div class="info-row">
@@ -640,7 +640,7 @@ body::after {
   
   <div class="info-row">
     <div class="label"><i class="fa-solid fa-chart-line"></i> Profit total estimé</div>
-    <div class="value total">{{ "{:,.0f}".format(revenu_total).replace(",", " ") }} XOF</div>
+    <div class="value total">${{ "{:,.2f}".format(revenu_total / 625) }} USD</div>
   </div>
 </div>
 
@@ -676,10 +676,10 @@ body::after {
     <div class="wallet-icon">
       <i class="fa-solid fa-wallet"></i>
     </div>
-    <div class="wallet-info">
-      <div class="label">Solde disponible</div>
-      <div class="balance">{{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }} XOF</div>
-    </div>
+      <div class="wallet-info">
+        <div class="label">Solde disponible</div>
+        <div class="balance">${{ "{:,.2f}".format((user.solde_total or 0) / 625) }} USD</div>
+      </div>
   </div>
   
   <div class="wallet-status">
@@ -723,11 +723,11 @@ body::after {
   
   <div class="success-stats">
     <div class="success-stat">
-      <span class="value">+ {{ "{:,.0f}".format(revenu_journalier).replace(",", " ") }} XOF</span>
+      <span class="value">+ ${{ "{:,.2f}".format(revenu_journalier / 625) }} USD</span>
       <span class="label">Profit/jour</span>
     </div>
     <div class="success-stat">
-      <span class="value">+ {{ "{:,.0f}".format(revenu_total).replace(",", " ") }} XOF</span>
+      <span class="value">+ ${{ "{:,.2f}".format(revenu_total / 625) }} USD</span>
       <span class="label">Profit total</span>
     </div>
     <div class="success-stat">
