@@ -225,11 +225,11 @@
   <!-- Stats -->
   <div class="profile-stats">
     <div class="profile-stat">
-      <div class="stat-value">{{ "{:,.0f}".format(user.solde_total|default(0)|int).replace(",", " ") }} XOF</div>
+      <div class="stat-value">${{ "{:,.2f}".format(user.balance_usd|default(0)|float) }} USD</div>
       <div class="stat-label">Solde total</div>
     </div>
     <div class="profile-stat">
-      <div class="stat-value" style="color: var(--success);">{{ "{:,.0f}".format((user.solde_parrainage|default(0) + user.solde_revenu|default(0))|int).replace(",", " ") }} XOF</div>
+      <div class="stat-value" style="color: var(--success);">${{ "{:,.2f}".format(((user.solde_parrainage|default(0) + user.solde_revenu|default(0))|float)) }} USD</div>
       <div class="stat-label">Revenus</div>
     </div>
   </div>

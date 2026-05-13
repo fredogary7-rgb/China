@@ -1,0 +1,10 @@
+Tables in database:
+  - alembic_version
+  - commission
+  - depot
+  - investissement
+  - retrait
+  - staking
+  - support_message
+  - user
+  - vlog

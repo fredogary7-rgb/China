@@ -269,78 +269,169 @@
     <!-- Main Content -->
     {% block content %}{% endblock %}
     
+    <!-- Bottom Navigation (hidden on auth pages) -->
+    <nav class="bottom-nav" id="bottomNav" style="display: none;">
+      <a href="/dashboard" class="nav-item">
+        <i class="fa-solid fa-house"></i>
+        <span>Accueil</span>
+      </a>
+      <a href="/produits_rapide" class="nav-item">
+        <i class="fa-solid fa-rocket"></i>
+        <span>Investir</span>
+      </a>
+      <a href="/team" class="nav-item">
+        <i class="fa-solid fa-users"></i>
+        <span>Réseau</span>
+      </a>
+      <a href="/profile" class="nav-item">
+        <i class="fa-solid fa-user"></i>
+        <span>Profil</span>
+      </a>
+    </nav>
+    
+    <style>
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-card);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      z-index: 1000;
+      backdrop-filter: blur(20px);
+    }
+    
+    .bottom-nav .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 8px 12px;
+      transition: all 0.2s;
+      flex: 1;
+      text-align: center;
+    }
+    
+    .bottom-nav .nav-item i {
+      font-size: 20px;
+      transition: all 0.2s;
+    }
+    
+    .bottom-nav .nav-item:hover,
+    .bottom-nav .nav-item.active {
+      color: var(--primary);
+    }
+    
+    .bottom-nav .nav-item.active i {
+      transform: scale(1.1);
+    }
+    
+    /* Add padding to body when nav is visible */
+    body.has-bottom-nav {
+      padding-bottom: 70px;
+    }
+    </style>
+    
+    <script>
+    // Show bottom nav on authenticated pages (not on login, register, index)
+    document.addEventListener('DOMContentLoaded', function() {
+      const bottomNav = document.getElementById('bottomNav');
+      const currentPath = window.location.pathname;
+      const authPages = ['/connexion', '/inscription', '/login', '/register', '/'];
+      
+      const isAuthPage = authPages.some(page => currentPath.startsWith(page));
+      
+      if (!isAuthPage && bottomNav) {
+        bottomNav.style.display = 'flex';
+        document.body.classList.add('has-bottom-nav');
+        
+        // Set active state
+        bottomNav.querySelectorAll('.nav-item').forEach(item => {
+          const href = item.getAttribute('href');
+          if (href === currentPath) {
+            item.classList.add('active');
+          }
+        });
+      }
+    });
+    </script>
+    
     <!-- Global Currency Preference System -->
     <script>
     // ============================================
     // SYSTÈME DE DEVISE GLOBALE
     // Synchronisation automatique entre toutes les pages
+    // Devise de base: USD
     // ============================================
     window.TokenFlow = window.TokenFlow || {};
     
-    // Taux de change
+    // Taux de change (USD est la devise de base)
     const EXCHANGE_RATES = {
-        XOF: 1,
-        USD: 0.0016,
-        EUR: 0.00147
+        USD: 1,
+        EUR: 0.92
     };
     
     const CURRENCY_SYMBOLS = {
-        XOF: ' XOF',
         USD: '$',
         EUR: '€'
     };
     
-    // Récupérer la devise préférée (défaut: XOF)
+    // Récupérer la devise préférée (défaut: USD)
     window.TokenFlow.getPreferredCurrency = function() {
-        return localStorage.getItem('preferredCurrency') || 'XOF';
+        return localStorage.getItem('preferredCurrency') || 'USD';
     };
     
     // Définir la devise préférée
     window.TokenFlow.setPreferredCurrency = function(currency) {
-        if (['XOF', 'USD', 'EUR'].includes(currency)) {
+        if (['USD', 'EUR'].includes(currency)) {
             localStorage.setItem('preferredCurrency', currency);
             // Déclencher un événement pour mettre à jour les autres onglets
             window.dispatchEvent(new Event('storage'));
         }
     };
     
-    // Convertir un montant XOF vers la devise préférée
-    window.TokenFlow.convertFromXOF = function(amountXOF, targetCurrency) {
+    // Convertir un montant USD vers la devise préférée
+    window.TokenFlow.convertFromUSD = function(amountUSD, targetCurrency) {
         targetCurrency = targetCurrency || window.TokenFlow.getPreferredCurrency();
-        if (targetCurrency === 'XOF') return amountXOF;
-        return Math.round(amountXOF * EXCHANGE_RATES[targetCurrency] * 100) / 100;
+        if (targetCurrency === 'USD') return amountUSD;
+        return Math.round(amountUSD * EXCHANGE_RATES[targetCurrency] * 100) / 100;
     };
     
-    // Convertir un montant de la devise préférée vers XOF
-    window.TokenFlow.convertToXOF = function(amount, fromCurrency) {
+    // Convertir un montant de la devise préférée vers USD
+    window.TokenFlow.convertToUSD = function(amount, fromCurrency) {
         fromCurrency = fromCurrency || window.TokenFlow.getPreferredCurrency();
-        if (fromCurrency === 'XOF') return amount;
-        return Math.round(amount / EXCHANGE_RATES[fromCurrency]);
+        if (fromCurrency === 'USD') return amount;
+        return Math.round(amount / EXCHANGE_RATES[fromCurrency] * 100) / 100;
     };
     
     // Formater un montant avec la devise préférée
-    window.TokenFlow.formatCurrency = function(amountXOF, options = {}) {
+    window.TokenFlow.formatCurrency = function(amountUSD, options = {}) {
         const currency = options.currency || window.TokenFlow.getPreferredCurrency();
-        const converted = window.TokenFlow.convertFromXOF(amountXOF, currency);
+        const converted = window.TokenFlow.convertFromUSD(amountUSD, currency);
         const symbol = CURRENCY_SYMBOLS[currency];
         
-        if (currency === 'XOF') {
-            return Math.round(converted).toLocaleString('fr-FR').replace(/\s/g, ' ') + symbol;
-        }
-        
         // Pour USD et EUR, on garde 2 décimales
-        return symbol + converted.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return symbol + converted.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     };
     
-    // Mettre à jour tous les éléments avec data-xof
+    // Mettre à jour tous les éléments avec data-usd
     window.TokenFlow.updateAllCurrencies = function() {
         const currency = window.TokenFlow.getPreferredCurrency();
         
-        // Mettre à jour tous les éléments avec data-xof
-        document.querySelectorAll('[data-xof]').forEach(el => {
-            const xof = parseFloat(el.dataset.xof);
-            if (!isNaN(xof)) {
-                el.textContent = window.TokenFlow.formatCurrency(xof);
+        // Mettre à jour tous les éléments avec data-usd
+        document.querySelectorAll('[data-usd]').forEach(el => {
+            const usd = parseFloat(el.dataset.usd);
+            if (!isNaN(usd)) {
+                el.textContent = window.TokenFlow.formatCurrency(usd);
             }
         });
         

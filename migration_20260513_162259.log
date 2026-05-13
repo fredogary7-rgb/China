@@ -1,0 +1,26 @@
+2026-05-13 16:22:59,616 - INFO - ======================================================================
+2026-05-13 16:22:59,616 - INFO - MIGRATION XOF → USD/EUR
+2026-05-13 16:22:59,616 - INFO - ======================================================================
+2026-05-13 16:22:59,617 - INFO - Mode : RÉEL
+2026-05-13 16:22:59,617 - INFO - Taux : 1 USD = 625 XOF, 1 EUR = 655.957 XOF
+2026-05-13 16:22:59,617 - INFO - ======================================================================
+2026-05-13 16:23:00,082 - INFO - 🔒 CRÉATION DU BACKUP...
+2026-05-13 16:23:02,995 - ERROR - ❌ Erreur backup : (psycopg2.errors.UndefinedTable) relation "wallet" does not exist
+LINE 3:                 FROM wallet
+                             ^
+
+[SQL: 
+                SELECT id, user_phone, currency, balance
+                FROM wallet
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-13 16:23:02,997 - ERROR - ❌ MIGRATION ÉCHOUÉE : (psycopg2.errors.UndefinedTable) relation "wallet" does not exist
+LINE 3:                 FROM wallet
+                             ^
+
+[SQL: 
+                SELECT id, user_phone, currency, balance
+                FROM wallet
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-13 16:23:02,997 - ERROR -    Les données n'ont pas été modifiées (transaction rollback)

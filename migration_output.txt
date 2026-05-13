@@ -1,0 +1,23 @@
+🔍 Checking current columns in user table...
+Current columns: ['id', 'uid', 'phone', 'password', 'parrain', 'commission_total', 'wallet_country', 'wallet_operator', 'wallet_number', 'solde_total', 'solde_depot', 'solde_parrainage', 'solde_revenu', 'premier_depot', 'is_admin', 'is_banned', 'date_creation', 'referral_code', 'parrain_code', 'username', 'email', 'google_id', 'apple_id', 'balance_usd', 'balance_eur']
+
+ℹ️ Colonne 'balance_usd' déjà existante
+
+ℹ️ Colonne 'balance_eur' déjà existante
+
+💰 Migrating solde_total to balance_usd...
+✅ 0 utilisateurs migrés vers balance_usd
+
+💶 Calculating balance_eur from balance_usd...
+✅ balance_eur calculé pour 0 utilisateurs
+
+🎉 Migration balance_usd/balance_eur terminée !
+
+📊 Sample data:
+Email | Solde Total | Balance USD | Balance EUR
+------------------------------------------------------------
+ameket4@gmail.com | 1.6 | 1.6 | 1.472
+None | 1.6 | 1.6 | 1.472
+None | 1.6 | 1.6 | 1.472
+None | 1.6 | 1.6 | 1.472
+None | 1.6 | 1.6 | 1.472

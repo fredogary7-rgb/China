@@ -123,6 +123,10 @@ class User(db.Model):
     solde_depot = db.Column(db.Float, default=0.0)
     solde_parrainage = db.Column(db.Float, default=0.0)
     solde_revenu = db.Column(db.Float, default=0.0)
+    
+    # New balance columns in USD and EUR (no XOF conversion)
+    balance_usd = db.Column(db.Float, default=0.0)
+    balance_eur = db.Column(db.Float, default=0.0)
 
     premier_depot = db.Column(db.Boolean, default=False)
 
@@ -751,6 +755,55 @@ def migrate_referral_codes():
         print("ℹ️ Aucune migration de parrainage nécessaire")
 
     print("🎉 Migration terminée avec succès !")
+
+@app.cli.command("add-balance-columns")
+def add_balance_columns_command():
+    """
+    Ajoute les colonnes balance_usd et balance_eur à la table user.
+    Usage: flask --app app.py add-balance-columns
+    """
+    from sqlalchemy import inspect
+
+    inspector = inspect(db.engine)
+    columns = [col['name'] for col in inspector.get_columns('user')]
+
+    if 'balance_usd' not in columns:
+        with db.engine.connect() as conn:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN balance_usd REAL DEFAULT 0.0'))
+            conn.commit()
+        print("✅ Colonne 'balance_usd' ajoutée")
+    else:
+        print("ℹ️ Colonne 'balance_usd' déjà existante")
+
+    if 'balance_eur' not in columns:
+        with db.engine.connect() as conn:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN balance_eur REAL DEFAULT 0.0'))
+            conn.commit()
+        print("✅ Colonne 'balance_eur' ajoutée")
+    else:
+        print("ℹ️ Colonne 'balance_eur' déjà existante")
+
+    # Migrer solde_total (qui est maintenant en USD) vers balance_usd
+    with db.engine.connect() as conn:
+        result = conn.execute(text('''
+            UPDATE "user" 
+            SET balance_usd = solde_total 
+            WHERE balance_usd IS NULL OR balance_usd = 0
+        '''))
+        conn.commit()
+        print(f"✅ {result.rowcount} utilisateurs migrés vers balance_usd")
+
+    # Calculer balance_eur (1 USD = 0.92 EUR)
+    with db.engine.connect() as conn:
+        result = conn.execute(text('''
+            UPDATE "user" 
+            SET balance_eur = balance_usd * 0.92 
+            WHERE balance_eur IS NULL OR balance_eur = 0
+        '''))
+        conn.commit()
+        print(f"✅ balance_eur calculé pour {result.rowcount} utilisateurs")
+
+    print("🎉 Migration balance_usd/balance_eur terminée !")
 
 @app.route("/inscription", methods=["GET", "POST"])
 def inscription_page():

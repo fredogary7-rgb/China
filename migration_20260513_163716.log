@@ -1,0 +1,28 @@
+2026-05-13 16:37:16,678 - INFO - ======================================================================
+2026-05-13 16:37:16,678 - INFO - MIGRATION XOF → USD/EUR
+2026-05-13 16:37:16,679 - INFO - ======================================================================
+2026-05-13 16:37:16,679 - INFO - Mode : RÉEL
+2026-05-13 16:37:16,679 - INFO - Taux : 1 USD = 625 XOF, 1 EUR = 655.957 XOF
+2026-05-13 16:37:16,680 - INFO - ======================================================================
+2026-05-13 16:37:17,295 - INFO - 🔒 CRÉATION DU BACKUP...
+2026-05-13 16:37:22,206 - ERROR - ❌ Erreur backup : (psycopg2.errors.UndefinedColumn) column "amount" does not exist
+LINE 2:                 SELECT id, phone, amount, daily_reward
+                                          ^
+
+[SQL: 
+                SELECT id, phone, amount, daily_reward
+                FROM staking
+                WHERE active = true
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-13 16:37:22,215 - ERROR - ❌ MIGRATION ÉCHOUÉE : (psycopg2.errors.UndefinedColumn) column "amount" does not exist
+LINE 2:                 SELECT id, phone, amount, daily_reward
+                                          ^
+
+[SQL: 
+                SELECT id, phone, amount, daily_reward
+                FROM staking
+                WHERE active = true
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-13 16:37:22,215 - ERROR -    Les données n'ont pas été modifiées (transaction rollback)

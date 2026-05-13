@@ -1,0 +1,1041 @@
+{
+  "timestamp": "2026-05-13T16:45:35.799918",
+  "users": [
+    {
+      "id": 86,
+      "phone": "98254088",
+      "username": "Token",
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 1,
+      "phone": "71609808",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 2,
+      "phone": "99099065",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 9,
+      "phone": "97322901",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 10,
+      "phone": "98779082",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 75,
+      "phone": "93936936",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 26,
+      "phone": "54598249",
+      "username": null,
+      "solde_total": 5400.0,
+      "solde_depot": 11000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 3400.0
+    },
+    {
+      "id": 29,
+      "phone": "90966979",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 6,
+      "phone": "00000001",
+      "username": null,
+      "solde_total": 5000.0,
+      "solde_depot": 5000.0,
+      "solde_parrainage": 240.0,
+      "solde_revenu": 400.0
+    },
+    {
+      "id": 85,
+      "phone": "93947070",
+      "username": "test",
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 4,
+      "phone": "72199198",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 25,
+      "phone": "64903056",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 27,
+      "phone": "96812558",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 28,
+      "phone": "0584324567",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 3,
+      "phone": "96200865",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 1280.0,
+      "solde_revenu": 1280.0
+    },
+    {
+      "id": 13,
+      "phone": "0778755378",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 11,
+      "phone": "90963577",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 12,
+      "phone": "72 18 07 08",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 15,
+      "phone": "91754820",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 14,
+      "phone": "677989694",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 16,
+      "phone": "07369781",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 30,
+      "phone": "97330023",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 5,
+      "phone": "72211538",
+      "username": null,
+      "solde_total": 3400.0,
+      "solde_depot": 9000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 3400.0
+    },
+    {
+      "id": 19,
+      "phone": "0711410241",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 18,
+      "phone": "0140804709",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 20,
+      "phone": "651137807",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 21,
+      "phone": "+24165611732",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 22,
+      "phone": "58421541",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 23,
+      "phone": "622334455",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 24,
+      "phone": "237694886677",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 7,
+      "phone": "695579234",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 39,
+      "phone": "52525252",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 31,
+      "phone": "04456998",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 32,
+      "phone": "77004147",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 33,
+      "phone": "67772123",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 34,
+      "phone": "92090762",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 35,
+      "phone": "75990410",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 36,
+      "phone": "56088052",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 37,
+      "phone": "77553488",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 38,
+      "phone": "56565653",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 40,
+      "phone": "74965641",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 41,
+      "phone": "77548007",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 42,
+      "phone": "69741248",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 43,
+      "phone": "76998898",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 44,
+      "phone": "74330845",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 45,
+      "phone": "0170366025",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 46,
+      "phone": "620202020",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 47,
+      "phone": "87868203",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 48,
+      "phone": "87 86 82 03",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 49,
+      "phone": "68654392",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 50,
+      "phone": "5869856855",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 51,
+      "phone": "55367969",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 52,
+      "phone": "6660066",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 53,
+      "phone": "66660066",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 54,
+      "phone": "50817673",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 55,
+      "phone": "54349371",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 56,
+      "phone": "695096967",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 71,
+      "phone": "0195128616",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 58,
+      "phone": "0507404751",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 72,
+      "phone": "0596067161",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 57,
+      "phone": "96427313",
+      "username": null,
+      "solde_total": 2200.0,
+      "solde_depot": 5000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 2200.0
+    },
+    {
+      "id": 59,
+      "phone": "689776310",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 60,
+      "phone": "96248435",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 61,
+      "phone": "72161412",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 62,
+      "phone": "90543507",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 63,
+      "phone": "76602366",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 64,
+      "phone": "90337795",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 65,
+      "phone": "66752692",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 66,
+      "phone": "0708371912",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 67,
+      "phone": "97523069",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 68,
+      "phone": "681929278",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 69,
+      "phone": "691068961",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 73,
+      "phone": "71734608",
+      "username": null,
+      "solde_total": 1000.0,
+      "solde_depot": 1000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 0.0
+    },
+    {
+      "id": 74,
+      "phone": "71339325",
+      "username": null,
+      "solde_total": 6750.0,
+      "solde_depot": 13000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 1000.0
+    },
+    {
+      "id": 70,
+      "phone": "76320057",
+      "username": null,
+      "solde_total": 3400.0,
+      "solde_depot": 9000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 2400.0
+    },
+    {
+      "id": 8,
+      "phone": "90334870",
+      "username": null,
+      "solde_total": 2200.0,
+      "solde_depot": 5000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 5280.0
+    },
+    {
+      "id": 17,
+      "phone": "93886991",
+      "username": null,
+      "solde_total": 3400.0,
+      "solde_depot": 9000.0,
+      "solde_parrainage": 0.0,
+      "solde_revenu": 3400.0
+    }
+  ],
+  "transactions": [],
+  "depots": [
+    {
+      "id": 1,
+      "phone": "71609808",
+      "montant": 4000.0
+    },
+    {
+      "id": 4,
+      "phone": "00000001",
+      "montant": 4000.0
+    },
+    {
+      "id": 3,
+      "phone": "72211538",
+      "montant": 4000.0
+    },
+    {
+      "id": 2,
+      "phone": "72211538",
+      "montant": 4000.0
+    },
+    {
+      "id": 5,
+      "phone": "90334870",
+      "montant": 4000.0
+    },
+    {
+      "id": 11,
+      "phone": "54598249",
+      "montant": 10000.0
+    },
+    {
+      "id": 10,
+      "phone": "54598249",
+      "montant": 100000.0
+    },
+    {
+      "id": 9,
+      "phone": "58421541",
+      "montant": 10000.0
+    },
+    {
+      "id": 7,
+      "phone": "93886991",
+      "montant": 8000.0
+    },
+    {
+      "id": 6,
+      "phone": "0711410241",
+      "montant": 12000.0
+    },
+    {
+      "id": 8,
+      "phone": "622334455",
+      "montant": 4000.0
+    },
+    {
+      "id": 19,
+      "phone": "93886991",
+      "montant": 8000.0
+    },
+    {
+      "id": 18,
+      "phone": "93886991",
+      "montant": 8000.0
+    },
+    {
+      "id": 15,
+      "phone": "87 86 82 03",
+      "montant": 4000.0
+    },
+    {
+      "id": 14,
+      "phone": "87 86 82 03",
+      "montant": 4000.0
+    },
+    {
+      "id": 13,
+      "phone": "677989694",
+      "montant": 12000.0
+    },
+    {
+      "id": 12,
+      "phone": "67772123",
+      "montant": 8000.0
+    },
+    {
+      "id": 17,
+      "phone": "93886991",
+      "montant": 8000.0
+    },
+    {
+      "id": 16,
+      "phone": "87 86 82 03",
+      "montant": 4000.0
+    },
+    {
+      "id": 24,
+      "phone": "96427313",
+      "montant": 4000.0
+    },
+    {
+      "id": 23,
+      "phone": "677989694",
+      "montant": 8000.0
+    },
+    {
+      "id": 22,
+      "phone": "87868203",
+      "montant": 8000.0
+    },
+    {
+      "id": 21,
+      "phone": "0778755378",
+      "montant": 4000.0
+    },
+    {
+      "id": 20,
+      "phone": "55367969",
+      "montant": 100000.0
+    },
+    {
+      "id": 25,
+      "phone": "90543507",
+      "montant": 4000.0
+    },
+    {
+      "id": 26,
+      "phone": "76320057",
+      "montant": 4000.0
+    },
+    {
+      "id": 27,
+      "phone": "76320057",
+      "montant": 4000.0
+    },
+    {
+      "id": 28,
+      "phone": "76320057",
+      "montant": 4000.0
+    },
+    {
+      "id": 29,
+      "phone": "71339325",
+      "montant": 8000.0
+    },
+    {
+      "id": 30,
+      "phone": "71339325",
+      "montant": 4000.0
+    },
+    {
+      "id": 31,
+      "phone": "71339325",
+      "montant": 12000.0
+    },
+    {
+      "id": 32,
+      "phone": "71339325",
+      "montant": 12000.0
+    },
+    {
+      "id": 33,
+      "phone": "71339325",
+      "montant": 6000.0
+    },
+    {
+      "id": 34,
+      "phone": "71339325",
+      "montant": 11111.0
+    },
+    {
+      "id": 35,
+      "phone": "71339325",
+      "montant": 6000.0
+    },
+    {
+      "id": 36,
+      "phone": "71339325",
+      "montant": 6000.0
+    },
+    {
+      "id": 37,
+      "phone": "71339325",
+      "montant": 6000.0
+    },
+    {
+      "id": 40,
+      "phone": "71339325",
+      "montant": 12000.0
+    },
+    {
+      "id": 39,
+      "phone": "71339325",
+      "montant": 12000.0
+    },
+    {
+      "id": 38,
+      "phone": "71339325",
+      "montant": 12000.0
+    },
+    {
+      "id": 41,
+      "phone": "71734608",
+      "montant": 600000.0
+    },
+    {
+      "id": 42,
+      "phone": "71734608",
+      "montant": 600000.0
+    },
+    {
+      "id": 43,
+      "phone": "71339325",
+      "montant": 120000.0
+    }
+  ],
+  "investissements": [
+    {
+      "id": 8,
+      "phone": "71339325",
+      "montant": 6250.0,
+      "revenu_journalier": 62.0
+    },
+    {
+      "id": 1,
+      "phone": "72211538",
+      "montant": 8000.0,
+      "revenu_journalier": 800.0
+    },
+    {
+      "id": 2,
+      "phone": "90334870",
+      "montant": 4000.0,
+      "revenu_journalier": 400.0
+    },
+    {
+      "id": 3,
+      "phone": "54598249",
+      "montant": 8000.0,
+      "revenu_journalier": 800.0
+    },
+    {
+      "id": 4,
+      "phone": "93886991",
+      "montant": 8000.0,
+      "revenu_journalier": 800.0
+    },
+    {
+      "id": 5,
+      "phone": "96427313",
+      "montant": 4000.0,
+      "revenu_journalier": 400.0
+    },
+    {
+      "id": 6,
+      "phone": "76320057",
+      "montant": 4000.0,
+      "revenu_journalier": 400.0
+    },
+    {
+      "id": 7,
+      "phone": "76320057",
+      "montant": 4000.0,
+      "revenu_journalier": 400.0
+    }
+  ],
+  "commissions": [
+    {
+      "id": 1,
+      "parrain_phone": "96200865",
+      "montant": 1080.0
+    },
+    {
+      "id": 2,
+      "parrain_phone": "00000001",
+      "montant": 1080.0
+    },
+    {
+      "id": 3,
+      "parrain_phone": "96200865",
+      "montant": 80.0
+    },
+    {
+      "id": 4,
+      "parrain_phone": "90334870",
+      "montant": 2160.0
+    },
+    {
+      "id": 5,
+      "parrain_phone": "00000001",
+      "montant": 160.0
+    },
+    {
+      "id": 6,
+      "parrain_phone": "96200865",
+      "montant": 80.0
+    },
+    {
+      "id": 7,
+      "parrain_phone": "90334870",
+      "montant": 1080.0
+    },
+    {
+      "id": 8,
+      "parrain_phone": "00000001",
+      "montant": 80.0
+    },
+    {
+      "id": 9,
+      "parrain_phone": "96200865",
+      "montant": 40.0
+    }
+  ],
+  "retraits": [
+    {
+      "id": 1,
+      "phone": "00000001",
+      "montant": 2000.0
+    },
+    {
+      "id": 2,
+      "phone": "54598249",
+      "montant": 1000.0
+    },
+    {
+      "id": 3,
+      "phone": "90334870",
+      "montant": 3400.0
+    },
+    {
+      "id": 4,
+      "phone": "76320057",
+      "montant": 1000.0
+    },
+    {
+      "id": 5,
+      "phone": "76320057",
+      "montant": 1000.0
+    }
+  ],
+  "staking": []
+}

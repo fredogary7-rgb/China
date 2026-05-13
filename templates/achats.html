@@ -260,7 +260,7 @@ body{
       </div>
       <div class="stat-box">
         <div class="stat-value" style="color: var(--success);">
-          {{ investissements|sum(attribute='revenu_journalier') }} XOF
+          ${{ "%.2f"|format(investissements|sum(attribute='revenu_journalier') or 0) }} USD
         </div>
         <div class="stat-label">Profit/jour</div>
       </div>
@@ -268,7 +268,7 @@ body{
 
     <!-- Total Profit Card -->
     <div class="total-profit">
-      <div class="profit-value">+{{ investissements|sum(attribute='revenu_journalier') * 30 }} XOF</div>
+      <div class="profit-value">+${{ "%.2f"|format((investissements|sum(attribute='revenu_journalier') or 0) * 30) }} USD</div>
       <div class="profit-label">Profit mensuel estimé</div>
     </div>
 
@@ -278,12 +278,12 @@ body{
 
       <div class="row">
         <span class="label"><i class="fa-solid fa-vault"></i> Capital</span>
-        <span class="val">{{ inv.montant }} XOF</span>
+        <span class="val">${{ "%.2f"|format(inv.montant|float) }} USD</span>
       </div>
 
       <div class="row">
         <span class="label"><i class="fa-solid fa-chart-line"></i> Profit / jour</span>
-        <span class="val" style="color: var(--success);">+ {{ inv.revenu_journalier }} XOF</span>
+        <span class="val" style="color: var(--success);">+ ${{ "%.2f"|format(inv.revenu_journalier|float) }} USD</span>
       </div>
 
       <div class="row">

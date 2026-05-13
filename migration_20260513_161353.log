@@ -1,0 +1,28 @@
+2026-05-13 16:13:53,120 - INFO - ======================================================================
+2026-05-13 16:13:53,120 - INFO - MIGRATION XOF → USD/EUR
+2026-05-13 16:13:53,121 - INFO - ======================================================================
+2026-05-13 16:13:53,121 - INFO - Mode : RÉEL
+2026-05-13 16:13:53,121 - INFO - Taux : 1 USD = 625 XOF, 1 EUR = 655.957 XOF
+2026-05-13 16:13:53,121 - INFO - ======================================================================
+2026-05-13 16:13:53,607 - INFO - 🔒 CRÉATION DU BACKUP...
+2026-05-13 16:13:56,198 - ERROR - ❌ Erreur backup : (psycopg2.errors.UndefinedTable) relation "users" does not exist
+LINE 4:                 FROM users
+                             ^
+
+[SQL: 
+                SELECT id, phone, username, solde_total, solde_depot, 
+                       solde_parrainage, solde_revenu
+                FROM users
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-13 16:13:56,206 - ERROR - ❌ MIGRATION ÉCHOUÉE : (psycopg2.errors.UndefinedTable) relation "users" does not exist
+LINE 4:                 FROM users
+                             ^
+
+[SQL: 
+                SELECT id, phone, username, solde_total, solde_depot, 
+                       solde_parrainage, solde_revenu
+                FROM users
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-13 16:13:56,206 - ERROR -    Les données n'ont pas été modifiées (transaction rollback)

@@ -448,7 +448,7 @@
                         <div style="font-size: 12px; color: var(--text-muted);">{{ d.fullname }}</div>
                         {% endif %}
                     </td>
-                    <td class="amount">{{ "{:,.0f}".format(d.montant) }} XOF</td>
+                    <td class="amount">${{ "{:,.2f}".format(d.montant|float) }}</td>
                     <td>
                         <div class="payment-method">
                             {% if d.payment_method == 'Stripe' %}
@@ -595,7 +595,7 @@ function viewDetails(id, phone, fullname, amount, ref, date, status, operator, c
     document.getElementById('modalId').textContent = '#' + id;
     document.getElementById('modalPhone').textContent = phone;
     document.getElementById('modalFullname').textContent = fullname || '-';
-    document.getElementById('modalAmount').textContent = amount.toLocaleString('fr-FR') + ' XOF';
+    document.getElementById('modalAmount').textContent = '$' + amount.toFixed(2) + ' USD';
     document.getElementById('modalRef').textContent = ref || '-';
     document.getElementById('modalDate').textContent = date;
     

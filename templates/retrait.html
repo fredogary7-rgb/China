@@ -36,7 +36,6 @@
   --text-muted: #94A3B8;
   
   /* Wallet Cards */
-  --wallet-xof: linear-gradient(135deg, #F7931A, #FFB84D);
   --wallet-usd: linear-gradient(135deg, #10B981, #06D6A0);
   --wallet-eur: linear-gradient(135deg, #3B82F6, #6366F1);
 }
@@ -205,10 +204,6 @@ body::after {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-}
-
-.wallet-card.xof {
-  background: var(--wallet-xof);
 }
 
 .wallet-card.usd {
@@ -974,7 +969,7 @@ body::after {
       <i class="fa-solid fa-wallet"></i>
       Solde total disponible
     </div>
-    <div class="total-balance-value">{{ "{:,.0f}".format(solde_retraitable or 0).replace(",", " ") }} XOF</div>
+    <div class="total-balance-value">${{ "{:,.2f}".format(solde_retraitable or 0) }} USD</div>
     <div class="total-balance-sub">
       <i class="fa-solid fa-arrow-trend-up" style="color: var(--profit-green);"></i>
       Parrainage + Revenus générés
@@ -989,19 +984,11 @@ body::after {
     </div>
     
     <div class="wallet-cards-grid">
-      <!-- XOF Wallet -->
-      <div class="wallet-card xof active" onclick="selectCurrency('XOF', this)">
-        <div class="currency-icon">C</div>
-        <div class="currency-code">XOF</div>
-        <div class="balance">{{ "{:,.0f}".format(solde_retraitable or 0).replace(",", " ") }}</div>
-        <div class="balance-label">FCFA</div>
-      </div>
-      
       <!-- USD Wallet -->
-      <div class="wallet-card usd" onclick="selectCurrency('USD', this)">
+      <div class="wallet-card usd active" onclick="selectCurrency('USD', this)">
         <div class="currency-icon">$</div>
         <div class="currency-code">USD</div>
-        <div class="balance">{{ "%.2f"|format((solde_retraitable or 0) / 625) }}</div>
+        <div class="balance">{{ "%.2f"|format(solde_retraitable or 0) }}</div>
         <div class="balance-label">Dollars</div>
       </div>
       
@@ -1009,7 +996,7 @@ body::after {
       <div class="wallet-card eur" onclick="selectCurrency('EUR', this)">
         <div class="currency-icon">€</div>
         <div class="currency-code">EUR</div>
-        <div class="balance">{{ "%.2f"|format((solde_retraitable or 0) / 655) }}</div>
+        <div class="balance">{{ "%.2f"|format((solde_retraitable or 0) * 0.00147) }}</div>
         <div class="balance-label">Euros</div>
       </div>
     </div>
@@ -1052,8 +1039,7 @@ body::after {
             Devise de retrait
           </div>
           <div class="currency-selector">
-            <button type="button" class="currency-btn active" data-currency="XOF" onclick="setFormCurrency('XOF', this)">XOF</button>
-            <button type="button" class="currency-btn" data-currency="USD" onclick="setFormCurrency('USD', this)">USD</button>
+            <button type="button" class="currency-btn active" data-currency="USD" onclick="setFormCurrency('USD', this)">USD</button>
             <button type="button" class="currency-btn" data-currency="EUR" onclick="setFormCurrency('EUR', this)">EUR</button>
           </div>
         </div>
@@ -1099,17 +1085,17 @@ body::after {
             Montant à retirer
           </div>
           <div class="amount-input-wrapper">
-            <span class="currency-prefix" id="currencyPrefix">XOF</span>
-            <input type="number" name="montant" id="montant" placeholder="0" min="1000" max="{{ solde_retraitable or 0 }}" required>
+            <span class="currency-prefix" id="currencyPrefix">$</span>
+            <input type="number" name="montant" id="montant" placeholder="0.00" min="1.60" max="{{ "%.2f"|format(solde_retraitable or 0) }}" step="0.01" required>
           </div>
           
           <!-- Quick Amounts -->
           <div class="quick-amounts">
-            <div class="quick-amount" onclick="setAmount(5000)">5K</div>
-            <div class="quick-amount" onclick="setAmount(10000)">10K</div>
-            <div class="quick-amount" onclick="setAmount(25000)">25K</div>
-            <div class="quick-amount" onclick="setAmount(50000)">50K</div>
-            <div class="quick-amount" onclick="setAmount({{ solde_retraitable or 0 }})">Max</div>
+            <div class="quick-amount" onclick="setAmount(10)">10</div>
+            <div class="quick-amount" onclick="setAmount(25)">25</div>
+            <div class="quick-amount" onclick="setAmount(50)">50</div>
+            <div class="quick-amount" onclick="setAmount(100)">100</div>
+            <div class="quick-amount" onclick="setAmount({{ "%.2f"|format(solde_retraitable or 0) }})">Max</div>
           </div>
         </div>
 
@@ -1117,15 +1103,15 @@ body::after {
         <div class="fee-breakdown">
           <div class="fee-row">
             <span class="label"><i class="fa-solid fa-tag"></i> Montant demandé</span>
-            <span class="value" id="requestedAmount">0 XOF</span>
+            <span class="value" id="requestedAmount">$0.00 USD</span>
           </div>
           <div class="fee-row">
             <span class="label"><i class="fa-solid fa-percent"></i> Frais de traitement (3%)</span>
-            <span class="value" id="feeAmount" style="color: var(--loss-red);">- 0 XOF</span>
+            <span class="value" id="feeAmount" style="color: var(--loss-red);">- $0.00 USD</span>
           </div>
           <div class="fee-row total">
             <span class="label"><i class="fa-solid fa-check-circle"></i> Net à recevoir</span>
-            <span class="value" id="netAmount" style="color: var(--profit-green);">0 XOF</span>
+            <span class="value" id="netAmount" style="color: var(--profit-green);">$0.00 USD</span>
           </div>
         </div>
 
@@ -1134,8 +1120,8 @@ body::after {
           <div class="info-card">
             <i class="fa-solid fa-circle-info"></i>
             <p>
-              <b>Minimum:</b> 1 000 XOF • 
-              <b>Délai:</b> 24-48h ouvrables • 
+              <b>Minimum:</b> $1.60 USD • 
+              <b>Délai:</b> 24h-48h • 
               Les retraits sont traités du lundi au vendredi.
             </p>
           </div>
@@ -1193,16 +1179,15 @@ body::after {
 <script>
 // Configuration
 const EXCHANGE_RATES = {
-  XOF: 1,
-  USD: 0.0016,
-  EUR: 0.00153
+  USD: 1,
+  EUR: 0.92
 };
 
 const FEE_RATE = 0.03; // 3% frais
-const MIN_AMOUNT = 9375; // 15 USD minimum
-const maxAmount = {{ solde_retraitable or 0 }};
+const MIN_AMOUNT = 1.60; // Minimum in USD
+const maxAmount = {{ "%.2f"|format(solde_retraitable or 0) }};
 
-let currentCurrency = 'XOF';
+let currentCurrency = 'USD';
 let currentMethod = 'mtn';
 
 // Select currency for wallet cards display
@@ -1224,22 +1209,21 @@ function setFormCurrency(currency, element) {
   element.classList.add('active');
   
   // Update currency prefix
-  document.getElementById('currencyPrefix').textContent = currency;
+  const prefix = currency === 'USD' ? '$' : '€';
+  document.getElementById('currencyPrefix').textContent = prefix;
   
   // Update placeholder and min/max based on currency
   const input = document.getElementById('montant');
   if (currency === 'USD') {
     input.placeholder = '0.00';
-    input.min = '1.6';
-    input.max = (maxAmount * EXCHANGE_RATES.USD).toFixed(2);
+    input.min = '1.60';
+    input.max = maxAmount.toFixed(2);
+    input.step = '0.01';
   } else if (currency === 'EUR') {
     input.placeholder = '0.00';
-    input.min = '1.5';
+    input.min = '1.47';
     input.max = (maxAmount * EXCHANGE_RATES.EUR).toFixed(2);
-  } else {
-    input.placeholder = '0';
-    input.min = MIN_AMOUNT;
-    input.max = maxAmount;
+    input.step = '0.01';
   }
   
   updateFeeBreakdown();
@@ -1258,33 +1242,31 @@ function selectMethod(method, element) {
 // Set quick amount
 function setAmount(amount) {
   const input = document.getElementById('montant');
-  if (currentCurrency === 'USD') {
-    input.value = (amount * EXCHANGE_RATES.USD).toFixed(2);
-  } else if (currentCurrency === 'EUR') {
+  if (currentCurrency === 'EUR') {
     input.value = (amount * EXCHANGE_RATES.EUR).toFixed(2);
   } else {
-    input.value = amount;
+    input.value = amount.toFixed(2);
   }
   updateFeeBreakdown();
 }
 
-// Convert amount to XOF for fee calculation
-function getAmountInXOF() {
+// Get amount in USD (base currency)
+function getAmountInUSD() {
   const amount = parseFloat(document.getElementById('montant').value) || 0;
-  if (currentCurrency === 'XOF') return amount;
-  return amount / EXCHANGE_RATES[currentCurrency];
+  if (currentCurrency === 'USD') return amount;
+  return amount / EXCHANGE_RATES.EUR;
 }
 
 // Update fee breakdown in real-time
 function updateFeeBreakdown() {
-  const amountXOF = getAmountInXOF();
-  const fee = Math.round(amountXOF * FEE_RATE);
-  const net = Math.round(amountXOF - fee);
+  const amount = getAmountInUSD();
+  const fee = amount * FEE_RATE;
+  const net = amount - fee;
   
   // Format display based on current currency
-  const displayAmount = formatCurrency(amountXOF, currentCurrency);
-  const displayFee = formatCurrency(fee, 'XOF');
-  const displayNet = formatCurrency(net, 'XOF');
+  const displayAmount = formatCurrency(amount, currentCurrency);
+  const displayFee = formatCurrency(fee, currentCurrency);
+  const displayNet = formatCurrency(net, currentCurrency);
   
   document.getElementById('requestedAmount').textContent = displayAmount;
   document.getElementById('feeAmount').textContent = '- ' + displayFee;
@@ -1292,11 +1274,9 @@ function updateFeeBreakdown() {
   
   // Enable/disable submit button
   const submitBtn = document.getElementById('submitBtn');
-  const minInCurrency = currentCurrency === 'USD' ? 1.6 : currentCurrency === 'EUR' ? 1.5 : MIN_AMOUNT;
-  const maxInCurrency = currentCurrency === 'USD' ? maxAmount * EXCHANGE_RATES.USD : 
-                         currentCurrency === 'EUR' ? maxAmount * EXCHANGE_RATES.EUR : maxAmount;
+  const minInCurrency = currentCurrency === 'USD' ? MIN_AMOUNT : MIN_AMOUNT * EXCHANGE_RATES.EUR;
   
-  if (amountXOF >= minInCurrency && amountXOF <= maxInCurrency && amountXOF > 0) {
+  if (amount >= minInCurrency && amount <= maxAmount && amount > 0) {
     submitBtn.disabled = false;
   } else {
     submitBtn.disabled = true;
@@ -1305,14 +1285,12 @@ function updateFeeBreakdown() {
 
 // Format currency display
 function formatCurrency(amount, currency) {
-  if (currency === 'XOF') {
-    return Math.round(amount).toLocaleString('fr-FR').replace(/\s/g, ' ') + ' XOF';
-  } else if (currency === 'USD') {
-    return '$' + (amount * EXCHANGE_RATES.USD).toFixed(2);
+  if (currency === 'USD') {
+    return '$' + amount.toFixed(2) + ' USD';
   } else if (currency === 'EUR') {
-    return '€' + (amount * EXCHANGE_RATES.EUR).toFixed(2);
+    return '€' + (amount / EXCHANGE_RATES.EUR).toFixed(2) + ' EUR';
   }
-  return amount.toLocaleString('fr-FR') + ' ' + currency;
+  return amount.toFixed(2) + ' ' + currency;
 }
 
 // Toggle theme

@@ -858,10 +858,10 @@ body::after {
       <div class="balance-icon">
         <i class="fa-solid fa-wallet"></i>
       </div>
-      <div class="balance-details">
-        <div class="label">Solde disponible</div>
-        <div class="value" id="userBalance" data-xof="{{ user.solde_total or 0 }}">{{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }} XOF</div>
-      </div>
+        <div class="balance-details">
+          <div class="label">Solde disponible</div>
+          <div class="value" id="userBalance" data-usd="{{ user.solde_total or 0 }}">${{ "{:,.2f}".format(user.solde_total or 0) }}</div>
+        </div>
     </div>
     <a href="/deposit" class="btn-deposit">
       <i class="fa-solid fa-plus"></i> Déposer
@@ -876,8 +876,7 @@ body::after {
     </div>
     
     <div class="currency-toggle">
-      <button data-currency="USD" onclick="setCurrency('USD', this)">USD</button>
-      <button data-currency="XOF" onclick="setCurrency('XOF', this)">XOF</button>
+      <button data-currency="USD" onclick="setCurrency('USD', this)" class="active">USD</button>
       <button data-currency="EUR" onclick="setCurrency('EUR', this)">EUR</button>
     </div>
   </div>
@@ -909,13 +908,13 @@ body::after {
     {% for p in produits %}
     {% set cat_lower = p.nom|lower %}
     {% set category = 'crypto' if 'crypto' in cat_lower or 'btc' in cat_lower or 'bitcoin' in cat_lower else 'forex' if 'forex' in cat_lower or 'currency' in cat_lower else 'gold' if 'gold' in cat_lower or 'or' in cat_lower else 'ai' if 'ai' in cat_lower or 'bot' in cat_lower or 'auto' in cat_lower else 'vip' if 'vip' in cat_lower or 'premium' in cat_lower or 'exclusive' in cat_lower else 'stable' %}
-    {% set prix_xof = (p.prix_usd * 625)|int %}
-    {% set revenu_xof = (p.revenu_journalier_usd * 625)|int %}
-    {% set roi_total = (revenu_xof * 120) / prix_xof * 100 %}
+    {% set prix_usd = p.prix_usd %}
+    {% set revenu_usd = p.revenu_journalier_usd %}
+    {% set roi_total = (revenu_usd * 120) / prix_usd * 100 %}
     {% set risk_level = 'low' if roi_total < 100 else 'medium' if roi_total < 150 else 'high' %}
     {% set risk_dots = 1 if risk_level == 'low' else 2 if risk_level == 'medium' else 3 %}
     
-    <div class="product-card" data-category="{{ category }}" data-name="{{ p.nom|lower }}" data-price-usd="{{ p.prix_usd }}" data-price-xof="{{ prix_xof }}" data-daily-usd="{{ p.revenu_journalier_usd }}" data-daily-xof="{{ revenu_xof }}">
+    <div class="product-card" data-category="{{ category }}" data-name="{{ p.nom|lower }}" data-price-usd="{{ p.prix_usd }}" data-daily-usd="{{ p.revenu_journalier_usd }}">
       <!-- Image Header -->
       <div class="product-image">
         <div class="product-image-bg" style="background-image: url('https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400');"></div>
@@ -954,16 +953,15 @@ body::after {
 
         <div class="product-price">
           <div class="price-label">Investissement minimum</div>
-          <div class="price-value" data-xof="{{ prix_xof }}" data-usd="{{ p.prix_usd }}">
-            {{ "{:,.0f}".format(prix_xof).replace(",", " ") }} <span>XOF</span>
+          <div class="price-value" data-usd="{{ p.prix_usd }}">
+            ${{ "{:,.2f}".format(p.prix_usd) }}
           </div>
-          <div class="price-converted" id="converted-{{ p.id }}"></div>
         </div>
 
         <div class="product-stats">
           <div class="product-stat">
-            <span class="value profit" data-xof="{{ revenu_xof }}" data-usd="{{ p.revenu_journalier_usd }}">
-              +{{ "{:,.0f}".format(revenu_xof).replace(",", " ") }}
+            <span class="value profit" data-usd="{{ p.revenu_journalier_usd }}">
+              +${{ "{:,.2f}".format(p.revenu_journalier_usd) }}
             </span>
             <span class="label">/jour</span>
           </div>
@@ -972,8 +970,8 @@ body::after {
             <span class="label">jours</span>
           </div>
           <div class="product-stat">
-            <span class="value total" data-xof="{{ (revenu_xof * 120)|int }}" data-usd="{{ (p.revenu_journalier_usd * 120)|round(2) }}">
-              +{{ "{:,.0f}".format((revenu_xof * 120)|int).replace(",", " ") }}
+            <span class="value total" data-usd="{{ (p.revenu_journalier_usd * 120)|round(2) }}">
+              +${{ "{:,.2f}".format((p.revenu_journalier_usd * 120)|round(2)) }}
             </span>
             <span class="label">total</span>
           </div>
@@ -1002,7 +1000,7 @@ body::after {
         </div>
 
         <div class="product-actions">
-          <button class="btn-details" onclick="showProductDetails('{{ p.nom }}', {{ prix_xof }}, {{ revenu_xof }}, '{{ category }}', '{{ roi_total }}', {{ p.id }}, '{{ risk_level }}')">
+          <button class="btn-details" onclick="showProductDetails('{{ p.nom }}', {{ p.prix_usd }}, {{ p.revenu_journalier_usd }}, '{{ category }}', '{{ roi_total }}', {{ p.id }}, '{{ risk_level }}')">
             <i class="fa-solid fa-chart-simple"></i> Détails
           </button>
           <a href="/produits_rapide/confirmer/{{ p.id }}" class="btn-invest">
@@ -1095,36 +1093,33 @@ body::after {
 
 {% block extra_js %}
 <script>
-// Taux de conversion
+// Taux de conversion (USD est la devise de base)
 const EXCHANGE_RATES = {
-  XOF: 1,
-  USD: 0.0016,
-  EUR: 0.0015
+  USD: 1,
+  EUR: 0.92
 };
 
 const CURRENCY_SYMBOLS = {
-  XOF: 'XOF',
   USD: '$',
   EUR: '€'
 };
 
 let currentCurrency = 'USD';
 
-// Conversion
-function convertCurrency(amount, from = 'XOF', to = currentCurrency) {
+// Conversion depuis USD vers la devise cible
+function convertCurrency(amount, from = 'USD', to = currentCurrency) {
   if (from === to) return amount;
-  const inXOF = amount / EXCHANGE_RATES[from];
-  return Math.round(inXOF * EXCHANGE_RATES[to] * 100) / 100;
+  // Convert to USD first if needed, then to target currency
+  const inUSD = from === 'USD' ? amount : amount / EXCHANGE_RATES[from];
+  return Math.round(inUSD * EXCHANGE_RATES[to] * 100) / 100;
 }
 
 function formatPrice(amount, currency = currentCurrency) {
-  if (currency === 'XOF') {
-    return amount.toLocaleString('fr-FR').replace(/\s/g, ' ') + ' ' + CURRENCY_SYMBOLS[currency];
+  if (currency === 'USD') {
+    return '$' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
   const converted = convertCurrency(amount);
-  // Format with 2 decimal places for USD/EUR
-  const formatted = converted.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return CURRENCY_SYMBOLS[currency] + formatted;
+  return '€' + converted.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 // Changement de devise
@@ -1135,23 +1130,23 @@ function setCurrency(currency, btn) {
   document.querySelectorAll('.currency-toggle button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   
-  // Update all prices
-  document.querySelectorAll('.price-value').forEach(el => {
-    const xof = parseInt(el.dataset.xof);
-    el.innerHTML = formatPrice(xof) + (currency === 'XOF' ? '' : '');
+  // Update all prices (data-usd contains the base USD amount)
+  document.querySelectorAll('.price-value[data-usd]').forEach(el => {
+    const usd = parseFloat(el.dataset.usd);
+    el.innerHTML = formatPrice(usd);
   });
   
-  document.querySelectorAll('.value[data-xof]').forEach(el => {
-    const xof = parseInt(el.dataset.xof);
-    const converted = formatPrice(xof);
+  document.querySelectorAll('.value[data-usd]').forEach(el => {
+    const usd = parseFloat(el.dataset.usd);
+    const converted = formatPrice(usd);
     el.textContent = converted;
   });
   
-  // Update balance - use data-xof attribute for accurate conversion
+  // Update balance - use data-usd attribute for accurate conversion
   const balanceEl = document.getElementById('userBalance');
-  if (balanceEl && balanceEl.dataset.xof) {
-    const balanceXOF = parseFloat(balanceEl.dataset.xof);
-    balanceEl.textContent = formatPrice(balanceXOF);
+  if (balanceEl && balanceEl.dataset.usd) {
+    const balanceUSD = parseFloat(balanceEl.dataset.usd);
+    balanceEl.textContent = formatPrice(balanceUSD);
   }
   
   localStorage.setItem('preferredCurrency', currency);
@@ -1311,7 +1306,7 @@ document.head.appendChild(style);
 // Charger la devise préférée ou USD par défaut
 document.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('preferredCurrency');
-  if (saved && ['XOF', 'USD', 'EUR'].includes(saved)) {
+  if (saved && ['USD', 'EUR'].includes(saved)) {
     currentCurrency = saved;
   }
   // Set active button based on current currency

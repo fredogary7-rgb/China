@@ -907,7 +907,7 @@
     <!-- Top Bar -->
     <div class="pro-topbar">
       <div class="pro-topbar-left">
-        <h1>Bonjour, {{ user.username or user.phone }} 👋</h1>
+        <h1>Bonjour, {{ user.username or user.phone }} </h1>
         <p>Voici votre aperçu financier en temps réel</p>
       </div>
       <div class="pro-topbar-right">
@@ -931,7 +931,7 @@
         <div class="pro-wallet-label">Solde Total Disponible</div>
         <div class="pro-wallet-balance">
           {{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }}
-          <span class="pro-wallet-currency">XOF</span>
+          <span class="pro-wallet-currency">USD</span>
         </div>
         <div class="pro-wallet-actions">
           <a href="/deposit" class="pro-wallet-btn primary">
@@ -948,18 +948,14 @@
     </div>
 
     <!-- Multi-Wallet Tabs -->
-    <div class="pro-wallet-tabs">
-      <div class="pro-wallet-tab active" onclick="switchWallet('XOF', this)">
-        <span class="tab-currency">🇽🇴🇫 XOF</span>
-        <span class="tab-balance">{{ "{:,.0f}".format(user.solde_total or 0).replace(",", " ") }} FCFA</span>
-      </div>
-      <div class="pro-wallet-tab" onclick="switchWallet('USD', this)">
+      <div class="pro-wallet-tabs">
+      <div class="pro-wallet-tab active" onclick="switchWallet('USD', this)">
         <span class="tab-currency">🇺🇸 USD</span>
-        <span class="tab-balance">${{ "{:,.2f}".format((user.solde_total or 0) * 0.0016) }}</span>
+        <span class="tab-balance">${{ "{:,.2f}".format(user.balance_usd or 0) }}</span>
       </div>
       <div class="pro-wallet-tab" onclick="switchWallet('EUR', this)">
         <span class="tab-currency">🇪🇺 EUR</span>
-        <span class="tab-balance">€{{ "{:,.2f}".format((user.solde_total or 0) * 0.0015) }}</span>
+        <span class="tab-balance">€{{ "{:,.2f}".format(user.balance_eur or 0) }}</span>
       </div>
     </div>
 
@@ -974,8 +970,8 @@
             <i class="fa-solid fa-arrow-trend-up"></i> +12.5%
           </div>
         </div>
-        <div class="pro-stat-value">{{ "{:,.0f}".format(revenu_cumule or 0).replace(",", " ") }}</div>
-        <div class="pro-stat-label">Revenus cumulés (XOF)</div>
+        <div class="pro-stat-value">${{ "{:,.2f}".format(revenu_cumule or 0) }}</div>
+        <div class="pro-stat-label">Revenus cumulés (USD)</div>
       </div>
 
       <div class="pro-stat-card">
@@ -1005,7 +1001,7 @@
           </div>
         </div>
         <div class="pro-stat-value">{{ "{:,.0f}".format(user.commission_total or 0).replace(",", " ") }}</div>
-        <div class="pro-stat-label">Commissions gagnées (XOF)</div>
+        <div class="pro-stat-label">Commissions gagnées (USD)</div>
       </div>
     </div>
 
@@ -1056,8 +1052,8 @@
             <div class="pro-progress-label">{{ inv.progression }}%</div>
           </div>
           <div class="pro-investment-daily">
-            <div class="pro-daily-value">+{{ "{:,.0f}".format(inv.revenu_journalier).replace(",", " ") }}</div>
-            <div class="pro-daily-label">XOF/jour</div>
+            <div class="pro-daily-value">+${{ "{:,.2f}".format(inv.revenu_journalier or 0) }}</div>
+            <div class="pro-daily-label">USD/jour</div>
           </div>
         </div>
         {% endfor %}
@@ -1099,7 +1095,7 @@
               <div class="pro-tx-date">{{ tx.date }}</div>
             </div>
             <div class="pro-tx-amount {{ 'positive' if tx.amount_type == 'plus' else 'negative' }}">
-              {% if tx.amount_type == 'plus' %}+{% endif %}{{ "{:,.0f}".format(tx.montant).replace(",", " ") }} XOF
+              {% if tx.amount_type == 'plus' %}+{% endif %}${{ "{:,.2f}".format(tx.montant or 0) }} USD
             </div>
           </div>
           {% endfor %}
@@ -1141,8 +1137,8 @@
               <div style="font-size: 11px; color: var(--text-muted);">Filleuls</div>
             </div>
             <div style="text-align: center;">
-              <div style="font-size: 24px; font-weight: 900; color: #10B981;">{{ "{:,.0f}".format(user.commission_total or 0).replace(",", " ") }}</div>
-              <div style="font-size: 11px; color: var(--text-muted);">XOF gagnés</div>
+              <div style="font-size: 24px; font-weight: 900; color: #10B981;">${{ "{:,.2f}".format(user.commission_total or 0) }}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">USD gagnés</div>
             </div>
           </div>
         </div>
@@ -1175,8 +1171,8 @@ document.addEventListener('DOMContentLoaded', function() {
     data: {
       labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
       datasets: [{
-        label: 'Gains (XOF)',
-        data: [12000, 19000, 15000, 25000, 22000, 32000, {{ revenu_cumule or 35000 }}],
+        label: 'Gains (USD)',
+        data: [19.20, 30.40, 24.00, 40.00, 35.20, 51.20, {{ (revenu_cumule or 35)|float|round(2) }}],
         borderColor: '#6366F1',
         backgroundColor: gradientFill,
         borderWidth: 3,
@@ -1206,7 +1202,7 @@ document.addEventListener('DOMContentLoaded', function() {
           borderRadius: 12,
           displayColors: false,
           callbacks: {
-            label: (context) => context.parsed.y.toLocaleString('fr-FR') + ' XOF'
+            label: (context) => '$' + context.parsed.y.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
           }
         }
       },
@@ -1234,12 +1230,12 @@ function switchWallet(currency, element) {
   element.classList.add('active');
   
   const balance = {{ user.solde_total or 0 }};
-  const rates = { 'XOF': 1, 'USD': 0.0016, 'EUR': 0.0015 };
-  const symbols = { 'XOF': ' FCFA', 'USD': ' $', 'EUR': ' €' };
+  const rates = { 'USD': 0.0016, 'EUR': 0.0015 };
+  const symbols = { 'USD': ' $', 'EUR': ' €' };
   
   const converted = (balance * rates[currency]).toLocaleString('fr-FR', {
-    minimumFractionDigits: currency === 'XOF' ? 0 : 2,
-    maximumFractionDigits: currency === 'XOF' ? 0 : 2
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   });
   
   const walletHero = document.querySelector('.pro-wallet-balance');

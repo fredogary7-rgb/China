@@ -29,7 +29,7 @@
         <div class="transaction-icon deposit"><i class="fa-solid fa-plus"></i></div>
         <div class="transaction-info"><b>Rechargement Mobile</b><span>{{ d.date.strftime('%d %b %H:%M') if d.date else 'Date inconnue' }}</span></div>
       </div>
-      <div class="transaction-amount plus">+{{ "{:,.0f}".format(d.montant).replace(",", " ") }} XOF</div>
+      <div class="transaction-amount plus">+${{ "{:,.2f}".format(d.montant|float) }}</div>
     </div>
     {% else %}
       <div class="empty-state"><p>Aucun dépôt</p></div>
@@ -42,7 +42,7 @@
         <div class="transaction-icon withdraw"><i class="fa-solid fa-money-bill-transfer"></i></div>
         <div class="transaction-info"><b>Demande de retrait</b><span>{{ r.statut }}</span></div>
       </div>
-      <div class="transaction-amount minus">-{{ "{:,.0f}".format(r.montant).replace(",", " ") }} XOF</div>
+      <div class="transaction-amount minus">-${{ "{:,.2f}".format(r.montant|float) }}</div>
     </div>
     {% else %}
       <div class="empty-state"><p>Aucun retrait</p></div>
@@ -55,7 +55,7 @@
         <div class="transaction-icon invest" style="background: var(--secondary-light); color: var(--secondary);"><i class="fa-solid fa-share-nodes"></i></div>
         <div class="transaction-info"><b>Commission Niveau {{ c.niveau }}</b><span>Bonus réseau</span></div>
       </div>
-      <div class="transaction-amount plus">+{{ "{:,.0f}".format(c.montant).replace(",", " ") }} XOF</div>
+      <div class="transaction-amount plus">+${{ "{:,.2f}".format(c.montant|float) }}</div>
     </div>
     {% else %}
       <div class="empty-state"><p>Aucune commission</p></div>
