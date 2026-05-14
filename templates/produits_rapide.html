@@ -870,11 +870,6 @@ body::after {
 
   <!-- Controls Bar -->
   <div class="controls-bar">
-    <div class="search-box">
-      <i class="fa-solid fa-search"></i>
-      <input type="text" id="searchInput" placeholder="Rechercher un produit..." oninput="searchProducts()">
-    </div>
-    
     <div class="currency-toggle">
       <button data-currency="USD" onclick="setCurrency('USD', this)" class="active">USD</button>
       <button data-currency="EUR" onclick="setCurrency('EUR', this)">EUR</button>
@@ -887,13 +882,13 @@ body::after {
       <i class="fa-solid fa-layer-group"></i> Tous
     </button>
     <button class="filter-btn" onclick="filterCategory('crypto', this)">
-      <i class="fa-brands fa-bitcoin"></i> Crypto
+      <i class="fa-brands fa-bitcoin"></i> Immobilier
     </button>
     <button class="filter-btn" onclick="filterCategory('forex', this)">
-      <i class="fa-solid fa-money-bill-transfer"></i> Forex
+      <i class="fa-solid fa-money-bill-transfer"></i> Materials
     </button>
     <button class="filter-btn" onclick="filterCategory('gold', this)">
-      <i class="fa-solid fa-gem"></i> Gold
+      <i class="fa-solid fa-gem"></i> Metaux Précieux
     </button>
     <button class="filter-btn" onclick="filterCategory('ai', this)">
       <i class="fa-solid fa-brain"></i> AI Trading
@@ -997,6 +992,14 @@ body::after {
           <span class="risk-label" style="margin-left: auto; color: {% if risk_level == 'low' %}var(--profit-green){% elif risk_level == 'medium' %}#FFB84D{% else %}var(--loss-red){% endif %};">
             {{ risk_level|upper }}
           </span>
+        </div>
+
+        <!-- Mini Detail Section -->
+        <div class="product-mini-detail" style="margin-bottom: 16px; padding: 12px 14px; background: rgba(99, 102, 241, 0.05); border-radius: 10px; border: 1px solid rgba(99, 102, 241, 0.1);">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted);">
+            <span><i class="fa-solid fa-circle-info" style="color: var(--primary); margin-right: 4px;"></i> Risque: <strong style="color: {% if risk_level == 'low' %}var(--profit-green){% elif risk_level == 'medium' %}#FFB84D{% else %}var(--loss-red){% endif %};">{{ risk_level|upper }}</strong></span>
+            <span>{{ roi_total|int }}% ROI</span>
+          </div>
         </div>
 
         <div class="product-actions">
@@ -1169,12 +1172,26 @@ function filterCategory(category, btn) {
 
 // Recherche
 function searchProducts() {
-  const query = document.getElementById('searchInput').value.toLowerCase();
+  const searchInput = document.getElementById('searchInput');
+  if (!searchInput) return;
+  
+  const query = searchInput.value.toLowerCase().trim();
+  
+  // Also consider active category filter
+  const activeCategory = document.querySelector('.filter-btn.active');
+  const categoryFilter = activeCategory ? activeCategory.getAttribute('onclick').match(/'([^']+)'/)[1] : 'all';
   
   document.querySelectorAll('.product-card').forEach(card => {
     const name = card.dataset.name || '';
-    if (name.includes(query) || query === '') {
+    const category = card.dataset.category || '';
+    
+    // Check both search query and category filter
+    const matchesSearch = name.includes(query) || query === '';
+    const matchesCategory = categoryFilter === 'all' || category === categoryFilter;
+    
+    if (matchesSearch && matchesCategory) {
       card.style.display = 'block';
+      card.style.animation = 'fadeIn 0.3s ease';
     } else {
       card.style.display = 'none';
     }

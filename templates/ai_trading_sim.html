@@ -1,0 +1,1238 @@
+{% extends "base.html" %}
+
+{% block title %}AI Trading Simulator | TokenFlow{% endblock %}
+
+{% block page_styles %}
+/* AI Trading Simulator - Professional TradingView Style */
+:root {
+  --bg-dark: #0a0e1a;
+  --bg-card: rgba(15, 23, 42, 0.8);
+  --bg-panel: rgba(30, 41, 59, 0.6);
+  --border-color: rgba(148, 163, 184, 0.1);
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --primary: #6366F1;
+  --primary-glow: rgba(99, 102, 241, 0.3);
+  --success: #10B981;
+  --success-glow: rgba(16, 185, 129, 0.3);
+  --danger: #EF4444;
+  --danger-glow: rgba(239, 68, 68, 0.3);
+  --warning: #F59E0B;
+  --warning-glow: rgba(245, 158, 11, 0.3);
+}
+
+/* Light Theme */
+body.light-theme {
+  --bg-dark: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-panel: #f8fafc;
+  --border-color: rgba(148, 163, 184, 0.3);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+}
+
+body.light-theme .bg-grid {
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.06) 1px, transparent 1px);
+}
+
+body.light-theme .trading-header {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+body.light-theme .chart-panel,
+body.light-theme .panel-section {
+  background: #ffffff;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+body.light-theme .position-card,
+body.light-theme .stat-item {
+  background: #f8fafc;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+body.light-theme .disclaimer {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Background Grid */
+.bg-grid {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Header */
+.trading-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 14, 26, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 900;
+  color: white;
+}
+
+.brand-name {
+  font-size: 20px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-badge {
+  padding: 4px 10px;
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.header-center {
+  display: flex;
+  gap: 8px;
+}
+
+.pair-btn {
+  padding: 8px 16px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.pair-btn:hover, .pair-btn.active {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: var(--primary);
+  color: var(--text-primary);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Main Layout */
+.trading-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  grid-template-rows: 1fr auto;
+  gap: 16px;
+  padding: 16px;
+  height: calc(100vh - 73px);
+  position: relative;
+  z-index: 1;
+}
+
+/* Chart Panel */
+.chart-panel {
+  grid-row: 1 / 3;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-title .pair {
+  color: var(--primary);
+}
+
+.chart-title .price {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.chart-title .change {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chart-title .change.up { color: var(--success); }
+.chart-title .change.down { color: var(--danger); }
+
+.chart-toolbar {
+  display: flex;
+  gap: 6px;
+}
+
+.toolbar-btn {
+  padding: 8px 14px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  min-width: 36px;
+  text-decoration: none;
+}
+
+.toolbar-btn:hover, .toolbar-btn.active {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: var(--primary);
+  color: var(--text-primary);
+}
+
+.toolbar-btn i {
+  font-size: 14px;
+}
+
+.chart-container {
+  flex: 1;
+  position: relative;
+  min-height: 400px;
+}
+
+#tradingViewWidget {
+  width: 100%;
+  height: 100%;
+}
+
+/* Right Panel */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.panel-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.panel-body {
+  padding: 16px 18px;
+}
+
+/* AI Status */
+.ai-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 14px;
+  margin: 0 16px 16px;
+}
+
+.ai-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  animation: breathe 3s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 20px var(--primary-glow); }
+  50% { box-shadow: 0 0 40px var(--primary-glow), 0 0 60px var(--primary-glow); }
+}
+
+.ai-info {
+  flex: 1;
+}
+
+.ai-info .label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-info .status {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Current Position */
+.position-card {
+  background: var(--bg-panel);
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid var(--border-color);
+}
+
+.position-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.position-type.buy { color: var(--success); }
+.position-type.sell { color: var(--danger); }
+
+.position-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.position-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.position-stat .label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.position-stat .value {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.position-stat .value.profit { color: var(--success); }
+.position-stat .value.loss { color: var(--danger); }
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-item {
+  background: var(--bg-panel);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.stat-item .value {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.stat-item .label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Activity Feed */
+.activity-feed {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.activity-icon.buy { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+.activity-icon.sell { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+.activity-icon.info { background: rgba(99, 102, 241, 0.2); color: var(--primary); }
+
+.activity-text {
+  flex: 1;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.activity-time {
+  color: var(--text-muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+/* Positions History */
+.positions-list {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.position-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+  align-items: center;
+}
+
+.position-row:last-child {
+  border-bottom: none;
+}
+
+.position-row .type {
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.position-row .type.buy { color: var(--success); }
+.position-row .type.sell { color: var(--danger); }
+
+.position-row .pnl {
+  font-weight: 700;
+  text-align: right;
+}
+
+.position-row .pnl.profit { color: var(--success); }
+.position-row .pnl.loss { color: var(--danger); }
+
+/* Disclaimer */
+.disclaimer {
+  grid-column: 1 / -1;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--warning);
+}
+
+.disclaimer i {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .trading-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    height: auto;
+  }
+  
+  .chart-panel {
+    grid-row: auto;
+    min-height: 400px;
+  }
+  
+  .right-panel {
+    overflow-y: visible;
+  }
+  
+  .trading-header {
+    padding: 12px 16px;
+  }
+  
+  .header-left {
+    gap: 10px;
+  }
+  
+  .brand-name {
+    font-size: 16px;
+  }
+  
+  .header-center {
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  
+  .pair-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  
+  .header-right {
+    gap: 10px;
+  }
+  
+  .toolbar-btn {
+    padding: 8px 10px;
+    height: 34px;
+    min-width: 34px;
+  }
+  
+  .toolbar-btn i {
+    font-size: 13px;
+  }
+}
+
+/* Mobile Breakpoint */
+@media (max-width: 768px) {
+  .trading-header {
+    padding: 10px 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .header-left {
+    gap: 8px;
+    min-width: 0;
+  }
+  
+  .brand-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  
+  .brand-name {
+    font-size: 14px;
+  }
+  
+  .brand-badge {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+  
+  .header-center {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+  
+  .pair-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  
+  .header-right {
+    gap: 8px;
+    margin-left: auto;
+  }
+  
+  .status-indicator {
+    font-size: 11px;
+    gap: 6px;
+  }
+  
+  .status-dot {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .toolbar-btn {
+    padding: 8px 12px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 11px;
+  }
+  
+  .toolbar-btn i {
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .trading-header {
+    padding: 8px 10px;
+  }
+  
+  .brand-name {
+    display: none;
+  }
+  
+  .brand-badge {
+    display: none;
+  }
+  
+  .header-center {
+    gap: 4px;
+  }
+  
+  .pair-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  
+  .header-right {
+    gap: 6px;
+  }
+  
+  .status-indicator span {
+    display: none;
+  }
+  
+  .toolbar-btn {
+    height: 34px;
+    min-width: 34px;
+    padding: 8px 10px;
+  }
+  
+  .toolbar-btn i {
+    font-size: 13px;
+  }
+}
+{% endblock %}
+
+{% block content %}
+<div class="bg-grid"></div>
+
+<!-- Header -->
+<header class="trading-header">
+  <div class="header-left">
+    <div class="brand">
+      <div class="brand-icon">T</div>
+      <span class="brand-name">TokenFlow</span>
+    </div>
+    <span class="brand-badge">AI Simulation</span>
+  </div>
+  
+  <div class="header-center">
+    <button class="pair-btn active" onclick="switchPair('EURUSD')">EUR/USD</button>
+    <button class="pair-btn" onclick="switchPair('GBPUSD')">GBP/USD</button>
+    <button class="pair-btn" onclick="switchPair('USDJPY')">USD/JPY</button>
+    <button class="pair-btn" onclick="switchPair('BTCUSD')">BTC/USD</button>
+  </div>
+  
+  <div class="header-right">
+    <div class="status-indicator">
+      <div class="status-dot"></div>
+      <span>AI Active</span>
+    </div>
+    <button class="toolbar-btn" onclick="toggleTheme()" id="themeToggle" title="Mode Sombre/Clair">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+    <a href="/dashboard" class="toolbar-btn">
+      <i class="fa-solid fa-arrow-left"></i> Retour
+    </a>
+  </div>
+</header>
+
+<!-- Main Layout -->
+<main class="trading-layout">
+  <!-- Chart Panel -->
+  <div class="chart-panel">
+    <div class="chart-header">
+      <div class="chart-title">
+        <span class="pair" id="currentPair">EUR/USD</span>
+        <span class="price" id="currentPrice">1.0847</span>
+        <span class="change up" id="priceChange">+0.12%</span>
+      </div>
+      <div class="chart-toolbar">
+        <button class="toolbar-btn active" onclick="setTimeframe('1m')">1m</button>
+        <button class="toolbar-btn" onclick="setTimeframe('5m')">5m</button>
+        <button class="toolbar-btn" onclick="setTimeframe('15m')">15m</button>
+        <button class="toolbar-btn" onclick="setTimeframe('1h')">1h</button>
+        <button class="toolbar-btn" onclick="setTimeframe('4h')">4h</button>
+      </div>
+    </div>
+    <div class="chart-container">
+      <div id="tradingViewWidget"></div>
+    </div>
+  </div>
+  
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <!-- AI Status -->
+    <div class="ai-status">
+      <div class="ai-icon">
+        <i class="fa-solid fa-brain" style="color: white;"></i>
+      </div>
+      <div class="ai-info">
+        <div class="label">TokenFlow AI v2.4</div>
+        <div class="status" id="aiStatus">Analyse en cours...</div>
+      </div>
+    </div>
+    
+    <!-- Current Position -->
+    <div class="panel-section">
+      <div class="panel-header">
+        <span><i class="fa-solid fa-bullseye" style="margin-right: 6px;"></i>Position Actuelle</span>
+        <span id="positionTimer" style="font-size: 12px; color: var(--text-muted);">--:--</span>
+      </div>
+      <div class="panel-body">
+        <div class="position-card" id="currentPosition">
+          <div class="position-type buy">
+            <i class="fa-solid fa-arrow-up"></i>
+            <span>BUY</span>
+            <span style="margin-left: auto; font-size: 12px; color: var(--text-muted);">EUR/USD</span>
+          </div>
+          <div class="position-details">
+            <div class="position-stat">
+              <span class="label">Entrée</span>
+              <span class="value">1.0842</span>
+            </div>
+            <div class="position-stat">
+              <span class="label">Actuel</span>
+              <span class="value">1.0847</span>
+            </div>
+            <div class="position-stat">
+              <span class="label">P&L</span>
+              <span class="value profit">+$12.50</span>
+            </div>
+            <div class="position-stat">
+              <span class="label">Risque</span>
+              <span class="value" style="color: var(--warning);">Moyen</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="panel-section">
+      <div class="panel-header">
+        <span><i class="fa-solid fa-chart-pie" style="margin-right: 6px;"></i>Statistiques</span>
+      </div>
+      <div class="panel-body">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="value" style="color: var(--success);" id="winRate">72%</div>
+            <div class="label">Taux Réussite</div>
+          </div>
+          <div class="stat-item">
+            <div class="value" id="totalTrades">24</div>
+            <div class="label">Trades Today</div>
+          </div>
+          <div class="stat-item">
+            <div class="value" style="color: var(--success);" id="totalProfit">+$847</div>
+            <div class="label">Profit Simulé</div>
+          </div>
+          <div class="stat-item">
+            <div class="value" id="avgWin">+$35</div>
+            <div class="label">Gain Moyen</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Activity Feed -->
+    <div class="panel-section">
+      <div class="panel-header">
+        <span><i class="fa-solid fa-bolt" style="margin-right: 6px;"></i>Activité IA</span>
+      </div>
+      <div class="panel-body activity-feed" id="activityFeed">
+        <div class="activity-item">
+          <div class="activity-icon buy">
+            <i class="fa-solid fa-arrow-up"></i>
+          </div>
+          <div class="activity-text">Position BUY ouverte sur EUR/USD à 1.0842</div>
+          <div class="activity-time">2m</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-icon info">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <div class="activity-text">Détection tendance haussière confirmée</div>
+          <div class="activity-time">5m</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-icon sell">
+            <i class="fa-solid fa-arrow-down"></i>
+          </div>
+          <div class="activity-text">Position SELL fermée: +$28.40</div>
+          <div class="activity-time">12m</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Positions History -->
+    <div class="panel-section">
+      <div class="panel-header">
+        <span><i class="fa-solid fa-clock-rotate-left" style="margin-right: 6px;"></i>Historique</span>
+      </div>
+      <div class="panel-body positions-list" id="positionsHistory">
+        <div class="position-row">
+          <span class="type buy">BUY</span>
+          <span>EUR/USD</span>
+          <span>1.0820 → 1.0847</span>
+          <span class="pnl profit">+$27.00</span>
+        </div>
+        <div class="position-row">
+          <span class="type sell">SELL</span>
+          <span>GBP/USD</span>
+          <span>1.2680 → 1.2655</span>
+          <span class="pnl profit">+$25.00</span>
+        </div>
+        <div class="position-row">
+          <span class="type buy">BUY</span>
+          <span>USD/JPY</span>
+          <span>151.20 → 150.85</span>
+          <span class="pnl loss">-$35.00</span>
+        </div>
+        <div class="position-row">
+          <span class="type sell">SELL</span>
+          <span>EUR/USD</span>
+          <span>1.0865 → 1.0840</span>
+          <span class="pnl profit">+$25.00</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>Ceci est une simulation AI Trading à but realiste. argent réel investi. Les performances passées ne préjugent pas des performances futures.</span>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+// State
+let currentPair = 'EURUSD';
+let currentPosition = null;
+let activityCount = 0;
+let tradeCount = 24;
+let totalProfit = 847;
+let winCount = 17;
+
+// TradingView Widget
+function initChart(pair) {
+  const symbolMap = {
+    'EURUSD': 'FX:EURUSD',
+    'GBPUSD': 'FX:GBPUSD',
+    'USDJPY': 'FX:USDJPY',
+    'BTCUSD': 'BITSTAMP:BTCUSD'
+  };
+  
+  new TradingView.widget({
+    width: "100%",
+    height: "100%",
+    symbol: symbolMap[pair] || 'FX:EURUSD',
+    interval: "1",
+    timezone: "Europe/Paris",
+    theme: "dark",
+    style: "1",
+    locale: "fr",
+    toolbar_bg: "#0a0e1a",
+    enable_publishing: false,
+    hide_top_toolbar: true,
+    hide_legend: false,
+    save_image: false,
+    container_id: "tradingViewWidget",
+    backgroundColor: "rgba(10, 14, 26, 1)",
+    gridColor: "rgba(148, 163, 184, 0.05)",
+    allow_symbol_change: false,
+    studies: [
+      "RSI@tv-basicstudies",
+      "MACD@tv-basicstudies"
+    ],
+    disabled_features: [
+      "use_localstorage_for_settings",
+      "header_widget",
+      "symbol_search_hot_key"
+    ]
+  });
+}
+
+// Switch Trading Pair
+function switchPair(pair) {
+  currentPair = pair;
+  document.querySelectorAll('.pair-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  const pairNames = {
+    'EURUSD': 'EUR/USD',
+    'GBPUSD': 'GBP/USD',
+    'USDJPY': 'USD/JPY',
+    'BTCUSD': 'BTC/USD'
+  };
+  
+  document.getElementById('currentPair').textContent = pairNames[pair];
+  initChart(pair);
+  simulateNewPosition();
+}
+
+// Set Timeframe
+function setTimeframe(tf) {
+  document.querySelectorAll('.toolbar-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  initChart(currentPair);
+}
+
+// Simulate AI Position
+function simulateNewPosition() {
+  const types = ['buy', 'sell'];
+  const pairs = ['EUR/USD', 'GBP/USD', 'USD/JPY'];
+  const type = types[Math.floor(Math.random() * types.length)];
+  const pair = pairs[Math.floor(Math.random() * pairs.length)];
+  const entry = (1.05 + Math.random() * 0.1).toFixed(4);
+  
+  currentPosition = {
+    type,
+    pair,
+    entry: parseFloat(entry),
+    current: parseFloat(entry),
+    pnl: 0,
+    risk: Math.random() > 0.5 ? 'Élevé' : 'Moyen'
+  };
+  
+  updatePositionDisplay();
+  addActivity(type === 'buy' ? 'buy' : 'sell', `Position ${type.toUpperCase()} ouverte sur ${pair} à ${entry}`);
+}
+
+// Update Position Display
+function updatePositionDisplay() {
+  if (!currentPosition) return;
+  
+  const el = document.getElementById('currentPosition');
+  const typeClass = currentPosition.type;
+  const pnlColor = currentPosition.pnl >= 0 ? 'profit' : 'loss';
+  const pnlSign = currentPosition.pnl >= 0 ? '+' : '';
+  
+  el.innerHTML = `
+    <div class="position-type ${typeClass}">
+      <i class="fa-solid fa-arrow-${typeClass === 'buy' ? 'up' : 'down'}"></i>
+      <span>${typeClass.toUpperCase()}</span>
+      <span style="margin-left: auto; font-size: 12px; color: var(--text-muted);">${currentPosition.pair}</span>
+    </div>
+    <div class="position-details">
+      <div class="position-stat">
+        <span class="label">Entrée</span>
+        <span class="value">${currentPosition.entry.toFixed(4)}</span>
+      </div>
+      <div class="position-stat">
+        <span class="label">Actuel</span>
+        <span class="value">${currentPosition.current.toFixed(4)}</span>
+      </div>
+      <div class="position-stat">
+        <span class="label">P&L</span>
+        <span class="value ${pnlColor}">${pnlSign}$${Math.abs(currentPosition.pnl).toFixed(2)}</span>
+      </div>
+      <div class="position-stat">
+        <span class="label">Risque</span>
+        <span class="value" style="color: var(--warning);">${currentPosition.risk}</span>
+      </div>
+    </div>
+  `;
+}
+
+// Simulate Price Movement
+function simulatePriceMovement() {
+  if (!currentPosition) return;
+  
+  const change = (Math.random() - 0.5) * 0.001;
+  currentPosition.current += change;
+  
+  // Calculate P&L (simplified)
+  const diff = currentPosition.current - currentPosition.entry;
+  const multiplier = currentPosition.type === 'buy' ? 1 : -1;
+  currentPosition.pnl = diff * 10000 * multiplier;
+  
+  // Update price display
+  document.getElementById('currentPrice').textContent = currentPosition.current.toFixed(4);
+  const priceChange = ((change / currentPosition.current) * 100);
+  const changeEl = document.getElementById('priceChange');
+  changeEl.textContent = (priceChange >= 0 ? '+' : '') + priceChange.toFixed(3) + '%';
+  changeEl.className = 'change ' + (priceChange >= 0 ? 'up' : 'down');
+  
+  updatePositionDisplay();
+}
+
+// Add Activity
+function addActivity(type, text) {
+  const feed = document.getElementById('activityFeed');
+  const iconClass = type === 'buy' ? 'buy' : type === 'sell' ? 'sell' : 'info';
+  const icon = type === 'buy' ? '<i class="fa-solid fa-arrow-up"></i>' : 
+               type === 'sell' ? '<i class="fa-solid fa-arrow-down"></i>' :
+               '<i class="fa-solid fa-magnifying-glass"></i>';
+  
+  const item = document.createElement('div');
+  item.className = 'activity-item';
+  item.innerHTML = `
+    <div class="activity-icon ${iconClass}">${icon}</div>
+    <div class="activity-text">${text}</div>
+    <div class="activity-time">now</div>
+  `;
+  
+  feed.insertBefore(item, feed.firstChild);
+  
+  // Keep only last 10 items
+  while (feed.children.length > 10) {
+    feed.removeChild(feed.lastChild);
+  }
+}
+
+// Add Position to History
+function addPositionHistory(pos) {
+  const list = document.getElementById('positionsHistory');
+  const pnlClass = pos.pnl >= 0 ? 'profit' : 'loss';
+  const pnlSign = pos.pnl >= 0 ? '+' : '';
+  
+  const row = document.createElement('div');
+  row.className = 'position-row';
+  row.innerHTML = `
+    <span class="type ${pos.type}">${pos.type.toUpperCase()}</span>
+    <span>${pos.pair}</span>
+    <span>${pos.entry.toFixed(4)} → ${pos.current.toFixed(4)}</span>
+    <span class="pnl ${pnlClass}">${pnlSign}$${Math.abs(pos.pnl).toFixed(2)}</span>
+  `;
+  
+  list.insertBefore(row, list.firstChild);
+  
+  // Keep only last 10
+  while (list.children.length > 10) {
+    list.removeChild(list.lastChild);
+  }
+  
+  // Update stats
+  tradeCount++;
+  if (pos.pnl > 0) winCount++;
+  totalProfit += pos.pnl;
+  
+  document.getElementById('totalTrades').textContent = tradeCount;
+  document.getElementById('winRate').textContent = Math.round((winCount / tradeCount) * 100) + '%';
+  document.getElementById('totalProfit').textContent = (totalProfit >= 0 ? '+' : '') + '$' + Math.round(totalProfit);
+  document.getElementById('totalProfit').style.color = totalProfit >= 0 ? 'var(--success)' : 'var(--danger)';
+}
+
+// AI Analysis Messages
+const aiMessages = [
+  "Analyse des tendances en cours...",
+  "Détection support/résistance...",
+  "Calcul indicateurs techniques...",
+  "Analyse volume et volatilité...",
+  "Évaluation risque/rendement...",
+  "Recherche opportunités...",
+  "Mise à jour modèles IA...",
+  "Analyse corrélation marchés...",
+  "Optimisation paramètres...",
+  "Scan signaux trading..."
+];
+
+function updateAIStatus() {
+  const status = document.getElementById('aiStatus');
+  status.textContent = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+}
+
+// Auto-close and open positions
+function autoTrade() {
+  if (currentPosition) {
+    // 20% chance to close position
+    if (Math.random() < 0.2) {
+      addPositionHistory({...currentPosition});
+      addActivity('info', `Position fermée: ${currentPosition.pnl >= 0 ? '+' : ''}$${Math.abs(currentPosition.pnl).toFixed(2)}`);
+      
+      // Open new position after delay
+      setTimeout(() => {
+        simulateNewPosition();
+      }, 2000);
+    }
+  }
+}
+
+// Theme Toggle
+function toggleTheme() {
+  const body = document.body;
+  const icon = document.querySelector('#themeToggle i');
+  
+  body.classList.toggle('light-theme');
+  
+  const isLight = body.classList.contains('light-theme');
+  
+  if (isLight) {
+    icon.className = 'fa-solid fa-sun';
+    localStorage.setItem('tradingTheme', 'light');
+  } else {
+    icon.className = 'fa-solid fa-moon';
+    localStorage.setItem('tradingTheme', 'dark');
+  }
+}
+
+// Load saved theme preference
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('tradingTheme') || 'dark';
+  const icon = document.querySelector('#themeToggle i');
+  
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+    icon.className = 'fa-solid fa-sun';
+  }
+  
+  initChart('EURUSD');
+  
+  // Price updates every 500ms
+  setInterval(simulatePriceMovement, 500);
+  
+  // AI status updates every 3s
+  setInterval(updateAIStatus, 3000);
+  
+  // Auto trade every 8s
+  setInterval(autoTrade, 8000);
+  
+  // Random activity
+  setInterval(() => {
+    if (Math.random() < 0.3) {
+      const messages = [
+        "Signal détecté sur EUR/USD",
+        "Mise à jour analyse technique",
+        "Nouveau niveau de résistance identifié",
+        "Volume en augmentation",
+        "Volatilité en hausse"
+      ];
+      addActivity('info', messages[Math.floor(Math.random() * messages.length)]);
+    }
+  }, 5000);
+});
+</script>
+{% endblock %}

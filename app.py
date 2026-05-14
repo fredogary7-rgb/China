@@ -1880,36 +1880,49 @@ def nous_page():
 def ai_chat_page():
     return render_template("ai_chat.html")
 
+@app.route("/ai-trading")
+@login_required
+def ai_trading_sim_page():
+    """AI Trading Simulation - Paper trading demonstration"""
+    return render_template("ai_trading_sim.html")
+
 # Taux de change (1 USD = ...)
 USD_TO_XOF = 625
 USD_TO_EUR = 0.92
 
 PRODUITS_VIP = [
-    # Crypto Trading (prix en USD) - ROI: 0.8% à 1.2% par jour
-    {"id": 1, "nom": "Bitcoin Trader Pro", "prix_usd": 50, "revenu_journalier_usd": 0.50, "image": "crypto.jpg"},
-    {"id": 2, "nom": "Crypto Portfolio Elite", "prix_usd": 100, "revenu_journalier_usd": 1.00, "image": "crypto.jpg"},
-    {"id": 3, "nom": "BTC Mining Fund", "prix_usd": 200, "revenu_journalier_usd": 2.20, "image": "crypto.jpg"},
+    # AI Trading (prix en USD) - ROI: ~1% par jour - Minimum $25
+    {"id": 1, "nom": "AI Basic Trader", "prix_usd": 25, "revenu_journalier_usd": 0.25, "image": "ai.jpg"},
+    {"id": 2, "nom": "AI Pro Assistant", "prix_usd": 50, "revenu_journalier_usd": 0.55, "image": "ai.jpg"},
+    {"id": 3, "nom": "AI Trading Bot Alpha", "prix_usd": 100, "revenu_journalier_usd": 1.10, "image": "ai.jpg"},
+    {"id": 4, "nom": "AutoTrader Quantum", "prix_usd": 200, "revenu_journalier_usd": 2.40, "image": "ai.jpg"},
+    {"id": 5, "nom": "AI Elite System", "prix_usd": 500, "revenu_journalier_usd": 6.50, "image": "ai.jpg"},
+    {"id": 6, "nom": "AI Master Platform", "prix_usd": 1000, "revenu_journalier_usd": 14.00, "image": "ai.jpg"},
     
-    # Forex Trading (prix en USD) - ROI: 0.6% à 1% par jour
-    {"id": 4, "nom": "Forex Master Fund", "prix_usd": 60, "revenu_journalier_usd": 0.48, "image": "forex.jpg"},
-    {"id": 5, "nom": "Currency Trader Pro", "prix_usd": 150, "revenu_journalier_usd": 1.35, "image": "forex.jpg"},
+    # Crypto Trading (prix en USD) - ROI: ~1% à 1.2% par jour
+    {"id": 7, "nom": "Bitcoin Trader Pro", "prix_usd": 100, "revenu_journalier_usd": 1.10, "image": "crypto.jpg"},
+    {"id": 8, "nom": "Crypto Portfolio Elite", "prix_usd": 200, "revenu_journalier_usd": 2.40, "image": "crypto.jpg"},
+    {"id": 9, "nom": "BTC Mining Fund", "prix_usd": 500, "revenu_journalier_usd": 6.25, "image": "crypto.jpg"},
+    {"id": 10, "nom": "Crypto Premium Fund", "prix_usd": 1000, "revenu_journalier_usd": 13.50, "image": "crypto.jpg"},
+    {"id": 11, "nom": "Bitcoin Elite Trust", "prix_usd": 2500, "revenu_journalier_usd": 35.00, "image": "crypto.jpg"},
     
-    # Gold Investment (prix en USD) - ROI: 0.4% à 0.7% par jour (sûr)
-    {"id": 6, "nom": "Gold Reserve Fund", "prix_usd": 200, "revenu_journalier_usd": 1.20, "image": "gold.jpg"},
-    {"id": 7, "nom": "Gold Bullion Premium", "prix_usd": 400, "revenu_journalier_usd": 2.80, "image": "gold.jpg"},
+    # Forex Trading (prix en USD) - ROI: ~0.8% à 1% par jour
+    {"id": 12, "nom": "Forex Master Fund", "prix_usd": 100, "revenu_journalier_usd": 0.90, "image": "forex.jpg"},
+    {"id": 13, "nom": "Currency Trader Pro", "prix_usd": 200, "revenu_journalier_usd": 1.90, "image": "forex.jpg"},
+    {"id": 14, "nom": "Forex Elite Platform", "prix_usd": 500, "revenu_journalier_usd": 5.25, "image": "forex.jpg"},
+    {"id": 15, "nom": "Global Forex Trust", "prix_usd": 1000, "revenu_journalier_usd": 11.00, "image": "forex.jpg"},
     
-    # AI Trading (prix en USD) - ROI: 0.9% à 1.1% par jour
-    {"id": 8, "nom": "AI Starter Bot", "prix_usd": 10, "revenu_journalier_usd": 0.10, "image": "ai.jpg"},
-    {"id": 9, "nom": "AI Trading Bot Alpha", "prix_usd": 80, "revenu_journalier_usd": 0.72, "image": "ai.jpg"},
-    {"id": 13, "nom": "AI Basic Trader", "prix_usd": 25, "revenu_journalier_usd": 0.24, "image": "ai.jpg"},
-    {"id": 14, "nom": "AI Pro Assistant", "prix_usd": 50, "revenu_journalier_usd": 0.48, "image": "ai.jpg"},
-    {"id": 15, "nom": "AutoTrader Quantum", "prix_usd": 300, "revenu_journalier_usd": 3.30, "image": "ai.jpg"},
-    {"id": 16, "nom": "AI Elite System", "prix_usd": 500, "revenu_journalier_usd": 5.75, "image": "ai.jpg"},
+    # Gold Investment (prix en USD) - ROI: ~0.6% à 0.8% par jour (sûr)
+    {"id": 16, "nom": "Gold Reserve Fund", "prix_usd": 200, "revenu_journalier_usd": 1.40, "image": "gold.jpg"},
+    {"id": 17, "nom": "Gold Bullion Premium", "prix_usd": 500, "revenu_journalier_usd": 3.75, "image": "gold.jpg"},
+    {"id": 18, "nom": "Gold Elite Reserve", "prix_usd": 1000, "revenu_journalier_usd": 8.00, "image": "gold.jpg"},
+    {"id": 19, "nom": "Gold Platinum Vault", "prix_usd": 5000, "revenu_journalier_usd": 42.50, "image": "gold.jpg"},
     
-    # VIP Premium (prix en USD) - ROI: 1% à 1.5% par jour (le plus élevé)
-    {"id": 10, "nom": "VIP Diamond Club", "prix_usd": 400, "revenu_journalier_usd": 4.80, "image": "vip.jpg"},
-    {"id": 11, "nom": "VIP Platinum Elite", "prix_usd": 800, "revenu_journalier_usd": 10.40, "image": "vip.jpg"},
-    {"id": 12, "nom": "VIP Exclusive Fund", "prix_usd": 2000, "revenu_journalier_usd": 28.00, "image": "vip.jpg"},
+    # VIP Premium (prix en USD) - ROI: 1.2% à 1.5% par jour (le plus élevé)
+    {"id": 20, "nom": "VIP Diamond Club", "prix_usd": 1000, "revenu_journalier_usd": 13.00, "image": "vip.jpg"},
+    {"id": 21, "nom": "VIP Platinum Elite", "prix_usd": 2500, "revenu_journalier_usd": 35.00, "image": "vip.jpg"},
+    {"id": 22, "nom": "VIP Exclusive Fund", "prix_usd": 5000, "revenu_journalier_usd": 72.50, "image": "vip.jpg"},
+    {"id": 23, "nom": "VIP Ultimate Trust", "prix_usd": 10000, "revenu_journalier_usd": 150.00, "image": "vip.jpg"},
 ]
 
 def convertir_prix_en_usd(produit):
