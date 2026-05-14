@@ -784,14 +784,14 @@ def generate_otp():
 
 def send_otp_email(user_email, otp_code, purpose="connexion"):
     """Envoie un email avec le code OTP."""
-    smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+    smtp_server = os.getenv('SMTP_SERVER', 'smtp.zoho.com')
     smtp_port = int(os.getenv('SMTP_PORT', 587))
-    smtp_user = os.getenv('SMTP_USER', 'prestocashfinance0@gmail.com')
-    smtp_password = os.getenv('SMTP_PASSWORD', 'nrqe igme hdib hoji')
+    smtp_user = os.getenv('SMTP_USER', 'support@flowtoken.uk')
+    smtp_password = os.getenv('SMTP_PASSWORD', 'qWnPTC0ida0q')
     
     msg = MIMEMultipart('alternative')
     msg['Subject'] = f'Code de vérification TokenFlow - {purpose.capitalize()}'
-    msg['From'] = smtp_user
+    msg['From'] = 'TOKEN Flow <support@flowtoken.uk>'
     msg['To'] = user_email
     
     html_content = f'''
@@ -847,16 +847,16 @@ def send_otp_email(user_email, otp_code, purpose="connexion"):
 def send_verification_email(user_email, verification_token):
     """Envoie un email de vérification."""
     # Configuration SMTP (à adapter selon votre fournisseur)
-    smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+    smtp_server = os.getenv('SMTP_SERVER', 'smtp.zoho.com')
     smtp_port = int(os.getenv('SMTP_PORT', 587))
-    smtp_user = os.getenv('SMTP_USER', 'prestocashfinance0@gmail.com')
-    smtp_password = os.getenv('SMTP_PASSWORD', 'nrqe igme hdib hoji')  # App password Google
+    smtp_user = os.getenv('SMTP_USER', 'support@flowtoken.uk')
+    smtp_password = os.getenv('SMTP_PASSWORD', 'qWnPTC0ida0q')  # Zoho password
     
     verification_url = url_for('verify_email_page', token=verification_token, _external=True)
     
     msg = MIMEMultipart('alternative')
     msg['Subject'] = 'Vérifiez votre email - TokenFlow'
-    msg['From'] = smtp_user
+    msg['From'] = 'TOKEN Flow <support@flowtoken.uk>'
     msg['To'] = user_email
     
     html_content = f'''

@@ -3,6 +3,56 @@
 {% block title %}TokenFlow - Investissement & Trading Premium{% endblock %}
 
 {% block page_styles %}
+/* Dark mode using data-theme attribute (compatible with fintech.js) */
+html[data-theme="dark"] {
+  --bg-page: #0F172A;
+  --bg-card: rgba(30, 41, 59, 0.85);
+  --bg-card-hover: rgba(51, 65, 85, 0.95);
+  --bg-glass: rgba(51, 65, 85, 0.65);
+  --border-glow: rgba(99, 102, 241, 0.3);
+  --border-card: rgba(71, 85, 105, 0.3);
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+}
+
+html[data-theme="dark"] .hero-section,
+html[data-theme="dark"] .stat-item,
+html[data-theme="dark"] .feature-card,
+html[data-theme="dark"] .cta-section,
+html[data-theme="dark"] .footer {
+  background: var(--bg-card);
+}
+
+html[data-theme="dark"] .floating-card {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(71, 85, 105, 0.4);
+}
+
+html[data-theme="dark"] .ai-chat-window {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(71, 85, 105, 0.3);
+}
+
+html[data-theme="dark"] .message-content {
+  background: rgba(51, 65, 85, 0.8);
+}
+
+html[data-theme="dark"] .quick-replies button {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+html[data-theme="dark"] .chat-input-area input {
+  background: rgba(51, 65, 85, 0.5);
+  border-color: rgba(71, 85, 105, 0.4);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .float-img {
+  border-color: rgba(71, 85, 105, 0.5);
+}
+
 /* ============================================
    PAGE D'ACCUEIL PREMIUM
    Style: Binance, Bybit, Revolut
@@ -527,6 +577,10 @@ body::after {
           <i class="fa-solid fa-rocket"></i>
           Commencer maintenant
         </a>
+        <a href="/connexion" class="btn-secondary">
+          <i class="fa-solid fa-sign-in-alt"></i>
+          Se connecter
+        </a>
         <a href="/produits_rapide" class="btn-secondary">
           <i class="fa-solid fa-chart-line"></i>
           Voir les produits
@@ -643,7 +697,7 @@ body::after {
     <p>Rejoignez TokenFlow aujourd'hui et commencez à générer des revenus passifs</p>
     <a href="/inscription" class="btn-primary" style="font-size: 18px; padding: 20px 48px;">
       <i class="fa-solid fa-user-plus"></i>
-      Créer un compte gratuit
+      Créer un compte
     </a>
   </section>
 
@@ -1396,22 +1450,41 @@ body.dark-mode .float-img {
 <script>
 // ============================================
 // THEME TOGGLE (Dark/Light Mode)
+// Uses global TokenFlow.toggleDarkMode() from fintech.js
 // ============================================
 function toggleTheme() {
-  document.body.classList.toggle('dark-mode');
-  const isDark = document.body.classList.contains('dark-mode');
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  
-  const icon = document.getElementById('themeIcon');
-  icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  // Use the global TokenFlow function if available
+  if (typeof window.toggleDarkMode === 'function') {
+    window.toggleDarkMode();
+    
+    // Update the icon after toggle
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const icon = document.getElementById('themeIcon');
+    if (icon) {
+      icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    }
+  } else {
+    // Fallback: toggle dark mode manually
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    
+    const icon = document.getElementById('themeIcon');
+    if (icon) {
+      icon.className = isDark ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+    }
+  }
 }
 
-// Load saved theme
+// Load saved theme on page load
 document.addEventListener('DOMContentLoaded', () => {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-mode');
-    document.getElementById('themeIcon').className = 'fa-solid fa-sun';
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  const icon = document.getElementById('themeIcon');
+  if (icon) {
+    icon.className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
   }
 });
 
