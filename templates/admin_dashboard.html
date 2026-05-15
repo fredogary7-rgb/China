@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | TokenFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-light: rgba(99, 102, 241, 0.1);
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --bg: #F1F5F9;
+            --white: #FFFFFF;
+            --text: #0F172A;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { background: var(--bg); color: var(--text); min-height: 100vh; }
+        
+        .admin-header {
+            background: var(--white);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .admin-header h1 {
+            font-size: 20px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-header h1 i { color: var(--primary); }
+        
+        .admin-nav {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 16px 24px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .admin-nav a {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--bg);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            padding: 20px 24px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+        
+        .stat-card.blue::before { background: var(--primary); }
+        .stat-card.green::before { background: var(--success); }
+        .stat-card.orange::before { background: var(--warning); }
+        .stat-card.red::before { background: var(--danger); }
+        .stat-card.purple::before { background: #8B5CF6; }
+        .stat-card.pink::before { background: #EC4899; }
+        
+        .stat-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .stat-card.blue .icon { background: var(--primary-light); color: var(--primary); }
+        .stat-card.green .icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .stat-card.orange .icon { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .stat-card.red .icon { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .stat-card.purple .icon { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+        .stat-card.pink .icon { background: rgba(236, 72, 153, 0.1); color: #EC4899; }
+        
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--text);
+        }
+        
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .stat-card .sublabel {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .content { padding: 0 24px 40px; }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 24px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i { color: var(--primary); }
+        
+        .data-table {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: #F8FAFC;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            vertical-align: middle;
+        }
+        
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background: #F8FAFC; }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-badge.validated, .status-badge.validé {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .status-badge.rejected, .status-badge.refusé {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .status-badge.en_attente {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .status-badge.inactive {
+            background: rgba(100, 116, 139, 0.1);
+            color: var(--text-muted);
+        }
+        
+        .status-badge.banned {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .action-btn.validate {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .action-btn.validate:hover {
+            background: var(--success);
+            color: white;
+        }
+        
+        .action-btn.reject {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .action-btn.reject:hover {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .action-btn.view {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .action-btn.view:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .action-btn.ban {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .amount {
+            font-weight: 700;
+            color: var(--text);
+        }
+        
+        .date {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .search-filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .search-filter-bar input, .search-filter-bar select {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            background: var(--white);
+        }
+        
+        .search-filter-bar input {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .search-filter-bar input:focus, .search-filter-bar select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            margin-right: 8px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        .user-email {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge.admin {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8B5CF6;
+        }
+        
+        .badge.verified {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--white);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .pagination button:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .pagination button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--white);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+        
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 800;
+        }
+        
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--bg);
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .detail-row:last-child { border-bottom: none; }
+        
+        .detail-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        
+        .detail-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .referral-tree {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .referral-level {
+            margin-bottom: 16px;
+        }
+        
+        .referral-level-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .referral-level-count {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        
+        .referral-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .referral-item {
+            padding: 6px 12px;
+            background: var(--bg);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .quick-action-btn {
+            background: var(--white);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .quick-action-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+        
+        .quick-action-btn i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+        
+        .quick-action-btn span {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-header { padding: 12px 16px; }
+            .admin-nav { padding: 12px 16px; }
+            .stats-grid { padding: 16px; grid-template-columns: repeat(2, 1fr); }
+            .content { padding: 0 16px 24px; }
+            .data-table { overflow-x: auto; }
+            .data-table table { min-width: 700px; }
+            .search-filter-bar { flex-direction: column; }
+            .search-filter-bar input, .search-filter-bar select { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-header">
+    <h1><i class="fa-solid fa-shield-halved"></i> Admin Dashboard</h1>
+    <a href="/dashboard" class="action-btn view"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+</div>
+
+<div class="admin-nav">
+    <a href="#overview" class="active" onclick="showSection('overview')"><i class="fa-solid fa-chart-pie"></i> Vue d'ensemble</a>
+    <a href="#users" onclick="showSection('users')"><i class="fa-solid fa-users"></i> Utilisateurs</a>
+    <a href="#deposits" onclick="showSection('deposits')"><i class="fa-solid fa-wallet"></i> Dépôts</a>
+    <a href="#withdrawals" onclick="showSection('withdrawals')"><i class="fa-solid fa-money-bill-transfer"></i> Retraits</a>
+    <a href="#referrals" onclick="showSection('referrals')"><i class="fa-solid fa-sitemap"></i> Parrainages</a>
+</div>
+
+<!-- Overview Section -->
+<div class="stats-grid" id="overview-section">
+    <div class="stat-card blue">
+        <div class="icon"><i class="fa-solid fa-users"></i></div>
+        <div class="value">{{ stats.total_users }}</div>
+        <div class="label">Total Utilisateurs</div>
+        <div class="sublabel">
+            <span style="color: var(--success);">●</span> Actifs: {{ stats.active_users }}
+        </div>
+    </div>
+    
+    <div class="stat-card green">
+        <div class="icon"><i class="fa-solid fa-wallet"></i></div>
+        <div class="value">${{ "%.2f"|format(stats.total_deposits) }}</div>
+        <div class="label">Total Dépôts</div>
+        <div class="sublabel">
+            <span style="color: var(--warning);">●</span> En attente: ${{ "%.2f"|format(stats.pending_deposits) }}
+        </div>
+    </div>
+    
+    <div class="stat-card orange">
+        <div class="icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+        <div class="value">${{ "%.2f"|format(stats.total_withdrawals) }}</div>
+        <div class="label">Total Retraits</div>
+        <div class="sublabel">
+            <span style="color: var(--warning);">●</span> En attente: ${{ "%.2f"|format(stats.pending_withdrawals) }}
+        </div>
+    </div>
+    
+    <div class="stat-card purple">
+        <div class="icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+        <div class="value">${{ "%.2f"|format(stats.total_referral_withdrawals) }}</div>
+        <div class="label">Total Retraits Parrainage</div>
+        <div class="sublabel">Commission totale: ${{ "%.2f"|format(stats.total_commissions) }}</div>
+    </div>
+    
+    <div class="stat-card pink">
+        <div class="icon"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="value">${{ "%.2f"|format(stats.total_invested) }}</div>
+        <div class="label">Total Investi</div>
+        <div class="sublabel">{{ stats.active_investments }} investissements actifs</div>
+    </div>
+    
+    <div class="stat-card red">
+        <div class="icon"><i class="fa-solid fa-user-xmark"></i></div>
+        <div class="value">{{ stats.banned_users }}</div>
+        <div class="label">Utilisateurs Bannis</div>
+        <div class="sublabel">{{ stats.verified_users }} vérifiés</div>
+    </div>
+</div>
+
+<div class="content">
+    <!-- Users Section -->
+    <div id="users-section" style="display: none;">
+        <h3 class="section-title"><i class="fa-solid fa-users"></i> Liste des Utilisateurs</h3>
+        
+        <div class="search-filter-bar">
+            <input type="text" id="userSearch" placeholder="🔍 Rechercher par nom, email, téléphone...">
+            <select id="userStatusFilter">
+                <option value="">Tous les statuts</option>
+                <option value="active">Actifs</option>
+                <option value="banned">Bannis</option>
+                <option value="admin">Admins</option>
+            </select>
+        </div>
+        
+        <div class="data-table">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>Téléphone</th>
+                        <th>Solde Total</th>
+                        <th>Solde Parrainage</th>
+                        <th>Code Parrain</th>
+                        <th>Inscrit le</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr data-status="{{ 'banned' if user.is_banned else ('admin' if user.is_admin else 'active') }}">
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar">{{ user.username[0]|upper if user.username else user.phone[0] }}</div>
+                                <div class="user-details">
+                                    <span class="user-name">{{ user.username or 'N/A' }}</span>
+                                    <span class="user-email">{{ user.email or '' }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ user.phone }}</td>
+                        <td class="amount">${{ "%.2f"|format(user.solde_total or 0) }}</td>
+                        <td class="amount">${{ "%.2f"|format(user.solde_parrainage or 0) }}</td>
+                        <td><code>{{ user.referral_code or '-' }}</code></td>
+                        <td class="date">{{ user.date_creation.strftime("%d/%m/%Y") }}</td>
+                        <td>
+                            <span class="status-badge {{ 'banned' if user.is_banned else ('active' if not user.is_banned else 'inactive') }}">
+                                {% if user.is_banned %}
+                                    <i class="fa-solid fa-ban"></i> Banni
+                                {% elif user.is_admin %}
+                                    <i class="fa-solid fa-shield"></i> Admin
+                                {% else %}
+                                    <i class="fa-solid fa-check"></i> Actif
+                                {% endif %}
+                            </span>
+                            {% if user.email_verified %}
+                                <span class="badge verified"><i class="fa-solid fa-check-circle"></i></span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="/admin/user/{{ user.id }}/view" class="action-btn view" title="Voir détails">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            {% if not user.is_admin %}
+                            <a href="/admin/user/{{ user.id }}/toggle-ban" class="action-btn ban" title="{{ 'Débannir' if user.is_banned else 'Bannir' }}" onclick="return confirm('Confirmer cette action ?');">
+                                <i class="fa-solid fa-{{ 'unlock' if user.is_banned else 'ban' }}"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Deposits Section -->
+    <div id="deposits-section" style="display: none;">
+        <h3 class="section-title"><i class="fa-solid fa-wallet"></i> Liste des Dépôts</h3>
+        
+        <div class="search-filter-bar">
+            <input type="text" id="depositSearch" placeholder="🔍 Rechercher par téléphone, référence...">
+            <select id="depositStatusFilter">
+                <option value="">Tous les statuts</option>
+                <option value="pending">En attente</option>
+                <option value="valide">Validés</option>
+                <option value="rejete">Rejetés</option>
+            </select>
+        </div>
+        
+        <div class="data-table">
+            <table id="depositsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Utilisateur</th>
+                        <th>Montant</th>
+                        <th>Méthode</th>
+                        <th>Référence</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for deposit in deposits %}
+                    <tr data-status="{{ deposit.statut }}">
+                        <td>#{{ deposit.id }}</td>
+                        <td>{{ deposit.phone }}</td>
+                        <td class="amount">${{ "%.2f"|format(deposit.montant) }}</td>
+                        <td>
+                            {% if deposit.payment_method == 'Stripe' %}
+                                <i class="fa-solid fa-credit-card" style="color: #8B5CF6;"></i> Carte
+                            {% else %}
+                                <i class="fa-solid fa-mobile-screen" style="color: var(--primary);"></i> {{ deposit.operator or 'Mobile' }}
+                            {% endif %}
+                        </td>
+                        <td style="font-size: 12px; color: var(--text-muted);">{{ deposit.reference or '-' }}</td>
+                        <td class="date">{{ deposit.date.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td>
+                            <span class="status-badge {{ deposit.statut }}">
+                                {% if deposit.statut == "valide" %}
+                                    <i class="fa-solid fa-check-circle"></i> Validé
+                                {% elif deposit.statut == "rejete" %}
+                                    <i class="fa-solid fa-xmark-circle"></i> Rejeté
+                                {% else %}
+                                    <i class="fa-solid fa-clock"></i> En attente
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            {% if deposit.statut == "pending" %}
+                                <a href="/admin/deposits/valider/{{ deposit.id }}" class="action-btn validate" title="Valider">
+                                    <i class="fa-solid fa-check"></i>
+                                </a>
+                                <a href="/admin/deposits/rejeter/{{ deposit.id }}" class="action-btn reject" title="Rejeter" onclick="return confirm('Confirmer le rejet ?');">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="text-align: center; margin-top: 16px;">
+            <a href="/admin/deposits" class="action-btn view">Voir tous les dépôts <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <!-- Withdrawals Section -->
+    <div id="withdrawals-section" style="display: none;">
+        <h3 class="section-title"><i class="fa-solid fa-money-bill-transfer"></i> Liste des Retraits</h3>
+        
+        <div class="search-filter-bar">
+            <input type="text" id="withdrawalSearch" placeholder="🔍 Rechercher par téléphone...">
+            <select id="withdrawalStatusFilter">
+                <option value="">Tous les statuts</option>
+                <option value="en_attente">En attente</option>
+                <option value="validé">Validés</option>
+                <option value="refusé">Refusés</option>
+            </select>
+        </div>
+        
+        <div class="data-table">
+            <table id="withdrawalsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Utilisateur</th>
+                        <th>Montant</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for retrait in withdrawals %}
+                    <tr data-status="{{ retrait.statut }}">
+                        <td>#{{ retrait.id }}</td>
+                        <td>{{ retrait.phone }}</td>
+                        <td class="amount">${{ "%.2f"|format(retrait.montant) }}</td>
+                        <td class="date">{{ retrait.date.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td>
+                            <span class="status-badge {{ retrait.statut }}">
+                                {% if retrait.statut == "validé" %}
+                                    <i class="fa-solid fa-check-circle"></i> Validé
+                                {% elif retrait.statut == "refusé" %}
+                                    <i class="fa-solid fa-xmark-circle"></i> Refusé
+                                {% else %}
+                                    <i class="fa-solid fa-clock"></i> En attente
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            {% if retrait.statut == "en_attente" %}
+                                <a href="/admin/retraits/valider/{{ retrait.id }}" class="action-btn validate" title="Valider">
+                                    <i class="fa-solid fa-check"></i>
+                                </a>
+                                <a href="/admin/retraits/refuser/{{ retrait.id }}" class="action-btn reject" title="Refuser" onclick="return confirm('Confirmer le refus ?');">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="text-align: center; margin-top: 16px;">
+            <a href="/admin/retraits" class="action-btn view">Voir tous les retraits <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <!-- Referrals Section -->
+    <div id="referrals-section" style="display: none;">
+        <h3 class="section-title"><i class="fa-solid fa-sitemap"></i> Statistiques de Parrainage</h3>
+        
+        <div class="stats-grid" style="padding: 0; margin-bottom: 24px;">
+            <div class="stat-card purple">
+                <div class="icon"><i class="fa-solid fa-users"></i></div>
+                <div class="value">{{ stats.total_referrals }}</div>
+                <div class="label">Total Parrainages</div>
+            </div>
+            
+            <div class="stat-card green">
+                <div class="icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                <div class="value">${{ "%.2f"|format(stats.total_commissions) }}</div>
+                <div class="label">Commissions Totales</div>
+            </div>
+            
+            <div class="stat-card orange">
+                <div class="icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                <div class="value">${{ "%.2f"|format(stats.total_referral_withdrawals) }}</div>
+                <div class="label">Retraits Parrainage</div>
+            </div>
+            
+            <div class="stat-card blue">
+                <div class="icon"><i class="fa-solid fa-trophy"></i></div>
+                <div class="value">{{ stats.top_referrer_username or 'N/A' }}</div>
+                <div class="label">Meilleur Parrain</div>
+                <div class="sublabel">{{ stats.top_referrer_count }} filleuls</div>
+            </div>
+        </div>
+        
+        <h4 class="section-title"><i class="fa-solid fa-list"></i> Top 10 des Parrains</h4>
+        
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rang</th>
+                        <th>Parrain</th>
+                        <th>Filleuls</th>
+                        <th>Commissions Gagnées</th>
+                        <th>Code Parrain</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for referrer in top_referrers %}
+                    <tr>
+                        <td>
+                            {% if loop.index == 1 %}
+                                <span style="color: gold; font-weight: bold;">🥇 {{ loop.index }}</span>
+                            {% elif loop.index == 2 %}
+                                <span style="color: silver; font-weight: bold;">🥈 {{ loop.index }}</span>
+                            {% elif loop.index == 3 %}
+                                <span style="color: #cd7f32; font-weight: bold;">🥉 {{ loop.index }}</span>
+                            {% else %}
+                                {{ loop.index }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar">{{ referrer.username[0]|upper if referrer.username else referrer.phone[0] }}</div>
+                                <span class="user-name">{{ referrer.username or referrer.phone }}</span>
+                            </div>
+                        </td>
+                        <td><strong>{{ referrer.referral_count }}</strong></td>
+                        <td class="amount">${{ "%.2f"|format(referrer.total_commissions) }}</td>
+                        <td><code>{{ referrer.referral_code }}</code></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <h4 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Dernières Commissions</h4>
+        
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Parrain</th>
+                        <th>Filleul</th>
+                        <th>Niveau</th>
+                        <th>Montant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for commission in recent_commissions %}
+                    <tr>
+                        <td class="date">{{ commission.date.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td>{{ commission.parrain_phone }}</td>
+                        <td>{{ commission.filleul_phone }}</td>
+                        <td>
+                            <span class="badge" style="background: var(--primary-light); color: var(--primary);">Niveau {{ commission.niveau }}</span>
+                        </td>
+                        <td class="amount">${{ "%.2f"|format(commission.montant) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// Section navigation
+function showSection(sectionId) {
+    // Hide all sections
+    document.getElementById('overview-section').style.display = 'none';
+    document.getElementById('users-section').style.display = 'none';
+    document.getElementById('deposits-section').style.display = 'none';
+    document.getElementById('withdrawals-section').style.display = 'none';
+    document.getElementById('referrals-section').style.display = 'none';
+    
+    // Show selected section
+    if (sectionId === 'overview') {
+        document.getElementById('overview-section').style.display = 'grid';
+    } else {
+        document.getElementById(sectionId + '-section').style.display = 'block';
+    }
+    
+    // Update nav
+    document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+// Search functionality for users
+document.getElementById('userSearch').addEventListener('keyup', function() {
+    let input = this.value.toLowerCase();
+    let rows = document.querySelectorAll('#usersTable tbody tr');
+    
+    rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? "" : "none";
+    });
+});
+
+// Status filter for users
+document.getElementById('userStatusFilter').addEventListener('change', function() {
+    let status = this.value;
+    let rows = document.querySelectorAll('#usersTable tbody tr');
+    
+    rows.forEach(row => {
+        if (!status) {
+            row.style.display = "";
+        } else {
+            row.style.display = row.dataset.status === status ? "" : "none";
+        }
+    });
+});
+
+// Search functionality for deposits
+document.getElementById('depositSearch').addEventListener('keyup', function() {
+    let input = this.value.toLowerCase();
+    let rows = document.querySelectorAll('#depositsTable tbody tr');
+    
+    rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? "" : "none";
+    });
+});
+
+// Status filter for deposits
+document.getElementById('depositStatusFilter').addEventListener('change', function() {
+    let status = this.value;
+    let rows = document.querySelectorAll('#depositsTable tbody tr');
+    
+    rows.forEach(row => {
+        if (!status) {
+            row.style.display = "";
+        } else {
+            row.style.display = row.dataset.status === status ? "" : "none";
+        }
+    });
+});
+
+// Search functionality for withdrawals
+document.getElementById('withdrawalSearch').addEventListener('keyup', function() {
+    let input = this.value.toLowerCase();
+    let rows = document.querySelectorAll('#withdrawalsTable tbody tr');
+    
+    rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? "" : "none";
+    });
+});
+
+// Status filter for withdrawals
+document.getElementById('withdrawalStatusFilter').addEventListener('change', function() {
+    let status = this.value;
+    let rows = document.querySelectorAll('#withdrawalsTable tbody tr');
+    
+    rows.forEach(row => {
+        if (!status) {
+            row.style.display = "";
+        } else {
+            row.style.display = row.dataset.status === status ? "" : "none";
+        }
+    });
+});
+</script>
+
+<nav class="bottom-nav">
+    <a href="/dashboard" class="nav-item">
+        <i class="fa-solid fa-house"></i>
+        <span>Accueil</span>
+    </a>
+    <a href="/produits_rapide" class="nav-item">
+        <i class="fa-solid fa-rocket"></i>
+        <span>Investir</span>
+    </a>
+    <a href="/team" class="nav-item">
+        <i class="fa-solid fa-users"></i>
+        <span>Réseau</span>
+    </a>
+    <a href="/profile" class="nav-item">
+        <i class="fa-solid fa-user"></i>
+        <span>Profil</span>
+    </a>
+</nav>
+
+</body>
+</html>

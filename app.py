@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 from urllib.parse import urlencode
 import re
+import requests
 
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, abort
@@ -65,6 +66,135 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 MONEYFUSION_API_KEY = os.getenv("MONEYFUSION_API_KEY")
 MONEYFUSION_API_URL = os.getenv("MONEYFUSION_API_URL")
+
+# SoleasPay API Configuration
+SOLEAS_API_KEY = os.getenv("SOLEAS_API_KEY", "SP_y7QKkaamPsVTlw8GDDGyzlJ7bmPUvdLorOQqWUXfRLI_AP")
+SOLEAS_API_URL = os.getenv("SOLEAS_API_URL", "https://api.soleaspay.com/v1")
+SOLEAS_WEBHOOK_SECRET = os.getenv("SOLEAS_WEBHOOK_SECRET", "b42ed39b9e0db71db4556a2dfe1b1ad00dcce656fd4dba033f1947f913f1908bc817588c2edb32d92533a1d162e57ad4b1f7299f39695c5671c3ef07baa6f22a")
+
+# SoleasPay Services by Country
+SOLEAS_SERVICES = {
+    # 🇨🇲 CAMEROUN
+    "CM": [
+        {"id": 1, "name": "MOMO CM", "description": "MTN MOBILE MONEY CAMEROUN"},
+        {"id": 2, "name": "OM CM", "description": "ORANGE MONEY CAMEROUN"},
+    ],
+
+    # 🇨🇮 CÔTE D'IVOIRE
+    "CI": [
+        {"id": 29, "name": "OM CI", "description": "ORANGE MONEY COTE D'IVOIRE"},
+        {"id": 30, "name": "MOMO CI", "description": "MTN MONEY COTE D'IVOIRE"},
+        {"id": 31, "name": "MOOV CI", "description": "MOOV COTE D'IVOIRE"},
+        {"id": 32, "name": "WAVE CI", "description": "WAVE COTE D'IVOIRE"},
+    ],
+
+    # 🇧🇫 BURKINA FASO
+    "BF": [
+        {"id": 33, "name": "MOOV BF", "description": "MOOV BURKINA FASO"},
+        {"id": 34, "name": "OM BF", "description": "ORANGE MONEY BURKINA FASO"},
+    ],
+
+    # 🇧🇯 BENIN
+    "BJ": [
+        {"id": 35, "name": "MOMO BJ", "description": "MTN MONEY BENIN"},
+        {"id": 36, "name": "MOOV BJ", "description": "MOOV BENIN"},
+    ],
+
+    # 🇹🇬 TOGO
+    "TG": [
+        {"id": 37, "name": "T-MONEY TG", "description": "T-MONEY TOGO"},
+        {"id": 38, "name": "MOOV TG", "description": "MOOV TOGO"},
+    ],
+
+    # 🇨🇩 CONGO DRC
+    "COD": [
+        {"id": 52, "name": "VODACOM COD", "description": "VODACOM CONGO DRC"},
+        {"id": 53, "name": "AIRTEL COD", "description": "AIRTEL CONGO DRC"},
+        {"id": 54, "name": "ORANGE COD", "description": "ORANGE CONGO DRC"},
+    ],
+
+    # 🇨🇬 CONGO BRAZZAVILLE
+    "COG": [
+        {"id": 55, "name": "AIRTEL COG", "description": "AIRTEL CONGO"},
+        {"id": 56, "name": "MOMO COG", "description": "MTN MOMO CONGO"},
+    ],
+
+    # 🇬🇦 GABON
+    "GAB": [
+        {"id": 57, "name": "AIRTEL GAB", "description": "AIRTEL GABON"},
+    ],
+
+    # 🇺🇬 UGANDA
+    "UGA": [
+        {"id": 58, "name": "AIRTEL UGA", "description": "AIRTEL UGANDA"},
+        {"id": 59, "name": "MOMO UGA", "description": "MTN MOMO UGANDA"},
+    ],
+}
+
+# Country Code Mapping
+COUNTRY_CODE_MAP = {
+    # Cameroun
+    "Cameroun": "CM",
+    "Cameroon": "CM",
+
+    # Côte d'Ivoire
+    "Côte d'Ivoire": "CI",
+    "Cote d Ivoire": "CI",
+    "Cote dIvoire": "CI",
+    "Ivory Coast": "CI",
+
+    # Burkina Faso
+    "Burkina Faso": "BF",
+
+    # Bénin
+    "Bénin": "BJ",
+    "Benin": "BJ",
+
+    # Togo
+    "Togo": "TG",
+
+    # Congo DRC
+    "Congo DRC": "COD",
+    "RDC": "COD",
+    "République Démocratique du Congo": "COD",
+
+    # Congo Brazzaville
+    "Congo": "COG",
+    "Congo Brazzaville": "COG",
+
+    # Gabon
+    "Gabon": "GAB",
+
+    # Uganda
+    "Uganda": "UGA",
+}
+
+def get_soleas_services():
+    """Retourne la configuration des services SoleasPay."""
+    return SOLEAS_SERVICES
+
+def get_country_code(country_name):
+    """Convertit le nom du pays en code pays."""
+    return COUNTRY_CODE_MAP.get(country_name, country_name.upper() if len(country_name) == 2 else None)
+
+def get_service_by_id(country_code, service_id):
+    """Récupère un service par son ID pour un pays donné."""
+    services = SOLEAS_SERVICES.get(country_code, [])
+    for service in services:
+        if service["id"] == int(service_id):
+            return service
+    return None
+
+def get_available_countries():
+    """Retourne la liste des pays disponibles."""
+    countries = []
+    for code, services in SOLEAS_SERVICES.items():
+        # Trouver le nom du pays depuis COUNTRY_CODE_MAP
+        for name, c in COUNTRY_CODE_MAP.items():
+            if c == code:
+                countries.append({"code": code, "name": name, "services": services})
+                break
+    return countries
 
 UPLOAD_FOLDER = "static/vlogs"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -1475,16 +1605,111 @@ def admin_required(f):
 @app.route("/admin")
 @login_required
 def admin_dashboard():
+    # Check if user is admin
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    if not user or not user.is_admin:
+        flash("Accès réservé aux administrateurs.", "danger")
+        return redirect(url_for("connexion_page"))
+    
+    # Calculate comprehensive stats
+    total_users = User.query.count()
+    active_users = User.query.filter_by(is_banned=False).count()
+    banned_users = User.query.filter_by(is_banned=True).count()
+    verified_users = User.query.filter_by(email_verified=True).count()
+    
+    total_deposits = db.session.query(db.func.sum(Depot.montant)).filter_by(statut="valide").scalar() or 0
+    pending_deposits = db.session.query(db.func.sum(Depot.montant)).filter_by(statut="pending").scalar() or 0
+    
+    total_withdrawals = db.session.query(db.func.sum(Retrait.montant)).filter_by(statut="validé").scalar() or 0
+    pending_withdrawals = db.session.query(db.func.sum(Retrait.montant)).filter_by(statut="en_attente").scalar() or 0
+    
+    total_referral_withdrawals = db.session.query(db.func.sum(Retrait.montant)).join(User, User.phone == Retrait.phone).filter(
+        Retrait.statut == "validé",
+        User.solde_parrainage != None
+    ).scalar() or 0
+    
+    total_commissions = db.session.query(db.func.sum(Commission.montant)).scalar() or 0
+    
+    total_invested = db.session.query(db.func.sum(Investissement.montant)).scalar() or 0
+    active_investments = Investissement.query.filter_by(actif=True).count()
+    
+    # Total referrals (users with parrain_code)
+    total_referrals = User.query.filter(User.parrain_code.isnot(None)).count()
+    
+    # Top referrer
+    from sqlalchemy import func, distinct
+    top_referrer = db.session.query(
+        User.phone,
+        User.username,
+        User.referral_code,
+        func.count(User.id).label('referral_count')
+    ).filter(User.parrain_code.isnot(None)).group_by(
+        User.parrain_code, User.phone, User.username, User.referral_code
+    ).order_by(func.count(User.id).desc()).first()
+    
+    # Get top 10 referrers with their commission data
+    # First, get all users who have referred others
+    top_referrers_query = db.session.query(
+        User.parrain_code,
+        func.count(User.id).label('referral_count')
+    ).filter(
+        User.parrain_code.isnot(None)
+    ).group_by(
+        User.parrain_code
+    ).order_by(
+        func.count(User.id).desc()
+    ).limit(10).all()
+    
+    # Build top referrers list by looking up each referrer
+    top_referrers = []
+    for r in top_referrers_query:
+        referrer = User.query.filter_by(referral_code=r.parrain_code).first()
+        if referrer:
+            top_referrers.append({
+                'id': referrer.id,
+                'phone': referrer.phone,
+                'username': referrer.username,
+                'referral_code': referrer.referral_code,
+                'total_commissions': referrer.commission_total or 0,
+                'referral_count': r.referral_count
+            })
+    
+    # Recent commissions
+    recent_commissions = Commission.query.order_by(Commission.date.desc()).limit(20).all()
+    
+    # Get recent data for the dashboard
+    users = User.query.order_by(User.date_creation.desc()).limit(50).all()
+    deposits = Depot.query.order_by(Depot.date.desc()).limit(50).all()
+    withdrawals = Retrait.query.order_by(Retrait.date.desc()).limit(50).all()
+    
     stats = {
-        "users": User.query.count(),
-        "depots": Depot.query.count(),
-        "retraits": Retrait.query.count(),
-        "investissements": Investissement.query.count(),
-        "staking": Staking.query.count(),
-        "commissions": Commission.query.count(),
-        "solde_total": db.session.query(db.func.sum(User.solde_total)).scalar() or 0
+        "total_users": total_users,
+        "active_users": active_users,
+        "banned_users": banned_users,
+        "verified_users": verified_users,
+        "total_deposits": total_deposits,
+        "pending_deposits": pending_deposits,
+        "total_withdrawals": total_withdrawals,
+        "pending_withdrawals": pending_withdrawals,
+        "total_referral_withdrawals": total_referral_withdrawals,
+        "total_commissions": total_commissions,
+        "total_invested": total_invested,
+        "active_investments": active_investments,
+        "total_referrals": total_referrals,
+        "top_referrer_username": top_referrer.username if top_referrer else "N/A",
+        "top_referrer_count": top_referrer.referral_count if top_referrer else 0
     }
-    return render_template("admin/dashboard.html", stats=stats)
+    
+    return render_template(
+        "admin_dashboard.html",
+        stats=stats,
+        users=users,
+        deposits=deposits,
+        withdrawals=withdrawals,
+        top_referrers=top_referrers,
+        recent_commissions=recent_commissions
+    )
 
 @app.route("/rules")
 @login_required
@@ -1627,6 +1852,134 @@ def hash_cvc(cvc):
     """Hash le CVC (ne devrait jamais être stocké en clair ou decryptable)."""
     return hashlib.sha256(cvc.encode()).hexdigest()
 
+# ============================================
+# SOLEASPAY API INTEGRATION
+# ============================================
+
+def soleaspay_create_payment(amount, phone, country_code, service_id, reference, fullname="", email=""):
+    """
+    Crée une demande de paiement via l'API SoleasPay.
+    Retourne un dictionnaire avec le statut et les informations de réponse.
+    """
+    import json
+    
+    # Récupérer les infos du service
+    service = get_service_by_id(country_code, service_id)
+    if not service:
+        print(f"Service introuvable pour country_code={country_code}, service_id={service_id}")
+        return {"success": False, "message": "Service introuvable"}
+    
+    headers = {
+        'x-api-key': SOLEAS_API_KEY,
+        'operation': '2',
+        'service': str(service_id),
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'wallet': phone,  # Numéro saisi par l'utilisateur
+        'amount': amount,
+        'currency': 'XOF',
+        'order_id': reference,
+        'description': f"Dépôt TokenFlow reference={reference}",
+        'payer': fullname,
+        'payerEmail': email,
+        'successUrl': url_for('deposit_page', _external=True),
+        'failureUrl': url_for('deposit_page', _external=True),
+    }
+    
+    try:
+        response = requests.post(
+            'https://soleaspay.com/api/agent/bills/v3',
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+        
+        result = response.json()
+        print(f"Réponse SoleasPay: {result}")
+        
+        # Retourner la réponse complète pour analyse
+        return {
+            "success": result.get('succès') or result.get('success') or response.status_code == 200,
+            "data": result,
+            "message": result.get('message', 'Paiement initié avec succès')
+        }
+    except Exception as e:
+        print(f"Exception SoleasPay: {e}")
+        return {"success": False, "message": str(e)}
+
+def verify_soleaspay_webhook(signature, payload):
+    """Vérifie la signature du webhook SoleasPay."""
+    expected_signature = hmac.new(
+        SOLEAS_WEBHOOK_SECRET.encode(),
+        payload,
+        hashlib.sha256
+    ).hexdigest()
+    
+    return hmac.compare_digest(expected_signature, signature)
+
+@app.route("/api/soleaspay/countries", methods=["GET"])
+@login_required
+def api_soleaspay_countries():
+    """Retourne la liste des pays et opérateurs disponibles."""
+    countries = get_available_countries()
+    return jsonify(countries)
+
+@app.route("/api/soleaspay/services/<country_code>", methods=["GET"])
+@login_required
+def api_soleaspay_services(country_code):
+    """Retourne les services disponibles pour un pays donné."""
+    services = SOLEAS_SERVICES.get(country_code.upper(), [])
+    return jsonify(services)
+
+@app.route("/webhook/soleaspay", methods=["POST"])
+def soleaspay_webhook():
+    """Webhook pour les notifications de paiement SoleasPay."""
+    import json
+    
+    # Vérifier la signature
+    signature = request.headers.get('X-SoleasPay-Signature', '')
+    payload = request.get_data()
+    
+    if not verify_soleaspay_webhook(signature, payload):
+        return jsonify({'error': 'Invalid signature'}), 401
+    
+    data = request.get_json()
+    
+    event_type = data.get('event')
+    reference = data.get('reference')
+    
+    if event_type == 'payment.completed':
+        # Trouver le dépôt par référence
+        depot = Depot.query.filter_by(reference=reference).first()
+        
+        if depot and depot.statut == 'pending':
+            user = User.query.filter_by(phone=depot.phone).first()
+            
+            if user:
+                # Valider le dépôt
+                depot.statut = 'valide'
+                user.solde_depot += depot.montant
+                user.solde_total += depot.montant
+                
+                # Vérifier si c'est le premier dépôt pour les commissions
+                premier_depot = Depot.query.filter_by(phone=user.phone, statut='valide').first()
+                if not premier_depot and user.parrain_code:
+                    donner_commission(user.phone, depot.montant)
+                
+                db.session.commit()
+                
+                # Créer une notification
+                create_notification(
+                    user.phone,
+                    'deposit',
+                    'Dépôt validé',
+                    f'Votre dépôt de {depot.montant} XOF a été validé avec succès.'
+                )
+    
+    return jsonify({'status': 'ok'}), 200
+
 @app.route("/deposit", methods=["POST"])
 @login_required
 def create_deposit():
@@ -1653,6 +2006,51 @@ def create_deposit():
     ip_address = request.remote_addr
     user_agent = request.headers.get('User-Agent', '')
 
+    # Vérifier si c'est un paiement SoleasPay (Mobile Money Afrique)
+    country_code = get_country_code(country) if country else None
+    service_id = request.form.get("service_id")
+    
+    # Utiliser SoleasPay pour les paiements Mobile Money en Afrique
+    if country_code and service_id and country_code in SOLEAS_SERVICES:
+        # Utiliser SoleasPay pour le paiement mobile money
+        reference = f"DEPOT-{uuid.uuid4().hex[:12].upper()}"
+        
+        depot = Depot(
+            phone=phone,
+            phone_paiement=phone_paiement,
+            fullname=fullname,
+            operator=operator,
+            country=country,
+            montant=montant,
+            reference=reference,
+            statut="pending",
+            payment_method=f"SoleasPay_{operator}",
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
+        db.session.add(depot)
+        db.session.commit()
+        
+        # Créer la demande de paiement SoleasPay
+        result = soleaspay_create_payment(
+            amount=montant,
+            phone=phone_paiement,
+            country_code=country_code,
+            service_id=int(service_id),
+            reference=reference,
+            fullname=fullname,
+            email=user.email or ""
+        )
+        
+        if result and result.get('url'):
+            return jsonify({"url": result['url']})
+        elif result and result.get('success'):
+            # Si le paiement est réussi mais pas d'URL, rediriger vers le dashboard
+            return jsonify({"url": url_for('dashboard_page', _external=True)})
+        else:
+            return jsonify({"error": "Erreur lors de la création du paiement. Veuillez réessayer."}), 500
+
+    # Paiement par carte bancaire (Stripe)
     if operator == "Stripe":
         if montant < 6000:
             return jsonify({"error": "Montant minimum 10 USD (6 000 XOF) pour le paiement par carte"}), 400

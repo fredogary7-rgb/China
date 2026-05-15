@@ -3,6 +3,15 @@
 {% block title %}Dépôt | TokenFlow{% endblock %}
 
 {% block page_styles %}
+/* Page layout with bottom nav spacing */
+.app-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 100px; /* Space for bottom navigation */
+  min-height: 100vh;
+}
+
 /* Amount grid */
 .amount-grid {
   display: grid;
@@ -98,6 +107,7 @@
 .payment-card .logo.flooz { background: #E6007E; color: #fff; }
 .payment-card .logo.free { background: #FF7900; color: #fff; }
 .payment-card .logo.airtel { background: #FF0000; color: #fff; }
+.payment-card .logo.vodacom { background: #E60000; color: #fff; }
 
 .payment-card .info b {
   display: block;
@@ -402,7 +412,7 @@
       Déposer des fonds
     </h1>
     <p style="font-size: 14px; color: var(--text-muted);">
-      Choisissez un montant et un moyen de paiement
+      Choisissez un pays, un opérateur et un montant
     </p>
   </div>
 
@@ -416,50 +426,52 @@
     </a>
   </div>
 
+  <!-- Étape 1: Pays -->
   <div class="section-label">
-    <i class="fa-solid fa-coins"></i>
-    Montant du dépôt
+    <i class="fa-solid fa-globe"></i>
+    1. Choisissez votre pays
   </div>
   
-  <div class="amount-grid">
-    <div class="amount-option" onclick="selectAmount(10, this)">
-      <span class="amount">$10</span>
-      <span class="label">Starter</span>
-    </div>
-    <div class="amount-option" onclick="selectAmount(20, this)">
-      <span class="amount">$20</span>
-      <span class="label">Basic</span>
-    </div>
-    <div class="amount-option" onclick="selectAmount(50, this)">
-      <span class="amount">$50</span>
-      <span class="label">Standard</span>
-    </div>
-    <div class="amount-option" onclick="selectAmount(100, this)">
-      <span class="amount">$100</span>
-      <span class="label">Premium</span>
-    </div>
-    <div class="amount-option" onclick="selectAmount(200, this)">
-      <span class="amount">$200</span>
-      <span class="label">Gold</span>
-    </div>
-    <div class="amount-option" onclick="selectAmount(500, this)">
-      <span class="amount">$500</span>
-      <span class="label">VIP</span>
-    </div>
+  <div class="country-selector" id="countrySelector">
+    <div class="country-chip active" data-country="Togo" onclick="selectCountry('Togo', this)">🇹🇬 Togo</div>
+    <div class="country-chip" data-country="Benin" onclick="selectCountry('Benin', this)">🇧🇯 Bénin</div>
+    <div class="country-chip" data-country="Cote dIvoire" onclick="selectCountry('Cote dIvoire', this)">🇨🇮 Côte d'I.</div>
+    <div class="country-chip" data-country="Cameroun" onclick="selectCountry('Cameroun', this)">🇨🇲 Cameroun</div>
+    <div class="country-chip" data-country="Burkina Faso" onclick="selectCountry('Burkina Faso', this)">🇧🇫 Burkina</div>
+    <div class="country-chip" data-country="Gabon" onclick="selectCountry('Gabon', this)">🇬🇦 Gabon</div>
+    <div class="country-chip" data-country="Congo" onclick="selectCountry('Congo', this)">🇨🇬 Congo</div>
+    <div class="country-chip" data-country="RDC" onclick="selectCountry('RDC', this)">🇨🇩 RDC</div>
+    <div class="country-chip" data-country="Uganda" onclick="selectCountry('Uganda', this)">🇺🇬 Uganda</div>
   </div>
 
+  <!-- Étape 2: Opérateur -->
   <div class="section-label">
     <i class="fa-solid fa-credit-card"></i>
-    Moyen de paiement
+    2. Choisissez l'opérateur
   </div>
 
   <div class="payment-grid" id="paymentMethods">
+    <div class="payment-card selected" onclick="selectOperator('Stripe', 0, this)">
+      <div class="logo" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <i class="fa-solid fa-credit-card"></i>
+      </div>
+      <div class="info">
+        <b>Carte bancaire</b>
+        <span>Paiement international</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Étape 3: Montant et informations -->
+  <div class="section-label">
+    <i class="fa-solid fa-dollar-sign"></i>
+    3. Informations de paiement
   </div>
 
   <div class="form-card">
     <div class="input-group">
       <label><i class="fa-solid fa-hashtag"></i> Montant (USD $)</label>
-      <input type="number" id="montant" placeholder="Entrez le montant" min="5" step="0.01" required>
+      <input type="number" id="montant" placeholder="Entrez le montant" min="25" step="0.01" required>
     </div>
 
     <div class="input-group">
@@ -471,29 +483,6 @@
       <div class="input-group">
         <label><i class="fa-solid fa-phone"></i> Numéro de paiement</label>
         <input type="tel" id="phone" placeholder="Numéro sans indicatif" required>
-      </div>
-
-      <div class="input-group">
-        <label><i class="fa-solid fa-globe"></i> Pays</label>
-        <div class="country-selector" id="countrySelector">
-          <div class="country-chip active" data-country="Togo" onclick="selectCountry('Togo', this)">🇹🇬 Togo</div>
-          <div class="country-chip" data-country="Benin" onclick="selectCountry('Benin', this)">🇧🇯 Bénin</div>
-          <div class="country-chip" data-country="Cote dIvoire" onclick="selectCountry('Cote dIvoire', this)">🇨🇮 Côte d'I.</div>
-          <div class="country-chip" data-country="Senegal" onclick="selectCountry('Senegal', this)">🇸🇳 Sénégal</div>
-          <div class="country-chip" data-country="Cameroun" onclick="selectCountry('Cameroun', this)">🇨🇲 Cameroun</div>
-          <div class="country-chip" data-country="Burkina Faso" onclick="selectCountry('Burkina Faso', this)">🇧🇫 Burkina</div>
-          <div class="country-chip" data-country="Mali" onclick="selectCountry('Mali', this)">🇲🇱 Mali</div>
-          <div class="country-chip" data-country="Niger" onclick="selectCountry('Niger', this)">🇳🇪 Niger</div>
-          <div class="country-chip" data-country="Gabon" onclick="selectCountry('Gabon', this)">🇬🇦 Gabon</div>
-          <div class="country-chip" data-country="Guinee" onclick="selectCountry('Guinee', this)">🇬🇳 Guinée</div>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <label><i class="fa-solid fa-wallet"></i> Opérateur</label>
-        <select id="operator" required>
-          <option value="">Sélectionnez un opérateur</option>
-        </select>
       </div>
     </div>
 
@@ -537,7 +526,7 @@
     <div class="info-banner" style="margin-top: 20px;">
       <i class="fa-solid fa-circle-info"></i>
       <p>
-        <b>Minimum:</b> $5 (Mobile) / $10 (Carte) • 
+        <b>Minimum:</b> $25 (Mobile) / $30 (Carte) • 
         <b>Traitement:</b> Instantané après confirmation • 
         <b>Support:</b> 24/7 disponible
       </p>
@@ -563,66 +552,80 @@
     </div>
   </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-const operatorsMap = {
+// SoleasPay services by country (hardcoded for reliability)
+const soleasServicesByCountry = {
   "Togo": [
-    { id: "tmoney", name: "TMoney", logo: "tmoney" },
-    { id: "flooz", name: "Flooz", logo: "flooz" }
+    { id: 37, name: "T-MONEY", description: "T-Money Togo" },
+    { id: 38, name: "MOOV", description: "Moov Togo" }
   ],
   "Benin": [
-    { id: "mtn", name: "MTN Money", logo: "mtn" },
-    { id: "moov", name: "Moov Money", logo: "moov" }
-  ],
-  "Burkina Faso": [
-    { id: "orange", name: "Orange Money", logo: "orange" },
-    { id: "moov", name: "Moov Money", logo: "moov" }
+    { id: 35, name: "MTN MONEY", description: "MTN Money Bénin" },
+    { id: 36, name: "MOOV", description: "Moov Bénin" }
   ],
   "Cote dIvoire": [
-    { id: "orange", name: "Orange Money", logo: "orange" },
-    { id: "mtn", name: "MTN Money", logo: "mtn" },
-    { id: "moov", name: "Moov Money", logo: "moov" },
-    { id: "wave", name: "Wave", logo: "wave" }
-  ],
-  "Guinee": [
-    { id: "orange", name: "Orange Money", logo: "orange" },
-    { id: "mtn", name: "MTN Money", logo: "mtn" }
-  ],
-  "Mali": [
-    { id: "orange", name: "Orange Money", logo: "orange" },
-    { id: "moov", name: "Moov Money", logo: "moov" }
-  ],
-  "Niger": [
-    { id: "moov", name: "Moov Money", logo: "moov" },
-    { id: "airtel", name: "Airtel Money", logo: "airtel" }
-  ],
-  "Senegal": [
-    { id: "orange", name: "Orange Money", logo: "orange" },
-    { id: "free", name: "Free Money", logo: "free" },
-    { id: "wave", name: "Wave", logo: "wave" }
-  ],
-  "Gabon": [
-    { id: "airtel", name: "Airtel Money", logo: "airtel" },
-    { id: "moov", name: "Moov Money", logo: "moov" }
+    { id: 29, name: "ORANGE MONEY", description: "Orange Money CI" },
+    { id: 30, name: "MTN MONEY", description: "MTN Money CI" },
+    { id: 31, name: "MOOV", description: "Moov CI" },
+    { id: 32, name: "WAVE", description: "Wave CI" }
   ],
   "Cameroun": [
-    { id: "mtn", name: "MTN Money", logo: "mtn" },
-    { id: "orange", name: "Orange Money", logo: "orange" }
+    { id: 1, name: "MTN MOBILE MONEY", description: "MTN MOMO Cameroun" },
+    { id: 2, name: "ORANGE MONEY", description: "Orange Money CM" }
+  ],
+  "Burkina Faso": [
+    { id: 33, name: "MOOV", description: "Moov Burkina" },
+    { id: 34, name: "ORANGE MONEY", description: "Orange Money BF" }
+  ],
+  "Gabon": [
+    { id: 57, name: "AIRTEL MONEY", description: "Airtel Money Gabon" }
+  ],
+  "Congo": [
+    { id: 55, name: "AIRTEL MONEY", description: "Airtel Money Congo" },
+    { id: 56, name: "MTN MONEY", description: "MTN MOMO Congo" }
+  ],
+  "RDC": [
+    { id: 52, name: "VODACOM", description: "Vodacom RDC" },
+    { id: 53, name: "AIRTEL MONEY", description: "Airtel Money RDC" },
+    { id: 54, name: "ORANGE MONEY", description: "Orange Money RDC" }
+  ],
+  "Uganda": [
+    { id: 58, name: "AIRTEL MONEY", description: "Airtel Money Uganda" },
+    { id: 59, name: "MTN MONEY", description: "MTN MOMO Uganda" }
   ]
+};
+
+// Country code mapping for API
+const countryCodeMap = {
+  "Cameroun": "CM",
+  "Côte d'Ivoire": "CI",
+  "Cote dIvoire": "CI",
+  "Burkina Faso": "BF",
+  "Bénin": "BJ",
+  "Benin": "BJ",
+  "Togo": "TG",
+  "Congo DRC": "COD",
+  "RDC": "COD",
+  "Congo": "COG",
+  "Congo Brazzaville": "COG",
+  "Gabon": "GAB",
+  "Uganda": "UGA"
 };
 
 let selectedCountry = "Togo";
 let selectedOperator = null;
+let selectedServiceId = null;
 
 function initPaymentMethods() {
   const container = document.getElementById('paymentMethods');
-  const operators = operatorsMap[selectedCountry];
   
-  // Add card payment option
+  // Get services for selected country
+  const services = soleasServicesByCountry[selectedCountry] || [];
+  
+  // Add card payment option (Stripe)
   const cardOption = `
-    <div class="payment-card selected" onclick="selectOperator('Stripe', this)">
+    <div class="payment-card selected" onclick="selectOperator('Stripe', 0, this)">
       <div class="logo" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
         <i class="fa-solid fa-credit-card"></i>
       </div>
@@ -633,17 +636,20 @@ function initPaymentMethods() {
     </div>
   `;
   
-  container.innerHTML = cardOption + operators.map((op) => `
-    <div class="payment-card" onclick="selectOperator('${op.id}', this)">
-      <div class="logo ${op.logo}">${op.name.charAt(0)}</div>
+  container.innerHTML = cardOption + services.map((service) => `
+    <div class="payment-card" onclick="selectOperator('${service.name}', ${service.id}, this)">
+      <div class="logo" style="background: var(--primary-gradient); color: white;">
+        ${service.name.charAt(0)}
+      </div>
       <div class="info">
-        <b>${op.name}</b>
-        <span>Paiement mobile</span>
+        <b>${service.name}</b>
+        <span>${service.description}</span>
       </div>
     </div>
   `).join('');
   
   selectedOperator = 'Stripe';
+  selectedServiceId = null;
   updatePaymentFields();
 }
 
@@ -660,8 +666,9 @@ function selectCountry(country, element) {
   initPaymentMethods();
 }
 
-function selectOperator(operatorId, element) {
-  selectedOperator = operatorId;
+function selectOperator(operatorName, serviceId, element) {
+  selectedOperator = operatorName;
+  selectedServiceId = serviceId;
   document.querySelectorAll('.payment-card').forEach(card => card.classList.remove('selected'));
   element.classList.add('selected');
   updatePaymentFields();
@@ -697,8 +704,8 @@ function startPayment() {
   const montantXOF = Math.round(montantUSD * 600);
 
   if (selectedOperator === 'Stripe') {
-    if (montantUSD < 10) {
-      showToast('Montant minimum pour carte bancaire: $10 USD', 'error');
+    if (montantUSD < 30) {
+      showToast('Montant minimum pour carte bancaire: $30 USD', 'error');
       return;
     }
     if (!cardHolder || !cardNumber || !cardExpiry || !cardCvc) {
@@ -710,8 +717,8 @@ function startPayment() {
       showToast('Veuillez renseigner votre numéro de paiement', 'error');
       return;
     }
-    if (montantUSD < 5) {
-      showToast('Montant minimum: $5 USD', 'error');
+    if (montantUSD < 25) {
+      showToast('Montant minimum pour Mobile Money: $25 USD', 'error');
       return;
     }
   }
@@ -724,6 +731,11 @@ function startPayment() {
   data.append("phone", phone);
   data.append("country", selectedCountry);
   data.append("operator", selectedOperator);
+
+  // Send service_id for SoleasPay mobile money payments
+  if (selectedOperator !== 'Stripe' && selectedServiceId) {
+    data.append("service_id", selectedServiceId);
+  }
 
   if (selectedOperator === 'Stripe') {
     data.append("card_holder", cardHolder);
@@ -763,8 +775,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initPaymentMethods();
 });
 </script>
-{% endblock %}
-
 
 <nav class="bottom-nav">
   <a href="/dashboard" class="nav-item">
@@ -784,6 +794,4 @@ document.addEventListener('DOMContentLoaded', () => {
     <span>Profil</span>
   </a>
 </nav>
-
-
-
+{% endblock %}

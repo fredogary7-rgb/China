@@ -1290,6 +1290,81 @@
     min-height: 50px;
   }
 }
+
+/* Bottom Navigation Bar - Optimized for iOS and Android */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: none;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  background: rgba(30, 41, 59, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  z-index: 1000;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
+  /* Support for iOS safe area */
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+.bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  border-radius: 12px;
+  min-width: 70px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.bottom-nav .nav-item:hover,
+.bottom-nav .nav-item.active {
+  color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.bottom-nav .nav-item:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+.bottom-nav .nav-item i {
+  font-size: 22px;
+}
+
+.bottom-nav .nav-item span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Support for iPhone X and newer with notch */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 768px) {
+  .bottom-nav {
+    display: flex;
+  }
+  
+  .pro-main {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom)) !important;
+  }
+}
 {% endblock %}
 
 {% block content %}
