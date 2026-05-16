@@ -1507,7 +1507,7 @@
       <div class="pro-wallet-tabs">
       <div class="pro-wallet-tab active" onclick="switchWallet('USD', this)">
         <span class="tab-currency">🇺🇸 USD</span>
-        <span class="tab-balance">${{ "{:,.2f}".format(user.balance_usd or 0) }}</span>
+        <span class="tab-balance">${{ "{:,.0f}".format(user.solde_depot or 0) }}</span>
       </div>
       <div class="pro-wallet-tab" onclick="switchWallet('EUR', this)">
         <span class="tab-currency">🇪🇺 EUR</span>
@@ -1927,5 +1927,24 @@ document.addEventListener('DOMContentLoaded', function() {
   setLanguage(savedLang);
 });
 
-</script>
+  </script>
 {% endblock %}
+
+<nav class="bottom-nav">
+  <a href="/dashboard" class="nav-item active">
+    <i class="fa-solid fa-house"></i>
+    <span>Accueil</span>
+  </a>
+  <a href="/produits_rapide" class="nav-item">
+    <i class="fa-solid fa-rocket"></i>
+    <span>Investir</span>
+  </a>
+  <a href="/team" class="nav-item">
+    <i class="fa-solid fa-users"></i>
+    <span>Réseau</span>
+  </a>
+  <a href="/profile" class="nav-item">
+    <i class="fa-solid fa-user"></i>
+    <span>Profil</span>
+  </a>
+</nav>

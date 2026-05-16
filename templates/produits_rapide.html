@@ -816,6 +816,63 @@ body::after {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(99, 102, 241, 0.5);
 }
+
+/* ============================================
+   BOTTOM NAVIGATION - Premium Style
+   ============================================ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 1000;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 12px;
+  transition: all 0.3s;
+  min-width: 60px;
+}
+
+.bottom-nav .nav-item i {
+  font-size: 20px;
+  transition: all 0.3s;
+}
+
+.bottom-nav .nav-item:hover,
+.bottom-nav .nav-item.active {
+  color: var(--primary);
+}
+
+.bottom-nav .nav-item:hover i,
+.bottom-nav .nav-item.active i {
+  transform: translateY(-2px);
+}
+
+.bottom-nav .nav-item.active {
+  background: rgba(99, 102, 241, 0.15);
+}
+
+body {
+  padding-bottom: 80px;
+}
 {% endblock %}
 
 {% block content %}

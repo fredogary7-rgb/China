@@ -442,6 +442,7 @@
     <div class="country-chip" data-country="Congo" onclick="selectCountry('Congo', this)">🇨🇬 Congo</div>
     <div class="country-chip" data-country="RDC" onclick="selectCountry('RDC', this)">🇨🇩 RDC</div>
     <div class="country-chip" data-country="Uganda" onclick="selectCountry('Uganda', this)">🇺🇬 Uganda</div>
+    <div class="country-chip" data-country="International" onclick="selectCountry('International', this)">🌍 International</div>
   </div>
 
   <!-- Étape 2: Opérateur -->
@@ -593,6 +594,16 @@ const soleasServicesByCountry = {
   "Uganda": [
     { id: 58, name: "AIRTEL MONEY", description: "Airtel Money Uganda" },
     { id: 59, name: "MTN MONEY", description: "MTN MOMO Uganda" }
+  ],
+  "International": [
+    { id: 3, name: "BITCOIN", description: "Bitcoin (BTC)", type: "CRYPTOCURRENCY" },
+    { id: 4, name: "PAYPAL_BTN", description: "PayPal Button", type: "TRUSTEECURRENCY" },
+    { id: 5, name: "EUM", description: "EUM Token", type: "TRUSTEECURRENCY" },
+    { id: 6, name: "XPI", description: "XPI Token", type: "OTHER" },
+    { id: 7, name: "PAYPAL", description: "PayPal", type: "TRUSTEECURRENCY" },
+    { id: 8, name: "PM", description: "Perfect Money", type: "TRUSTEECURRENCY" },
+    { id: 10, name: "LITECOIN", description: "Litecoin (LTC)", type: "CRYPTOCURRENCY" },
+    { id: 11, name: "DOGECOIN", description: "Dogecoin (DOGE)", type: "CRYPTOCURRENCY" }
   ]
 };
 
@@ -700,9 +711,6 @@ function startPayment() {
     return;
   }
 
-  // Convert USD to XOF (1 USD = 600 XOF)
-  const montantXOF = Math.round(montantUSD * 600);
-
   if (selectedOperator === 'Stripe') {
     if (montantUSD < 30) {
       showToast('Montant minimum pour carte bancaire: $30 USD', 'error');
@@ -726,7 +734,8 @@ function startPayment() {
   document.getElementById('loadingOverlay').classList.add('active');
 
   const data = new URLSearchParams();
-  data.append("montant", montantXOF);
+  // Send amount in USD (backend will handle conversion if needed)
+  data.append("montant", montantUSD);
   data.append("fullname", fullname);
   data.append("phone", phone);
   data.append("country", selectedCountry);
@@ -776,22 +785,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<nav class="bottom-nav">
-  <a href="/dashboard" class="nav-item">
-    <i class="fa-solid fa-house"></i>
-    <span>Accueil</span>
-  </a>
-  <a href="/produits_rapide" class="nav-item">
-    <i class="fa-solid fa-rocket"></i>
-    <span>Investir</span>
-  </a>
-  <a href="/team" class="nav-item">
-    <i class="fa-solid fa-users"></i>
-    <span>Réseau</span>
-  </a>
-  <a href="/profile" class="nav-item">
-    <i class="fa-solid fa-user"></i>
-    <span>Profil</span>
-  </a>
-</nav>
 {% endblock %}

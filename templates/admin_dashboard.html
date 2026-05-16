@@ -581,6 +581,7 @@
     <a href="#deposits" onclick="showSection('deposits')"><i class="fa-solid fa-wallet"></i> Dépôts</a>
     <a href="#withdrawals" onclick="showSection('withdrawals')"><i class="fa-solid fa-money-bill-transfer"></i> Retraits</a>
     <a href="#referrals" onclick="showSection('referrals')"><i class="fa-solid fa-sitemap"></i> Parrainages</a>
+    <a href="#products" onclick="showSection('products')"><i class="fa-solid fa-box-open"></i> Produits</a>
 </div>
 
 <!-- Overview Section -->
@@ -851,6 +852,110 @@
         </div>
     </div>
 
+    <!-- Products Section -->
+    <div id="products-section" style="display: none;">
+        <h3 class="section-title"><i class="fa-solid fa-box-open"></i> Gestion des Produits</h3>
+        
+        <!-- Create Product Form -->
+        <div class="data-table" style="padding: 24px; margin-bottom: 24px;">
+            <h4 style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i>
+                Créer un Nouveau Produit
+            </h4>
+            
+            <form action="/admin/products" method="POST" enctype="multipart/form-data">
+                <div class="search-filter-bar">
+                    <input type="text" name="name" placeholder="Nom du produit *" required style="flex: 1;">
+                    <select name="category" style="min-width: 150px;">
+                        <option value="custom">Personnalisé</option>
+                        <option value="ai">AI Trading</option>
+                        <option value="crypto">Crypto</option>
+                        <option value="forex">Forex</option>
+                        <option value="gold">Gold</option>
+                        <option value="vip">VIP</option>
+                    </select>
+                </div>
+                
+                <div class="search-filter-bar" style="margin-top: 12px;">
+                    <textarea name="description" placeholder="Description du produit..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; min-height: 80px; resize: vertical;"></textarea>
+                </div>
+                
+                <div class="search-filter-bar" style="margin-top: 12px;">
+                    <input type="number" name="price_usd" step="0.01" min="1" placeholder="Prix (USD) *" required style="flex: 1;">
+                    <input type="number" name="daily_revenue_usd" step="0.01" min="0.01" placeholder="Revenu Journalier (USD) *" required style="flex: 1;">
+                    <input type="file" name="image" accept="image/*" style="flex: 1; padding: 10px;">
+                </div>
+                
+                <div style="margin-top: 16px; text-align: right;">
+                    <button type="submit" class="action-btn validate" style="padding: 12px 24px; font-size: 14px;">
+                        <i class="fa-solid fa-plus"></i> Créer le Produit
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Products List -->
+        <h4 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-list" style="color: var(--primary);"></i>
+            Produits Créés ({{ products|length }})
+        </h4>
+        
+        {% if products %}
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Catégorie</th>
+                        <th>Prix</th>
+                        <th>Revenu/jour</th>
+                        <th>ROI/jour</th>
+                        <th>Créé le</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <img src="{{ url_for('static', filename='vlogs/' + product.image_filename) if product.image_filename else url_for('static', filename='images/ai.jpg') }}" 
+                                     alt="{{ product.name }}" 
+                                     style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;"
+                                     onerror="this.src='{{ url_for('static', filename='images/ai.jpg') }}'">
+                                <div>
+                                    <strong>{{ product.name }}</strong>
+                                    <div style="font-size: 12px; color: var(--text-muted);">{{ product.description[:50] + '...' if product.description and product.description|length > 50 else (product.description or '') }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge" style="background: var(--primary-light); color: var(--primary);">{{ product.category|upper }}</span>
+                        </td>
+                        <td class="amount">${{ "%.2f"|format(product.price_usd) }}</td>
+                        <td class="amount">${{ "%.2f"|format(product.daily_revenue_usd) }}</td>
+                        <td>
+                            <span style="color: var(--success); font-weight: 700;">{{ "%.1f"|format((product.daily_revenue_usd / product.price_usd * 100) if product.price_usd > 0 else 0) }}%</span>
+                        </td>
+                        <td class="date">{{ product.created_at.strftime("%d/%m/%Y") }}</td>
+                        <td>
+                            <a href="/admin/products/delete/{{ product.id }}" class="action-btn reject" onclick="return confirm('Désactiver ce produit ?');">
+                                <i class="fa-solid fa-trash"></i> Désactiver
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+            <i class="fa-solid fa-box-open" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+            <p>Aucun produit personnalisé créé pour le moment.</p>
+        </div>
+        {% endif %}
+    </div>
+
     <!-- Referrals Section -->
     <div id="referrals-section" style="display: none;">
         <h3 class="section-title"><i class="fa-solid fa-sitemap"></i> Statistiques de Parrainage</h3>
@@ -964,6 +1069,7 @@ function showSection(sectionId) {
     document.getElementById('deposits-section').style.display = 'none';
     document.getElementById('withdrawals-section').style.display = 'none';
     document.getElementById('referrals-section').style.display = 'none';
+    document.getElementById('products-section').style.display = 'none';
     
     // Show selected section
     if (sectionId === 'overview') {
@@ -1052,25 +1158,6 @@ document.getElementById('withdrawalStatusFilter').addEventListener('change', fun
     });
 });
 </script>
-
-<nav class="bottom-nav">
-    <a href="/dashboard" class="nav-item">
-        <i class="fa-solid fa-house"></i>
-        <span>Accueil</span>
-    </a>
-    <a href="/produits_rapide" class="nav-item">
-        <i class="fa-solid fa-rocket"></i>
-        <span>Investir</span>
-    </a>
-    <a href="/team" class="nav-item">
-        <i class="fa-solid fa-users"></i>
-        <span>Réseau</span>
-    </a>
-    <a href="/profile" class="nav-item">
-        <i class="fa-solid fa-user"></i>
-        <span>Profil</span>
-    </a>
-</nav>
 
 </body>
 </html>

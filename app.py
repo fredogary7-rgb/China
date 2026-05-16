@@ -129,6 +129,18 @@ SOLEAS_SERVICES = {
         {"id": 58, "name": "AIRTEL UGA", "description": "AIRTEL UGANDA"},
         {"id": 59, "name": "MOMO UGA", "description": "MTN MOMO UGANDA"},
     ],
+
+    # 🌍 INTERNATIONAL (Crypto & Digital Payments)
+    "INTL": [
+        {"id": 3, "name": "BITCOIN", "description": "Bitcoin (BTC)", "type": "CRYPTOCURRENCY"},
+        {"id": 4, "name": "PAYPAL_BTN", "description": "PayPal Button", "type": "TRUSTEECURRENCY"},
+        {"id": 5, "name": "EUM", "description": "EUM Token", "type": "TRUSTEECURRENCY"},
+        {"id": 6, "name": "XPI", "description": "XPI Token", "type": "OTHER"},
+        {"id": 7, "name": "PAYPAL", "description": "PayPal", "type": "TRUSTEECURRENCY"},
+        {"id": 8, "name": "PM", "description": "Perfect Money", "type": "TRUSTEECURRENCY"},
+        {"id": 10, "name": "LITECOIN", "description": "Litecoin (LTC)", "type": "CRYPTOCURRENCY"},
+        {"id": 11, "name": "DOGECOIN", "description": "Dogecoin (DOGE)", "type": "CRYPTOCURRENCY"},
+    ],
 }
 
 # Country Code Mapping
@@ -335,6 +347,19 @@ class Commission(db.Model):
     montant = db.Column(db.Float)
     niveau = db.Column(db.Integer)
     date = db.Column(db.DateTime, default=datetime.utcnow)
+
+class CustomProduct(db.Model):
+    """Produits personnalisés créés par l'admin"""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    price_usd = db.Column(db.Float, nullable=False)
+    daily_revenue_usd = db.Column(db.Float, nullable=False)
+    image_filename = db.Column(db.String(200))
+    category = db.Column(db.String(50), default="custom")  # custom, ai, crypto, forex, gold, vip
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by = db.Column(db.String(30))  # phone of admin who created it
 
 class Vlog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -845,6 +870,28 @@ def verifier_investissements(phone):
 def init_db():
     db.create_all()
     print("✅ Base de données initialisée avec succès !")
+
+@app.cli.command("create-custom-product-table")
+def create_custom_product_table():
+    """Crée la table custom_product si elle n'existe pas."""
+    from sqlalchemy import text
+    with db.engine.connect() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS custom_product (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                description TEXT,
+                price_usd FLOAT NOT NULL,
+                daily_revenue_usd FLOAT NOT NULL,
+                image_filename VARCHAR(200),
+                category VARCHAR(50) DEFAULT 'custom',
+                is_active BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                created_by VARCHAR(30)
+            )
+        """))
+        conn.commit()
+    print("✅ Table custom_product créée avec succès !")
 
 @app.cli.command("migrate-referral-codes")
 def migrate_referral_codes():
@@ -1701,6 +1748,9 @@ def admin_dashboard():
         "top_referrer_count": top_referrer.referral_count if top_referrer else 0
     }
     
+    # Get custom products for the products section
+    products = CustomProduct.query.order_by(CustomProduct.created_at.desc()).all()
+    
     return render_template(
         "admin_dashboard.html",
         stats=stats,
@@ -1708,7 +1758,8 @@ def admin_dashboard():
         deposits=deposits,
         withdrawals=withdrawals,
         top_referrers=top_referrers,
-        recent_commissions=recent_commissions
+        recent_commissions=recent_commissions,
+        products=products
     )
 
 @app.route("/rules")
@@ -2006,18 +2057,23 @@ def create_deposit():
     ip_address = request.remote_addr
     user_agent = request.headers.get('User-Agent', '')
 
-    # Vérifier si c'est un paiement SoleasPay (Mobile Money Afrique)
-    country_code = get_country_code(country) if country else None
+    # Vérifier si c'est un paiement SoleasPay (Mobile Money Afrique ou Crypto)
     service_id = request.form.get("service_id")
     
-    # Utiliser SoleasPay pour les paiements Mobile Money en Afrique
-    if country_code and service_id and country_code in SOLEAS_SERVICES:
-        # Utiliser SoleasPay pour le paiement mobile money
+    # Utiliser SoleasPay pour les paiements avec service_id (Mobile Money + Crypto)
+    if service_id:
+        # Déterminer le country_code
+        country_code = get_country_code(country) if country else None
+        
+        # Pour International (crypto), utiliser "INTL" comme code
+        if country == "International":
+            country_code = "INTL"
+        
         reference = f"DEPOT-{uuid.uuid4().hex[:12].upper()}"
         
         depot = Depot(
             phone=phone,
-            phone_paiement=phone_paiement,
+            phone_paiement=phone_paiement if phone_paiement else operator,
             fullname=fullname,
             operator=operator,
             country=country,
@@ -2034,7 +2090,7 @@ def create_deposit():
         # Créer la demande de paiement SoleasPay
         result = soleaspay_create_payment(
             amount=montant,
-            phone=phone_paiement,
+            phone=phone_paiement if phone_paiement else "crypto_wallet",
             country_code=country_code,
             service_id=int(service_id),
             reference=reference,
@@ -2042,13 +2098,32 @@ def create_deposit():
             email=user.email or ""
         )
         
-        if result and result.get('url'):
-            return jsonify({"url": result['url']})
-        elif result and result.get('success'):
-            # Si le paiement est réussi mais pas d'URL, rediriger vers le dashboard
-            return jsonify({"url": url_for('dashboard_page', _external=True)})
+        if result and result.get('success'):
+            # Vérifier si l'API retourne une URL de paiement
+            data = result.get('data', {})
+            payment_url = data.get('url') or data.get('payment_url') or data.get('redirect_url')
+            
+            # Si l'API ne retourne pas d'URL, c'est que le paiement doit être confirmé
+            # via l'application mobile de l'opérateur (pour Mobile Money) ou
+            # via un processus automatique (pour Crypto)
+            if not payment_url:
+                # Pour les cryptomonnaies, retourner une URL de confirmation
+                if country == "International":
+                    return jsonify({
+                        "url": url_for('dashboard_page', _external=True),
+                        "message": f"Paiement {operator} initié ! Votre dépôt sera crédité après confirmation du réseau blockchain.",
+                        "status": "pending"
+                    })
+                else:
+                    # Pour Mobile Money, l'utilisateur doit confirmer sur son téléphone
+                    return jsonify({
+                        "url": url_for('dashboard_page', _external=True),
+                        "message": f"Veuillez confirmer le paiement sur votre téléphone ({operator}). Votre dépôt sera crédité automatiquement.",
+                        "status": "pending"
+                    })
         else:
-            return jsonify({"error": "Erreur lors de la création du paiement. Veuillez réessayer."}), 500
+            error_msg = result.get('message', 'Erreur lors de la création du paiement') if result else 'Erreur inconnue'
+            return jsonify({"error": error_msg}), 500
 
     # Paiement par carte bancaire (Stripe)
     if operator == "Stripe":
@@ -2345,10 +2420,29 @@ def produits_rapide_page():
     phone = get_logged_in_user_phone()
     user = User.query.filter_by(phone=phone).first()
 
+    # Get active custom products from database
+    custom_products_db = CustomProduct.query.filter_by(is_active=True).order_by(CustomProduct.created_at.desc()).all()
+    
+    # Convert custom products to same format as PRODUITS_VIP
+    custom_products = []
+    for p in custom_products_db:
+        custom_products.append({
+            "id": 1000 + p.id,  # Use offset to avoid ID conflicts
+            "nom": p.name,
+            "prix_usd": p.price_usd,
+            "revenu_journalier_usd": p.daily_revenue_usd,
+            "image": p.image_filename or "ai.jpg",
+            "is_custom": True,
+            "description": p.description or ""
+        })
+    
+    # Combine default products with custom products
+    all_products = PRODUITS_VIP + custom_products
+
     return render_template(
         "produits_rapide.html",
         user=user,
-        produits=PRODUITS_VIP
+        produits=all_products
     )
 
 @app.route("/produits_rapide/confirmer/<int:vip_id>", methods=["GET", "POST"])
@@ -2357,7 +2451,29 @@ def confirmer_produit_rapide(vip_id):
     phone = get_logged_in_user_phone()
     user = User.query.filter_by(phone=phone).first()
 
-    produit = next((p for p in PRODUITS_VIP if p["id"] == vip_id), None)
+    # Check if it's a custom product (ID >= 1000)
+    produit = None
+    is_custom = False
+    
+    if vip_id >= 1000:
+        # Look for custom product
+        custom_id = vip_id - 1000
+        custom_product = CustomProduct.query.get(custom_id)
+        if custom_product and custom_product.is_active:
+            produit = {
+                "id": vip_id,
+                "nom": custom_product.name,
+                "prix_usd": custom_product.price_usd,
+                "revenu_journalier_usd": custom_product.daily_revenue_usd,
+                "image": custom_product.image_filename or "ai.jpg",
+                "is_custom": True,
+                "description": custom_product.description or ""
+            }
+            is_custom = True
+    else:
+        # Look in default products
+        produit = next((p for p in PRODUITS_VIP if p["id"] == vip_id), None)
+    
     if not produit:
         flash("Produit introuvable.", "danger")
         return redirect(url_for("produits_rapide_page"))
@@ -2534,12 +2650,47 @@ def get_image(montant):
 def historique_page():
     phone = get_logged_in_user_phone()
 
-    depots = Depot.query.filter_by(phone=phone).order_by(Depot.date.desc()).all()
-    retraits = Retrait.query.filter_by(phone=phone).order_by(Retrait.date.desc()).all()
+    # Get deposits - amounts are already stored in the currency user entered
+    # If user entered 30 USD, montant = 30 (not 18000 XOF)
+    # If user entered 18000 XOF, montant = 18000
+    depots_raw = Depot.query.filter_by(phone=phone).order_by(Depot.date.desc()).all()
+    depots = []
+    for d in depots_raw:
+        # Check if amount looks like XOF (large number) or USD (small number)
+        # If amount > 1000, assume it's XOF and convert to USD
+        montant_usd = d.montant / 600 if d.montant > 1000 else d.montant
+        depots.append({
+            'date': d.date,
+            'montant': round(montant_usd, 2),
+            'statut': d.statut,
+            'operator': d.operator,
+            'reference': d.reference
+        })
 
-    commissions = Commission.query.filter_by(
+    # Get withdrawals - same logic
+    retraits_raw = Retrait.query.filter_by(phone=phone).order_by(Retrait.date.desc()).all()
+    retraits = []
+    for r in retraits_raw:
+        montant_usd = r.montant / 600 if r.montant > 1000 else r.montant
+        retraits.append({
+            'date': r.date,
+            'montant': round(montant_usd, 2),
+            'statut': r.statut
+        })
+
+    # Get commissions - same logic
+    commissions_raw = Commission.query.filter_by(
         parrain_phone=phone
     ).order_by(Commission.date.desc()).all()
+    commissions = []
+    for c in commissions_raw:
+        montant_usd = c.montant / 600 if c.montant > 1000 else c.montant
+        commissions.append({
+            'date': c.date,
+            'montant': round(montant_usd, 2),
+            'niveau': c.niveau,
+            'filleul_phone': c.filleul_phone
+        })
 
     investissements = []
     now = datetime.now()
@@ -2676,6 +2827,81 @@ def team_page():
 def admin_deposits():
     depots = Depot.query.order_by(Depot.date.desc()).all()
     return render_template("admin_deposits.html", depots=depots)
+
+@app.route("/admin/products", methods=["GET", "POST"])
+@login_required
+def admin_products():
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    
+    if not user or not user.is_admin:
+        flash("Accès réservé aux administrateurs.", "danger")
+        return redirect(url_for("connexion_page"))
+    
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        description = request.form.get("description", "").strip()
+        price_usd = float(request.form.get("price_usd", 0))
+        daily_revenue_usd = float(request.form.get("daily_revenue_usd", 0))
+        category = request.form.get("category", "custom")
+        
+        # Handle image upload
+        image_filename = None
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename:
+                # Generate unique filename
+                ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else 'jpg'
+                image_filename = f"product_{uuid.uuid4().hex[:8]}.{ext}"
+                file.save(os.path.join(UPLOAD_FOLDER, image_filename))
+        
+        # Create new product
+        new_product = CustomProduct(
+            name=name,
+            description=description,
+            price_usd=price_usd,
+            daily_revenue_usd=daily_revenue_usd,
+            image_filename=image_filename or "ai.jpg",  # Default image
+            category=category,
+            created_by=phone
+        )
+        db.session.add(new_product)
+        db.session.commit()
+        
+        # Send notification to all users
+        all_users = User.query.all()
+        for u in all_users:
+            create_notification(
+                u.phone,
+                'product',
+                'Nouveau Produit Disponible!',
+                f'Le produit "{name}" est maintenant disponible. ROI journalier: ${daily_revenue_usd:.2f} USD',
+                url_for('produits_rapide_page', _external=True)
+            )
+        
+        flash("✅ Produit créé avec succès et notifications envoyées!", "success")
+        return redirect(url_for("admin_products"))
+    
+    # GET request - show products list and creation form
+    products = CustomProduct.query.order_by(CustomProduct.created_at.desc()).all()
+    return render_template("admin_products.html", products=products)
+
+@app.route("/admin/products/delete/<int:product_id>")
+@login_required
+def admin_delete_product(product_id):
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    
+    if not user or not user.is_admin:
+        flash("Accès réservé aux administrateurs.", "danger")
+        return redirect(url_for("connexion_page"))
+    
+    product = CustomProduct.query.get_or_404(product_id)
+    product.is_active = False
+    db.session.commit()
+    
+    flash("Produit désactivé avec succès.", "success")
+    return redirect(url_for("admin_products"))
 
 @app.route("/admin/deposits/valider/<int:depot_id>")
 def valider_depot(depot_id):
