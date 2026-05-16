@@ -209,6 +209,28 @@
   margin-bottom: 8px;
 }
 
+/* QR Code Styles */
+#qr-code {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px !important;
+  background: white !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+}
+
+#qr-code canvas,
+#qr-code img {
+  border-radius: 8px;
+}
+
+#qr-code div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 /* ============================================
    BOTTOM NAVIGATION - Premium Style
    ============================================ */
@@ -426,7 +448,7 @@ body {
 </nav>
 
 <!-- QR Code Generator Library -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <script>
 // Generate QR Code for referral link
@@ -434,30 +456,26 @@ document.addEventListener('DOMContentLoaded', function() {
   const referralCode = '{{ user.referral_code or user.phone }}';
   const referralLink = window.location.origin + '/inscription?ref=' + referralCode;
   
-  // Generate QR code on canvas
+  // Clear canvas
+  const container = document.getElementById('qr-code');
   const canvas = document.getElementById('qr-canvas');
-  if (canvas && typeof QRCode !== 'undefined') {
-    QRCode.toCanvas(canvas, referralLink, {
+  
+  if (container && typeof QRCode !== 'undefined') {
+    // Clear any existing QR code
+    container.innerHTML = '<div id="qr-canvas"></div>';
+    
+    // Generate new QR code
+    new QRCode(document.getElementById('qr-canvas'), {
+      text: referralLink,
       width: 180,
-      margin: 2,
-      color: {
-        dark: '#1E293B',
-        light: '#FFFFFF'
-      }
-    }, function(error) {
-      if (error) {
-        console.error('QR Code error:', error);
-        // Fallback: show a simple QR code placeholder
-        canvas.style.width = '180px';
-        canvas.style.height = '180px';
-        canvas.style.background = 'linear-gradient(135deg, #6366F1, #8B5CF6)';
-        canvas.style.borderRadius = '12px';
-        canvas.style.display = 'flex';
-        canvas.style.alignItems = 'center';
-        canvas.style.justifyContent = 'center';
-        canvas.innerHTML = '<i class="fa-solid fa-qrcode" style="font-size: 60px; color: white;"></i>';
-      }
+      height: 180,
+      colorDark: '#1E293B',
+      colorLight: '#FFFFFF',
+      correctLevel: QRCode.CorrectLevel.H
     });
+  } else {
+    // Fallback: show a simple QR code placeholder
+    container.innerHTML = '<div style="width: 180px; height: 180px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 12px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-qrcode" style="font-size: 60px; color: white;"></i></div>';
   }
 });
 

@@ -489,22 +489,29 @@
     </style>
     
     <script>
-    // Show bottom nav on specific pages (deposit, retrait, etc.) but NOT on dashboard
+    // Show bottom nav on specific pages (deposit, retrait, etc.) but NOT on auth pages
     document.addEventListener('DOMContentLoaded', function() {
       const bottomNav = document.getElementById('bottomNav');
       const currentPath = window.location.pathname;
+      const hostname = window.location.hostname;
+      
+      // Always hide on localhost for auth pages
+      const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
       
       // Pages where bottom nav should be shown
       const showNavPages = ['/deposit', '/retrait', '/produits_rapide', '/achats', '/historique', '/team', '/profile', '/ai-chat', '/ai-trading', '/formation/', '/netflix'];
       
-      // Auth pages where bottom nav should be hidden
+      // Auth pages where bottom nav should ALWAYS be hidden
       const hideNavPages = ['/connexion', '/inscription', '/login', '/register', '/'];
       
       const shouldShowNav = showNavPages.some(page => currentPath.startsWith(page));
       const shouldHideNav = hideNavPages.some(page => currentPath.startsWith(page));
       
       if (bottomNav) {
-        if (shouldShowNav && !shouldHideNav) {
+        // On localhost, only show on specific pages, hide everywhere else
+        if (isLocalhost && shouldHideNav) {
+          bottomNav.style.display = 'none';
+        } else if (shouldShowNav && !shouldHideNav) {
           bottomNav.style.display = 'flex';
           document.body.classList.add('has-bottom-nav');
           
