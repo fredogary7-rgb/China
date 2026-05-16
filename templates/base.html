@@ -464,9 +464,18 @@
       padding-bottom: 0 !important;
     }
     
-    /* Auth pages - hide bottom nav completely */
-    .auth-page .bottom-nav {
+    /* Auth pages - hide ALL navigation completely */
+    .auth-page .bottom-nav,
+    .auth-page .sidebar,
+    .auth-page .top-nav,
+    .auth-page .header-nav,
+    .auth-page nav:not(.auth-nav) {
       display: none !important;
+    }
+    
+    .auth-page body {
+      padding: 0 !important;
+      margin: 0 !important;
     }
         
         /* Small screens */
