@@ -421,34 +421,13 @@ body {
   <a href="/logout" class="logout-btn">
     <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
   </a>
+  </div>
 </div>
-
-
-
 {% endblock %}
 
-
-<nav class="bottom-nav">
-  <a href="/dashboard" class="nav-item">
-    <i class="fa-solid fa-house"></i>
-    <span>Accueil</span>
-  </a>
-  <a href="/produits_rapide" class="nav-item">
-    <i class="fa-solid fa-rocket"></i>
-    <span>Investir</span>
-  </a>
-  <a href="/team" class="nav-item">
-    <i class="fa-solid fa-users"></i>
-    <span>Réseau</span>
-  </a>
-  <a href="/profile" class="nav-item">
-    <i class="fa-solid fa-user"></i>
-    <span>Profil</span>
-  </a>
-</nav>
-
+{% block extra_js %}
 <!-- QR Code Generator Library -->
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
 <script>
 // Generate QR Code for referral link
@@ -456,26 +435,32 @@ document.addEventListener('DOMContentLoaded', function() {
   const referralCode = '{{ user.referral_code or user.phone }}';
   const referralLink = window.location.origin + '/inscription?ref=' + referralCode;
   
-  // Clear canvas
-  const container = document.getElementById('qr-code');
-  const canvas = document.getElementById('qr-canvas');
+  const qrContainer = document.getElementById('qr-code');
   
-  if (container && typeof QRCode !== 'undefined') {
-    // Clear any existing QR code
-    container.innerHTML = '<div id="qr-canvas"></div>';
+  if (qrContainer && typeof QRCode !== 'undefined') {
+    // Clear container
+    qrContainer.innerHTML = '';
     
-    // Generate new QR code
-    new QRCode(document.getElementById('qr-canvas'), {
-      text: referralLink,
+    // Generate QR code directly into the container
+    QRCode.toCanvas(qrContainer, referralLink, {
       width: 180,
-      height: 180,
-      colorDark: '#1E293B',
-      colorLight: '#FFFFFF',
-      correctLevel: QRCode.CorrectLevel.H
+      margin: 2,
+      color: {
+        dark: '#1E293B',
+        light: '#FFFFFF'
+      }
+    }, function(error) {
+      if (error) {
+        console.error('QR Code error:', error);
+        // Fallback: show placeholder
+        qrContainer.innerHTML = '<div style="width: 180px; height: 180px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 12px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-qrcode" style="font-size: 60px; color: white;"></i></div>';
+      }
     });
   } else {
     // Fallback: show a simple QR code placeholder
-    container.innerHTML = '<div style="width: 180px; height: 180px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 12px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-qrcode" style="font-size: 60px; color: white;"></i></div>';
+    if (qrContainer) {
+      qrContainer.innerHTML = '<div style="width: 180px; height: 180px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 12px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-qrcode" style="font-size: 60px; color: white;"></i></div>';
+    }
   }
 });
 
@@ -518,4 +503,5 @@ function copyReferralLink() {
   });
 }
 </script>
+{% endblock %}
 
