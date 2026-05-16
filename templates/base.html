@@ -247,7 +247,7 @@
         {% block page_styles %}{% endblock %}
     </style>
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
     
@@ -272,8 +272,8 @@
     <!-- Main Content -->
     {% block content %}{% endblock %}
     
-    <!-- Bottom Navigation (hidden on auth pages) -->
-    <nav class="bottom-nav" id="bottomNav" style="display: none;">
+    <!-- Bottom Navigation (visible on mobile) -->
+    <nav class="bottom-nav" id="bottomNav">
       <a href="/dashboard" class="nav-item">
         <i class="fa-solid fa-house"></i>
         <span>Accueil</span>
@@ -293,110 +293,231 @@
     </nav>
     
     <style>
-        /* Bottom Navigation - iOS & Android Optimized */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(30, 41, 59, 0.98);
-      border-top: 1px solid rgba(148, 163, 184, 0.1);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
-      z-index: 1000;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
-    }
-    
-    .bottom-nav .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      text-decoration: none;
-      color: var(--text-muted);
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-      padding: 8px 12px;
-      transition: all 0.2s;
-      flex: 1;
-      text-align: center;
-      border-radius: 12px;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    
-    .bottom-nav .nav-item i {
-      font-size: 22px;
-      transition: all 0.2s;
-    }
-    
-    .bottom-nav .nav-item:hover,
-    .bottom-nav .nav-item.active {
-      color: var(--primary);
-      background: rgba(99, 102, 241, 0.1);
-    }
-    
-    .bottom-nav .nav-item:active {
-      transform: scale(0.95);
-      opacity: 0.8;
-    }
-    
-    .bottom-nav .nav-item.active i {
-      transform: scale(1.1);
-    }
-    
-    /* Support for iPhone X and newer with notch */
-    @supports (padding-bottom: env(safe-area-inset-bottom)) {
-      .bottom-nav {
-        padding-bottom: calc(8px + env(safe-area-inset-bottom));
-      }
-    }
-    
-    /* Add padding to body when nav is visible */
-    body.has-bottom-nav {
-      padding-bottom: calc(70px + env(safe-area-inset-bottom));
-    }
-    
+        /* Bottom Navigation - Premium Fintech Style (Binance/Revolut) */
+        .bottom-nav {
+          position: fixed;
+          bottom: 16px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: calc(100% - 32px);
+          max-width: 400px;
+          background: rgba(30, 41, 59, 0.85);
+          backdrop-filter: blur(24px) saturate(180%);
+          -webkit-backdrop-filter: blur(24px) saturate(180%);
+          border: 1px solid rgba(148, 163, 184, 0.15);
+          border-radius: 24px;
+          display: none;
+          justify-content: center;
+          align-items: center;
+          padding: 8px 12px;
+          padding-bottom: calc(8px + env(safe-area-inset-bottom));
+          z-index: 1000;
+          box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            0 2px 8px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          gap: 4px;
+        }
+        
+        .bottom-nav::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border-radius: 24px;
+          background: linear-gradient(
+            135deg,
+            rgba(99, 102, 241, 0.1) 0%,
+            rgba(139, 92, 246, 0.05) 50%,
+            transparent 100%
+          );
+          pointer-events: none;
+          z-index: -1;
+        }
+        
+        .bottom-nav .nav-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          text-decoration: none;
+          color: var(--text-muted);
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 0.3px;
+          padding: 10px 16px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          text-align: center;
+          border-radius: 16px;
+          -webkit-tap-highlight-color: transparent;
+          user-select: none;
+          -webkit-user-select: none;
+          position: relative;
+          min-width: 64px;
+        }
+        
+        .bottom-nav .nav-item i {
+          font-size: 20px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          z-index: 1;
+        }
+        
+        .bottom-nav .nav-item span {
+          font-size: 10px;
+          font-weight: 600;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          z-index: 1;
+        }
+        
+        .bottom-nav .nav-item:hover {
+          color: var(--primary);
+          background: rgba(99, 102, 241, 0.08);
+          transform: translateY(-2px);
+        }
+        
+        .bottom-nav .nav-item.active {
+          color: var(--primary);
+          background: rgba(99, 102, 241, 0.15);
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+        
+        .bottom-nav .nav-item.active i {
+          transform: scale(1.15) translateY(-2px);
+          filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.4));
+        }
+        
+        .bottom-nav .nav-item.active::after {
+          content: '';
+          position: absolute;
+          bottom: 4px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 4px;
+          height: 4px;
+          border-radius: 50%;
+          background: var(--primary);
+          box-shadow: 0 0 8px var(--primary);
+        }
+        
+        .bottom-nav .nav-item:active {
+          transform: scale(0.95);
+          opacity: 0.9;
+        }
+        
+        /* Glow animation for active item */
+        @keyframes navGlow {
+          0%, 100% {
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+          }
+          50% {
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4), 0 0 30px rgba(99, 102, 241, 0.1);
+          }
+        }
+        
+        .bottom-nav .nav-item.active {
+          animation: navGlow 2s ease-in-out infinite;
+        }
+        
+        /* Support for iPhone X and newer with notch */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+          .bottom-nav {
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+          }
+        }
+        
+        /* Add padding to body when nav is visible */
+        body.has-bottom-nav {
+          padding-bottom: calc(90px + env(safe-area-inset-bottom));
+        }
+        
     /* Ensure proper viewport on mobile devices */
     @media (max-width: 768px) {
+      body:not(.dashboard-page) .bottom-nav {
+        display: flex !important;
+      }
+      
       body {
         min-height: 100vh;
         min-height: -webkit-fill-available;
+      }
+      
+      body.has-bottom-nav {
+        padding-bottom: calc(90px + env(safe-area-inset-bottom)) !important;
       }
       
       html {
         height: -webkit-fill-available;
       }
     }
+    
+    /* Dashboard-specific overrides - ensure sidebar works correctly */
+    .dashboard-page .bottom-nav {
+      display: none !important;
+    }
+    
+    .dashboard-page body.has-bottom-nav {
+      padding-bottom: 0 !important;
+    }
+        
+        /* Small screens */
+        @media (max-width: 360px) {
+          .bottom-nav {
+            width: calc(100% - 24px);
+            bottom: 12px;
+            padding: 6px 8px;
+            border-radius: 20px;
+          }
+          
+          .bottom-nav .nav-item {
+            padding: 8px 10px;
+            min-width: 56px;
+          }
+          
+          .bottom-nav .nav-item i {
+            font-size: 18px;
+          }
+          
+          .bottom-nav .nav-item span {
+            font-size: 9px;
+          }
+        }
     </style>
     
     <script>
-    // Show bottom nav on authenticated pages (not on login, register, index)
+    // Show bottom nav on specific pages (deposit, retrait, etc.) but NOT on dashboard
     document.addEventListener('DOMContentLoaded', function() {
       const bottomNav = document.getElementById('bottomNav');
       const currentPath = window.location.pathname;
-      const authPages = ['/connexion', '/inscription', '/login', '/register', '/'];
       
-      const isAuthPage = authPages.some(page => currentPath.startsWith(page));
+      // Pages where bottom nav should be shown
+      const showNavPages = ['/deposit', '/retrait', '/produits_rapide', '/achats', '/historique', '/team', '/profile', '/ai-chat', '/ai-trading', '/formation/', '/netflix'];
       
-      if (!isAuthPage && bottomNav) {
-        bottomNav.style.display = 'flex';
-        document.body.classList.add('has-bottom-nav');
-        
-        // Set active state
-        bottomNav.querySelectorAll('.nav-item').forEach(item => {
-          const href = item.getAttribute('href');
-          if (href === currentPath) {
-            item.classList.add('active');
-          }
-        });
+      // Auth pages where bottom nav should be hidden
+      const hideNavPages = ['/connexion', '/inscription', '/login', '/register', '/'];
+      
+      const shouldShowNav = showNavPages.some(page => currentPath.startsWith(page));
+      const shouldHideNav = hideNavPages.some(page => currentPath.startsWith(page));
+      
+      if (bottomNav) {
+        if (shouldShowNav && !shouldHideNav) {
+          bottomNav.style.display = 'flex';
+          document.body.classList.add('has-bottom-nav');
+          
+          // Set active state
+          bottomNav.querySelectorAll('.nav-item').forEach(item => {
+            const href = item.getAttribute('href');
+            if (href === currentPath) {
+              item.classList.add('active');
+            }
+          });
+        } else {
+          bottomNav.style.display = 'none';
+        }
       }
     });
     </script>

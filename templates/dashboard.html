@@ -2,6 +2,8 @@
 
 {% block title %}Dashboard | TokenFlow Premium{% endblock %}
 
+{% block body_class %}dashboard-page{% endblock %}
+
 {% block page_styles %}
 /* Dashboard Pro Styles */
 .dashboard-pro {
@@ -242,6 +244,56 @@
   height: 8px;
   border-radius: 50%;
   background: #EF4444;
+}
+
+/* Quick Navigation Bar */
+.quick-nav-bar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.quick-nav-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.quick-nav-item i {
+  font-size: 20px;
+}
+
+.quick-nav-item:hover {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+}
+
+.quick-nav-item.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px var(--primary-glow);
 }
 
 /* Wallet Hero Card */
@@ -1291,80 +1343,6 @@
   }
 }
 
-/* Bottom Navigation Bar - Optimized for iOS and Android */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: none;
-  justify-content: space-around;
-  align-items: center;
-  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
-  background: rgba(30, 41, 59, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
-  z-index: 1000;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
-  /* Support for iOS safe area */
-  padding-bottom: max(8px, env(safe-area-inset-bottom));
-}
-
-.bottom-nav .nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 8px 12px;
-  text-decoration: none;
-  color: var(--text-muted);
-  transition: all 0.2s ease;
-  border-radius: 12px;
-  min-width: 70px;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.bottom-nav .nav-item:hover,
-.bottom-nav .nav-item.active {
-  color: var(--primary);
-  background: rgba(99, 102, 241, 0.1);
-}
-
-.bottom-nav .nav-item:active {
-  transform: scale(0.95);
-  opacity: 0.8;
-}
-
-.bottom-nav .nav-item i {
-  font-size: 22px;
-}
-
-.bottom-nav .nav-item span {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-/* Support for iPhone X and newer with notch */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .bottom-nav {
-    padding-bottom: calc(8px + env(safe-area-inset-bottom));
-  }
-}
-
-@media (max-width: 768px) {
-  .bottom-nav {
-    display: flex;
-  }
-  
-  .pro-main {
-    padding-bottom: calc(70px + env(safe-area-inset-bottom)) !important;
-  }
-}
 {% endblock %}
 
 {% block content %}
@@ -1726,6 +1704,7 @@
 <button id="mobileMenuToggle" onclick="toggleMobileMenu()" style="display: none; position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 16px; background: var(--primary); color: white; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 8px 24px var(--primary-glow); z-index: 200;">
   <i class="fa-solid fa-bars"></i>
 </button>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -1945,22 +1924,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
   </script>
 {% endblock %}
-
-<nav class="bottom-nav">
-  <a href="/dashboard" class="nav-item active">
-    <i class="fa-solid fa-house"></i>
-    <span>Accueil</span>
-  </a>
-  <a href="/produits_rapide" class="nav-item">
-    <i class="fa-solid fa-rocket"></i>
-    <span>Investir</span>
-  </a>
-  <a href="/team" class="nav-item">
-    <i class="fa-solid fa-users"></i>
-    <span>Réseau</span>
-  </a>
-  <a href="/profile" class="nav-item">
-    <i class="fa-solid fa-user"></i>
-    <span>Profil</span>
-  </a>
-</nav>

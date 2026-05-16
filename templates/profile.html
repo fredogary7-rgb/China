@@ -310,6 +310,30 @@ body {
     <p style="font-size: 13px; color: var(--text-muted); text-align: center;">
       Partagez ce code et gagnez 27% de commission
     </p>
+    
+    <!-- QR Code -->
+    <div style="text-align: center; margin-top: 20px;">
+      <div id="qr-code" style="display: inline-flex; align-items: center; justify-content: center; padding: 12px; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+        <canvas id="qr-canvas"></canvas>
+      </div>
+      <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Scannez pour rejoindre</p>
+    </div>
+    
+    <!-- Share Buttons -->
+    <div style="display: flex; gap: 12px; margin-top: 16px;">
+      <button onclick="shareWhatsApp()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: #25D366; color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.3s;">
+        <i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i>
+        WhatsApp
+      </button>
+      <button onclick="shareTelegram()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: #0088cc; color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.3s;">
+        <i class="fa-brands fa-telegram" style="font-size: 18px;"></i>
+        Telegram
+      </button>
+    </div>
+    
+    <button onclick="copyReferralLink()" style="width: 100%; margin-top: 8px; padding: 12px; background: var(--bg-card); color: var(--primary); border: 1px solid var(--border-card); border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.3s;">
+      <i class="fa-regular fa-copy"></i> Copier le lien de parrainage
+    </button>
   </div>
 
   <!-- Menu -->
@@ -400,4 +424,80 @@ body {
     <span>Profil</span>
   </a>
 </nav>
+
+<!-- QR Code Generator Library -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+<script>
+// Generate QR Code for referral link
+document.addEventListener('DOMContentLoaded', function() {
+  const referralCode = '{{ user.referral_code or user.phone }}';
+  const referralLink = window.location.origin + '/inscription?ref=' + referralCode;
+  
+  // Generate QR code on canvas
+  const canvas = document.getElementById('qr-canvas');
+  if (canvas && typeof QRCode !== 'undefined') {
+    QRCode.toCanvas(canvas, referralLink, {
+      width: 180,
+      margin: 2,
+      color: {
+        dark: '#1E293B',
+        light: '#FFFFFF'
+      }
+    }, function(error) {
+      if (error) {
+        console.error('QR Code error:', error);
+        // Fallback: show a simple QR code placeholder
+        canvas.style.width = '180px';
+        canvas.style.height = '180px';
+        canvas.style.background = 'linear-gradient(135deg, #6366F1, #8B5CF6)';
+        canvas.style.borderRadius = '12px';
+        canvas.style.display = 'flex';
+        canvas.style.alignItems = 'center';
+        canvas.style.justifyContent = 'center';
+        canvas.innerHTML = '<i class="fa-solid fa-qrcode" style="font-size: 60px; color: white;"></i>';
+      }
+    });
+  }
+});
+
+// Share on WhatsApp
+function shareWhatsApp() {
+  const referralCode = '{{ user.referral_code or user.phone }}';
+  const referralLink = window.location.origin + '/inscription?ref=' + referralCode;
+  const message = `🎁 Rejoignez TokenFlow avec mon code de parrainage : ${referralCode}\n\nInscrivez-vous ici : ${referralLink}\n\nGagnez des bonus exclusifs ! 🚀`;
+  
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  window.open(whatsappUrl, '_blank');
+}
+
+// Share on Telegram
+function shareTelegram() {
+  const referralCode = '{{ user.referral_code or user.phone }}';
+  const referralLink = window.location.origin + '/inscription?ref=' + referralCode;
+  const message = `🎁 Rejoignez TokenFlow avec mon code de parrainage : ${referralCode}\n\nInscrivez-vous ici : ${referralLink}\n\nGagnez des bonus exclusifs ! 🚀`;
+  
+  const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
+  window.open(telegramUrl, '_blank');
+}
+
+// Copy referral link
+function copyReferralLink() {
+  const referralCode = '{{ user.referral_code or user.phone }}';
+  const referralLink = window.location.origin + '/inscription?ref=' + referralCode;
+  
+  navigator.clipboard.writeText(referralLink).then(() => {
+    showToast('Lien de parrainage copié !', 'success');
+  }).catch(() => {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = referralLink;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    showToast('Lien de parrainage copié !', 'success');
+  });
+}
+</script>
 
