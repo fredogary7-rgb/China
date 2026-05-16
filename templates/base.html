@@ -489,14 +489,23 @@
     </style>
     
     <script>
+    // Immediately hide bottom nav on auth pages before DOM renders
+    (function() {
+      var currentPath = window.location.pathname;
+      var hideNavPages = ['/connexion', '/inscription', '/login', '/register', '/'];
+      var shouldHideNav = hideNavPages.some(function(page) { 
+        return currentPath.startsWith(page); 
+      });
+      
+      if (shouldHideNav) {
+        document.documentElement.style.setProperty('--bottom-nav-display', 'none !important');
+      }
+    })();
+
     // Show bottom nav on specific pages (deposit, retrait, etc.) but NOT on auth pages
     document.addEventListener('DOMContentLoaded', function() {
       const bottomNav = document.getElementById('bottomNav');
       const currentPath = window.location.pathname;
-      const hostname = window.location.hostname;
-      
-      // Always hide on localhost for auth pages
-      const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
       
       // Pages where bottom nav should be shown
       const showNavPages = ['/deposit', '/retrait', '/produits_rapide', '/achats', '/historique', '/team', '/profile', '/ai-chat', '/ai-trading', '/formation/', '/netflix'];
@@ -508,8 +517,7 @@
       const shouldHideNav = hideNavPages.some(page => currentPath.startsWith(page));
       
       if (bottomNav) {
-        // On localhost, only show on specific pages, hide everywhere else
-        if (isLocalhost && shouldHideNav) {
+        if (shouldHideNav) {
           bottomNav.style.display = 'none';
         } else if (shouldShowNav && !shouldHideNav) {
           bottomNav.style.display = 'flex';
