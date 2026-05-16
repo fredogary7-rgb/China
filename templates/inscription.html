@@ -1,803 +1,751 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#6366F1">
-    <title>Inscription | TokenFlow</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Google Sign-In SDK -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        :root {
-            --primary: #5D5FEF;
-            --primary-gradient: linear-gradient(135deg, #5D5FEF 0%, #8B5CF6 50%, #06B6D4 100%);
-            --primary-glow: rgba(93, 95, 239, 0.3);
-            --primary-light: rgba(93, 95, 239, 0.1);
-            --bg-page: #F4F7FE;
-            --bg-card: #ffffff;
-            --bg-input: #F8FAFC;
-            --bg-card-solid: #ffffff;
-            --white: #ffffff;
-            --text-primary: #1A202C;
-            --text-secondary: #4A5568;
-            --text-muted: #718096;
-            --border-color: #E2E8F0;
-            --border-light: rgba(0,0,0,0.05);
-            --success: #27AE60;
-            --danger: #EB5757;
-            --radius-md: 14px;
-            --radius-lg: 16px;
-            --radius-2xl: 24px;
-            --transition-fast: 0.2s;
-            --transition-normal: 0.3s;
-        }
-
-        * { 
-            box-sizing: border-box; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background-color: var(--bg-page);
-            padding: 0;
-        }
-
-        /* Bannière Image TokenFlow */
-        .banner { 
-            width: 100%; 
-            height: 180px; 
-            position: relative;
-            background: var(--primary-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        
-        .banner-svg {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .banner-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.2));
-        }
-
-        .content { 
-            padding: 24px;
-            max-width: 480px;
-            margin: 0 auto;
-        }
-        
-        h1 { 
-            color: var(--text-primary); 
-            font-size: 22px; 
-            font-weight: 800; 
-            margin-bottom: 6px; 
-            text-align: center;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-            text-align: center;
-            margin-bottom: 24px;
-            display: block;
-        }
-
-        .flash { 
-            padding: 12px 16px; 
-            border-radius: var(--radius-md); 
-            margin-bottom: 16px; 
-            font-size: 13px; 
-            font-weight: 600; 
-            text-align: center; 
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .flash.danger { 
-            background: #FFF5F5; 
-            color: var(--danger); 
-            border: 1px solid #FED7D7; 
-        }
-
-        .flash.success { 
-            background: #F0FFF4; 
-            color: var(--success); 
-            border: 1px solid #C6F6D5; 
-        }
-
-        .input-group {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            margin-bottom: 12px;
-            padding: 2px 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: var(--transition-fast);
-        }
-
-        .input-group:focus-within {
-            border-color: var(--primary);
-            background: var(--white);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .input-group i { 
-            color: var(--primary); 
-            font-size: 16px; 
-            width: 20px; 
-            text-align: center; 
-            flex-shrink: 0; 
-        }
-
-        .input-group input, 
-        .input-group select {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text-primary);
-            width: 100%;
-            padding: 12px 0;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .input-group input::placeholder {
-            color: var(--text-muted);
-            font-weight: 400;
-        }
-
-        .input-group select {
-            cursor: pointer;
-        }
-
-        .btn-register-submit {
-            width: 100%;
-            padding: 16px;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 15px;
-            font-weight: 800;
-            cursor: pointer;
-            margin-top: 8px;
-            box-shadow: 0 10px 20px var(--primary-glow);
-            transition: var(--transition-normal);
-        }
-
-        .btn-register-submit:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 12px 25px var(--primary-glow);
-        }
-
-        .btn-register-submit:active {
-            transform: scale(0.98);
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border-color);
-        }
-
-        .divider span {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .social-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .social-btn {
-            padding: 12px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: var(--transition-fast);
-        }
-
-        .social-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .social-btn:active {
-            transform: scale(0.98);
-        }
-
-        .footer-box {
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        .footer-text { 
-            color: var(--text-muted); 
-            font-size: 13px; 
-            font-weight: 500; 
-            margin-bottom: 10px; 
-        }
-        
-        .btn-login-link {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 13px;
-            display: inline-block;
-        }
-
-        .btn-login-link:hover { 
-            text-decoration: underline; 
-        }
-
-        .password-toggle {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 4px;
-            flex-shrink: 0;
-        }
-
-        .password-toggle:hover {
-            color: var(--primary);
-        }
-
-        /* Features section - hidden on mobile, shown on tablet+ */
-        .features-section {
-            display: none;
-            padding: 40px 24px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-top: 24px;
-        }
-
-        .feature-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            text-align: center;
-            border: 1px solid var(--border-light);
-        }
-
-        .feature-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--primary-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 12px;
-        }
-
-        .feature-icon i {
-            font-size: 20px;
-            color: var(--primary);
-        }
-
-        .feature-card h3 {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-
-        .feature-card p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* Payment methods */
-        .payment-section {
-            display: none;
-            padding: 40px 24px;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .payment-section h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .payment-section p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-        }
-
-        .payment-logos {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .payment-logo {
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .payment-logo i {
-            font-size: 20px;
-        }
-
-        .payment-logo span {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        /* Footer */
-        .footer {
-            display: none;
-            text-align: center;
-            padding: 24px;
-            border-top: 1px solid var(--border-color);
-            margin-top: 40px;
-        }
-
-        .footer p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* Tablet+ responsive */
-        @media (min-width: 768px) {
-            .features-section {
-                display: block;
-            }
-
-            .payment-section {
-                display: block;
-            }
-
-            .footer {
-                display: block;
-            }
-
-            .content {
-                padding: 32px;
-            }
-
-            .banner {
-                height: 200px;
-            }
-        }
-
-        /* Desktop responsive */
-        @media (min-width: 1024px) {
-            body {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                padding: 40px;
-            }
-
-            .main-container {
-                display: flex;
-                gap: 40px;
-                max-width: 1100px;
-                width: 100%;
-            }
-
-            .form-container {
-                flex: 1;
-                max-width: 480px;
-            }
-
-            .info-container {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-            }
-
-            .features-section,
-            .payment-section {
-                display: block;
-                padding: 0;
-            }
-
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .banner {
-                display: none;
-            }
-
-            .info-title {
-                font-size: 36px;
-                font-weight: 800;
-                color: var(--text-primary);
-                margin-bottom: 16px;
-                line-height: 1.2;
-            }
-
-            .info-subtitle {
-                font-size: 16px;
-                color: var(--text-muted);
-                margin-bottom: 32px;
-                line-height: 1.6;
-            }
-
-            .info-stats {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 24px;
-                margin-bottom: 32px;
-            }
-
-            .stat-item {
-                text-align: center;
-            }
-
-            .stat-number {
-                font-size: 28px;
-                font-weight: 800;
-                background: var(--primary-gradient);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-            }
-
-            .stat-label {
-                font-size: 12px;
-                color: var(--text-muted);
-                margin-top: 4px;
-            }
-        }
-
-        /* iPhone specific adjustments */
-        @supports (-webkit-touch-callout: none) {
-            .input-group input,
-            .input-group select {
-                font-size: 16px; /* Prevents zoom on iOS */
-            }
-        }
-    </style>
-</head>
-<body>
-
+{% extends "base.html" %}
+
+{% block title %}Inscription | TokenFlow{% endblock %}
+
+{% block page_styles %}
+:root {
+  --primary: #5D5FEF;
+  --primary-gradient: linear-gradient(135deg, #5D5FEF 0%, #8B5CF6 50%, #06B6D4 100%);
+  --primary-glow: rgba(93, 95, 239, 0.3);
+  --primary-light: rgba(93, 95, 239, 0.1);
+  --bg-page: #F4F7FE;
+  --bg-card: #ffffff;
+  --bg-input: #F8FAFC;
+  --white: #ffffff;
+  --text-primary: #1A202C;
+  --text-secondary: #4A5568;
+  --text-muted: #718096;
+  --border-color: #E2E8F0;
+  --border-light: rgba(0,0,0,0.05);
+  --success: #27AE60;
+  --danger: #EB5757;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-2xl: 24px;
+  --transition-fast: 0.2s;
+  --transition-normal: 0.3s;
+}
+
+* { 
+  box-sizing: border-box; 
+  font-family: 'Plus Jakarta Sans', sans-serif; 
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  padding: 0;
+}
+
+/* Banner */
+.banner { 
+  width: 100%; 
+  height: 180px; 
+  position: relative;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.content { 
+  padding: 24px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+h1 { 
+  color: var(--text-primary); 
+  font-size: 22px; 
+  font-weight: 800; 
+  margin-bottom: 6px; 
+  text-align: center;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.flash { 
+  padding: 12px 16px; 
+  border-radius: var(--radius-md); 
+  margin-bottom: 16px; 
+  font-size: 13px; 
+  font-weight: 600; 
+  text-align: center; 
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.flash.danger { 
+  background: #FFF5F5; 
+  color: var(--danger); 
+  border: 1px solid #FED7D7; 
+}
+
+.flash.success { 
+  background: #F0FFF4; 
+  color: var(--success); 
+  border: 1px solid #C6F6D5; 
+}
+
+.input-group {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  padding: 2px 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: var(--transition-fast);
+}
+
+.input-group:focus-within {
+  border-color: var(--primary);
+  background: var(--white);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.input-group i { 
+  color: var(--primary); 
+  font-size: 16px; 
+  width: 20px; 
+  text-align: center; 
+  flex-shrink: 0; 
+}
+
+.input-group input, 
+.input-group select {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  width: 100%;
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.input-group input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.input-group select {
+  cursor: pointer;
+}
+
+.btn-register-submit {
+  width: 100%;
+  padding: 16px;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 10px 20px var(--primary-glow);
+  transition: var(--transition-normal);
+}
+
+.btn-register-submit:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 12px 25px var(--primary-glow);
+}
+
+.btn-register-submit:active {
+  transform: scale(0.98);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.divider span {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.social-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.social-btn {
+  padding: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition-fast);
+}
+
+.social-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.social-btn:active {
+  transform: scale(0.98);
+}
+
+.footer-box {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.footer-text { 
+  color: var(--text-muted); 
+  font-size: 13px; 
+  font-weight: 500; 
+  margin-bottom: 10px; 
+}
+
+.btn-login-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13px;
+  display: inline-block;
+}
+
+.btn-login-link:hover { 
+  text-decoration: underline; 
+}
+
+.password-toggle {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.password-toggle:hover {
+  color: var(--primary);
+}
+
+/* Features */
+.features-section {
+  display: none;
+  padding: 40px 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.feature-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  border: 1px solid var(--border-light);
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+.feature-icon i {
+  font-size: 20px;
+  color: var(--primary);
+}
+
+.feature-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.feature-card p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Payment methods */
+.payment-section {
+  display: none;
+  padding: 40px 24px;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.payment-section h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.payment-section p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.payment-logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.payment-logo {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.payment-logo i {
+  font-size: 20px;
+}
+
+.payment-logo span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Footer */
+.footer {
+  display: none;
+  text-align: center;
+  padding: 24px;
+  border-top: 1px solid var(--border-color);
+  margin-top: 40px;
+}
+
+.footer p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Tablet+ responsive */
+@media (min-width: 768px) {
+  .features-section { display: block; }
+  .payment-section { display: block; }
+  .footer { display: block; }
+  .content { padding: 32px; }
+  .banner { height: 200px; }
+}
+
+/* Desktop responsive */
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px;
+  }
+
+  .main-container {
+    display: flex;
+    gap: 40px;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .form-container {
+    flex: 1;
+    max-width: 480px;
+  }
+
+  .info-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .features-section,
+  .payment-section {
+    display: block;
+    padding: 0;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .banner { display: none; }
+
+  .info-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .info-subtitle {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .info-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .stat-item { text-align: center; }
+
+  .stat-number {
+    font-size: 28px;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+}
+
+/* iPhone specific adjustments */
+@supports (-webkit-touch-callout: none) {
+  .input-group input,
+  .input-group select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+{% endblock %}
+
+{% block content %}
 <div class="main-container">
-    <!-- Left: Info section (desktop only) -->
-    <div class="info-container" style="display: none;" id="infoSection">
-        <h1 class="info-title">Rejoignez la révolution TokenFlow</h1>
-        <p class="info-subtitle">Investissez intelligemment dans le futur numérique et générez des revenus passifs grâce à notre plateforme de trading automatisé.</p>
-        
-        <div class="info-stats">
-            <div class="stat-item">
-                <div class="stat-number">15K+</div>
-                <div class="stat-label">Utilisateurs</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">2.5M€</div>
-                <div class="stat-label">Volume</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">98%</div>
-                <div class="stat-label">Satisfaction</div>
-            </div>
-        </div>
-
-        <div class="features-section" style="display: block; padding: 0;">
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Sécurité maximale</h3>
-                    <p>Cryptage bancaire</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Transactions rapides</h3>
-                    <p>Retraits instantanés</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-coins"></i>
-                    </div>
-                    <h3>Multi-devises</h3>
-                    <p>XOF, USD, EUR</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Rendements élevés</h3>
-                    <p>Jusqu'à 2% quotidien</p>
-                </div>
-            </div>
-        </div>
+  <!-- Left: Info section (desktop only) -->
+  <div class="info-container" style="display: none;" id="infoSection">
+    <h1 class="info-title">Rejoignez la révolution TokenFlow</h1>
+    <p class="info-subtitle">Investissez intelligemment dans le futur numérique et générez des revenus passifs grâce à notre plateforme de trading automatisé.</p>
+    
+    <div class="info-stats">
+      <div class="stat-item">
+        <div class="stat-number">15K+</div>
+        <div class="stat-label">Utilisateurs</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">2.5M€</div>
+        <div class="stat-label">Volume</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">98%</div>
+        <div class="stat-label">Satisfaction</div>
+      </div>
     </div>
 
-    <!-- Right: Form section -->
-    <div class="form-container">
-        <!-- Mobile: Banner on top -->
-        <div class="banner">
-            <svg class="banner-svg" viewBox="0 0 400 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="90" r="120" fill="rgba(255,255,255,0.05)"/>
-                <circle cx="350" cy="90" r="100" fill="rgba(255,255,255,0.03)"/>
-                <circle cx="200" cy="170" r="80" fill="rgba(255,255,255,0.04)"/>
-                <path d="M0,90 Q100,30 200,90 T400,90" stroke="rgba(255,255,255,0.15)" stroke-width="2" fill="none"/>
-                <path d="M0,110 Q100,50 200,110 T400,110" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" fill="none"/>
-                <g transform="translate(170, 45)">
-                    <rect x="0" y="0" width="60" height="60" rx="15" fill="rgba(255,255,255,0.2)" />
-                    <text x="30" y="47" font-family="Plus Jakarta Sans, sans-serif" font-size="32" font-weight="900" fill="white" text-anchor="middle">T</text>
-                </g>
-                <text x="200" y="140" font-family="Plus Jakarta Sans, sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle" opacity="0.9">TokenFlow</text>
-                <text x="200" y="158" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="500" fill="rgba(255,255,255,0.7)" text-anchor="middle">Rejoignez la révolution</text>
-                <circle cx="80" cy="45" r="3" fill="rgba(255,255,255,0.3)"/>
-                <circle cx="320" cy="55" r="2" fill="rgba(255,255,255,0.2)"/>
-                <circle cx="120" cy="130" r="2" fill="rgba(255,255,255,0.25)"/>
-                <circle cx="280" cy="140" r="3" fill="rgba(255,255,255,0.2)"/>
-            </svg>
-            <div class="banner-overlay"></div>
+    <div class="features-section" style="display: block; padding: 0;">
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>Sécurité maximale</h3>
+          <p>Cryptage bancaire</p>
         </div>
-
-        <div class="content">
-            <h1>Créer un compte</h1>
-            <span class="subtitle">Rejoignez notre réseau de partenaires</span>
-
-            {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                {% for category, msg in messages %}
-                  <div class="flash {{ category }}">{{ msg }}</div>
-                {% endfor %}
-              {% endif %}
-            {% endwith %}
-
-            <form method="POST">
-                <div class="input-group">
-                    <i class="fa-solid fa-user"></i>
-                    <input type="text" name="username" placeholder="Nom d'utilisateur" required>
-                </div>
-
-                <div class="input-group">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" name="email" placeholder="Adresse email" required>
-                </div>
-
-                <div class="input-group">
-                    <i class="fa-solid fa-earth-africa"></i>
-                    <select name="pays" required>
-                        <option value="" disabled selected>Choisir mon pays</option>
-                        <option value="Bénin">🇧🇯 Bénin</option>
-                        <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
-                        <option value="Cameroun">🇨🇲 Cameroun</option>
-                        <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
-                        <option value="Gabon">🇬🇦 Gabon</option>
-                        <option value="Guinée">🇬🇳 Guinée</option>
-                        <option value="Mali">🇲🇱 Mali</option>
-                        <option value="Niger">🇳🇪 Niger</option>
-                        <option value="Sénégal">🇸🇳 Sénégal</option>
-                        <option value="Togo">🇹🇬 Togo</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <i class="fa-solid fa-phone"></i>
-                    <input type="tel" name="phone" placeholder="Numéro de téléphone" required>
-                </div>
-
-                <div class="input-group">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" name="password" placeholder="Mot de passe" required>
-                    <button type="button" class="password-toggle" onclick="togglePassword(this, 'password')">
-                        <i class="fa-solid fa-eye"></i>
-                    </button>
-                </div>
-
-                <div class="input-group">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <input type="password" name="confirm_password" placeholder="Confirmer le mot de passe" required>
-                    <button type="button" class="password-toggle" onclick="togglePassword(this, 'confirm_password')">
-                        <i class="fa-solid fa-eye"></i>
-                    </button>
-                </div>
-
-                <div class="input-group">
-                    <i class="fa-solid fa-ticket"></i>
-                    <input type="text" name="code_invitation" placeholder="Code d'invitation (optionnel)" value="{{ code_ref if code_ref else '' }}">
-                </div>
-
-                <button type="submit" class="btn-register-submit">
-                    Commencer l'aventure
-                </button>
-            </form>
-
-            <div class="divider">
-                <span>ou s'inscrire avec</span>
-            </div>
-
-            <div class="social-buttons">
-                <button class="social-btn" onclick="signupWithGoogle()">
-                    <i class="fa-brands fa-google" style="color: #DB4437;"></i>
-                    Google
-                </button>
-                <button class="social-btn" onclick="signupWithApple()">
-                    <i class="fa-brands fa-apple"></i>
-                    Apple
-                </button>
-            </div>
-
-            <div class="footer-box">
-                <div class="footer-text">Vous avez déjà un compte ?</div>
-                <a href="{{ url_for('connexion_page') }}" class="btn-login-link">
-                    Se connecter maintenant
-                </a>
-            </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <h3>Transactions rapides</h3>
+          <p>Retraits instantanés</p>
         </div>
-
-        <!-- Features (mobile) -->
-        <div class="features-section">
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Sécurité maximale</h3>
-                    <p>Cryptage bancaire</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Transactions rapides</h3>
-                    <p>Retraits instantanés</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-coins"></i>
-                    </div>
-                    <h3>Multi-devises</h3>
-                    <p>XOF, USD, EUR</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Rendements élevés</h3>
-                    <p>Jusqu'à 2% quotidien</p>
-                </div>
-            </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-coins"></i>
+          </div>
+          <h3>Multi-devises</h3>
+          <p>XOF, USD, EUR</p>
         </div>
-
-        <!-- Payment methods -->
-        <div class="payment-section">
-            <h2>Moyens de paiement acceptés</h2>
-            <p>Déposez et retirez en toute simplicité</p>
-            <div class="payment-logos">
-                <div class="payment-logo">
-                    <i class="fab fa-cc-visa" style="color: #1A1F71;"></i>
-                    <span>Visa</span>
-                </div>
-                <div class="payment-logo">
-                    <i class="fab fa-cc-mastercard" style="color: #EB001B;"></i>
-                    <span>Mastercard</span>
-                </div>
-                <div class="payment-logo">
-                    <i class="fas fa-mobile-alt" style="color: #FFCC00;"></i>
-                    <span>MTN MoMo</span>
-                </div>
-                <div class="payment-logo">
-                    <i class="fas fa-mobile-alt" style="color: #FF7900;"></i>
-                    <span>Orange Money</span>
-                </div>
-                <div class="payment-logo">
-                    <i class="fas fa-wallet" style="color: #1DC4E0;"></i>
-                    <span>Wave</span>
-                </div>
-            </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3>Rendements élevés</h3>
+          <p>Jusqu'à 2% quotidien</p>
         </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <p>© 2024 TokenFlow. Tous droits réservés.</p>
-        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Right: Form section -->
+  <div class="form-container">
+    <!-- Mobile: Banner on top -->
+    <div class="banner">
+      <svg class="banner-svg" viewBox="0 0 400 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="90" r="120" fill="rgba(255,255,255,0.05)"/>
+        <circle cx="350" cy="90" r="100" fill="rgba(255,255,255,0.03)"/>
+        <circle cx="200" cy="170" r="80" fill="rgba(255,255,255,0.04)"/>
+        <path d="M0,90 Q100,30 200,90 T400,90" stroke="rgba(255,255,255,0.15)" stroke-width="2" fill="none"/>
+        <path d="M0,110 Q100,50 200,110 T400,110" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" fill="none"/>
+        <g transform="translate(170, 45)">
+          <rect x="0" y="0" width="60" height="60" rx="15" fill="rgba(255,255,255,0.2)" />
+          <text x="30" y="47" font-family="Plus Jakarta Sans, sans-serif" font-size="32" font-weight="900" fill="white" text-anchor="middle">T</text>
+        </g>
+        <text x="200" y="140" font-family="Plus Jakarta Sans, sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle" opacity="0.9">TokenFlow</text>
+        <text x="200" y="158" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="500" fill="rgba(255,255,255,0.7)" text-anchor="middle">Rejoignez la révolution</text>
+        <circle cx="80" cy="45" r="3" fill="rgba(255,255,255,0.3)"/>
+        <circle cx="320" cy="55" r="2" fill="rgba(255,255,255,0.2)"/>
+        <circle cx="120" cy="130" r="2" fill="rgba(255,255,255,0.25)"/>
+        <circle cx="280" cy="140" r="3" fill="rgba(255,255,255,0.2)"/>
+      </svg>
+    </div>
+
+    <div class="content">
+      <h1>Créer un compte</h1>
+      <span class="subtitle">Rejoignez notre réseau de partenaires</span>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, msg in messages %}
+            <div class="flash {{ category }}">{{ msg }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST">
+        <div class="input-group">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="email" name="email" placeholder="Adresse email" required>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-earth-africa"></i>
+          <select name="pays" required>
+            <option value="" disabled selected>Choisir mon pays</option>
+            <option value="Bénin">🇧🇯 Bénin</option>
+            <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
+            <option value="Cameroun">🇨🇲 Cameroun</option>
+            <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
+            <option value="Gabon">🇬🇦 Gabon</option>
+            <option value="Guinée">🇬🇳 Guinée</option>
+            <option value="Mali">🇲🇱 Mali</option>
+            <option value="Niger">🇳🇪 Niger</option>
+            <option value="Sénégal">🇸🇳 Sénégal</option>
+            <option value="Togo">🇹🇬 Togo</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-phone"></i>
+          <input type="tel" name="phone" placeholder="Numéro de téléphone" required>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" name="password" placeholder="Mot de passe" required>
+          <button type="button" class="password-toggle" onclick="togglePassword(this, 'password')">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-circle-check"></i>
+          <input type="password" name="confirm_password" placeholder="Confirmer le mot de passe" required>
+          <button type="button" class="password-toggle" onclick="togglePassword(this, 'confirm_password')">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-ticket"></i>
+          <input type="text" name="code_invitation" placeholder="Code d'invitation (optionnel)" value="{{ code_ref if code_ref else '' }}">
+        </div>
+
+        <button type="submit" class="btn-register-submit">
+          Commencer l'aventure
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>ou s'inscrire avec</span>
+      </div>
+
+      <div class="social-buttons">
+        <button class="social-btn" onclick="signupWithGoogle()">
+          <i class="fa-brands fa-google" style="color: #DB4437;"></i>
+          Google
+        </button>
+        <button class="social-btn" onclick="signupWithApple()">
+          <i class="fa-brands fa-apple"></i>
+          Apple
+        </button>
+      </div>
+
+      <div class="footer-box">
+        <div class="footer-text">Vous avez déjà un compte ?</div>
+        <a href="{{ url_for('connexion_page') }}" class="btn-login-link">
+          Se connecter maintenant
+        </a>
+      </div>
+    </div>
+
+    <!-- Features (mobile) -->
+    <div class="features-section">
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+          <h3>Sécurité maximale</h3>
+          <p>Cryptage bancaire</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+          <h3>Transactions rapides</h3>
+          <p>Retraits instantanés</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-coins"></i></div>
+          <h3>Multi-devises</h3>
+          <p>XOF, USD, EUR</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+          <h3>Rendements élevés</h3>
+          <p>Jusqu'à 2% quotidien</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment methods -->
+    <div class="payment-section">
+      <h2>Moyens de paiement acceptés</h2>
+      <p>Déposez et retirez en toute simplicité</p>
+      <div class="payment-logos">
+        <div class="payment-logo">
+          <i class="fab fa-cc-visa" style="color: #1A1F71;"></i>
+          <span>Visa</span>
+        </div>
+        <div class="payment-logo">
+          <i class="fab fa-cc-mastercard" style="color: #EB001B;"></i>
+          <span>Mastercard</span>
+        </div>
+        <div class="payment-logo">
+          <i class="fas fa-mobile-alt" style="color: #FFCC00;"></i>
+          <span>MTN MoMo</span>
+        </div>
+        <div class="payment-logo">
+          <i class="fas fa-mobile-alt" style="color: #FF7900;"></i>
+          <span>Orange Money</span>
+        </div>
+        <div class="payment-logo">
+          <i class="fas fa-wallet" style="color: #1DC4E0;"></i>
+          <span>Wave</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>© 2024 TokenFlow. Tous droits réservés.</p>
+    </div>
+  </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
 // Show info section on desktop
 function checkScreenSize() {
-    const infoSection = document.getElementById('infoSection');
-    if (window.innerWidth >= 1024) {
-        infoSection.style.display = 'flex';
-    } else {
-        infoSection.style.display = 'none';
-    }
+  const infoSection = document.getElementById('infoSection');
+  if (window.innerWidth >= 1024) {
+    infoSection.style.display = 'flex';
+  } else {
+    infoSection.style.display = 'none';
+  }
 }
 
 window.addEventListener('resize', checkScreenSize);
-checkScreenSize(); // Run on load
+checkScreenSize();
 
 function togglePassword(btn, inputName) {
-    const input = btn.parentElement.querySelector(`input[name="${inputName}"]`);
-    const icon = btn.querySelector('i');
-    
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.className = 'fa-solid fa-eye-slash';
-    } else {
-        input.type = 'password';
-        icon.className = 'fa-solid fa-eye';
-    }
+  const input = btn.parentElement.querySelector(`input[name="${inputName}"]`);
+  const icon = btn.querySelector('i');
+  
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'fa-solid fa-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'fa-solid fa-eye';
+  }
 }
 
-// Google Sign-Up - Redirection directe vers OAuth backend
 function signupWithGoogle() {
-    window.location.href = '/auth/google?register=true';
+  window.location.href = '/auth/google?register=true';
 }
 
-// Apple Sign-Up
 function signupWithApple() {
-    window.location.href = '/auth/apple?register=true';
+  window.location.href = '/auth/apple?register=true';
 }
 </script>
-
-</body>
-</html>
+{% endblock %}

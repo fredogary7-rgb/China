@@ -3,7 +3,29 @@
 {% block title %}TokenFlow - Investissement & Trading Premium{% endblock %}
 
 {% block page_styles %}
-/* Dark mode using data-theme attribute (compatible with fintech.js) */
+/* ============================================
+   PAGE D'ACCUEIL PREMIUM
+   Style: Binance, Bybit, Revolut
+   ============================================ */
+
+:root {
+  --bg-page: #F1F5F9;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --bg-glass: rgba(255, 255, 255, 0.65);
+  --border-glow: rgba(99, 102, 241, 0.2);
+  --border-card: rgba(148, 163, 184, 0.2);
+  --profit-green: #10B981;
+  --profit-green-glow: rgba(16, 185, 129, 0.15);
+  --primary: #6366F1;
+  --primary-glow: rgba(99, 102, 241, 0.15);
+  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+}
+
+/* Dark mode */
 html[data-theme="dark"] {
   --bg-page: #0F172A;
   --bg-card: rgba(30, 41, 59, 0.85);
@@ -16,75 +38,7 @@ html[data-theme="dark"] {
   --text-muted: #64748B;
 }
 
-html[data-theme="dark"] .hero-section,
-html[data-theme="dark"] .stat-item,
-html[data-theme="dark"] .feature-card,
-html[data-theme="dark"] .cta-section,
-html[data-theme="dark"] .footer {
-  background: var(--bg-card);
-}
-
-html[data-theme="dark"] .floating-card {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: rgba(71, 85, 105, 0.4);
-}
-
-html[data-theme="dark"] .ai-chat-window {
-  background: rgba(30, 41, 59, 0.95);
-  border-color: rgba(71, 85, 105, 0.3);
-}
-
-html[data-theme="dark"] .message-content {
-  background: rgba(51, 65, 85, 0.8);
-}
-
-html[data-theme="dark"] .quick-replies button {
-  background: rgba(99, 102, 241, 0.15);
-  border-color: rgba(99, 102, 241, 0.3);
-}
-
-html[data-theme="dark"] .chat-input-area input {
-  background: rgba(51, 65, 85, 0.5);
-  border-color: rgba(71, 85, 105, 0.4);
-  color: var(--text-primary);
-}
-
-html[data-theme="dark"] .float-img {
-  border-color: rgba(71, 85, 105, 0.5);
-}
-
-/* ============================================
-   PAGE D'ACCUEIL PREMIUM
-   Style: Binance, Bybit, Revolut
-   ============================================ */
-
-:root {
-  /* Palette Fintech Premium - Thème Clair */
-  --bg-page: #F1F5F9;
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --bg-card-hover: rgba(255, 255, 255, 0.95);
-  --bg-glass: rgba(255, 255, 255, 0.65);
-  --border-glow: rgba(99, 102, 241, 0.2);
-  --border-card: rgba(148, 163, 184, 0.2);
-  
-  /* Couleurs */
-  --profit-green: #10B981;
-  --profit-green-glow: rgba(16, 185, 129, 0.15);
-  --primary: #6366F1;
-  --primary-glow: rgba(99, 102, 241, 0.15);
-  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-  
-  /* Text */
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
-}
-
-* { 
-  box-sizing: border-box; 
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
+* { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
 
 body {
   margin: 0;
@@ -94,7 +48,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Background animé */
 body::before {
   content: '';
   position: fixed;
@@ -102,19 +55,6 @@ body::before {
   background: 
     radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Grid de fond */
-body::after {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: 
-    linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
   pointer-events: none;
   z-index: 0;
 }
@@ -127,9 +67,7 @@ body::after {
   padding: 20px;
 }
 
-/* ============================================
-   HERO SECTION
-   ============================================ */
+/* Hero Section */
 .hero-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -224,7 +162,7 @@ body::after {
   text-align: center;
 }
 
-.hero-visual .floating-card {
+.floating-card {
   background: var(--bg-card);
   border-radius: 24px;
   padding: 40px;
@@ -254,9 +192,7 @@ body::after {
   margin-top: 8px;
 }
 
-/* ============================================
-   STATS BAR
-   ============================================ */
+/* Stats Bar */
 .stats-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -308,9 +244,7 @@ body::after {
   letter-spacing: 0.5px;
 }
 
-/* ============================================
-   FEATURES
-   ============================================ */
+/* Features */
 .features-section {
   margin-bottom: 60px;
 }
@@ -384,9 +318,7 @@ body::after {
   margin: 0;
 }
 
-/* ============================================
-   CTA SECTION
-   ============================================ */
+/* CTA Section */
 .cta-section {
   background: var(--bg-card);
   border-radius: 24px;
@@ -422,9 +354,7 @@ body::after {
   margin-bottom: 32px;
 }
 
-/* ============================================
-   FOOTER
-   ============================================ */
+/* Footer */
 .footer {
   margin-top: 60px;
   padding: 32px;
@@ -446,118 +376,428 @@ body::after {
   color: var(--text-secondary);
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+/* Responsive */
 @media (max-width: 1024px) {
   .hero-section {
     grid-template-columns: 1fr;
     text-align: center;
   }
-  
-  .hero-content h1 {
-    font-size: 36px;
-  }
-  
-  .hero-buttons {
-    justify-content: center;
-  }
-  
-  .stats-bar {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .features-grid {
-    grid-template-columns: 1fr;
-  }
+  .hero-content h1 { font-size: 36px; }
+  .hero-buttons { justify-content: center; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .features-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-  .app-container {
-    padding: 16px;
-  }
-  
-  .hero-section {
-    padding: 40px 20px;
-  }
-  
-  .hero-content h1 {
-    font-size: 28px;
-  }
-  
-  .stats-bar {
-    grid-template-columns: 1fr;
-  }
-  
-  .cta-section {
-    padding: 32px 20px;
-  }
+  .app-container { padding: 16px; }
+  .hero-section { padding: 40px 20px; }
+  .hero-content h1 { font-size: 28px; }
+  .stats-bar { grid-template-columns: 1fr; }
+  .cta-section { padding: 32px 20px; }
 }
 
-/* Images flottantes - Positionnement professionnel */
-.floating-images {
-  position: relative;
-  margin-top: 24px;
-  height: 160px;
+/* Top Controls */
+.top-controls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
   display: flex;
+  gap: 12px;
+  z-index: 1002;
+}
+
+.control-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-primary);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
   justify-content: center;
+}
+
+.control-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.lang-selector { position: relative; }
+
+.lang-btn { width: auto; padding: 0 14px; gap: 8px; font-size: 14px; font-weight: 600; }
+
+.lang-menu {
+  position: absolute;
+  top: 54px;
+  right: 0;
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-card);
+  padding: 8px;
+  min-width: 160px;
+  display: none;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.lang-menu.active { display: block; }
+
+.lang-menu button {
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.lang-menu button:hover {
+  background: var(--primary-glow);
+  color: var(--primary);
+}
+
+/* Notifications */
+.notification-btn { position: relative; }
+
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #EF4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notifications-panel {
+  position: fixed;
+  top: 74px;
+  right: 20px;
+  width: 360px;
+  max-width: calc(100vw - 40px);
+  background: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid var(--border-card);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  z-index: 1002;
+  display: none;
+  overflow: hidden;
+}
+
+.notifications-panel.active { display: block; }
+
+.notif-header {
+  padding: 16px 20px;
+  background: var(--primary-gradient);
+  color: white;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
-.float-img {
+.notif-header h3 { margin: 0; font-size: 16px; font-weight: 700; }
+
+.notif-header button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.notif-list { max-height: 400px; overflow-y: auto; }
+
+.notif-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-card);
+}
+
+.notif-item.unread { background: var(--primary-glow); }
+
+.notif-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.notif-icon.success { background: rgba(16, 185, 129, 0.15); }
+.notif-icon.profit { background: rgba(99, 102, 241, 0.15); }
+.notif-icon.info { background: rgba(245, 158, 11, 0.15); }
+
+.notif-content { flex: 1; min-width: 0; }
+
+.notif-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.notif-message {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.notif-time {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* AI Chatbot */
+.ai-chat-toggle {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 8px 30px var(--primary-glow);
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-chat-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 40px var(--primary-glow);
+}
+
+.ai-chat-toggle .pulse {
   position: absolute;
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  animation: floatGentle 4s ease-in-out infinite;
-  transition: all 0.3s ease;
-}
-
-.float-img:hover {
-  transform: scale(1.15);
-  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.25);
-  z-index: 10;
-}
-
-.float-img img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.4);
+  animation: pulse 2s infinite;
 }
 
-/* Positionnement en hexagone autour de la carte */
-.float-img-1 { top: 0; left: 50%; transform: translateX(-50%); animation-delay: 0s; }
-.float-img-2 { top: 15%; right: 5%; animation-delay: 0.5s; }
-.float-img-3 { bottom: 15%; right: 10%; animation-delay: 1s; }
-.float-img-4 { bottom: 0; left: 50%; transform: translateX(-50%); animation-delay: 1.5s; }
-.float-img-5 { bottom: 15%; left: 10%; animation-delay: 2s; }
-.float-img-6 { top: 15%; left: 5%; animation-delay: 2.5s; }
-
-@keyframes floatGentle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 
-/* Animation différente pour chaque image */
-.float-img-2, .float-img-5 {
-  animation-name: floatGentle2;
+.ai-chat-window {
+  position: fixed;
+  bottom: 100px;
+  right: 30px;
+  width: 380px;
+  max-width: calc(100vw - 60px);
+  height: 500px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border-card);
 }
 
-.float-img-3, .float-img-6 {
-  animation-name: floatGentle3;
+.ai-chat-window.active {
+  display: flex;
+  animation: slideIn 0.3s ease;
 }
 
-@keyframes floatGentle2 {
-  0%, 100% { transform: translateY(0) translateX(3px); }
-  50% { transform: translateY(-12px) translateX(-3px); }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes floatGentle3 {
-  0%, 100% { transform: translateY(0) translateX(-3px); }
-  50% { transform: translateY(-8px) translateX(3px); }
+.chat-header {
+  padding: 20px;
+  background: var(--primary-gradient);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-header-info i { font-size: 24px; }
+
+.chat-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.chat-close:hover { background: rgba(255, 255, 255, 0.3); }
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message {
+  display: flex;
+  gap: 12px;
+  animation: fadeIn 0.3s ease;
+}
+
+.message.user { flex-direction: row-reverse; }
+
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.message-content {
+  background: var(--bg-glass);
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.message.user .message-content {
+  background: var(--primary);
+  color: white;
+}
+
+.quick-replies {
+  padding: 12px 20px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border-card);
+}
+
+.quick-replies button {
+  padding: 8px 14px;
+  background: var(--primary-glow);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 20px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.quick-replies button:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.chat-input-area {
+  padding: 16px 20px;
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid var(--border-card);
+}
+
+.chat-input-area input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+.chat-input-area input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.send-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--primary-gradient);
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.send-btn:hover { transform: scale(1.05); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .ai-chat-window {
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 70vh;
+    border-radius: 20px 20px 0 0;
+  }
+  .ai-chat-toggle {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+  .top-controls {
+    top: 10px;
+    right: 10px;
+    gap: 8px;
+  }
+  .control-btn { width: 40px; height: 40px; }
+  .notifications-panel {
+    top: 54px;
+    right: 10px;
+  }
 }
 {% endblock %}
 
@@ -567,15 +807,15 @@ body::after {
   <!-- Hero Section -->
   <section class="hero-section">
     <div class="hero-content">
-      <h1>Investissez dans l'Avenir avec TokenFlow</h1>
-      <p class="subtitle">
+      <h1 data-i18n="hero_title">Investissez dans l'Avenir avec TokenFlow</h1>
+      <p class="subtitle" data-i18n="hero_subtitle">
         Plateforme d'investissement premium avec trading automatisé par IA. 
         Rejoignez plus de 10 000 investisseurs qui génèrent des revenus passifs quotidiens.
       </p>
       <div class="hero-buttons">
         <a href="/inscription" class="btn-primary">
           <i class="fa-solid fa-rocket"></i>
-          Commencer maintenant
+          <span data-i18n="btn_start">Commencer maintenant</span>
         </a>
         <a href="/connexion" class="btn-secondary">
           <i class="fa-solid fa-sign-in-alt"></i>
@@ -596,28 +836,6 @@ body::after {
         </div>
         <div class="label">Profit Moyen / Mois</div>
       </div>
-      
-      <!-- Images flottantes décoratives -->
-      <div class="floating-images">
-        <div class="float-img float-img-1">
-          <img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=100" alt="Bitcoin">
-        </div>
-        <div class="float-img float-img-2">
-          <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=100" alt="Trading">
-        </div>
-        <div class="float-img float-img-3">
-          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=100" alt="Gold">
-        </div>
-        <div class="float-img float-img-4">
-          <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=100" alt="AI">
-        </div>
-        <div class="float-img float-img-5">
-          <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=100" alt="Security">
-        </div>
-        <div class="float-img float-img-6">
-          <img src="https://images.unsplash.com/photo-1563089145-599997674d42?w=100" alt="Money">
-        </div>
-      </div>
     </div>
   </section>
 
@@ -626,89 +844,81 @@ body::after {
     <div class="stat-item">
       <div class="icon"><i class="fa-solid fa-users"></i></div>
       <div class="value">10,847</div>
-      <div class="label">Investisseurs</div>
+      <div class="label" data-i18n="stats_investors">Investisseurs</div>
     </div>
     <div class="stat-item">
       <div class="icon"><i class="fa-solid fa-chart-pie"></i></div>
       <div class="value">$2.4M</div>
-      <div class="label">Volume Total</div>
+      <div class="label" data-i18n="stats_volume">Volume Total</div>
     </div>
     <div class="stat-item">
       <div class="icon"><i class="fa-solid fa-robot"></i></div>
       <div class="value">324</div>
-      <div class="label">Bots Actifs</div>
+      <div class="label" data-i18n="stats_bots">Bots Actifs</div>
     </div>
     <div class="stat-item">
       <div class="icon"><i class="fa-solid fa-trophy"></i></div>
       <div class="value">+127%</div>
-      <div class="label">ROI Moyen</div>
+      <div class="label" data-i18n="stats_roi">ROI Moyen</div>
     </div>
   </section>
 
   <!-- Features Section -->
   <section class="features-section">
     <div class="section-header">
-      <h2>Pourquoi Choisir TokenFlow ?</h2>
-      <p>Une plateforme complète pour maximiser vos rendements</p>
+      <h2 data-i18n="features_title">Pourquoi Choisir TokenFlow ?</h2>
+      <p data-i18n="features_subtitle">Une plateforme complète pour maximiser vos rendements</p>
     </div>
     
     <div class="features-grid">
       <div class="feature-card">
         <div class="icon"><i class="fa-solid fa-brain"></i></div>
         <h3>Trading par IA</h3>
-        <p>Nos algorithmes d'intelligence artificielle analysent les marchés 24/7 pour identifier les meilleures opportunités de trading.</p>
+        <p>Nos algorithmes d'intelligence artificielle analysent les marchés 24/7.</p>
       </div>
-      
       <div class="feature-card">
         <div class="icon"><i class="fa-solid fa-shield-halved"></i></div>
         <h3>Sécurité Maximale</h3>
-        <p>Vos fonds sont protégés par un cryptage de niveau bancaire et stockés dans des cold wallets sécurisés.</p>
+        <p>Vos fonds sont protégés par un cryptage de niveau bancaire.</p>
       </div>
-      
       <div class="feature-card">
         <div class="icon"><i class="fa-solid fa-bolt"></i></div>
         <h3>Retraits Rapides</h3>
-        <p>Retirez vos gains à tout moment via Mobile Money ou carte bancaire. Traitement en 24-48h ouvrables.</p>
+        <p>Retirez vos gains à tout moment. Traitement en 24-48h.</p>
       </div>
-      
       <div class="feature-card">
         <div class="icon"><i class="fa-solid fa-chart-line"></i></div>
         <h3>Suivi en Temps Réel</h3>
-        <p>Dashboard complet avec graphiques, statistiques de performance et notifications instantanées.</p>
+        <p>Dashboard complet with graphiques et statistiques.</p>
       </div>
-      
       <div class="feature-card">
         <div class="icon"><i class="fa-solid fa-headset"></i></div>
         <h3>Support 24/7</h3>
-        <p>Notre équipe de support est disponible 24h/24 et 7j/7 pour répondre à toutes vos questions.</p>
+        <p>Notre équipe est disponible 24h/24 et 7j/7.</p>
       </div>
-      
       <div class="feature-card">
         <div class="icon"><i class="fa-solid fa-coins"></i></div>
         <h3>Multi-Devises</h3>
-        <p>Investissez et retirez en USD et EUR. Changez de devise instantanément sans frais cachés.</p>
+        <p>Investissez et retirez en USD et EUR sans frais cachés.</p>
       </div>
     </div>
   </section>
 
   <!-- CTA Section -->
   <section class="cta-section">
-    <h2>Prêt à Commencer ?</h2>
-    <p>Rejoignez TokenFlow aujourd'hui et commencez à générer des revenus passifs</p>
+    <h2 data-i18n="cta_title">Prêt à Commencer ?</h2>
+    <p data-i18n="cta_subtitle">Rejoignez TokenFlow aujourd'hui et commencez à générer des revenus passifs</p>
     <a href="/inscription" class="btn-primary" style="font-size: 18px; padding: 20px 48px;">
       <i class="fa-solid fa-user-plus"></i>
-      Créer un compte
+      <span data-i18n="btn_create">Créer un compte</span>
     </a>
   </section>
 
-  <!-- Top Right Controls -->
+  <!-- Top Controls -->
   <div class="top-controls">
-    <!-- Theme Toggle -->
     <button class="control-btn" onclick="toggleTheme()" title="Changer le thème">
       <i class="fa-solid fa-moon" id="themeIcon"></i>
     </button>
-    
-    <!-- Language Selector -->
     <div class="lang-selector">
       <button class="control-btn lang-btn" onclick="toggleLangMenu()">
         <i class="fa-solid fa-globe"></i>
@@ -722,9 +932,7 @@ body::after {
         <button onclick="setLanguage('pt')">🇧🇷 Português</button>
       </div>
     </div>
-    
-    <!-- Notifications -->
-    <button class="control-btn notification-btn" onclick="toggleNotifications()" title="Notifications">
+    <button class="control-btn notification-btn" onclick="toggleNotifications()">
       <i class="fa-solid fa-bell"></i>
       <span class="notification-badge" id="notifBadge">3</span>
     </button>
@@ -740,42 +948,41 @@ body::after {
       <div class="notif-item unread">
         <div class="notif-icon success">✅</div>
         <div class="notif-content">
-          <div class="notif-title" data-i18n="notif1_title">Dépôt confirmé</div>
-          <div class="notif-message" data-i18n="notif1_msg">Votre dépôt de $80 USD a été crédité.</div>
+          <div class="notif-title">Dépôt confirmé</div>
+          <div class="notif-message">Votre dépôt de $80 USD a été crédité.</div>
           <div class="notif-time">Il y a 5 min</div>
         </div>
       </div>
       <div class="notif-item unread">
         <div class="notif-icon profit">📈</div>
         <div class="notif-content">
-          <div class="notif-title" data-i18n="notif2_title">Profit quotidien</div>
-          <div class="notif-message" data-i18n="notif2_msg">+$4 USD de profit sur votre investissement.</div>
+          <div class="notif-title">Profit quotidien</div>
+          <div class="notif-message">+$4 USD de profit sur votre investissement.</div>
           <div class="notif-time">Il y a 1h</div>
         </div>
       </div>
       <div class="notif-item">
         <div class="notif-icon info">🎁</div>
         <div class="notif-content">
-          <div class="notif-title" data-i18n="notif3_title">Bonus de bienvenue</div>
-          <div class="notif-message" data-i18n="notif3_msg">$1.60 USD ont été ajoutés à votre compte.</div>
+          <div class="notif-title">Bonus de bienvenue</div>
+          <div class="notif-message">$1.60 USD ont été ajoutés à votre compte.</div>
           <div class="notif-time">Il y a 2h</div>
         </div>
       </div>
     </div>
   </div>
-  
+
   <!-- Footer -->
   <footer class="footer">
     <p>&copy; 2024 TokenFlow Inc. Tous droits réservés.</p>
     <div class="contact-info">
-      📞 +1 343-453-7211 &bull; ✉️ support@tokenflow.com
+      📞 +1 343-453-7211 • ✉️ support@tokenflow.com
     </div>
   </footer>
-
 </div>
 
 <!-- AI Chatbot Button -->
-<button class="ai-chat-toggle" onclick="toggleAIChat()" title="Poser une question à l'IA">
+<button class="ai-chat-toggle" onclick="toggleAIChat()">
   <i class="fa-solid fa-robot"></i>
   <span class="pulse"></span>
 </button>
@@ -824,664 +1031,25 @@ body::after {
 
 {% block extra_js %}
 <script>
-// Réponses de l'IA TokenFlow
-const AI_RESPONSES = {
-  'c\'est quoi tokenflow': 'TokenFlow est une plateforme d\'investissement premium qui utilise l\'intelligence artificielle pour générer des revenus passifs. Nous proposons du trading automatisé sur les cryptomonnaies, le forex, l\'or et plus encore. Rejoignez plus de 10 000 investisseurs qui nous font confiance ! 🚀',
-  
-  'comment commencer': 'C\'est très simple ! 1️⃣ Cliquez sur "Commencer maintenant" 2️⃣ Inscrivez-vous avec votre email ou Google 3️⃣ Faites un dépôt minimum de 10 USD 4️⃣ Choisissez un produit d\'investissement 5️⃣ Laissez l\'IA travailler pour vous ! 💰',
-  
-  'est-ce sécurisé': 'Absolument ! 🔒 TokenFlow utilise un cryptage de niveau bancaire, des cold wallets pour stocker les fonds, et une vérification en deux étapes. Nous sommes conformes aux réglementations internationales et transparents sur toutes nos opérations.',
-  
-  'frais de retrait': 'Les retraits sont simples et transparents : ✅ Frais fixes de 3% ✅ Minimum 15 USD ✅ Traitement en 24-48h ouvrables ✅ Disponible via Mobile Money ou carte bancaire. Pas de frais cachés !',
-  
-  'rendement': 'Nos rendements varient selon les produits : 📈 Crypto : 0.8-1.2%/jour 📈 Forex : 0.6-1%/jour 📈 Gold : 0.4-0.7%/jour 📈 AI Trading : 0.9-1.5%/jour 📈 VIP : jusqu\'à 2%/jour. Tous nos produits sont détaillés sur la page "Produits".',
-  
-  'parrainage': 'Notre programme de parrainage est très généreux ! 🤝 Niveau 1 : 27% de commission 🤝 Niveau 2 : 2% 🤝 Niveau 3 : 1% Les commissions sont créditées instantanément sur votre solde de parrainage, retirables à tout moment.',
-  
-  'dépot minimum': 'Le dépôt minimum est de 10 USD pour commencer. Nous acceptons les paiements par Mobile Money (MTN, Orange, Wave, Moov) et par carte bancaire via Stripe. Tous les dépôts sont crédités instantanément.',
-  
-  'contact': 'Vous pouvez nous contacter : 📞 +1 343-453-7211 ✉️ support@tokenflow.com 💬 Via le chat de support (dans votre espace membre) Notre équipe est disponible 24/7 pour vous aider !',
-  
-  'default': 'Je suis un assistant AI spécialisé dans TokenFlow. Je peux vous renseigner sur nos produits, les rendements, les frais, le parrainage, et comment commencer. Posez-moi une question précise ! 😊'
-};
-
-function getAIResponse(question) {
-  const lowerQ = question.toLowerCase().trim();
-  
-  // Recherche de mots-clés
-  for (const [keyword, response] of Object.entries(AI_RESPONSES)) {
-    if (lowerQ.includes(keyword) || lowerQ.includes(keyword.split(' ')[0])) {
-      return response;
-    }
-  }
-  
-  // Réponse par défaut
-  return AI_RESPONSES.default;
-}
-
-function toggleAIChat() {
-  const chatWindow = document.getElementById('aiChatWindow');
-  chatWindow.classList.toggle('active');
-  
-  if (chatWindow.classList.contains('active')) {
-    document.getElementById('chatInput').focus();
-  }
-}
-
-function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const message = input.value.trim();
-  
-  if (!message) return;
-  
-  // Ajouter message utilisateur
-  addMessage(message, 'user');
-  input.value = '';
-  
-  // Simuler réflexion de l'IA
-  setTimeout(() => {
-    const response = getAIResponse(message);
-    addMessage(response, 'bot');
-  }, 800);
-}
-
-function sendQuickReply(text) {
-  addMessage(text, 'user');
-  
-  setTimeout(() => {
-    const response = getAIResponse(text);
-    addMessage(response, 'bot');
-  }, 600);
-}
-
-function addMessage(text, type) {
-  const messagesContainer = document.getElementById('chatMessages');
-  
-  const messageDiv = document.createElement('div');
-  messageDiv.className = `message ${type}`;
-  
-  messageDiv.innerHTML = type === 'bot' ? `
-    <div class="message-avatar">
-      <i class="fa-solid fa-robot"></i>
-    </div>
-    <div class="message-content">${text}</div>
-  ` : `
-    <div class="message-content">${text}</div>
-  `;
-  
-  messagesContainer.appendChild(messageDiv);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-function handleChatKey(e) {
-  if (e.key === 'Enter') {
-    sendMessage();
-  }
-}
-</script>
-
-<style>
-/* AI Chatbot Styles */
-.ai-chat-toggle {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  z-index: 1000;
-  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ai-chat-toggle:hover {
-  transform: scale(1.1);
-  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.6);
-}
-
-.ai-chat-toggle .pulse {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: rgba(99, 102, 241, 0.4);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(1.5); opacity: 0; }
-}
-
-.ai-chat-window {
-  position: fixed;
-  bottom: 100px;
-  right: 30px;
-  width: 380px;
-  max-width: calc(100vw - 60px);
-  height: 500px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  z-index: 1001;
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-.ai-chat-window.active {
-  display: flex;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.chat-header {
-  padding: 20px;
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.chat-header-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.chat-header-info i {
-  font-size: 24px;
-}
-
-.chat-close {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.chat-close:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.message {
-  display: flex;
-  gap: 12px;
-  animation: fadeIn 0.3s ease;
-}
-
-.message.user {
-  flex-direction: row-reverse;
-}
-
-.message-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.message-content {
-  background: rgba(241, 245, 249, 0.8);
-  padding: 12px 16px;
-  border-radius: 16px;
-  font-size: 14px;
-  line-height: 1.5;
-  max-width: 280px;
-}
-
-.message.user .message-content {
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
-  color: white;
-}
-
-.quick-replies {
-  padding: 12px 20px;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  border-top: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-.quick-replies button {
-  padding: 8px 14px;
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 20px;
-  color: #6366F1;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  white-space: nowrap;
-}
-
-.quick-replies button:hover {
-  background: rgba(99, 102, 241, 0.2);
-  border-color: #6366F1;
-}
-
-.chat-input-area {
-  padding: 16px 20px;
-  display: flex;
-  gap: 12px;
-  border-top: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-.chat-input-area input {
-  flex: 1;
-  padding: 12px 16px;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  border-radius: 14px;
-  font-size: 14px;
-  outline: none;
-  transition: all 0.3s;
-}
-
-.chat-input-area input:focus {
-  border-color: #6366F1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-.send-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.send-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 768px) {
-  .ai-chat-window {
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    max-width: 100%;
-    height: 70vh;
-    border-radius: 20px 20px 0 0;
-  }
-  
-  .ai-chat-toggle {
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-  }
-}
-
-/* ============================================
-   TOP CONTROLS - Theme, Language, Notifications
-   ============================================ */
-.top-controls {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 12px;
-  z-index: 1002;
-}
-
-.control-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  color: var(--text-primary);
-  font-size: 18px;
-  cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(20px);
-}
-
-.control-btn:hover {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-  transform: translateY(-2px);
-}
-
-.lang-btn {
-  width: auto;
-  padding: 0 14px;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-/* Language Selector */
-.lang-selector {
-  position: relative;
-}
-
-.lang-menu {
-  position: absolute;
-  top: 54px;
-  right: 0;
-  background: var(--bg-card);
-  border-radius: 16px;
-  border: 1px solid var(--border-card);
-  padding: 8px;
-  min-width: 160px;
-  display: none;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-}
-
-.lang-menu.active {
-  display: block;
-  animation: fadeIn 0.2s ease;
-}
-
-.lang-menu button {
-  width: 100%;
-  padding: 10px 14px;
-  background: none;
-  border: none;
-  border-radius: 10px;
-  text-align: left;
-  font-size: 14px;
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.lang-menu button:hover {
-  background: var(--primary-glow);
-  color: var(--primary);
-}
-
-/* Notifications */
-.notification-btn {
-  position: relative;
-}
-
-.notification-badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #EF4444;
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.notifications-panel {
-  position: fixed;
-  top: 74px;
-  right: 20px;
-  width: 360px;
-  max-width: calc(100vw - 40px);
-  background: var(--bg-card);
-  border-radius: 20px;
-  border: 1px solid var(--border-card);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  z-index: 1002;
-  display: none;
-  overflow: hidden;
-}
-
-.notifications-panel.active {
-  display: block;
-  animation: fadeIn 0.2s ease;
-}
-
-.notif-header {
-  padding: 16px 20px;
-  background: var(--primary-gradient);
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.notif-header h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.notif-header button {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.notif-header button:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.notif-list {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.notif-item {
-  display: flex;
-  gap: 12px;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-card);
-  transition: all 0.2s;
-}
-
-.notif-item:hover {
-  background: var(--bg-glass);
-}
-
-.notif-item.unread {
-  background: var(--primary-glow);
-}
-
-.notif-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
-.notif-icon.success { background: rgba(16, 185, 129, 0.15); }
-.notif-icon.profit { background: rgba(99, 102, 241, 0.15); }
-.notif-icon.info { background: rgba(245, 158, 11, 0.15); }
-
-.notif-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.notif-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.notif-message {
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.4;
-  margin-bottom: 6px;
-}
-
-.notif-time {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-/* ============================================
-   DARK MODE
-   ============================================ */
-body.dark-mode {
-  --bg-page: #0F172A;
-  --bg-card: rgba(30, 41, 59, 0.85);
-  --bg-card-hover: rgba(51, 65, 85, 0.95);
-  --bg-glass: rgba(51, 65, 85, 0.65);
-  --border-glow: rgba(99, 102, 241, 0.3);
-  --border-card: rgba(71, 85, 105, 0.3);
-  --text-primary: #F1F5F9;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-}
-
-body.dark-mode .hero-section,
-body.dark-mode .stat-item,
-body.dark-mode .feature-card,
-body.dark-mode .cta-section,
-body.dark-mode .footer {
-  background: var(--bg-card);
-}
-
-body.dark-mode .floating-card {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: rgba(71, 85, 105, 0.4);
-}
-
-body.dark-mode .ai-chat-window {
-  background: rgba(30, 41, 59, 0.95);
-  border-color: rgba(71, 85, 105, 0.3);
-}
-
-body.dark-mode .message-content {
-  background: rgba(51, 65, 85, 0.8);
-}
-
-body.dark-mode .quick-replies button {
-  background: rgba(99, 102, 241, 0.15);
-  border-color: rgba(99, 102, 241, 0.3);
-}
-
-body.dark-mode .chat-input-area input {
-  background: rgba(51, 65, 85, 0.5);
-  border-color: rgba(71, 85, 105, 0.4);
-  color: var(--text-primary);
-}
-
-body.dark-mode .float-img {
-  border-color: rgba(71, 85, 105, 0.5);
-}
-
-@media (max-width: 768px) {
-  .top-controls {
-    top: 10px;
-    right: 10px;
-    gap: 8px;
-  }
-  
-  .control-btn {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .notifications-panel {
-    top: 54px;
-    right: 10px;
-  }
-}
-</style>
-
-<script>
 // ============================================
-// THEME TOGGLE (Dark/Light Mode)
-// Uses global TokenFlow.toggleDarkMode() from fintech.js
+// THEME TOGGLE
 // ============================================
 function toggleTheme() {
-  // Use the global TokenFlow function if available
-  if (typeof window.toggleDarkMode === 'function') {
-    window.toggleDarkMode();
-    
-    // Update the icon after toggle
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const icon = document.getElementById('themeIcon');
-    if (icon) {
-      icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-    }
-  } else {
-    // Fallback: toggle dark mode manually
-    const html = document.documentElement;
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
-    
-    const icon = document.getElementById('themeIcon');
-    if (icon) {
-      icon.className = isDark ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
-    }
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  
+  const icon = document.getElementById('themeIcon');
+  if (icon) {
+    icon.className = isDark ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
   }
 }
 
-// Load saved theme on page load
+// Load saved theme
 document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme') || 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
-  
   const icon = document.getElementById('themeIcon');
   if (icon) {
     icon.className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
@@ -1489,14 +1057,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
-// LANGUAGE SYSTEM (5 Languages)
+// LANGUAGE SYSTEM
 // ============================================
 const TRANSLATIONS = {
   fr: {
     hero_title: "Investissez dans l'Avenir avec TokenFlow",
-    hero_subtitle: "Plateforme d'investissement premium avec trading automatisé par IA. Rejoignez plus de 10 000 investisseurs qui génèrent des revenus passifs quotidiens.",
+    hero_subtitle: "Plateforme d'investissement premium avec trading automatisé par IA.",
     btn_start: "Commencer maintenant",
-    btn_products: "Voir les produits",
+    btn_create: "Créer un compte",
     stats_investors: "Investisseurs",
     stats_volume: "Volume Total",
     stats_bots: "Bots Actifs",
@@ -1504,21 +1072,14 @@ const TRANSLATIONS = {
     features_title: "Pourquoi Choisir TokenFlow ?",
     features_subtitle: "Une plateforme complète pour maximiser vos rendements",
     cta_title: "Prêt à Commencer ?",
-    cta_subtitle: "Rejoignez TokenFlow aujourd'hui et commencez à générer des revenus passifs",
-    btn_create: "Créer un compte gratuit",
-    notif1_title: "Dépôt confirmé",
-    notif1_msg: "Votre dépôt de $80 USD a été crédité.",
-    notif2_title: "Profit quotidien",
-    notif2_msg: "+$4 USD de profit sur votre investissement.",
-    notif3_title: "Bonus de bienvenue",
-    notif3_msg: "$1.60 USD ont été ajoutés à votre compte.",
+    cta_subtitle: "Rejoignez TokenFlow aujourd'hui",
     chat_welcome: "Bonjour ! 👋 Je suis l'assistant virtuel TokenFlow. Comment puis-je vous aider aujourd'hui ?"
   },
   en: {
     hero_title: "Invest in the Future with TokenFlow",
-    hero_subtitle: "Premium investment platform with AI-powered automated trading. Join over 10,000 investors generating daily passive income.",
+    hero_subtitle: "Premium investment platform with AI-powered automated trading.",
     btn_start: "Get Started Now",
-    btn_products: "View Products",
+    btn_create: "Create Account",
     stats_investors: "Investors",
     stats_volume: "Total Volume",
     stats_bots: "Active Bots",
@@ -1527,20 +1088,13 @@ const TRANSLATIONS = {
     features_subtitle: "A complete platform to maximize your returns",
     cta_title: "Ready to Start?",
     cta_subtitle: "Join TokenFlow today and start generating passive income",
-    btn_create: "Create Free Account",
-    notif1_title: "Deposit Confirmed",
-    notif1_msg: "Your deposit of $80 USD has been credited.",
-    notif2_title: "Daily Profit",
-    notif2_msg: "+$4 USD profit on your investment.",
-    notif3_title: "Welcome Bonus",
-    notif3_msg: "$1.60 USD has been added to your account.",
     chat_welcome: "Hello! 👋 I'm the TokenFlow virtual assistant. How can I help you today?"
   },
   es: {
     hero_title: "Invierta en el Futuro con TokenFlow",
-    hero_subtitle: "Plataforma de inversión premium con trading automatizado por IA. Únase a más de 10,000 inversores que generan ingresos pasivos diarios.",
+    hero_subtitle: "Plataforma de inversión premium con trading automatizado por IA.",
     btn_start: "Comenzar Ahora",
-    btn_products: "Ver Productos",
+    btn_create: "Crear Cuenta",
     stats_investors: "Inversores",
     stats_volume: "Volumen Total",
     stats_bots: "Bots Activos",
@@ -1549,20 +1103,13 @@ const TRANSLATIONS = {
     features_subtitle: "Una plataforma completa para maximizar sus rendimientos",
     cta_title: "¿Listo para Empezar?",
     cta_subtitle: "Únase a TokenFlow hoy y comience a generar ingresos pasivos",
-    btn_create: "Crear Cuenta Gratuita",
-    notif1_title: "Depósito Confirmado",
-    notif1_msg: "Su depósito de $80 USD ha sido acreditado.",
-    notif2_title: "Beneficio Diario",
-    notif2_msg: "+$4 USD de beneficio en su inversión.",
-    notif3_title: "Bono de Bienvenida",
-    notif3_msg: "$1.60 USD han sido añadidos a su cuenta.",
     chat_welcome: "¡Hola! 👋 Soy el asistente virtual de TokenFlow. ¿Cómo puedo ayudarte hoy?"
   },
   de: {
     hero_title: "Investieren Sie in die Zukunft mit TokenFlow",
-    hero_subtitle: "Premium-Investmentplattform mit KI-gesteuertem automatisiertem Trading. Schließen Sie sich über 10.000 Investoren an, die täglich passive Einkünfte erzielen.",
+    hero_subtitle: "Premium-Investmentplattform mit KI-gesteuertem automatisiertem Trading.",
     btn_start: "Jetzt Starten",
-    btn_products: "Produkte Ansehen",
+    btn_create: "Konto Erstellen",
     stats_investors: "Investoren",
     stats_volume: "Gesamtvolumen",
     stats_bots: "Aktive Bots",
@@ -1570,21 +1117,14 @@ const TRANSLATIONS = {
     features_title: "Warum TokenFlow Wählen?",
     features_subtitle: "Eine komplette Plattform zur Maximierung Ihrer Renditen",
     cta_title: "Bereit zu Starten?",
-    cta_subtitle: "Treten Sie noch heute TokenFlow bei und generieren Sie passive Einkünfte",
-    btn_create: "Kostenloses Konto Erstellen",
-    notif1_title: "Einzahlung Bestätigt",
-    notif1_msg: "Ihre Einzahlung von $80 USD wurde gutgeschrieben.",
-    notif2_title: "Tagesgewinn",
-    notif2_msg: "+$4 USD Gewinn auf Ihre Investition.",
-    notif3_title: "Willkommensbonus",
-    notif3_msg: "$1.60 USD wurden Ihrem Konto gutgeschrieben.",
-    chat_welcome: "Hallo! 👋 Ich bin der TokenFlow virtuelle Assistent. Wie kann ich Ihnen heute helfen?"
+    cta_subtitle: "Treten Sie noch heute TokenFlow bei",
+    chat_welcome: "Hallo! 👋 Ich bin der TokenFlow virtuelle Assistent. Wie kann ich Ihnen helfen?"
   },
   pt: {
     hero_title: "Invista no Futuro com TokenFlow",
-    hero_subtitle: "Plataforma de investimento premium com trading automatizado por IA. Junte-se a mais de 10.000 investidores que geram renda passiva diária.",
+    hero_subtitle: "Plataforma de investimento premium com trading automatizado por IA.",
     btn_start: "Começar Agora",
-    btn_products: "Ver Produtos",
+    btn_create: "Criar Conta",
     stats_investors: "Investidores",
     stats_volume: "Volume Total",
     stats_bots: "Bots Ativos",
@@ -1593,13 +1133,6 @@ const TRANSLATIONS = {
     features_subtitle: "Uma plataforma completa para maximizar seus retornos",
     cta_title: "Pronto para Começar?",
     cta_subtitle: "Junte-se à TokenFlow hoje e comece a gerar renda passiva",
-    btn_create: "Criar Conta Gratuita",
-    notif1_title: "Depósito Confirmado",
-    notif1_msg: "Seu depósito de $80 USD foi creditado.",
-    notif2_title: "Lucro Diário",
-    notif2_msg: "+$4 USD de lucro em seu investimento.",
-    notif3_title: "Bônus de Boas-vindas",
-    notif3_msg: "$1.60 USD foram adicionados à sua conta.",
     chat_welcome: "Olá! 👋 Sou o assistente virtual TokenFlow. Como posso ajudá-lo hoje?"
   }
 };
@@ -1616,50 +1149,19 @@ function applyLanguage(lang) {
   
   document.getElementById('currentLang').textContent = lang.toUpperCase();
   
-  // Update hero section
-  document.querySelector('.hero-content h1').textContent = t.hero_title;
-  document.querySelector('.subtitle').textContent = t.hero_subtitle;
+  document.querySelector('[data-i18n="hero_title"]').textContent = t.hero_title;
+  document.querySelector('[data-i18n="hero_subtitle"]').textContent = t.hero_subtitle;
+  document.querySelector('[data-i18n="btn_start"]').textContent = t.btn_start;
+  document.querySelector('[data-i18n="btn_create"]').textContent = t.btn_create;
+  document.querySelector('[data-i18n="stats_investors"]').textContent = t.stats_investors;
+  document.querySelector('[data-i18n="stats_volume"]').textContent = t.stats_volume;
+  document.querySelector('[data-i18n="stats_bots"]').textContent = t.stats_bots;
+  document.querySelector('[data-i18n="stats_roi"]').textContent = t.stats_roi;
+  document.querySelector('[data-i18n="features_title"]').textContent = t.features_title;
+  document.querySelector('[data-i18n="features_subtitle"]').textContent = t.features_subtitle;
+  document.querySelector('[data-i18n="cta_title"]').textContent = t.cta_title;
+  document.querySelector('[data-i18n="cta_subtitle"]').textContent = t.cta_subtitle;
   
-  // Update buttons
-  const buttons = document.querySelectorAll('.btn-primary');
-  if (buttons[0]) buttons[0].innerHTML = '<i class="fa-solid fa-rocket"></i> ' + t.btn_start;
-  if (buttons[1]) buttons[1].innerHTML = '<i class="fa-solid fa-user-plus"></i> ' + t.btn_create;
-  
-  const btnSecondary = document.querySelector('.btn-secondary');
-  if (btnSecondary) btnSecondary.innerHTML = '<i class="fa-solid fa-chart-line"></i> ' + t.btn_products;
-  
-  // Update stats labels
-  const statLabels = document.querySelectorAll('.stat-item .label');
-  if (statLabels.length >= 4) {
-    statLabels[0].textContent = t.stats_investors;
-    statLabels[1].textContent = t.stats_volume;
-    statLabels[2].textContent = t.stats_bots;
-    statLabels[3].textContent = t.stats_roi;
-  }
-  
-  // Update features section
-  const sectionHeader = document.querySelector('.section-header h2');
-  if (sectionHeader) sectionHeader.textContent = t.features_title;
-  
-  const sectionSubtitle = document.querySelector('.section-header p');
-  if (sectionSubtitle) sectionSubtitle.textContent = t.features_subtitle;
-  
-  // Update CTA
-  const ctaTitle = document.querySelector('.cta-section h2');
-  if (ctaTitle) ctaTitle.textContent = t.cta_title;
-  
-  const ctaSubtitle = document.querySelector('.cta-section p');
-  if (ctaSubtitle) ctaSubtitle.textContent = t.cta_subtitle;
-  
-  // Update notifications
-  document.querySelectorAll('[data-i18n="notif1_title"]')[0]?.textContent = t.notif1_title;
-  document.querySelectorAll('[data-i18n="notif1_msg"]')[0]?.textContent = t.notif1_msg;
-  document.querySelectorAll('[data-i18n="notif2_title"]')[0]?.textContent = t.notif2_title;
-  document.querySelectorAll('[data-i18n="notif2_msg"]')[0]?.textContent = t.notif2_msg;
-  document.querySelectorAll('[data-i18n="notif3_title"]')[0]?.textContent = t.notif3_title;
-  document.querySelectorAll('[data-i18n="notif3_msg"]')[0]?.textContent = t.notif3_msg;
-  
-  // Update chat welcome message
   const chatWelcome = document.querySelector('.message.bot .message-content');
   if (chatWelcome) chatWelcome.textContent = t.chat_welcome;
 }
@@ -1668,12 +1170,10 @@ function toggleLangMenu() {
   document.getElementById('langMenu').classList.toggle('active');
 }
 
-// Load saved language
 document.addEventListener('DOMContentLoaded', () => {
   const savedLang = localStorage.getItem('language') || 'fr';
   applyLanguage(savedLang);
   
-  // Close menus when clicking outside
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.lang-selector')) {
       document.getElementById('langMenu').classList.remove('active');
@@ -1699,59 +1199,254 @@ function markAllRead() {
 }
 
 // ============================================
-// UPDATE AI RESPONSES FOR MULTIPLE LANGUAGES
+// AI CHATBOT WITH REGISTRATION FLOW
 // ============================================
-const AI_RESPONSES_MULTI = {
-  fr: {
-    'c\'est quoi tokenflow': 'TokenFlow est une plateforme d\'investissement premium qui utilise l\'intelligence artificielle pour générer des revenus passifs.',
-    'comment commencer': 'C\'est très simple ! 1️⃣ Cliquez sur "Commencer maintenant" 2️⃣ Inscrivez-vous 3️⃣ Faites un dépôt 4️⃣ Choisissez un produit 5️⃣ Laissez l\'IA travailler !',
-    'est-ce sécurisé': 'Absolument ! 🔒 TokenFlow utilise un cryptage de niveau bancaire et des cold wallets sécurisés.',
-    'frais de retrait': 'Frais fixes de 3%, minimum 15 USD, traitement en 24-48h.',
-    'default': 'Je suis l\'assistant AI TokenFlow. Posez-moi une question ! 😊'
-  },
-  en: {
-    'what is tokenflow': 'TokenFlow is a premium investment platform using AI to generate passive income.',
-    'how to start': 'Simple! 1️⃣ Click "Get Started" 2️⃣ Sign up 3️⃣ Deposit 4️⃣ Choose a product 5️⃣ Let AI work!',
-    'is it safe': 'Absolutely! 🔒 TokenFlow uses bank-level encryption and secure cold wallets.',
-    'withdrawal fees': 'Fixed 3% fees, $15 minimum, 24-48h processing.',
-    'default': 'I\'m the TokenFlow AI assistant. Ask me anything! 😊'
-  },
-  es: {
-    'qué es tokenflow': 'TokenFlow es una plataforma de inversión premium que usa IA para generar ingresos pasivos.',
-    'cómo empezar': '¡Simple! 1️⃣ Haz clic en "Comenzar" 2️⃣ Regístrate 3️⃣ Deposita 4️⃣ Elige un producto 5️⃣ ¡Deja que la IA trabaje!',
-    'es seguro': '¡Absolutamente! 🔒 TokenFlow usa cifrado bancario y cold wallets seguras.',
-    'comisiones retiro': 'Comisión fija del 3%, mínimo $15, procesamiento en 24-48h.',
-    'default': 'Soy el asistente AI de TokenFlow. ¡Pregúntame lo que sea! 😊'
-  },
-  de: {
-    'was ist tokenflow': 'TokenFlow ist eine Premium-Investmentplattform, die KI zur Generierung passiver Einkünfte nutzt.',
-    'wie anfangen': 'Einfach! 1️⃣ Klicken Sie auf "Starten" 2️⃣ Registrieren 3️⃣ Einzahlen 4️⃣ Produkt wählen 5️⃣ KI arbeiten lassen!',
-    'ist es sicher': 'Absolut! 🔒 TokenFlow verwendet Bankverschlüsselung und sichere Cold Wallets.',
-    'gebühren': 'Feste 3% Gebühren, minimum 15$, Bearbeitung in 24-48h.',
-    'default': 'Ich bin der TokenFlow AI-Assistent. Fragen Sie mich anything! 😊'
-  },
-  pt: {
-    'o que é tokenflow': 'TokenFlow é uma plataforma de investimento premium que usa IA para gerar renda passiva.',
-    'como começar': 'Simples! 1️⃣ Clique em "Começar" 2️⃣ Cadastre-se 3️⃣ Deposite 4️⃣ Escolha um produto 5️⃣ Deixe a IA trabalhar!',
-    'é seguro': 'Absolutamente! 🔒 TokenFlow usa criptografia bancária e cold wallets seguras.',
-    'taxas saque': 'Taxa fixa de 3%, mínimo $15, processamento em 24-48h.',
-    'default': 'Sou o assistente AI TokenFlow. Pergunte-me qualquer coisa! 😊'
-  }
+const registrationState = {
+  active: false,
+  step: null,
+  data: {}
 };
 
-// Override getAIResponse to use multi-language
-function getAIResponse(question) {
+const AI_RESPONSES = {
+  'c\'est quoi tokenflow': 'TokenFlow est une plateforme d\'investissement premium qui utilise l\'intelligence artificielle pour générer des revenus passifs. Rejoignez plus de 10 000 investisseurs ! 🚀',
+  'comment commencer': 'C\'est très simple ! 1️⃣ Cliquez sur "Commencer maintenant" 2️⃣ Inscrivez-vous 3️⃣ Faites un dépôt minimum de 10 USD 4️⃣ Choisissez un produit 5️⃣ Laissez l\'IA travailler ! 💰',
+  'est-ce sécurisé': 'Absolument ! 🔒 TokenFlow utilise un cryptage de niveau bancaire, des cold wallets sécurisés, et une vérification en deux étapes.',
+  'frais de retrait': 'Frais fixes de 3%, minimum 15 USD, traitement en 24-48h ouvrables. Disponible via Mobile Money ou carte bancaire.',
+  'rendement': 'Nos rendements varient : Crypto 0.8-1.2%/jour, Forex 0.6-1%/jour, Gold 0.4-0.7%/jour, AI Trading 0.9-1.5%/jour.',
+  'parrainage': 'Programme généreux ! 🤝 Niveau 1: 27%, Niveau 2: 2%, Niveau 3: 1%. Commissions créditées instantanément.',
+  'dépot minimum': 'Le dépôt minimum est de 10 USD. Nous acceptons Mobile Money (MTN, Orange, Wave) et carte bancaire.',
+  'contact': '📞 +1 343-453-7211 ✉️ support@tokenflow.com 💬 Chat de support disponible 24/7',
+  'default': 'Je suis l\'assistant AI TokenFlow. Posez-moi une question ! 😊'
+};
+
+async function getAIResponse(question) {
   const currentLang = localStorage.getItem('language') || 'fr';
-  const responses = AI_RESPONSES_MULTI[currentLang] || AI_RESPONSES_MULTI.fr;
   const lowerQ = question.toLowerCase().trim();
   
-  for (const [keyword, response] of Object.entries(responses)) {
+  // Check for account creation intent FIRST
+  const createPhrases = [
+    'je veux créer un compte', 'créer un compte', 'inscription', "s'inscrire",
+    'ouvrir un compte', 'create account', 'sign up', 'register',
+    'je veux m\'inscrire', 'je voudrais créer un compte', 'commencer',
+    'rejoindre tokenflow', 'm\'inscrire'
+  ];
+  
+  for (const phrase of createPhrases) {
+    if (lowerQ.includes(phrase)) {
+      startRegistrationFlow();
+      return currentLang === 'fr'
+        ? '🎉 Excellent ! Je vais vous guider pour créer votre compte TokenFlow.\n\n📱 Quel est votre numéro de téléphone ? (avec indicatif pays, ex: +22507070707)'
+        : '🎉 Great! I\'ll guide you through creating your TokenFlow account.\n\n📱 What is your phone number? (with country code, ex: +1234567890)';
+    }
+  }
+  
+  // Handle registration flow
+  if (registrationState.active) {
+    return await handleRegistrationStep(question);
+  }
+  
+  // Normal AI responses
+  for (const [keyword, response] of Object.entries(AI_RESPONSES)) {
     if (lowerQ.includes(keyword) || lowerQ.includes(keyword.split(' ')[0])) {
       return response;
     }
   }
   
-  return responses.default;
+  return AI_RESPONSES.default;
+}
+
+function startRegistrationFlow() {
+  registrationState.active = true;
+  registrationState.step = 'phone';
+  registrationState.data = {};
+}
+
+async function handleRegistrationStep(answer) {
+  const currentLang = localStorage.getItem('language') || 'fr';
+  const step = registrationState.step;
+  
+  switch(step) {
+    case 'phone':
+      registrationState.data.phone = answer.trim();
+      try {
+        const response = await fetch('/api/ai-register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'check_phone', phone: registrationState.data.phone })
+        });
+        const data = await response.json();
+        if (data.exists) {
+          return currentLang === 'fr'
+            ? '❌ Ce numéro is déjà enregistré. Veuillez en choisir un autre ou connectez-vous.'
+            : '❌ This phone number is already registered. Please choose another or login.';
+        }
+      } catch(e) {}
+      registrationState.step = 'email';
+      return currentLang === 'fr'
+        ? '✅ Numéro enregistré !\n\n📧 Quelle est votre adresse email ?'
+        : '✅ Phone saved!\n\n📧 What is your email address?';
+    
+    case 'email':
+      registrationState.data.email = answer.trim().toLowerCase();
+      try {
+        const response = await fetch('/api/ai-register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'check_email', email: registrationState.data.email })
+        });
+        const data = await response.json();
+        if (data.exists) {
+          return currentLang === 'fr'
+            ? '❌ Cet email est déjà enregistré. Veuillez en choisir un autre.'
+            : '❌ This email is already registered. Please choose another.';
+        }
+      } catch(e) {}
+      registrationState.step = 'username';
+      return currentLang === 'fr'
+        ? '✅ Email enregistré !\n\n👤 Quel nom d\'utilisateur souhaitez-vous ? (sans espaces)'
+        : '✅ Email saved!\n\n👤 What username would you like? (no spaces)';
+    
+    case 'username':
+      registrationState.data.username = answer.trim();
+      registrationState.step = 'password';
+      return currentLang === 'fr'
+        ? `✅ Nom d'utilisateur : ${registrationState.data.username}\n\n🔐 Choisissez un mot de passe (min 6 caractères)`
+        : `✅ Username: ${registrationState.data.username}\n\n🔐 Choose a password (min 6 characters)`;
+    
+    case 'password':
+      registrationState.data.password = answer.trim();
+      if (registrationState.data.password.length < 6) {
+        return currentLang === 'fr'
+          ? '❌ Le mot de passe doit contenir au moins 6 caractères. Veuillez réessayer.'
+          : '❌ Password must be at least 6 characters. Please try again.';
+      }
+      registrationState.step = 'country';
+      return currentLang === 'fr'
+        ? '✅ Mot de passe enregistré !\n\n🌍 Dans quel pays résidez-vous ?'
+        : '✅ Password saved!\n\n🌍 Which country do you live in?';
+    
+    case 'country':
+      registrationState.data.pays = answer.trim();
+      registrationState.step = 'referral';
+      return currentLang === 'fr'
+        ? '✅ Pays enregistré !\n\n🤝 Avez-vous un code de parrainage ? (répondez "non" si vous n\'en avez pas)'
+        : '✅ Country saved!\n\n🤝 Do you have a referral code? (reply "no" if not)';
+    
+    case 'referral':
+      if (!answer.trim().toLowerCase().startsWith('non') && !answer.trim().toLowerCase().startsWith('no')) {
+        registrationState.data.referral_code = answer.trim().toUpperCase();
+      }
+      registrationState.step = 'otp';
+      
+      try {
+        const response = await fetch('/api/ai-register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'start_registration',
+            phone: registrationState.data.phone,
+            email: registrationState.data.email,
+            username: registrationState.data.username,
+            password: registrationState.data.password,
+            pays: registrationState.data.pays,
+            referral_code: registrationState.data.referral_code || ''
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          registrationState.session_id = data.session_id;
+          return currentLang === 'fr'
+            ? `📧 Un code OTP a été envoyé à ${registrationState.data.email}. Veuillez le saisir pour vérifier votre compte.`
+            : `📧 An OTP code has been sent to ${registrationState.data.email}. Please enter it to verify your account.`;
+        }
+      } catch(e) {}
+      return currentLang === 'fr'
+        ? '❌ Erreur lors de l\'envoi de l\'OTP. Veuillez réessayer.'
+        : '❌ Error sending OTP. Please try again.';
+    
+    case 'otp':
+      try {
+        const response = await fetch('/api/ai-register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'verify_otp',
+            session_id: registrationState.session_id,
+            otp: answer.trim()
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          registrationState.active = false;
+          return currentLang === 'fr'
+            ? '🎉 Félicitations ! Votre compte TokenFlow a été créé avec succès !\n\n👉 <a href="/connexion" style="color: #6366F1; font-weight: 700; text-decoration: underline;">Connectez-vous maintenant</a>'
+            : '🎉 Congratulations! Your TokenFlow account has been created successfully!\n\n👉 <a href="/connexion" style="color: #6366F1; font-weight: 700; text-decoration: underline;">Login now</a>';
+        } else {
+          return currentLang === 'fr'
+            ? '❌ Code OTP incorrect. Veuillez réessayer.'
+            : '❌ Invalid OTP. Please try again.';
+        }
+      } catch(e) {
+        return currentLang === 'fr'
+          ? '❌ Erreur de vérification. Veuillez réessayer.'
+          : '❌ Verification error. Please try again.';
+      }
+    
+    default:
+      registrationState.active = false;
+      return currentLang === 'fr'
+        ? 'Je suis l\'assistant IA TokenFlow. Tapez "créer un compte" pour commencer ! 😊'
+        : 'I\'m the TokenFlow AI assistant. Type "create account" to start ! 😊';
+  }
+}
+
+function toggleAIChat() {
+  document.getElementById('aiChatWindow').classList.toggle('active');
+  if (document.getElementById('aiChatWindow').classList.contains('active')) {
+    document.getElementById('chatInput').focus();
+  }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  if (!message) return;
+  
+  addMessage(message, 'user');
+  input.value = '';
+  
+  setTimeout(async () => {
+    const response = await getAIResponse(message);
+    addMessage(response, 'bot');
+  }, 800);
+}
+
+async function sendQuickReply(text) {
+  addMessage(text, 'user');
+  
+  setTimeout(async () => {
+    const response = await getAIResponse(text);
+    addMessage(response, 'bot');
+  }, 600);
+}
+
+function addMessage(text, type) {
+  const container = document.getElementById('chatMessages');
+  const msgDiv = document.createElement('div');
+  msgDiv.className = `message ${type}`;
+  
+  msgDiv.innerHTML = type === 'bot'
+    ? `<div class="message-avatar"><i class="fa-solid fa-robot"></i></div><div class="message-content">${text}</div>`
+    : `<div class="message-content">${text}</div>`;
+  
+  container.appendChild(msgDiv);
+  container.scrollTop = container.scrollHeight;
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
 }
 </script>
 {% endblock %}

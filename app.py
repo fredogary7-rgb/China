@@ -3670,6 +3670,209 @@ def api_mark_notification_read(notification_id):
             'error': str(e)
         }), 500
 
+# ============================================
+# AI REGISTRATION FLOW
+# ============================================
+
+# Store pending registrations in memory (could use Redis for production)
+pending_registrations = {}
+
+@app.route('/api/ai-register', methods=['POST'])
+def api_ai_register():
+    """AI-powered registration flow endpoint"""
+    import json
+    data = request.get_json()
+    action = data.get('action')
+    
+    if action == 'check_phone':
+        phone = data.get('phone', '').strip()
+        if not phone:
+            return jsonify({'exists': False, 'error': 'Phone required'})
+        
+        # Check if phone already exists
+        existing = User.query.filter_by(phone=phone).first()
+        return jsonify({'exists': existing is not None})
+    
+    elif action == 'check_email':
+        email = data.get('email', '').strip().lower()
+        if not email:
+            return jsonify({'exists': False, 'error': 'Email required'})
+        
+        # Check if email already exists
+        existing = User.query.filter_by(email=email).first()
+        return jsonify({'exists': existing is not None})
+    
+    elif action == 'start_registration':
+        # Store registration data temporarily
+        phone = data.get('phone', '').strip()
+        email = data.get('email', '').strip().lower()
+        username = data.get('username', '').strip()
+        password = data.get('password', '')
+        pays = data.get('pays', '')
+        referral_code = data.get('referral_code', '').strip().upper()
+        
+        # Generate OTP
+        otp = generate_otp()
+        
+        # Store in pending registrations
+        session_id = f"{phone}_{int(datetime.utcnow().timestamp())}"
+        pending_registrations[session_id] = {
+            'phone': phone,
+            'email': email,
+            'username': username,
+            'password': password,
+            'pays': pays,
+            'referral_code': referral_code,
+            'otp': otp,
+            'expires': datetime.utcnow() + timedelta(minutes=10)
+        }
+        
+        # Send OTP email
+        try:
+            send_otp_email(email, otp, "inscription")
+        except Exception as e:
+            print(f"OTP email error: {e}")
+        
+        return jsonify({
+            'success': True,
+            'session_id': session_id,
+            'message': 'OTP sent to your email'
+        })
+    
+    elif action == 'verify_otp':
+        session_id = data.get('session_id')
+        otp_input = data.get('otp', '').strip()
+        
+        if session_id not in pending_registrations:
+            return jsonify({'success': False, 'error': 'Session expired'})
+        
+        reg_data = pending_registrations[session_id]
+        
+        # Check OTP
+        if otp_input != reg_data['otp']:
+            return jsonify({'success': False, 'error': 'Invalid OTP'})
+        
+        # Check expiration
+        if datetime.utcnow() > reg_data['expires']:
+            del pending_registrations[session_id]
+            return jsonify({'success': False, 'error': 'Session expired'})
+        
+        # Check referral code
+        parrain_code_value = None
+        if reg_data.get('referral_code'):
+            parrain_user = User.query.filter_by(referral_code=reg_data['referral_code']).first()
+            if parrain_user:
+                parrain_code_value = parrain_user.referral_code
+        
+        # Create user
+        new_user = User(
+            username=reg_data['username'],
+            email=reg_data['email'],
+            phone=reg_data['phone'],
+            password=reg_data['password'],
+            wallet_country=reg_data.get('pays', ''),
+            solde_total=0,
+            solde_depot=0,
+            solde_revenu=0,
+            solde_parrainage=0,
+            parrain_code=parrain_code_value,
+            otp_verified=True
+        )
+        
+        db.session.add(new_user)
+        db.session.commit()
+        
+        # Generate verification token
+        token = generate_verification_token()
+        new_user.email_verification_token = token
+        new_user.verification_token_expires = datetime.utcnow() + timedelta(hours=24)
+        db.session.commit()
+        
+        # Send verification email
+        try:
+            send_verification_email(reg_data['email'], token)
+        except:
+            pass
+        
+        # Clean up pending registration
+        del pending_registrations[session_id]
+        
+        return jsonify({
+            'success': True,
+            'message': 'Account created successfully',
+            'redirect': url_for('connexion_page')
+        })
+    
+    return jsonify({'error': 'Invalid action'}), 400
+
+@app.route('/api/ai-chat', methods=['POST'])
+def api_ai_chat():
+    """AI chat endpoint with registration flow support"""
+    data = request.get_json()
+    message = data.get('message', '').lower().strip()
+    lang = data.get('lang', 'fr')
+    
+    # AI responses with registration flow detection
+    responses = {
+        'fr': {
+            'create_account': [
+                'Je veux créer un compte',
+                'créer un compte',
+                'inscription',
+                "s'inscrire",
+                'ouvrir un compte',
+                'creer un compte',
+                'je veux m inscrire',
+                'je voudrais créer un compte'
+            ],
+            'account_created': '🎉 Excellent ! Je vais vous guider pour créer votre compte TokenFlow. Commençons par les informations de base.\n\n📱 Quel est votre numéro de téléphone ? (avec indicatif pays, ex: +33612345678)',
+            'ask_email': '✅ Numéro enregistré !\n\n📧 Quelle est votre adresse email ?',
+            'ask_username': '✅ Email enregistré !\n\n👤 Quel nom d\'utilisateur souhaitez-vous ? (sans espaces)',
+            'ask_password': '✅ Nom d\'utilisateur : {username}\n\n🔐 Choisissez un mot de passe (min 6 caractères)',
+            'ask_country': '✅ Mot de passe enregistré !\n\n🌍 Dans quel pays résidez-vous ?',
+            'ask_referral': '✅ Pays enregistré !\n\n🤝 Avez-vous un code de parrainage ? (laissez vide si non)',
+            'sending_otp': '📧 Un code OTP a été envoyé à {email}. Veuillez le saisir pour vérifier votre compte.',
+            'registration_complete': '🎉 Félicitations ! Votre compte TokenFlow a été créé avec succès !\n\nVous allez recevoir un email de vérification. Cliquez sur le lien pour activer votre compte.\n\n👉 <a href="/connexion" style="color: #6366F1; font-weight: 700;">Connectez-vous maintenant</a>',
+            'error_exists': '❌ Ce {field} existe déjà. Veuillez en choisir un autre.',
+            'error_invalid': '❌ Format invalide. Veuillez entrer un {field} valide.',
+            'help': 'Je suis l\'assistant IA TokenFlow ! 🤖\n\nJe peux vous aider à :\n• Créer un compte (tapez "créer un compte")\n• Répondre à vos questions sur la plateforme\n• Vous guider dans vos premiers pas\n\nComment puis-je vous aider ?'
+        },
+        'en': {
+            'create_account': [
+                'create account',
+                'sign up',
+                'register',
+                'i want to create',
+                'open an account'
+            ],
+            'account_created': '🎉 Great! I\'ll guide you through creating your TokenFlow account. Let\'s start with basic info.\n\n📱 What is your phone number? (with country code, ex: +1234567890)',
+            'ask_email': '✅ Phone saved!\n\n📧 What is your email address?',
+            'ask_username': '✅ Email saved!\n\n👤 What username would you like? (no spaces)',
+            'ask_password': '✅ Username: {username}\n\n🔐 Choose a password (min 6 characters)',
+            'ask_country': '✅ Password saved!\n\n🌍 Which country do you live in?',
+            'ask_referral': '✅ Country saved!\n\n🤝 Do you have a referral code? (leave empty if not)',
+            'sending_otp': '📧 An OTP code has been sent to {email}. Please enter it to verify your account.',
+            'registration_complete': '🎉 Congratulations! Your TokenFlow account has been created successfully!\n\nYou\'ll receive a verification email. Click the link to activate your account.\n\n👉 <a href="/connexion" style="color: #6366F1; font-weight: 700;">Login now</a>',
+            'error_exists': '❌ This {field} already exists. Please choose another.',
+            'error_invalid': '❌ Invalid format. Please enter a valid {field}.',
+            'help': 'I\'m the TokenFlow AI assistant! 🤖\n\nI can help you:\n• Create an account (type "create account")\n• Answer questions about the platform\n• Guide you through your first steps\n\nHow can I help you?'
+        }
+    }
+    
+    # Get responses for current language
+    lang_responses = responses.get(lang, responses['fr'])
+    
+    # Check if user wants to create account
+    for phrase in lang_responses['create_account']:
+        if phrase in message:
+            return jsonify({
+                'response': lang_responses['account_created'],
+                'step': 'ask_phone',
+                'show_form': True
+            })
+    
+    return jsonify({'response': 'Je suis l\'assistant IA TokenFlow. Tapez "créer un compte" pour commencer l\'inscription ! 😊'})
+
 @app.route('/api/check-first-deposit')
 @login_required
 def api_check_first_deposit():

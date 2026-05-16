@@ -333,6 +333,59 @@ TokenFlow.initNotifications = function() {
       }
     }
   });
+  
+  // Request notification permission after user interaction (required by browsers)
+  this.setupNotificationPermission();
+};
+
+// Request browser notification permission
+TokenFlow.requestNotificationPermission = function() {
+  if (!('Notification' in window)) {
+    console.log('This browser does not support desktop notifications');
+    return;
+  }
+  
+  if (Notification.permission === 'granted') {
+    console.log('Notification permission already granted');
+    return;
+  }
+  
+  if (Notification.permission !== 'denied') {
+    Notification.requestPermission().then(permission => {
+      console.log('Notification permission:', permission);
+      if (permission === 'granted') {
+        this.showToast('Notifications activées !', 'success');
+      }
+    });
+  }
+};
+
+// Setup notification permission request on user interaction
+TokenFlow.setupNotificationPermission = function() {
+  // Request permission when user clicks on notification bell
+  const notifBtn = document.getElementById('notificationBtn');
+  if (notifBtn) {
+    notifBtn.addEventListener('click', () => {
+      // Small delay to ensure the click is registered first
+      setTimeout(() => {
+        this.requestNotificationPermission();
+      }, 100);
+    });
+  }
+  
+  // Also request on first meaningful interaction if not already requested
+  const requestOnInteraction = () => {
+    if (!sessionStorage.getItem('notifPermissionRequested')) {
+      sessionStorage.setItem('notifPermissionRequested', 'true');
+      this.requestNotificationPermission();
+    }
+    // Remove listeners after first request
+    document.removeEventListener('click', requestOnInteraction);
+    document.removeEventListener('keydown', requestOnInteraction);
+  };
+  
+  document.addEventListener('click', requestOnInteraction);
+  document.addEventListener('keydown', requestOnInteraction);
 };
 
 TokenFlow.toggleNotifications = function() {
