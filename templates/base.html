@@ -677,6 +677,76 @@
                 return toast;
             };
         }
+
+        // ============================================
+        // NOTIFICATION PERMISSION REQUEST
+        // ============================================
+        
+        // Demander la permission pour les notifications push
+        function requestNotificationPermission() {
+            // Vérifier si le navigateur supporte les notifications
+            if (!('Notification' in window)) {
+                console.log('Ce navigateur ne supporte pas les notifications');
+                return;
+            }
+            
+            // Vérifier le statut actuel des permissions
+            const currentPermission = Notification.permission;
+            
+            if (currentPermission === 'granted') {
+                console.log('Notifications déjà autorisées');
+                return;
+            }
+            
+            if (currentPermission === 'denied') {
+                console.log('Notifications précédemment refusées');
+                return;
+            }
+            
+            // Demander la permission après un court délai pour une meilleure UX
+            setTimeout(() => {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        console.log('✅ Notification permission granted');
+                        // Afficher une notification de bienvenue
+                        showWelcomeNotification();
+                    } else if (permission === 'denied') {
+                        console.log('❌ Notification permission denied');
+                    } else {
+                        console.log('⚠️ Notification permission dismissed');
+                    }
+                });
+            }, 2000); // Délai de 2 secondes après le chargement
+        }
+        
+        // Afficher une notification de bienvenue
+        function showWelcomeNotification() {
+            if (Notification.permission === 'granted') {
+                try {
+                    new Notification('TokenFlow', {
+                        body: '🔔 Bienvenue sur TokenFlow ! Vous recevrez désormais vos notifications en temps réel.',
+                        icon: '/static/images/logo.png',
+                        badge: '/static/images/badge.png',
+                        tag: 'welcome',
+                        requireInteraction: false
+                    });
+                } catch (e) {
+                    console.log('Erreur notification:', e);
+                }
+            }
+        }
+        
+        // Initialiser la demande de permission au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            // Attendre que la page soit complètement chargée
+            if (document.readyState === 'complete') {
+                requestNotificationPermission();
+            } else {
+                window.addEventListener('load', function() {
+                    requestNotificationPermission();
+                });
+            }
+        });
     </script>
     {% endblock %}
 </body>

@@ -1,0 +1,519 @@
+{% extends "base.html" %}
+
+{% block title %}Netflix Premium | TokenFlow{% endblock %}
+
+{% block page_styles %}
+/* ============================================
+   NETFLIX PREMIUM - Style officiel
+   ============================================ */
+
+:root {
+  --bg-page: #F1F5F9;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --border-card: rgba(148, 163, 184, 0.2);
+  --profit-green: #10B981;
+  --profit-green-glow: rgba(16, 185, 129, 0.15);
+  --primary: #6366F1;
+  --primary-glow: rgba(99, 102, 241, 0.15);
+  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --netflix-red: #E50914;
+  --netflix-red-glow: rgba(229, 9, 20, 0.15);
+}
+
+[data-theme="dark"] {
+  --bg-page: #0F172A;
+  --bg-card: rgba(30, 41, 59, 0.85);
+  --border-card: rgba(148, 163, 184, 0.1);
+  --text-primary: #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --text-muted: #64748B;
+}
+
+* { 
+  box-sizing: border-box; 
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(229, 9, 20, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.netflix-header {
+  text-align: center;
+  padding: 48px 24px;
+  margin-bottom: 40px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+}
+
+.netflix-header h1 {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--netflix-red);
+  margin-bottom: 16px;
+  text-shadow: 0 0 40px var(--netflix-red-glow);
+}
+
+.netflix-header .subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Plans Grid */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.plan-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 32px;
+  border: 2px solid var(--border-card);
+  backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px var(--netflix-red-glow);
+  border-color: var(--netflix-red);
+}
+
+.plan-card.featured {
+  border-color: var(--netflix-red);
+  transform: scale(1.02);
+}
+
+.plan-card.featured::before {
+  content: 'RECOMMANDÉ';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #E50914, #FF1744);
+  color: white;
+  padding: 4px 20px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.plan-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--netflix-red-glow);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 28px;
+  color: var(--netflix-red);
+}
+
+.plan-card h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.plan-quality {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.plan-price {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.price-value {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--netflix-red);
+}
+
+.price-period {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 28px;
+}
+
+.plan-features li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.plan-features li:last-child {
+  border-bottom: none;
+}
+
+.plan-features li::before {
+  content: '✓';
+  color: var(--profit-green);
+  margin-right: 10px;
+  font-weight: 700;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-netflix {
+  background: linear-gradient(135deg, #E50914, #FF1744);
+  color: white;
+  box-shadow: 0 8px 24px var(--netflix-red-glow);
+}
+
+.btn-netflix:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px var(--netflix-red-glow);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--netflix-red);
+  color: var(--netflix-red);
+}
+
+.btn-outline:hover {
+  background: var(--netflix-red-glow);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+.theme-toggle i {
+  font-size: 20px;
+  color: var(--primary);
+}
+
+/* Back Button */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin-bottom: 24px;
+}
+
+.back-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Features Section */
+.features-section {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 48px 24px;
+  margin-bottom: 40px;
+  border: 1px solid var(--border-card);
+}
+
+.features-section h2 {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 36px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.feature-item {
+  text-align: center;
+  padding: 20px;
+}
+
+.feature-item i {
+  font-size: 36px;
+  color: var(--netflix-red);
+  margin-bottom: 16px;
+}
+
+.feature-item h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.feature-item p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .netflix-header h1 {
+    font-size: 28px;
+  }
+  
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .plan-card.featured {
+    transform: scale(1);
+  }
+}
+{% endblock %}
+
+{% block content %}
+<!-- Theme Toggle -->
+<div class="theme-toggle" onclick="toggleTheme()">
+  <i class="fa-solid fa-moon" id="themeIcon"></i>
+</div>
+
+<div class="app-container">
+  <!-- Back Button -->
+  <a href="/dashboard" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i>
+    Retour au Dashboard
+  </a>
+
+  <!-- Header -->
+  <div class="netflix-header">
+    <h1>🎬 Netflix Premium</h1>
+    <p class="subtitle">Profitez de Netflix en 4K Ultra HD sans publicité, partout et sur tous vos écrans</p>
+  </div>
+
+  <!-- Plans -->
+  <div class="plans-grid">
+    <!-- Basic Plan -->
+    <div class="plan-card">
+      <div class="plan-icon">
+        <i class="fa-solid fa-tv"></i>
+      </div>
+      <h3>Basic</h3>
+      <p class="plan-quality">Qualité HD (720p)</p>
+      <div class="plan-price">
+        <span class="price-value">$9.99</span>
+        <span class="price-period">/mois</span>
+      </div>
+      <ul class="plan-features">
+        <li>1 écran à la fois</li>
+        <li>Qualité HD (720p)</li>
+        <li>Sans publicité</li>
+        <li>Tous les films et séries</li>
+        <li>Annulation gratuite</li>
+      </ul>
+      <a href="javascript:void(0)" onclick="checkAndRedirect()" class="btn btn-outline">Choisir</a>
+    </div>
+
+    <!-- Standard Plan -->
+    <div class="plan-card featured">
+      <div class="plan-icon">
+        <i class="fa-solid fa-star"></i>
+      </div>
+      <h3>Standard</h3>
+      <p class="plan-quality">Qualité Full HD (1080p)</p>
+      <div class="plan-price">
+        <span class="price-value">$15.99</span>
+        <span class="price-period">/mois</span>
+      </div>
+      <ul class="plan-features">
+        <li>2 écrans à la fois</li>
+        <li>Qualité Full HD (1080p)</li>
+        <li>Sans publicité</li>
+        <li>Tous les films et séries</li>
+        <li>Téléchargements illimités</li>
+        <li>Annulation gratuite</li>
+      </ul>
+      <a href="javascript:void(0)" onclick="checkAndRedirect()" class="btn btn-netflix">Choisir</a>
+    </div>
+
+    <!-- Premium Plan -->
+    <div class="plan-card">
+      <div class="plan-icon">
+        <i class="fa-solid fa-crown"></i>
+      </div>
+      <h3>Premium</h3>
+      <p class="plan-quality">Qualité 4K + HDR</p>
+      <div class="plan-price">
+        <span class="price-value">$22.99</span>
+        <span class="price-period">/mois</span>
+      </div>
+      <ul class="plan-features">
+        <li>4 écrans à la fois</li>
+        <li>Qualité 4K Ultra HD + HDR</li>
+        <li>Audio spatial immersif</li>
+        <li>Sans publicité</li>
+        <li>Téléchargements illimités</li>
+        <li>Annulation gratuite</li>
+      </ul>
+      <a href="javascript:void(0)" onclick="checkAndRedirect()" class="btn btn-outline">Choisir</a>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features-section">
+    <h2>Pourquoi choisir Netflix Premium ?</h2>
+    <div class="features-grid">
+      <div class="feature-item">
+        <i class="fa-solid fa-film"></i>
+        <h4>Contenu Illimité</h4>
+        <p>Des milliers de films, séries, documentaires et productions originales</p>
+      </div>
+      <div class="feature-item">
+        <i class="fa-solid fa-download"></i>
+        <h4>Hors Ligne</h4>
+        <p>Téléchargez vos contenus préférés et regardez-les sans connexion</p>
+      </div>
+      <div class="feature-item">
+        <i class="fa-solid fa-tv"></i>
+        <h4>Multi-écrans</h4>
+        <p>Regardez sur TV, ordinateur, tablette et smartphone</p>
+      </div>
+      <div class="feature-item">
+        <i class="fa-solid fa-user-group"></i>
+        <h4>Profils Personnalisés</h4>
+        <p>Créez jusqu'à 5 profils pour toute la famille</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function checkAndRedirect() {
+  // Check if user has made first deposit
+  fetch('/api/check-first-deposit')
+    .then(response => response.json())
+    .then(data => {
+      if (data.has_first_deposit) {
+        // Redirect to Netflix site
+        window.location.href = 'https://net22.cc';
+      } else {
+        // Show message
+        alert('⚠️ Vous devez effectuer un dépôt sur votre compte pour accéder à Netflix Premium.\n\nVeuillez d\'abord créditer votre compte pour profiter de nos offres.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('❌ Erreur de connexion. Veuillez réessayer.');
+    });
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  const icon = document.getElementById('themeIcon');
+  
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  
+  if (newTheme === 'dark') {
+    icon.className = 'fa-solid fa-sun';
+  } else {
+    icon.className = 'fa-solid fa-moon';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  const icon = document.getElementById('themeIcon');
+  if (savedTheme === 'dark') {
+    icon.className = 'fa-solid fa-sun';
+  }
+});
+</script>
+{% endblock %}

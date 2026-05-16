@@ -1434,8 +1434,23 @@
         </a>
 
         <a href="/ai-trading" class="pro-nav-item">
-          <i class="fa-solid fa-chart-line"></i>
+          <i class="fa-solid fa-robot"></i>
           <span>AI Trading</span>
+        </a>
+
+        <a href="/formation/trading" class="pro-nav-item">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <span>Formation Trading</span>
+        </a>
+
+        <a href="/formation/ecommerce" class="pro-nav-item">
+          <i class="fa-solid fa-store"></i>
+          <span>Formation E-commerce</span>
+        </a>
+
+        <a href="/netflix" class="pro-nav-item">
+          <i class="fa-solid fa-film"></i>
+          <span>Netflix Premium</span>
         </a>
 
         <!-- Contact Number -->
@@ -1505,14 +1520,15 @@
 
     <!-- Multi-Wallet Tabs -->
       <div class="pro-wallet-tabs">
-      <div class="pro-wallet-tab active" onclick="switchWallet('USD', this)">
+      <div class="pro-wallet-tab active">
         <span class="tab-currency">🇺🇸 USD</span>
         <span class="tab-balance">${{ "{:,.0f}".format(user.solde_depot or 0) }}</span>
       </div>
-      <div class="pro-wallet-tab" onclick="switchWallet('EUR', this)">
+      <!-- EUR tab hidden -->
+      <!-- <div class="pro-wallet-tab" onclick="switchWallet('EUR', this)" style="display: none;">
         <span class="tab-currency">🇪🇺 EUR</span>
         <span class="tab-balance">€{{ "{:,.2f}".format(user.balance_eur or 0) }}</span>
-      </div>
+      </div> -->
     </div>
 
     <!-- Stats Grid -->

@@ -1,0 +1,612 @@
+{% extends "base.html" %}
+
+{% block title %}Formation Trading | TokenFlow{% endblock %}
+
+{% block page_styles %}
+/* ============================================
+   PLATEFORME FINTECH/TRADING PROFESSIONNELLE
+   Style: Binance, Bybit, Revolut Premium
+   ============================================ */
+
+:root {
+  /* Palette Fintech Premium - Thème Clair */
+  --bg-page: #F1F5F9;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --bg-glass: rgba(255, 255, 255, 0.65);
+  --border-glow: rgba(99, 102, 241, 0.2);
+  --border-card: rgba(148, 163, 184, 0.2);
+  
+  /* Couleurs Trading */
+  --profit-green: #10B981;
+  --profit-green-glow: rgba(16, 185, 129, 0.15);
+  --loss-red: #EF4444;
+  --loss-red-glow: rgba(239, 68, 68, 0.15);
+  
+  /* Primary */
+  --primary: #6366F1;
+  --primary-glow: rgba(99, 102, 241, 0.15);
+  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  
+  /* Text */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  
+  /* Badges */
+  --badge-crypto: linear-gradient(135deg, #F7931A, #FFB84D);
+  --badge-forex: linear-gradient(135deg, #3B82F6, #6366F1);
+  --badge-gold: linear-gradient(135deg, #FFD700, #FFA500);
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  --bg-page: #0F172A;
+  --bg-card: rgba(30, 41, 59, 0.85);
+  --bg-card-hover: rgba(30, 41, 59, 0.95);
+  --bg-glass: rgba(30, 41, 59, 0.65);
+  --border-glow: rgba(99, 102, 241, 0.3);
+  --border-card: rgba(148, 163, 184, 0.1);
+  
+  --text-primary: #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --text-muted: #64748B;
+}
+
+* { 
+  box-sizing: border-box; 
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  transition: all 0.3s ease;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.training-header {
+  text-align: center;
+  padding: 48px 24px;
+  margin-bottom: 40px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+}
+
+.training-header h1 {
+  font-size: 32px;
+  font-weight: 900;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+}
+
+.training-header .subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Modules Grid */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.module-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.module-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px var(--primary-glow);
+  border-color: var(--border-glow);
+}
+
+.module-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--primary-gradient);
+}
+
+.module-number {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  background: var(--primary-glow);
+  color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.module-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--primary-glow);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: var(--primary);
+}
+
+.module-card h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.module-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.module-lessons {
+  list-style: none;
+  padding: 0;
+}
+
+.module-lessons li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.module-lessons li:last-child {
+  border-bottom: none;
+}
+
+.module-lessons li::before {
+  content: '✓';
+  color: var(--profit-green);
+  margin-right: 10px;
+  font-weight: 700;
+}
+
+/* Pricing Section */
+.pricing-section {
+  text-align: center;
+  padding: 48px 24px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+  margin-bottom: 40px;
+}
+
+.pricing-section h2 {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.pricing-section > p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 36px;
+}
+
+.pricing-grid {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.price-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 32px;
+  border: 2px solid var(--border-card);
+  flex: 1;
+  max-width: 280px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.price-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px var(--primary-glow);
+}
+
+.price-card.featured {
+  border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+.price-card.featured::before {
+  content: 'POPULAIRE';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary-gradient);
+  color: white;
+  padding: 4px 16px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.price-card h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.price {
+  font-size: 36px;
+  font-weight: 900;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+}
+
+.price-features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 28px;
+}
+
+.price-features li {
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-card);
+}
+
+.price-features li:last-child {
+  border-bottom: none;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: white;
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px var(--primary-glow);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.btn-outline:hover {
+  background: var(--primary-glow);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(20px);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+.theme-toggle i {
+  font-size: 20px;
+  color: var(--primary);
+}
+
+/* Back Button */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin-bottom: 24px;
+}
+
+.back-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .training-header h1 {
+    font-size: 24px;
+  }
+  
+  .modules-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pricing-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .price-card.featured {
+    transform: scale(1);
+  }
+}
+{% endblock %}
+
+{% block content %}
+<!-- Theme Toggle -->
+<div class="theme-toggle" onclick="toggleTheme()">
+  <i class="fa-solid fa-moon" id="themeIcon"></i>
+</div>
+
+<div class="app-container">
+  <!-- Back Button -->
+  <a href="/dashboard" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i>
+    Retour au Dashboard
+  </a>
+
+  <!-- Header -->
+  <div class="training-header">
+    <h1><i class="fa-solid fa-chart-line"></i> Formation Trading Professionnel</h1>
+    <p class="subtitle">Maîtrisez l'art du trading et générez des revenus passifs grâce à nos stratégies éprouvées</p>
+  </div>
+
+  <!-- Modules -->
+  <div class="modules-grid">
+    <div class="module-card">
+      <div class="module-number">1</div>
+      <div class="module-icon">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+      <h3>Les Bases du Trading</h3>
+      <p>Comprendre les fondamentaux des marchés financiers et le vocabulaire essentiel du trading.</p>
+      <ul class="module-lessons">
+        <li>Introduction aux marchés financiers</li>
+        <li>Types d'actifs (actions, forex, crypto)</li>
+        <li>Analyse technique vs analyse fondamentale</li>
+        <li>Psychologie du trader</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="module-number">2</div>
+      <div class="module-icon">
+        <i class="fa-solid fa-chart-bar"></i>
+      </div>
+      <h3>Analyse Technique</h3>
+      <p>Apprenez à lire les graphiques et identifier les opportunités de trading.</p>
+      <ul class="module-lessons">
+        <li>Chandeliers japonais et patterns</li>
+        <li>Supports et résistances</li>
+        <li>Indicateurs techniques (RSI, MACD, MA)</li>
+        <li>Tendances et canaux</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="module-number">3</div>
+      <div class="module-icon">
+        <i class="fa-solid fa-shield-alt"></i>
+      </div>
+      <h3>Gestion des Risques</h3>
+      <p>Protégez votre capital et maximisez vos gains avec une gestion rigoureuse.</p>
+      <ul class="module-lessons">
+        <li>Position sizing et money management</li>
+        <li>Stop loss et take profit</li>
+        <li>Risk/Reward ratio optimal</li>
+        <li>Journal de trading</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="module-number">4</div>
+      <div class="module-icon">
+        <i class="fa-solid fa-robot"></i>
+      </div>
+      <h3>Trading Algorithmique</h3>
+      <p>Automatisez vos stratégies avec des bots de trading intelligents.</p>
+      <ul class="module-lessons">
+        <li>Introduction aux algorithmes de trading</li>
+        <li>Création de stratégies automatisées</li>
+        <li>Backtesting et optimisation</li>
+        <li>Utilisation des APIs de trading</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="module-number">5</div>
+      <div class="module-icon">
+        <i class="fa-solid fa-brain"></i>
+      </div>
+      <h3>Psychologie & Discipline</h3>
+      <p>Développez l'état d'esprit d'un trader gagnant.</p>
+      <ul class="module-lessons">
+        <li>Gestion des émotions</li>
+        <li>Discipline et routine de trading</li>
+        <li>Gestion du stress et de la pression</li>
+        <li>Éviter les erreurs courantes</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="module-number">6</div>
+      <div class="module-icon">
+        <i class="fa-solid fa-rocket"></i>
+      </div>
+      <h3>Stratégies Avancées</h3>
+      <p>Techniques professionnelles pour maximiser vos profits.</p>
+      <ul class="module-lessons">
+        <li>Trading de range et breakout</li>
+        <li>Scalping et day trading</li>
+        <li>Swing trading et position trading</li>
+        <li>Stratégies sur crypto-monnaies</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="pricing-section">
+    <h2>Choisissez votre formule</h2>
+    <p>Rejoignez des milliers de traders qui ont déjà transformé leur vie</p>
+    
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Débutant</h3>
+        <div class="price">$199</div>
+        <ul class="price-features">
+          <li>Modules 1-3</li>
+          <li>Support par email</li>
+          <li>Accès à vie</li>
+        </ul>
+        <a href="#" class="btn btn-outline" style="width: 100%;">Commencer</a>
+      </div>
+
+      <div class="price-card featured">
+        <h3>Complet</h3>
+        <div class="price">$399</div>
+        <ul class="price-features">
+          <li>Tous les modules</li>
+          <li>Support prioritaire</li>
+          <li>Certificat de completion</li>
+          <li>Accès à la communauté</li>
+        </ul>
+        <a href="#" class="btn btn-primary" style="width: 100%;">Commencer</a>
+      </div>
+
+      <div class="price-card">
+        <h3>VIP</h3>
+        <div class="price">$799</div>
+        <ul class="price-features">
+          <li>Tout le pack Complet</li>
+          <li>Coaching individuel</li>
+          <li>Stratégies exclusives</li>
+          <li>Accès aux webinaires</li>
+        </ul>
+        <a href="#" class="btn btn-outline" style="width: 100%;">Commencer</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Theme Toggle
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  const icon = document.getElementById('themeIcon');
+  
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  
+  if (newTheme === 'dark') {
+    icon.className = 'fa-solid fa-sun';
+  } else {
+    icon.className = 'fa-solid fa-moon';
+  }
+}
+
+// Load saved theme
+document.addEventListener('DOMContentLoaded', function() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  const icon = document.getElementById('themeIcon');
+  if (savedTheme === 'dark') {
+    icon.className = 'fa-solid fa-sun';
+  }
+});
+</script>
+{% endblock %}

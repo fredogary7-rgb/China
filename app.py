@@ -1021,6 +1021,33 @@ def send_otp_email(user_email, otp_code, purpose="connexion"):
         print(f"Erreur envoi OTP: {e}")
         return False
 
+def send_email_notification(user_email, subject, html_content):
+    """Envoie un email de notification (pour nouveaux produits, etc.)."""
+    smtp_server = os.getenv('SMTP_SERVER', 'smtp.zoho.com')
+    smtp_port = int(os.getenv('SMTP_PORT', 587))
+    smtp_user = os.getenv('SMTP_USER', 'support@flowtoken.uk')
+    smtp_password = os.getenv('SMTP_PASSWORD', 'qWnPTC0ida0q')
+    
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = 'TOKEN Flow <support@flowtoken.uk>'
+    msg['To'] = user_email
+    
+    # Version texte brut
+    text_content = f"TokenFlow Notification: {subject}"
+    msg.attach(MIMEText(text_content, 'plain'))
+    msg.attach(MIMEText(html_content, 'html'))
+    
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, user_email, msg.as_string())
+        return True
+    except Exception as e:
+        print(f"Erreur envoi email notification: {e}")
+        return False
+
 def send_verification_email(user_email, verification_token):
     """Envoie un email de vérification."""
     # Configuration SMTP (à adapter selon votre fournisseur)
@@ -2353,6 +2380,24 @@ def nous_page():
 def ai_chat_page():
     return render_template("ai_chat.html")
 
+@app.route("/formation/trading")
+@login_required
+def trading_training_page():
+    """Page de formation en trading"""
+    return render_template("trading_training.html")
+
+@app.route("/formation/ecommerce")
+@login_required
+def ecommerce_training_page():
+    """Page de formation en e-commerce"""
+    return render_template("ecommerce_training.html")
+
+@app.route("/netflix")
+@login_required
+def netflix_page():
+    """Page Netflix Premium"""
+    return render_template("netflix.html")
+
 @app.route("/ai-trading")
 @login_required
 def ai_trading_sim_page():
@@ -2868,9 +2913,11 @@ def admin_products():
         db.session.add(new_product)
         db.session.commit()
         
-        # Send notification to all users
+        # Send notification to all users (in-app + email)
         all_users = User.query.all()
+        email_count = 0
         for u in all_users:
+            # In-app notification
             create_notification(
                 u.phone,
                 'product',
@@ -2878,8 +2925,53 @@ def admin_products():
                 f'Le produit "{name}" est maintenant disponible. ROI journalier: ${daily_revenue_usd:.2f} USD',
                 url_for('produits_rapide_page', _external=True)
             )
+            
+            # Send email notification if user has email
+            if u.email and u.email_verified:
+                try:
+                    email_subject = f"🚀 Nouveau Produit: {name}"
+                    email_body = f'''
+<html>
+<body style="font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F1F5F9; padding: 40px;">
+    <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 900;">T</div>
+        </div>
+        <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">🚀 Nouveau Produit Disponible!</h1>
+        <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Bonjour {u.username or 'cher utilisateur'},
+        </p>
+        <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Un nouveau produit d'investissement vient d'être ajouté sur TokenFlow :
+        </p>
+        <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border-radius: 16px; padding: 24px; margin: 20px 0; border: 1px solid rgba(99, 102, 241, 0.2);">
+            <h2 style="color: #6366F1; font-size: 20px; margin: 0 0 12px;">{name}</h2>
+            <p style="color: #475569; font-size: 14px; margin: 0 0 8px;"><strong>Prix:</strong> ${price_usd:.2f} USD</p>
+            <p style="color: #10B981; font-size: 18px; font-weight: 700; margin: 0;">📈 ROI Journalier: ${daily_revenue_usd:.2f} USD</p>
+        </div>
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{url_for('produits_rapide_page', _external=True)}" style="display: inline-block; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);">
+                Investir Maintenant
+            </a>
+        </div>
+        <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
+            Ne manquez pas cette opportunité d'investissement !<br>
+            Connectez-vous à votre compte TokenFlow pour en profiter.
+        </p>
+        <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 30px 0;">
+        <p style="color: #94A3B8; font-size: 12px; text-align: center;">
+            © 2024 TokenFlow. Tous droits réservés.
+        </p>
+    </div>
+</body>
+</html>
+                    '''
+                    send_email_notification(u.email, email_subject, email_body)
+                    email_count += 1
+                except Exception as e:
+                    print(f"Erreur envoi email notification: {e}")
         
-        flash("✅ Produit créé avec succès et notifications envoyées!", "success")
+        flash(f"✅ Produit créé avec succès ! {email_count} notifications email envoyées.", "success")
         return redirect(url_for("admin_products"))
     
     # GET request - show products list and creation form
@@ -2901,6 +2993,44 @@ def admin_delete_product(product_id):
     db.session.commit()
     
     flash("Produit désactivé avec succès.", "success")
+    return redirect(url_for("admin_products"))
+
+@app.route("/admin/products/edit", methods=["POST"])
+@login_required
+def admin_edit_product():
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    
+    if not user or not user.is_admin:
+        flash("Accès réservé aux administrateurs.", "danger")
+        return redirect(url_for("connexion_page"))
+    
+    product_id = request.form.get("product_id")
+    if not product_id:
+        flash("ID du produit requis.", "danger")
+        return redirect(url_for("admin_products"))
+    
+    product = CustomProduct.query.get_or_404(int(product_id))
+    
+    # Update product fields
+    product.name = request.form.get("name", product.name)
+    product.description = request.form.get("description", product.description)
+    product.price_usd = float(request.form.get("price_usd", product.price_usd))
+    product.daily_revenue_usd = float(request.form.get("daily_revenue_usd", product.daily_revenue_usd))
+    product.category = request.form.get("category", product.category)
+    
+    # Handle image upload if provided
+    if 'image' in request.files:
+        file = request.files['image']
+        if file and file.filename:
+            ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else 'jpg'
+            image_filename = f"product_{uuid.uuid4().hex[:8]}.{ext}"
+            file.save(os.path.join(UPLOAD_FOLDER, image_filename))
+            product.image_filename = image_filename
+    
+    db.session.commit()
+    
+    flash("✅ Produit modifié avec succès !", "success")
     return redirect(url_for("admin_products"))
 
 @app.route("/admin/deposits/valider/<int:depot_id>")
@@ -3459,6 +3589,132 @@ def generate_apple_client_secret():
     # Cette fonction nécessite la clé privée Apple
     # Pour l'instant, retourne une valeur placeholder
     return "apple_client_secret_placeholder"
+
+# ============================================
+# API NOTIFICATIONS - Real-time updates
+# ============================================
+@app.route('/api/notifications')
+@login_required
+def api_get_notifications():
+    """Récupère les notifications de l'utilisateur connecté."""
+    try:
+        user_phone = session.get('phone')
+        if not user_phone:
+            return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+        
+        # Get unread notifications, ordered by most recent first
+        notifications = Notification.query.filter_by(
+            user_phone=user_phone,
+            is_read=False
+        ).order_by(Notification.created_at.desc()).limit(20).all()
+        
+        # Map notification types to display types
+        type_map = {
+            'deposit': 'success',
+            'withdrawal': 'info',
+            'investment': 'success',
+            'profit': 'success',
+            'referral': 'success',
+            'system': 'info',
+            'warning': 'warning',
+            'error': 'error'
+        }
+        
+        result = []
+        for n in notifications:
+            result.append({
+                'id': n.id,
+                'type': type_map.get(n.type, 'info'),
+                'title': n.title,
+                'message': n.message,
+                'created_at': n.created_at.isoformat() if n.created_at else datetime.utcnow().isoformat(),
+                'read': n.is_read,
+                'action_url': n.action_url
+            })
+        
+        return jsonify({
+            'success': True,
+            'notifications': result,
+            'count': len(result)
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/notifications/<int:notification_id>/read', methods=['POST'])
+@login_required
+def api_mark_notification_read(notification_id):
+    """Marque une notification comme lue."""
+    try:
+        user_phone = session.get('phone')
+        if not user_phone:
+            return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+        
+        notification = Notification.query.get(notification_id)
+        if not notification:
+            return jsonify({'success': False, 'error': 'Notification not found'}), 404
+        
+        # Only allow users to mark their own notifications
+        if notification.user_phone != user_phone:
+            return jsonify({'success': False, 'error': 'Forbidden'}), 403
+        
+        notification.is_read = True
+        db.session.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/check-first-deposit')
+@login_required
+def api_check_first_deposit():
+    """Vérifie si l'utilisateur a effectué son premier dépôt."""
+    try:
+        user_phone = session.get('phone')
+        if not user_phone:
+            return jsonify({'has_first_deposit': False, 'error': 'Not authenticated'}), 401
+        
+        # Check if user has any validated deposit
+        first_deposit = Depot.query.filter_by(
+            phone=user_phone,
+            statut='valide'
+        ).first()
+        
+        return jsonify({
+            'has_first_deposit': first_deposit is not None
+        })
+    except Exception as e:
+        return jsonify({
+            'has_first_deposit': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/notifications/mark-all-read', methods=['POST'])
+@login_required
+def api_mark_all_notifications_read():
+    """Marque toutes les notifications comme lues."""
+    try:
+        user_phone = session.get('phone')
+        if not user_phone:
+            return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+        
+        Notification.query.filter_by(
+            user_phone=user_phone,
+            is_read=False
+        ).update({'is_read': True})
+        db.session.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 if __name__ == "__main__":
     bg_thread = threading.Thread(target=paiement_quotidien, daemon=True)

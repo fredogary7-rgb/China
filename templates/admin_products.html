@@ -379,9 +379,15 @@
                 
                 <div class="product-meta">
                     <span class="product-category">{{ product.category|upper }}</span>
-                    <a href="/admin/products/delete/{{ product.id }}" class="btn-delete" onclick="return confirm('Désactiver ce produit ?');">
-                        <i class="fa-solid fa-trash"></i> Désactiver
-                    </a>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="openEditModal({{ product.id }}, '{{ product.name }}', '{{ product.description or '' }}', {{ product.price_usd }}, {{ product.daily_revenue_usd }}, '{{ product.category }}')" 
+                                style="padding: 6px 12px; background: rgba(99, 102, 241, 0.1); color: var(--primary); border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none;">
+                            <i class="fa-solid fa-pen"></i> Modifier
+                        </button>
+                        <a href="/admin/products/delete/{{ product.id }}" class="btn-delete" onclick="return confirm('Désactiver ce produit ?');">
+                            <i class="fa-solid fa-trash"></i> Désactiver
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -394,6 +400,88 @@
     </div>
     {% endif %}
 </div>
+
+<!-- Edit Modal -->
+<div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: var(--white); border-radius: 16px; padding: 24px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 18px; font-weight: 700;"><i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> Modifier le Produit</h3>
+            <button onclick="closeEditModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted);">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <form id="editForm" method="POST" action="/admin/products/edit">
+            <input type="hidden" name="product_id" id="editProductId">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nom du produit *</label>
+                    <input type="text" name="name" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label>Catégorie</label>
+                    <select name="category" id="editCategory">
+                        <option value="custom">Personnalisé</option>
+                        <option value="ai">AI Trading</option>
+                        <option value="crypto">Crypto</option>
+                        <option value="forex">Forex</option>
+                        <option value="gold">Gold</option>
+                        <option value="vip">VIP</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label>Description</label>
+                <textarea name="description" id="editDescription"></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Prix (USD) *</label>
+                    <input type="number" name="price_usd" id="editPriceUsd" step="0.01" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Revenu Journalier (USD) *</label>
+                    <input type="number" name="daily_revenue_usd" id="editDailyRevenue" step="0.01" min="0.01" required>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button type="submit" class="btn-submit" style="flex: 1;">
+                    <i class="fa-solid fa-check"></i> Enregistrer
+                </button>
+                <button type="button" onclick="closeEditModal()" style="flex: 1; padding: 14px 28px; background: var(--bg); color: var(--text-muted); border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer;">
+                    Annuler
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditModal(id, name, description, priceUsd, dailyRevenue, category) {
+    document.getElementById('editProductId').value = id;
+    document.getElementById('editName').value = name;
+    document.getElementById('editDescription').value = description;
+    document.getElementById('editPriceUsd').value = priceUsd;
+    document.getElementById('editDailyRevenue').value = dailyRevenue;
+    document.getElementById('editCategory').value = category;
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.getElementById('editModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeEditModal();
+    }
+});
+</script>
 
 </body>
 </html>

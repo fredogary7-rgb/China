@@ -56,6 +56,7 @@ TokenFlow.init = function() {
   this.initPaymentMethods();
   this.initFormValidation();
   this.initAutoLoaders();
+  this.startNotificationPolling(); // Start real-time notification polling
 
   // Store original balances from DOM
   const balanceEl = document.getElementById('mainBalance');
@@ -645,6 +646,93 @@ TokenFlow.startLiveUpdates = function() {
       this.updateRevenueDisplay();
     }
   }, 30000); // Update every 30 seconds
+};
+
+// ============================================
+// REAL-TIME NOTIFICATION POLLING
+// ============================================
+TokenFlow.lastNotificationCheck = null;
+TokenFlow.notificationPollingInterval = null;
+
+TokenFlow.startNotificationPolling = function() {
+  // Check for new notifications every 5 seconds
+  this.checkNewNotifications(); // Check immediately on load
+  this.notificationPollingInterval = setInterval(() => {
+    this.checkNewNotifications();
+  }, 5000);
+};
+
+TokenFlow.stopNotificationPolling = function() {
+  if (this.notificationPollingInterval) {
+    clearInterval(this.notificationPollingInterval);
+    this.notificationPollingInterval = null;
+  }
+};
+
+TokenFlow.checkNewNotifications = function() {
+  fetch('/api/notifications')
+    .then(response => response.json())
+    .then(data => {
+      if (data.success && data.notifications) {
+        const newNotifications = data.notifications.filter(n => {
+          // Only show notifications created after the last check
+          if (!this.lastNotificationCheck) return !n.read;
+          return new Date(n.created_at) > this.lastNotificationCheck && !n.read;
+        });
+
+        if (newNotifications.length > 0) {
+          // Update badge count
+          const badge = document.querySelector('.icon-btn .badge');
+          if (badge) {
+            const currentCount = parseInt(badge.textContent) || 0;
+            badge.textContent = currentCount + newNotifications.length;
+            badge.style.display = 'inline-flex';
+          }
+
+          // Add each new notification
+          newNotifications.forEach(n => {
+            this.addNotification(n.title, n.message, n.type || 'info');
+          });
+
+          // Update last check time
+          this.lastNotificationCheck = new Date();
+        } else if (!this.lastNotificationCheck) {
+          // First run - mark all as read and set timestamp
+          const unreadItems = document.querySelectorAll('.notification-item.unread');
+          if (unreadItems.length > 0) {
+            const badge = document.querySelector('.icon-btn .badge');
+            if (badge) {
+              badge.textContent = unreadItems.length;
+              badge.style.display = 'inline-flex';
+            }
+          }
+          this.lastNotificationCheck = new Date();
+        }
+      }
+    })
+    .catch(error => {
+      console.log('Notification polling error:', error);
+    });
+};
+
+TokenFlow.markNotificationAsRead = function(notificationId) {
+  fetch(`/api/notifications/${notificationId}/read`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Update badge
+      const badge = document.querySelector('.icon-btn .badge');
+      if (badge) {
+        const newCount = Math.max(0, parseInt(badge.textContent) - 1);
+        badge.textContent = newCount;
+        if (newCount === 0) badge.style.display = 'none';
+      }
+    }
+  })
+  .catch(error => console.log('Error marking notification as read:', error));
 };
 
 // ============================================
