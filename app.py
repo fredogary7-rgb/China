@@ -1692,11 +1692,12 @@ def admin_dashboard():
     banned_users = User.query.filter_by(is_banned=True).count()
     verified_users = User.query.filter_by(email_verified=True).count()
     
-    # Get deposits in XOF and convert to USD (divide by 600)
+    # Get deposits - amounts are stored in XOF (converted from USD at deposit time)
+    # Convert back to USD for display (divide by 600)
     total_deposits_xof = db.session.query(db.func.sum(Depot.montant)).filter_by(statut="valide").scalar() or 0
     pending_deposits_xof = db.session.query(db.func.sum(Depot.montant)).filter_by(statut="pending").scalar() or 0
-    total_deposits = total_deposits_xof / 600  # Convert to USD
-    pending_deposits = pending_deposits_xof / 600  # Convert to USD
+    total_deposits = round(total_deposits_xof / 600, 2)  # Convert XOF to USD
+    pending_deposits = round(pending_deposits_xof / 600, 2)  # Convert XOF to USD
     
     total_withdrawals = db.session.query(db.func.sum(Retrait.montant)).filter_by(statut="validé").scalar() or 0
     pending_withdrawals = db.session.query(db.func.sum(Retrait.montant)).filter_by(statut="en_attente").scalar() or 0
