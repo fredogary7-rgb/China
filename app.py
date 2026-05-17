@@ -1692,12 +1692,9 @@ def admin_dashboard():
     banned_users = User.query.filter_by(is_banned=True).count()
     verified_users = User.query.filter_by(email_verified=True).count()
     
-    # Get deposits - amounts are stored in XOF (converted from USD at deposit time)
-    # Convert back to USD for display (divide by 600)
-    total_deposits_xof = db.session.query(db.func.sum(Depot.montant)).filter_by(statut="valide").scalar() or 0
-    pending_deposits_xof = db.session.query(db.func.sum(Depot.montant)).filter_by(statut="pending").scalar() or 0
-    total_deposits = round(total_deposits_xof / 600, 2)  # Convert XOF to USD
-    pending_deposits = round(pending_deposits_xof / 600, 2)  # Convert XOF to USD
+    # Get deposits - amounts are now stored in USD directly (no XOF conversion)
+    total_deposits = db.session.query(db.func.sum(Depot.montant)).filter_by(statut="valide").scalar() or 0
+    pending_deposits = db.session.query(db.func.sum(Depot.montant)).filter_by(statut="pending").scalar() or 0
     
     total_withdrawals = db.session.query(db.func.sum(Retrait.montant)).filter_by(statut="validé").scalar() or 0
     pending_withdrawals = db.session.query(db.func.sum(Retrait.montant)).filter_by(statut="en_attente").scalar() or 0
@@ -2062,8 +2059,7 @@ def soleaspay_webhook():
     
     return jsonify({'status': 'ok'}), 200
 
-# Taux de conversion USD vers XOF
-USD_TO_XOF_RATE = 600
+# No XOF conversion - all amounts stored in USD directly
 
 @app.route("/deposit", methods=["POST"])
 @login_required
@@ -2073,19 +2069,19 @@ def create_deposit():
     if not user:
         return jsonify({"error": "Utilisateur introuvable"}), 400
 
-    # Récupérer le montant en USD (nouveau format)
+    # Get amount in USD directly (no conversion needed)
     montant_usd = request.form.get("montant_usd")
     if montant_usd:
         try:
-            montant_usd = float(montant_usd)
-            # Convertir USD en XOF pour stockage
-            montant = int(montant_usd * USD_TO_XOF_RATE)
+            montant = float(montant_usd)  # Store as USD directly
         except ValueError:
             return jsonify({"error": "Montant USD invalide"}), 400
     else:
-        # Ancien format (déjà en XOF)
+        # Legacy format - assume it's already in USD if small number, otherwise convert
         try:
-            montant = int(request.form.get("montant", 0))
+            legacy_montant = float(request.form.get("montant", 0))
+            # If amount > 1000, it's likely old XOF format, convert to USD
+            montant = legacy_montant / 600 if legacy_montant > 1000 else legacy_montant
         except ValueError:
             return jsonify({"error": "Montant invalide"}), 400
 
@@ -2172,9 +2168,9 @@ def create_deposit():
 
     # Paiement par carte bancaire (Stripe)
     if operator == "Stripe":
-        # Minimum $30 USD = 18000 XOF
-        if montant < 18000:
-            return jsonify({"error": "Montant minimum $30 USD (18 000 XOF) pour le paiement par carte"}), 400
+        # Minimum $30 USD
+        if montant < 30:
+            return jsonify({"error": "Montant minimum $30 USD pour le paiement par carte"}), 400
         if not all([card_holder, card_number, card_expiry, card_cvc]):
             return jsonify({"error": "Tous les champs de carte sont requis pour le paiement Stripe"}), 400
         fullname = card_holder
@@ -2216,9 +2212,9 @@ def create_deposit():
             user_agent=user_agent
         )
     else:
-        # Minimum $25 USD = 15000 XOF for Mobile Money
-        if montant < 15000:
-            return jsonify({"error": "Montant minimum $25 USD (15 000 XOF) pour Mobile Money"}), 400
+        # Minimum $25 USD for Mobile Money
+        if montant < 25:
+            return jsonify({"error": "Montant minimum $25 USD pour Mobile Money"}), 400
         if not all([phone_paiement, country, operator]):
             return jsonify({"error": "Tous les champs sont requis pour le paiement mobile"}), 400
         payment_link = "https://my.moneyfusion.net/69c436255b5e887878b20c60"
@@ -2716,44 +2712,37 @@ def get_image(montant):
 def historique_page():
     phone = get_logged_in_user_phone()
 
-    # Get deposits - amounts are already stored in the currency user entered
-    # If user entered 30 USD, montant = 30 (not 18000 XOF)
-    # If user entered 18000 XOF, montant = 18000
+    # Get deposits - amounts are stored in USD directly
     depots_raw = Depot.query.filter_by(phone=phone).order_by(Depot.date.desc()).all()
     depots = []
     for d in depots_raw:
-        # Check if amount looks like XOF (large number) or USD (small number)
-        # If amount > 1000, assume it's XOF and convert to USD
-        montant_usd = d.montant / 600 if d.montant > 1000 else d.montant
         depots.append({
             'date': d.date,
-            'montant': round(montant_usd, 2),
+            'montant': round(d.montant, 2),
             'statut': d.statut,
             'operator': d.operator,
             'reference': d.reference
         })
 
-    # Get withdrawals - same logic
+    # Get withdrawals - amounts in USD
     retraits_raw = Retrait.query.filter_by(phone=phone).order_by(Retrait.date.desc()).all()
     retraits = []
     for r in retraits_raw:
-        montant_usd = r.montant / 600 if r.montant > 1000 else r.montant
         retraits.append({
             'date': r.date,
-            'montant': round(montant_usd, 2),
+            'montant': round(r.montant, 2),
             'statut': r.statut
         })
 
-    # Get commissions - same logic
+    # Get commissions - amounts in USD
     commissions_raw = Commission.query.filter_by(
         parrain_phone=phone
     ).order_by(Commission.date.desc()).all()
     commissions = []
     for c in commissions_raw:
-        montant_usd = c.montant / 600 if c.montant > 1000 else c.montant
         commissions.append({
             'date': c.date,
-            'montant': round(montant_usd, 2),
+            'montant': round(c.montant, 2),
             'niveau': c.niveau,
             'filleul_phone': c.filleul_phone
         })
@@ -3155,9 +3144,9 @@ def retrait_page():
             flash("Montant invalide.", "danger")
             return redirect(url_for("retrait_page"))
 
-        # Minimum 15 USD = environ 9 375 XOF
-        if montant < 9375:
-            flash("Montant minimum : 15 USD (9 375 XOF).", "warning")
+        # Minimum 15 USD
+        if montant < 15:
+            flash("Montant minimum : 15 USD.", "warning")
             return redirect(url_for("retrait_page"))
 
         if montant > solde_retraitable:
