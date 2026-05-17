@@ -2148,20 +2148,22 @@ def create_deposit():
             # via l'application mobile de l'opérateur (pour Mobile Money) ou
             # via un processus automatique (pour Crypto)
             if not payment_url:
-                # Pour les cryptomonnaies, retourner une URL de confirmation
+                # Pour les cryptomonnaies et Mobile Money, retourner juste un message
+                # sans URL de redirection - le frontend affichera un message de succès
                 if country == "International":
                     return jsonify({
-                        "url": url_for('dashboard_page', _external=True),
                         "message": f"Paiement {operator} initié ! Votre dépôt sera crédité après confirmation du réseau blockchain.",
                         "status": "pending"
                     })
                 else:
                     # Pour Mobile Money, l'utilisateur doit confirmer sur son téléphone
                     return jsonify({
-                        "url": url_for('dashboard_page', _external=True),
                         "message": f"Veuillez confirmer le paiement sur votre téléphone ({operator}). Votre dépôt sera crédité automatiquement.",
                         "status": "pending"
                     })
+            else:
+                # Retourner l'URL de paiement si disponible
+                return jsonify({"url": payment_url})
         else:
             error_msg = result.get('message', 'Erreur lors de la création du paiement') if result else 'Erreur inconnue'
             return jsonify({"error": error_msg}), 500
