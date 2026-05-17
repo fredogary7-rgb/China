@@ -3582,8 +3582,8 @@ def apple_callback():
                 phone=phone,
                 apple_id=apple_id,
                 password=None,
-                solde_total=1000,
-                solde_depot=1000,
+                solde_total=0,
+                solde_depot=0,
                 solde_revenu=0,
                 solde_parrainage=0
             )
