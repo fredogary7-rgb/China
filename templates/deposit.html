@@ -426,6 +426,9 @@
     </a>
   </div>
 
+  <!-- Hidden field to store user's XOF balance for conversion -->
+  <input type="hidden" id="userXofBalance" value="{{ user.solde_total or 0 }}">
+
   <!-- Étape 1: Pays -->
   <div class="section-label">
     <i class="fa-solid fa-globe"></i>
@@ -527,8 +530,8 @@
     <div class="info-banner" style="margin-top: 20px;">
       <i class="fa-solid fa-circle-info"></i>
       <p>
-        <b>Minimum:</b> $25 (Mobile) / $30 (Carte) • 
-        <b>Traitement:</b> Instantané après confirmation • 
+        <b>Minimum:</b> $25 (Mobile Money) / $30 (Carte bancaire) • 
+        <b>Traitement:</b> 1-5 minutes après confirmation • 
         <b>Support:</b> 24/7 disponible
       </p>
     </div>
@@ -711,6 +714,7 @@ function startPayment() {
     return;
   }
 
+  // Validate amounts in USD
   if (selectedOperator === 'Stripe') {
     if (montantUSD < 30) {
       showToast('Montant minimum pour carte bancaire: $30 USD', 'error');
@@ -718,6 +722,22 @@ function startPayment() {
     }
     if (!cardHolder || !cardNumber || !cardExpiry || !cardCvc) {
       showToast('Veuillez renseigner toutes les informations de carte', 'error');
+      return;
+    }
+    // Validate card number format
+    const cleanCardNumber = cardNumber.replace(/\s/g, '');
+    if (!/^\d{13,19}$/.test(cleanCardNumber)) {
+      showToast('Numéro de carte invalide', 'error');
+      return;
+    }
+    // Validate expiry format MM/YY
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardExpiry)) {
+      showToast('Date d\'expiration invalide (format MM/AA)', 'error');
+      return;
+    }
+    // Validate CVC
+    if (!/^\d{3,4}$/.test(cardCvc)) {
+      showToast('CVC invalide', 'error');
       return;
     }
   } else {
@@ -734,8 +754,8 @@ function startPayment() {
   document.getElementById('loadingOverlay').classList.add('active');
 
   const data = new URLSearchParams();
-  // Send amount in USD (backend will handle conversion if needed)
-  data.append("montant", montantUSD);
+  // Send amount in USD - backend will convert to XOF for African payments
+  data.append("montant_usd", montantUSD);
   data.append("fullname", fullname);
   data.append("phone", phone);
   data.append("country", selectedCountry);
@@ -769,8 +789,15 @@ function startPayment() {
     document.getElementById('loadingOverlay').classList.remove('active');
     if (data.error) {
       showToast(data.error, 'error');
-    } else {
+    } else if (data.url) {
+      // Redirect to payment URL
       window.location.href = data.url;
+    } else if (data.message) {
+      // Show success message for mobile money/crypto
+      showToast(data.message, 'success');
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 2000);
     }
   })
   .catch((err) => {

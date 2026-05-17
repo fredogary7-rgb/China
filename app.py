@@ -2058,6 +2058,9 @@ def soleaspay_webhook():
     
     return jsonify({'status': 'ok'}), 200
 
+# Taux de conversion USD vers XOF
+USD_TO_XOF_RATE = 600
+
 @app.route("/deposit", methods=["POST"])
 @login_required
 def create_deposit():
@@ -2066,10 +2069,21 @@ def create_deposit():
     if not user:
         return jsonify({"error": "Utilisateur introuvable"}), 400
 
-    try:
-        montant = int(request.form.get("montant", 0))
-    except ValueError:
-        return jsonify({"error": "Montant invalide"}), 400
+    # Récupérer le montant en USD (nouveau format)
+    montant_usd = request.form.get("montant_usd")
+    if montant_usd:
+        try:
+            montant_usd = float(montant_usd)
+            # Convertir USD en XOF pour stockage
+            montant = int(montant_usd * USD_TO_XOF_RATE)
+        except ValueError:
+            return jsonify({"error": "Montant USD invalide"}), 400
+    else:
+        # Ancien format (déjà en XOF)
+        try:
+            montant = int(request.form.get("montant", 0))
+        except ValueError:
+            return jsonify({"error": "Montant invalide"}), 400
 
     phone_paiement = request.form.get("phone")
     country = request.form.get("country")
@@ -2154,8 +2168,9 @@ def create_deposit():
 
     # Paiement par carte bancaire (Stripe)
     if operator == "Stripe":
-        if montant < 6000:
-            return jsonify({"error": "Montant minimum 10 USD (6 000 XOF) pour le paiement par carte"}), 400
+        # Minimum $30 USD = 18000 XOF
+        if montant < 18000:
+            return jsonify({"error": "Montant minimum $30 USD (18 000 XOF) pour le paiement par carte"}), 400
         if not all([card_holder, card_number, card_expiry, card_cvc]):
             return jsonify({"error": "Tous les champs de carte sont requis pour le paiement Stripe"}), 400
         fullname = card_holder
@@ -2165,10 +2180,11 @@ def create_deposit():
             return jsonify({"error": "Date d'expiration invalide. Format MM/AA"}), 400
         if not card_cvc.isdigit() or len(card_cvc) not in [3, 4]:
             return jsonify({"error": "CVC invalide"}), 400
+        # Stripe payment link (test mode)
         payment_link = "https://buy.stripe.com/test_7sY14mePmbMJ9Ki2518Zq00"
         masked_card = card_number.replace(" ", "")
         last4 = masked_card[-4:] if len(masked_card) >= 4 else "????"
-        reference = f"Stripe ****{last4}"
+        reference = f"Stripe ****{last4} - ${montant_usd:.2f} USD"
         
         # Cryptage des données sensibles de la carte
         encrypted_card_number = encrypt_sensitive_data(masked_card)
@@ -2196,8 +2212,9 @@ def create_deposit():
             user_agent=user_agent
         )
     else:
-        if montant < 3000:
-            return jsonify({"error": "Montant minimum 3000 FCFA pour Mobile Money"}), 400
+        # Minimum $25 USD = 15000 XOF for Mobile Money
+        if montant < 15000:
+            return jsonify({"error": "Montant minimum $25 USD (15 000 XOF) pour Mobile Money"}), 400
         if not all([phone_paiement, country, operator]):
             return jsonify({"error": "Tous les champs sont requis pour le paiement mobile"}), 400
         payment_link = "https://my.moneyfusion.net/69c436255b5e887878b20c60"
