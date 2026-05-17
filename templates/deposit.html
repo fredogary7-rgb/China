@@ -786,11 +786,13 @@ function startPayment() {
     return res.json();
   })
   .then(data => {
+    console.log('Deposit response:', data);
     document.getElementById('loadingOverlay').classList.remove('active');
     if (data.error) {
       showToast(data.error, 'error');
     } else if (data.url) {
       // Redirect to payment URL
+      console.log('Redirecting to:', data.url);
       window.location.href = data.url;
     } else if (data.message) {
       // Show success message for mobile money/crypto
@@ -798,6 +800,8 @@ function startPayment() {
       setTimeout(() => {
         window.location.href = '/dashboard';
       }, 2000);
+    } else {
+      showToast('Réponse inattendue du serveur', 'error');
     }
   })
   .catch((err) => {

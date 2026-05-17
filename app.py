@@ -2054,7 +2054,7 @@ def soleaspay_webhook():
                     user.phone,
                     'deposit',
                     'Dépôt validé',
-                    f'Votre dépôt de {depot.montant} XOF a été validé avec succès.'
+                    f'Votre dépôt de ${depot.montant:.2f} USD a été validé avec succès.'
                 )
     
     return jsonify({'status': 'ok'}), 200
