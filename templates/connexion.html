@@ -90,7 +90,7 @@ body {
   position: relative;
 }
 
-.form-group .input-wrapper i {
+.form-group .input-wrapper > i {
   position: absolute;
   left: 16px;
   top: 50%;
@@ -124,32 +124,39 @@ body {
   font-weight: 400;
 }
 
-/* Password toggle */
+/* Password toggle button */
 .password-toggle {
   position: absolute;
-  right: 14px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  font-size: 18px;
-  padding: 6px;
+  font-size: 16px;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all var(--transition-fast);
-  z-index: 2;
+  z-index: 10;
 }
 
 .password-toggle:hover {
   color: var(--primary);
-  transform: translateY(-50%) scale(1.1);
 }
 
 .password-toggle:active {
-  transform: translateY(-50%) scale(0.95);
+  transform: translateY(-50%) scale(0.9);
+}
+
+/* Eye icon inside password toggle */
+.password-toggle i {
+  position: static;
+  transform: none;
+  font-size: 16px;
+  pointer-events: none;
 }
 
 /* Remember & Forgot */
