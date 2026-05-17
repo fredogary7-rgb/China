@@ -2128,9 +2128,12 @@ def create_deposit():
         db.session.add(depot)
         db.session.commit()
         
+        # Convertir USD en XOF pour SoleasPay (1 USD = 625 XOF)
+        montant_xof = int(montant * 625)
+        
         # Créer la demande de paiement SoleasPay
         result = soleaspay_create_payment(
-            amount=montant,
+            amount=montant_xof,
             phone=phone_paiement if phone_paiement else "crypto_wallet",
             country_code=country_code,
             service_id=int(service_id),
