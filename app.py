@@ -2928,7 +2928,15 @@ def team_page():
     )
 
 @app.route("/admin/deposits")
+@login_required
 def admin_deposits():
+    # Check if user is admin
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    if not user or not user.is_admin:
+        flash("Accès réservé aux administrateurs.", "danger")
+        return redirect(url_for("connexion_page"))
+    
     depots = Depot.query.order_by(Depot.date.desc()).all()
     return render_template("admin_deposits.html", depots=depots)
 
