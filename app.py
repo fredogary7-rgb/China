@@ -1676,6 +1676,50 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated
 
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login_page():
+    """Page de connexion dédiée pour les administrateurs."""
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "").strip()
+
+        if not email or not password:
+            flash("Veuillez remplir tous les champs.", "error")
+            return redirect(url_for("admin_login_page"))
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            flash("Aucun compte trouvé avec cet email.", "error")
+            return redirect(url_for("admin_login_page"))
+
+        if not user.is_admin:
+            flash("Accès refusé. Cet email n'a pas les privilèges administrateur.", "error")
+            return redirect(url_for("admin_login_page"))
+
+        if user.password != password:
+            flash("Mot de passe incorrect.", "error")
+            return redirect(url_for("admin_login_page"))
+
+        if user.is_banned:
+            flash("Ce compte administrateur est suspendu.", "error")
+            return redirect(url_for("admin_login_page"))
+
+        # Connexion réussie
+        session["phone"] = user.phone
+        flash("✅ Connexion administrateur réussie !", "success")
+        return redirect(url_for("admin_dashboard"))
+
+    # GET request - show login page
+    # Check if already logged in as admin
+    phone = get_logged_in_user_phone()
+    if phone:
+        user = User.query.filter_by(phone=phone).first()
+        if user and user.is_admin:
+            return redirect(url_for("admin_dashboard"))
+
+    return render_template("admin_login.html")
+
 @app.route("/admin")
 @login_required
 def admin_dashboard():
