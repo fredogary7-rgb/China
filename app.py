@@ -3201,9 +3201,9 @@ def retrait_page():
             flash("Montant invalide.", "danger")
             return redirect(url_for("retrait_page"))
 
-        # Minimum 15 USD
-        if montant < 15:
-            flash("Montant minimum : 15 USD.", "warning")
+        # Minimum 35 USD
+        if montant < 35:
+            flash("Montant minimum : 35 USD.", "warning")
             return redirect(url_for("retrait_page"))
 
         if montant > solde_retraitable:
