@@ -947,7 +947,7 @@ def migrate_referral_codes():
 # EMAIL VERIFICATION FUNCTIONS
 # ============================================
 import secrets
-import smtplib
+import resend
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -960,169 +960,137 @@ def generate_otp():
     return ''.join(random.choices(string.digits, k=6))
 
 def send_otp_email(user_email, otp_code, purpose="connexion"):
-    """Envoie un email avec le code OTP."""
-    smtp_server = os.getenv('SMTP_SERVER', 'smtp.zoho.com')
-    smtp_port = int(os.getenv('SMTP_PORT', 587))
-    smtp_user = os.getenv('SMTP_USER', 'support@flowtoken.uk')
-    smtp_password = os.getenv('SMTP_PASSWORD', 'qWnPTC0ida0q')
-    
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = f'Code de vérification TokenFlow - {purpose.capitalize()}'
-    msg['From'] = f'TOKEN Flow <{smtp_user}>'
-    msg['To'] = user_email
-    
-    html_content = f'''
-    <html>
-    <body style="font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F1F5F9; padding: 40px;">
-        <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 900;">T</div>
-            </div>
-            <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">Code de vérification</h1>
-            <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-                Votre code de vérification pour {purpose} sur TokenFlow est :
-            </p>
-            <div style="text-align: center; margin: 30px 0;">
-                <div style="display: inline-block; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; font-size: 36px; font-weight: 900; padding: 20px 40px; border-radius: 16px; letter-spacing: 8px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);">
-                    {otp_code}
+    """Envoie un email avec le code OTP via Resend API."""
+    try:
+        # Configure Resend API key
+        resend.api_key = os.getenv('RESEND_API_KEY', '')
+        
+        html_content = f'''
+        <html>
+        <head>
+            <style>
+                body {{ font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; background-color: #F1F5F9; padding: 40px; margin: 0; }}
+                .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }}
+                .logo {{ width: 60px; height: 60px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 900; }}
+                .otp-code {{ display: inline-block; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; font-size: 36px; font-weight: 900; padding: 20px 40px; border-radius: 16px; letter-spacing: 8px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3); }}
+                .footer {{ color: #94A3B8; font-size: 12px; text-align: center; margin-top: 30px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div class="logo">T</div>
+                </div>
+                <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">Code de vérification</h1>
+                <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                    Votre code de vérification pour {purpose} sur TokenFlow est :
+                </p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <div class="otp-code">{otp_code}</div>
+                </div>
+                <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
+                    Ce code est valide pendant 10 minutes. Ne le partagez avec personne.<br>
+                    Si vous n'avez pas demandé ce code, ignorez cet email.
+                </p>
+                <div class="footer">
+                    © 2024 TokenFlow. Tous droits réservés.
                 </div>
             </div>
-            <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
-                Ce code est valide pendant 10 minutes. Ne le partagez avec personne.<br>
-                Si vous n'avez pas demandé ce code, ignorez cet email.
-            </p>
-            <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 30px 0;">
-            <p style="color: #94A3B8; font-size: 12px; text-align: center;">
-                © 2024 TokenFlow. Tous droits réservés.
-            </p>
-        </div>
-    </body>
-    </html>
-    '''
-    
-    text_content = f'''
-    Code de vérification TokenFlow
-    
-    Votre code de vérification pour {purpose} est : {otp_code}
-    
-    Ce code est valide pendant 10 minutes. Ne le partagez avec personne.
-    '''
-    
-    msg.attach(MIMEText(text_content, 'plain'))
-    msg.attach(MIMEText(html_content, 'html'))
-    
-    try:
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()
-        server.login(smtp_user, smtp_password)
-        server.sendmail(smtp_user, user_email, msg.as_string())
-        server.quit()
-        print(f"✅ OTP email sent to {user_email}")
+        </body>
+        </html>
+        '''
+        
+        params = {
+            "from": "TokenFlow <support@flowtoken.uk>",
+            "to": user_email,
+            "subject": f'Code de vérification TokenFlow - {purpose.capitalize()}',
+            "html": html_content,
+            "text": f"Votre code de vérification TokenFlow pour {purpose} est : {otp_code}\n\nCe code est valide pendant 10 minutes."
+        }
+        
+        result = resend.Emails.send(params)
+        print(f"✅ OTP email sent to {user_email} via Resend")
         return True
-    except smtplib.SMTPAuthenticationError as e:
-        print(f"❌ SMTP Authentication Error: {e}")
-        print(f"   Check SMTP credentials in .env file")
-        return False
-    except smtplib.SMTPConnectError as e:
-        print(f"❌ SMTP Connection Error: {e}")
-        print(f"   Check SMTP_SERVER and SMTP_PORT in .env file")
-        return False
+        
     except Exception as e:
-        print(f"❌ Erreur envoi OTP: {e}")
+        print(f"❌ Erreur envoi OTP via Resend: {e}")
         return False
 
 def send_email_notification(user_email, subject, html_content):
-    """Envoie un email de notification (pour nouveaux produits, etc.)."""
-    smtp_server = os.getenv('SMTP_SERVER', 'smtp.zoho.com')
-    smtp_port = int(os.getenv('SMTP_PORT', 587))
-    smtp_user = os.getenv('SMTP_USER', 'support@flowtoken.uk')
-    smtp_password = os.getenv('SMTP_PASSWORD', 'qWnPTC0ida0q')
-    
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = subject
-    msg['From'] = 'TOKEN Flow <support@flowtoken.uk>'
-    msg['To'] = user_email
-    
-    # Version texte brut
-    text_content = f"TokenFlow Notification: {subject}"
-    msg.attach(MIMEText(text_content, 'plain'))
-    msg.attach(MIMEText(html_content, 'html'))
-    
+    """Envoie un email de notification via Resend (pour nouveaux produits, etc.)."""
     try:
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, user_email, msg.as_string())
+        resend.api_key = os.getenv('RESEND_API_KEY', '')
+        
+        params = {
+            "from": "TokenFlow <support@flowtoken.uk>",
+            "to": user_email,
+            "subject": subject,
+            "html": html_content
+        }
+        
+        result = resend.Emails.send(params)
+        print(f"✅ Notification email sent to {user_email} via Resend")
         return True
     except Exception as e:
-        print(f"Erreur envoi email notification: {e}")
+        print(f"❌ Erreur envoi email notification via Resend: {e}")
         return False
 
 def send_verification_email(user_email, verification_token):
-    """Envoie un email de vérification."""
-    # Configuration SMTP (à adapter selon votre fournisseur)
-    smtp_server = os.getenv('SMTP_SERVER', 'smtp.zoho.com')
-    smtp_port = int(os.getenv('SMTP_PORT', 587))
-    smtp_user = os.getenv('SMTP_USER', 'support@flowtoken.uk')
-    smtp_password = os.getenv('SMTP_PASSWORD', 'qWnPTC0ida0q')  # Zoho password
-    
-    verification_url = url_for('verify_email_page', token=verification_token, _external=True)
-    
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = 'Vérifiez votre email - TokenFlow'
-    msg['From'] = 'TOKEN Flow <support@flowtoken.uk>'
-    msg['To'] = user_email
-    
-    html_content = f'''
-    <html>
-    <body style="font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F1F5F9; padding: 40px;">
-        <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 900;">T</div>
-            </div>
-            <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">Vérifiez votre adresse email</h1>
-            <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
-                Merci de vous être inscrit sur <strong>TokenFlow</strong>. Pour activer votre compte, veuillez cliquer sur le bouton ci-dessous :
-            </p>
-            <div style="text-align: center; margin-bottom: 30px;">
-                <a href="{verification_url}" style="display: inline-block; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);">
-                    Vérifier mon email
-                </a>
-            </div>
-            <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
-                Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur :<br>
-                <a href="{verification_url}" style="color: #6366F1; word-break: break-all;">{verification_url}</a>
-            </p>
-            <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 30px 0;">
-            <p style="color: #94A3B8; font-size: 12px; text-align: center;">
-                Ce lien expire dans 24 heures. Si vous n'avez pas créé de compte TokenFlow, ignorez cet email.
-            </p>
-        </div>
-    </body>
-    </html>
-    '''
-    
-    text_content = f'''
-    Vérifiez votre adresse email - TokenFlow
-    
-    Merci de vous être inscrit sur TokenFlow. Pour activer votre compte, veuillez cliquer sur le lien ci-dessous :
-    
-    {verification_url}
-    
-    Ce lien expire dans 24 heures. Si vous n'avez pas créé de compte TokenFlow, ignorez cet email.
-    '''
-    
-    msg.attach(MIMEText(text_content, 'plain'))
-    msg.attach(MIMEText(html_content, 'html'))
-    
+    """Envoie un email de vérification via Resend."""
     try:
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, user_email, msg.as_string())
+        resend.api_key = os.getenv('RESEND_API_KEY', '')
+        
+        verification_url = url_for('verify_email_page', token=verification_token, _external=True)
+        
+        html_content = f'''
+        <html>
+        <head>
+            <style>
+                body {{ font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; background-color: #F1F5F9; padding: 40px; margin: 0; }}
+                .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }}
+                .logo {{ width: 60px; height: 60px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 900; }}
+                .btn {{ display: inline-block; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3); }}
+                .footer {{ color: #94A3B8; font-size: 12px; text-align: center; margin-top: 30px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div class="logo">T</div>
+                </div>
+                <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">Vérifiez your adresse email</h1>
+                <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+                    Merci de you être inscrit sur <strong>TokenFlow</strong>. Pour activer your compte, veuillez cliquer sur le bouton ci-dessous :
+                </p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <a href="{verification_url}" class="btn">Vérifier mon email</a>
+                </div>
+                <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
+                    Si le bouton ne fonctionne pas, copiez-collez ce lien dans your navigateur :<br>
+                    <a href="{verification_url}" style="color: #6366F1; word-break: break-all;">{verification_url}</a>
+                </p>
+                <div class="footer">
+                    Ce lien expire dans 24 heures. Si you n'avez pas créé de compte TokenFlow, ignorez cet email.<br>
+                    © 2024 TokenFlow. Tous droits réservés.
+                </div>
+            </div>
+        </body>
+        </html>
+        '''
+        
+        params = {
+            "from": "TokenFlow <support@flowtoken.uk>",
+            "to": user_email,
+            "subject": "Vérifiez your email - TokenFlow",
+            "html": html_content,
+            "text": f"Vérifiez your email TokenFlow\n\nCliquez sur ce lien pour vérifier your email : {verification_url}\n\nCe lien expire dans 24 heures."
+        }
+        
+        result = resend.Emails.send(params)
+        print(f"✅ Verification email sent to {user_email} via Resend")
         return True
     except Exception as e:
-        print(f"Erreur envoi email: {e}")
+        print(f"❌ Erreur envoi email verification via Resend: {e}")
         return False
 
 @app.route('/verify-email/<token>')
