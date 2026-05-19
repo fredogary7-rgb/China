@@ -1576,6 +1576,56 @@ def contact_page():
     """Page de contact"""
     return render_template("contact.html")
 
+@app.route("/sitemap.xml")
+def sitemap():
+    """Génère le sitemap XML pour le SEO Google"""
+    xml = '''<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://flowtoken.uk/</loc>
+        <lastmod>2026-05-19</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://flowtoken.uk/inscription</loc>
+        <lastmod>2026-05-19</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://flowtoken.uk/connexion</loc>
+        <lastmod>2026-05-19</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://flowtoken.uk/nous</loc>
+        <lastmod>2026-05-19</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://flowtoken.uk/contact</loc>
+        <lastmod>2026-05-19</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://flowtoken.uk/produits_rapide</loc>
+        <lastmod>2026-05-19</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://flowtoken.uk/team</loc>
+        <lastmod>2026-05-19</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+</urlset>'''
+    return app.response_class(xml, mimetype='text/xml')
+
 def get_global_stats():
     total_users = db.session.query(func.count(User.id)).scalar() or 0
     total_deposits = db.session.query(func.sum(Depot.montant)).scalar() or 0
