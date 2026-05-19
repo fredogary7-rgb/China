@@ -968,7 +968,7 @@ def send_otp_email(user_email, otp_code, purpose="connexion"):
     
     msg = MIMEMultipart('alternative')
     msg['Subject'] = f'Code de vérification TokenFlow - {purpose.capitalize()}'
-    msg['From'] = 'TOKEN Flow <support@flowtoken.uk>'
+    msg['From'] = f'TOKEN Flow <{smtp_user}>'
     msg['To'] = user_email
     
     html_content = f'''
@@ -989,7 +989,7 @@ def send_otp_email(user_email, otp_code, purpose="connexion"):
             </div>
             <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
                 Ce code est valide pendant 10 minutes. Ne le partagez avec personne.<br>
-                Si you n'avez pas demandé ce code, ignorez cet email.
+                Si vous n'avez pas demandé ce code, ignorez cet email.
             </p>
             <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 30px 0;">
             <p style="color: #94A3B8; font-size: 12px; text-align: center;">
@@ -1012,13 +1012,23 @@ def send_otp_email(user_email, otp_code, purpose="connexion"):
     msg.attach(MIMEText(html_content, 'html'))
     
     try:
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, user_email, msg.as_string())
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_user, smtp_password)
+        server.sendmail(smtp_user, user_email, msg.as_string())
+        server.quit()
+        print(f"✅ OTP email sent to {user_email}")
         return True
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"❌ SMTP Authentication Error: {e}")
+        print(f"   Check SMTP credentials in .env file")
+        return False
+    except smtplib.SMTPConnectError as e:
+        print(f"❌ SMTP Connection Error: {e}")
+        print(f"   Check SMTP_SERVER and SMTP_PORT in .env file")
+        return False
     except Exception as e:
-        print(f"Erreur envoi OTP: {e}")
+        print(f"❌ Erreur envoi OTP: {e}")
         return False
 
 def send_email_notification(user_email, subject, html_content):
