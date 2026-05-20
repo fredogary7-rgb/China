@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="theme-color" content="#6366F1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <title>Test Notifications Push - TokenFlow</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+            min-height: 100vh;
+            color: #F1F5F9;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            font-weight: 900;
+            color: white;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            color: #94A3B8;
+            font-size: 14px;
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card h2 i {
+            color: #6366F1;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-badge.supported {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-badge.not-supported {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .status-badge.granted {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+        }
+        
+        .status-badge.denied {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+        }
+        
+        .status-badge.default {
+            background: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+        }
+        
+        .status-badge.subscribed {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366F1;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            color: white;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.1);
+            color: #94A3B8;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.2);
+            color: #F1F5F9;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .info-item {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        
+        .info-item label {
+            display: block;
+            font-size: 11px;
+            color: #64748B;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-item .value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #F1F5F9;
+        }
+        
+        .log-container {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 12px;
+            padding: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        
+        .log-entry.success {
+            color: #10B981;
+        }
+        
+        .log-entry.error {
+            color: #EF4444;
+        }
+        
+        .log-entry.info {
+            color: #6366F1;
+        }
+        
+        .log-entry .timestamp {
+            color: #64748B;
+            margin-right: 8px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+        
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366F1, #8B5CF6);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">T</div>
+            <h1>Test Notifications Push</h1>
+            <p class="subtitle">Testez les notifications push sur votre mobile Android</p>
+        </div>
+        
+        <!-- Status Card -->
+        <div class="card">
+            <h2><i class="fa-solid fa-circle-info"></i> Statut du navigateur</h2>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Support Push</label>
+                    <div class="value" id="pushSupport">
+                        <span class="status-badge" id="pushSupportBadge">Vérification...</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <label>Permission</label>
+                    <div class="value" id="permissionStatus">
+                        <span class="status-badge" id="permissionBadge">Vérification...</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <label>Service Worker</label>
+                    <div class="value" id="swStatus">
+                        <span class="status-badge" id="swBadge">Vérification...</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <label>Abonnement</label>
+                    <div class="value" id="subscriptionStatus">
+                        <span class="status-badge" id="subscriptionBadge">Vérification...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Card -->
+        <div class="card" id="actionCard">
+            <h2><i class="fa-solid fa-bolt"></i> Actions</h2>
+            
+            <button class="btn btn-primary" id="btnSubscribe" onclick="subscribeToPush()">
+                <i class="fa-solid fa-bell"></i>
+                S'abonner aux notifications
+            </button>
+            
+            <button class="btn btn-success hidden" id="btnTestPush" onclick="sendTestPush()">
+                <i class="fa-solid fa-paper-plane"></i>
+                Envoyer notification test
+            </button>
+            
+            <button class="btn btn-secondary" id="btnUnsubscribe" onclick="unsubscribeFromPush()">
+                <i class="fa-solid fa-bell-slash"></i>
+                Se désabonner
+            </button>
+        </div>
+        
+        <!-- Logs Card -->
+        <div class="card">
+            <h2><i class="fa-solid fa-terminal"></i> Logs</h2>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry info">
+                    <span class="timestamp">[--:--:--]</span>
+                    Initialisation du test...
+                </div>
+            </div>
+        </div>
+        
+        <!-- Back to Admin -->
+        <div class="card" style="text-align: center;">
+            <a href="/admin" class="btn btn-secondary" style="text-decoration: none;">
+                <i class="fa-solid fa-arrow-left"></i>
+                Retour à l'admin
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        let pushSubscription = null;
+        let serviceWorkerRegistration = null;
+        
+        // ============================================
+        // LOGGING
+        // ============================================
+        function log(message, type = 'info') {
+            const container = document.getElementById('logContainer');
+            const now = new Date();
+            const timestamp = now.toTimeString().split(' ')[0];
+            
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
+            
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+            
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        async function init() {
+            log('Démarrage de l\'initialisation...', 'info');
+            
+            // Check push support
+            const isPushSupported = 'serviceWorker' in navigator && 'PushManager' in window;
+            document.getElementById('pushSupportBadge').className = `status-badge ${isPushSupported ? 'supported' : 'not-supported'}`;
+            document.getElementById('pushSupportBadge').textContent = isPushSupported ? '✅ Supporté' : '❌ Non supporté';
+            log(`Support Push: ${isPushSupported ? 'OUI' : 'NON'}`, isPushSupported ? 'success' : 'error');
+            
+            if (!isPushSupported) {
+                log('Votre navigateur ne supporte pas les notifications push', 'error');
+                return;
+            }
+            
+            // Check notification permission
+            const permission = await Notification.requestPermission();
+            updatePermissionBadge(permission);
+            log(`Permission notification: ${permission}`, permission === 'granted' ? 'success' : 'info');
+            
+            // Register service worker
+            try {
+                serviceWorkerRegistration = await navigator.serviceWorker.register('/static/js/sw.js');
+                document.getElementById('swBadge').className = 'status-badge supported';
+                document.getElementById('swBadge').textContent = '✅ Enregistré';
+                log('Service Worker enregistré avec succès', 'success');
+            } catch (error) {
+                document.getElementById('swBadge').className = 'status-badge not-supported';
+                document.getElementById('swBadge').textContent = '❌ Erreur';
+                log(`Erreur Service Worker: ${error.message}`, 'error');
+            }
+            
+            // Check existing subscription
+            await checkSubscription();
+            
+            // Update button visibility
+            updateButtonVisibility();
+        }
+        
+        function updatePermissionBadge(permission) {
+            const badge = document.getElementById('permissionBadge');
+            badge.className = `status-badge ${permission}`;
+            
+            const labels = {
+                'granted': '✅ Autorisée',
+                'denied': '❌ Refusée',
+                'default': '⚠️ Non demandée'
+            };
+            
+            badge.textContent = labels[permission] || permission;
+        }
+        
+        // ============================================
+        // SUBSCRIPTION
+        // ============================================
+        async function checkSubscription() {
+            if (!serviceWorkerRegistration) {
+                log('Service Worker non disponible', 'error');
+                return;
+            }
+            
+            try {
+                pushSubscription = await serviceWorkerRegistration.pushManager.getSubscription();
+                
+                if (pushSubscription) {
+                    document.getElementById('subscriptionBadge').className = 'status-badge subscribed';
+                    document.getElementById('subscriptionBadge').textContent = '✅ Abonné';
+                    log('Déjà abonné aux notifications push', 'success');
+                } else {
+                    document.getElementById('subscriptionBadge').className = 'status-badge default';
+                    document.getElementById('subscriptionBadge').textContent = '⚠️ Non abonné';
+                    log('Non abonné aux notifications push', 'info');
+                }
+            } catch (error) {
+                log(`Erreur vérification abonnement: ${error.message}`, 'error');
+            }
+        }
+        
+        async function subscribeToPush() {
+            log('Demande d\'abonnement en cours...', 'info');
+            
+            // Request notification permission first
+            const permission = await Notification.requestPermission();
+            updatePermissionBadge(permission);
+            
+            if (permission !== 'granted') {
+                log('Permission refusée. Impossible de s\'abonner.', 'error');
+                alert('Veuillez autoriser les notifications dans les paramètres de votre navigateur.');
+                return;
+            }
+            
+            try {
+                // Get VAPID public key
+                log('Récupération de la clé VAPID...', 'info');
+                const response = await fetch('/api/push/vapid-keys');
+                const data = await response.json();
+                
+                if (!data.publicKey) {
+                    log('Clé VAPID non disponible', 'error');
+                    return;
+                }
+                
+                // Convert VAPID key
+                const applicationServerKey = urlBase64ToUint8Array(data.publicKey);
+                
+                // Subscribe to push
+                log('Abonnement au service push...', 'info');
+                pushSubscription = await serviceWorkerRegistration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: applicationServerKey
+                });
+                
+                log('✅ Abonnement réussi !', 'success');
+                document.getElementById('subscriptionBadge').className = 'status-badge subscribed';
+                document.getElementById('subscriptionBadge').textContent = '✅ Abonné';
+                
+                // Send subscription to server
+                await sendSubscriptionToServer();
+                
+                updateButtonVisibility();
+                
+            } catch (error) {
+                log(`❌ Erreur abonnement: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+        
+        async function sendSubscriptionToServer() {
+            if (!pushSubscription) return;
+            
+            try {
+                log('Envoi de l\'abonnement au serveur...', 'info');
+                
+                const subscriptionData = {
+                    endpoint: pushSubscription.endpoint,
+                    p256dh: arrayBufferToBase64(pushSubscription.getKey('p256dh')),
+                    auth: arrayBufferToBase64(pushSubscription.getKey('auth')),
+                    browser: getBrowserName(),
+                    device_type: isMobile() ? 'mobile' : 'desktop'
+                };
+                
+                const response = await fetch('/api/push/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(subscriptionData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    log('✅ Abonnement enregistré sur le serveur', 'success');
+                } else {
+                    log(`⚠️ Erreur serveur: ${result.error || 'Inconnue'}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Erreur envoi serveur: ${error.message}`, 'error');
+            }
+        }
+        
+        async function unsubscribeFromPush() {
+            if (!pushSubscription) {
+                log('Déjà désabonné', 'info');
+                return;
+            }
+            
+            try {
+                log('Désabonnement en cours...', 'info');
+                await pushSubscription.unsubscribe();
+                
+                // Notify server
+                await fetch('/api/push/unsubscribe', { method: 'POST' });
+                
+                pushSubscription = null;
+                log('✅ Désabonné avec succès', 'success');
+                document.getElementById('subscriptionBadge').className = 'status-badge default';
+                document.getElementById('subscriptionBadge').textContent = '⚠️ Non abonné';
+                
+                updateButtonVisibility();
+                
+            } catch (error) {
+                log(`❌ Erreur désabonnement: ${error.message}`, 'error');
+            }
+        }
+        
+        // ============================================
+        // TEST PUSH NOTIFICATION
+        // ============================================
+        async function sendTestPush() {
+            if (!pushSubscription) {
+                log('Veuillez vous abonner d\'abord', 'error');
+                return;
+            }
+            
+            log('🚀 Envoi de la notification test...', 'info');
+            
+            try {
+                const response = await fetch('/api/push/test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: '🔔 TokenFlow Test',
+                        body: 'Si vous recevez ceci, les notifications push fonctionnent sur votre mobile ! ✅',
+                        url: window.location.origin + '/dashboard',
+                        sound: true,
+                        vibration: [100, 50, 100, 50, 100]
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    log('✅ Notification envoyée avec succès !', 'success');
+                    log('📱 Vérifiez votre téléphone...', 'info');
+                } else {
+                    log(`❌ Erreur: ${result.error || 'Échec de l\'envoi'}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+        
+        // ============================================
+        // UTILITIES
+        // ============================================
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+            
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+        
+        function arrayBufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+        
+        function getBrowserName() {
+            const userAgent = navigator.userAgent;
+            if (userAgent.indexOf('Chrome') > -1) return 'Chrome';
+            if (userAgent.indexOf('Safari') > -1) return 'Safari';
+            if (userAgent.indexOf('Firefox') > -1) return 'Firefox';
+            if (userAgent.indexOf('Edg') > -1) return 'Edge';
+            return 'Unknown';
+        }
+        
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        function updateButtonVisibility() {
+            const btnSubscribe = document.getElementById('btnSubscribe');
+            const btnTestPush = document.getElementById('btnTestPush');
+            const btnUnsubscribe = document.getElementById('btnUnsubscribe');
+            
+            if (pushSubscription) {
+                btnSubscribe.classList.add('hidden');
+                btnTestPush.classList.remove('hidden');
+                btnUnsubscribe.classList.remove('hidden');
+            } else {
+                btnSubscribe.classList.remove('hidden');
+                btnTestPush.classList.add('hidden');
+                btnUnsubscribe.classList.add('hidden');
+            }
+        }
+        
+        // ============================================
+        // START
+        // ============================================
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

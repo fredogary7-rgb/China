@@ -4272,6 +4272,8 @@ def api_test_push():
         title = data.get('title', 'Test TokenFlow')
         body = data.get('body', 'Ceci est une notification de test')
         
+        print(f"🔔 Envoi notification push test à {user_phone}: {title} - {body}")
+        
         success = send_push_notification_to_user(
             user_phone,
             title,
@@ -4280,9 +4282,17 @@ def api_test_push():
             require_interaction=True
         )
         
+        print(f"{'✅' if success else '❌'} Notification push test {'envoyée' if success else 'échouée'}")
         return jsonify({'success': success})
     except Exception as e:
+        print(f"❌ Erreur envoi notification test: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/push-test')
+@login_required
+def push_test_page():
+    """Page de test des notifications push."""
+    return render_template('push_test.html')
 
 if __name__ == "__main__":
     bg_thread = threading.Thread(target=paiement_quotidien, daemon=True)
