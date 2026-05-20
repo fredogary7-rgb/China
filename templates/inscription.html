@@ -600,8 +600,9 @@ h1 {
 
         <div class="input-group">
           <i class="fa-solid fa-phone"></i>
-          <input type="tel" name="phone" placeholder="Numéro de téléphone" required>
+          <input type="tel" name="phone" id="phoneInput" placeholder="Numéro de téléphone (ex: +22997000000)" required>
         </div>
+        <div id="phoneError" class="flash danger" style="display: none; margin-top: -8px; margin-bottom: 12px; padding: 8px 12px; font-size: 12px;"></div>
 
         <div class="input-group">
           <i class="fa-solid fa-lock"></i>
@@ -749,5 +750,66 @@ function signupWithGoogle() {
 function signupWithApple() {
   window.location.href = '/auth/apple?register=true';
 }
+
+// Phone number validation
+function validatePhone(phone) {
+  // Remove spaces, dashes, and parentheses
+  const cleaned = phone.replace(/[\s\-\(\)]/g, '');
+  
+  // Must start with + followed by country code (2-4 digits) and then 6-15 digits
+  const phoneRegex = /^\+[1-9]\d{6,14}$/;
+  
+  return phoneRegex.test(cleaned);
+}
+
+// Real-time phone validation
+document.addEventListener('DOMContentLoaded', function() {
+  const phoneInput = document.getElementById('phoneInput');
+  const phoneError = document.getElementById('phoneError');
+  const form = phoneInput.closest('form');
+  
+  // Format phone input on blur
+  phoneInput.addEventListener('blur', function() {
+    const phone = this.value.trim();
+    
+    if (phone && !validatePhone(phone)) {
+      phoneError.textContent = '❌ Format invalide. Exemple: +22997000000 (avec indicatif pays)';
+      phoneError.style.display = 'block';
+      this.style.borderColor = '#EB5757';
+    } else {
+      phoneError.style.display = 'none';
+      this.style.borderColor = '';
+    }
+  });
+  
+  // Validate on input (debounced)
+  let timeout;
+  phoneInput.addEventListener('input', function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      const phone = this.value.trim();
+      
+      if (phone && !validatePhone(phone)) {
+        phoneError.textContent = '❌ Format invalide. Exemple: +22997000000';
+        phoneError.style.display = 'block';
+      } else {
+        phoneError.style.display = 'none';
+      }
+    }, 500);
+  });
+  
+  // Form submission validation
+  form.addEventListener('submit', function(e) {
+    const phone = phoneInput.value.trim();
+    
+    if (!validatePhone(phone)) {
+      e.preventDefault();
+      phoneError.textContent = '❌ Numéro de téléphone invalide. Veuillez entrer un numéro avec indicatif pays (ex: +22997000000)';
+      phoneError.style.display = 'block';
+      phoneInput.focus();
+      return false;
+    }
+  });
+});
 </script>
 {% endblock %}

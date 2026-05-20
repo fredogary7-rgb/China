@@ -1205,6 +1205,15 @@ def add_balance_columns_command():
 
     print("🎉 Migration balance_usd/balance_eur terminée !")
 
+def is_valid_phone(phone):
+    """Valide le format d'un numéro de téléphone international."""
+    import re
+    # Remove spaces, dashes, parentheses
+    cleaned = re.sub(r'[\s\-\(\)]', '', phone)
+    # Must start with + followed by 7-15 digits (E.164 format)
+    pattern = r'^\+[1-9]\d{6,14}$'
+    return bool(re.match(pattern, cleaned))
+
 @app.route("/inscription", methods=["GET", "POST"])
 def inscription_page():
     code_ref = request.args.get("ref", "").strip().upper()
@@ -1220,6 +1229,11 @@ def inscription_page():
 
         if not username or not email or not phone or not password:
             flash("⚠️ Tous les champs obligatoires doivent être remplis.", "danger")
+            return redirect(url_for("inscription_page"))
+
+        # Validate phone number format (security)
+        if not is_valid_phone(phone):
+            flash("❌ Numéro de téléphone invalide. Veuillez entrer un numéro avec indicatif pays (ex: +22997000000).", "danger")
             return redirect(url_for("inscription_page"))
 
         if password != confirm:
