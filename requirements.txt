@@ -26,3 +26,7 @@ google-auth
 google-auth-oauthlib
 google-auth-httplib2
 resend
+flask-socketio==5.5.1
+python-socketio==5.11.0
+pywebpush==1.14.2
+py-vapid==1.9.1

@@ -487,6 +487,24 @@ class ExchangeRate(db.Model):
         db.Index('idx_exchange_pair', 'from_currency', 'to_currency', unique=True),
     )
 
+class PushSubscription(db.Model):
+    """ Abonnements aux notifications push (Web Push) """
+    id = db.Column(db.Integer, primary_key=True)
+    user_phone = db.Column(db.String(30), nullable=False)
+    endpoint = db.Column(db.Text, nullable=False)  # URL du service push
+    p256dh = db.Column(db.Text, nullable=False)  # Clé publique de chiffrement
+    auth = db.Column(db.Text, nullable=False)  # Secret d'authentification
+    browser = db.Column(db.String(50))  # Chrome, Firefox, Safari, Edge
+    device_type = db.Column(db.String(20), default='desktop')  # desktop, mobile
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_used = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (
+        db.Index('idx_push_subscription_user', 'user_phone', 'is_active'),
+        db.Index('idx_push_subscription_endpoint', 'endpoint', unique=True),
+    )
+
 class ReferralLeaderboard(db.Model):
     """Classement des parrains"""
     id = db.Column(db.Integer, primary_key=True)
@@ -742,8 +760,8 @@ def get_user_wallet(user_phone, currency='XOF'):
     
     return wallet
 
-def create_notification(user_phone, notif_type, title, message, action_url=None):
-    """Crée une notification pour un utilisateur."""
+def create_notification(user_phone, notif_type, title, message, action_url=None, send_push=True):
+    """Crée une notification pour un utilisateur et envoie une notification push."""
     notification = Notification(
         user_phone=user_phone,
         type=notif_type,
@@ -753,6 +771,20 @@ def create_notification(user_phone, notif_type, title, message, action_url=None)
     )
     db.session.add(notification)
     db.session.commit()
+    
+    # Envoyer notification push si activé
+    if send_push:
+        try:
+            send_push_notification_to_user(
+                user_phone,
+                title,
+                message,
+                url=action_url or '/dashboard',
+                require_interaction=False
+            )
+        except Exception as e:
+            print(f"Erreur envoi push notification: {e}")
+    
     return notification
 
 def log_security_action(user_phone, action, status='success', details=None):
@@ -3167,6 +3199,19 @@ def valider_depot(depot_id):
 
     db.session.commit()
 
+    # Envoyer notification push à l'utilisateur
+    try:
+        create_notification(
+            user.phone,
+            'deposit',
+            '✅ Dépôt validé !',
+            f'Votre dépôt de ${depot.montant:.2f} USD a été validé avec succès. Votre solde a été crédité.',
+            url_for('dashboard_page', _external=True),
+            send_push=True
+        )
+    except Exception as e:
+        print(f"Erreur envoi notification push dépôt: {e}")
+
     flash("Dépôt validé et crédité avec succès !", "success")
     return redirect("/admin/deposits")
 
@@ -3199,6 +3244,19 @@ def valider_retrait(retrait_id):
 
     retrait.statut = "validé"
     db.session.commit()
+
+    # Envoyer notification push à l'utilisateur
+    try:
+        create_notification(
+            retrait.phone,
+            'withdrawal',
+            '✅ Retrait validé !',
+            f'Votre retrait de ${retrait.montant:.2f} USD a été validé. Les fonds seront transférés sous peu.',
+            url_for('dashboard_page', _external=True),
+            send_push=True
+        )
+    except Exception as e:
+        print(f"Erreur envoi notification push retrait: {e}")
 
     flash("Retrait validé avec succès !", "success")
     return redirect("/admin/retraits")
@@ -4027,6 +4085,204 @@ def api_mark_all_notifications_read():
             'success': False,
             'error': str(e)
         }), 500
+
+# ============================================
+# PUSH NOTIFICATION SYSTEM (Web Push)
+# ============================================
+import hmac
+import hashlib
+import json as json_module
+from py_vapid import Vapid
+from pywebpush import webpush
+
+# VAPID Keys Configuration
+VAPID_PRIVATE_KEY = os.getenv('VAPID_PRIVATE_KEY', '')
+VAPID_PUBLIC_KEY = os.getenv('VAPID_PUBLIC_KEY', '')
+VAPID_CLAIMS = {
+    'sub': 'mailto:support@flowtoken.uk'
+}
+
+def generate_vapid_keys():
+    """Génère une nouvelle paire de clés VAPID si elles n'existent pas."""
+    vapid = Vapid()
+    return vapid.private_raw, vapid.public_raw
+
+def get_vapid_keys():
+    """Récupère les clés VAPID depuis les variables d'environnement ou en génère de nouvelles."""
+    global VAPID_PRIVATE_KEY, VAPID_PUBLIC_KEY
+    
+    if not VAPID_PRIVATE_KEY or not VAPID_PUBLIC_KEY:
+        VAPID_PRIVATE_KEY, VAPID_PUBLIC_KEY = generate_vapid_keys()
+        print("⚠️  Nouvelles clés VAPID générées. Ajoutez-les à votre .env:")
+        print(f"   VAPID_PRIVATE_KEY={VAPID_PRIVATE_KEY}")
+        print(f"   VAPID_PUBLIC_KEY={VAPID_PUBLIC_KEY}")
+    
+    return VAPID_PRIVATE_KEY, VAPID_PUBLIC_KEY
+
+def send_push_notification_to_subscription(subscription, title, body, url=None, icon='/static/images/logo.svg', badge='/static/images/badge.png', require_interaction=False):
+    """Envoie une notification push à un abonnement spécifique."""
+    try:
+        private_key, public_key = get_vapid_keys()
+        
+        # Convertir les clés en format brut pour py_vapid
+        vapid = Vapid.from_raw(
+            private_key=private_key,
+            public_key=public_key
+        )
+        
+        payload = json_module.dumps({
+            'title': title,
+            'body': body,
+            'url': url or '/dashboard',
+            'icon': icon,
+            'badge': badge,
+            'requireInteraction': require_interaction,
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        
+        response = webpush(
+            subscription_info={
+                'endpoint': subscription.endpoint,
+                'keys': {
+                    'p256dh': subscription.p256dh,
+                    'auth': subscription.auth
+                }
+            },
+            data=payload,
+            vapid_private_key=private_key,
+            vapid_claims=VAPID_CLAIMS,
+            ttl=86400  # 24 hours
+        )
+        
+        # Mettre à jour last_used
+        subscription.last_used = datetime.utcnow()
+        db.session.commit()
+        
+        return response.status_code < 400
+    except Exception as e:
+        print(f"❌ Erreur envoi push notification: {e}")
+        # Si l'abonnement est invalide (410 Gone), le supprimer
+        if hasattr(e, 'response') and e.response.status_code == 410:
+            subscription.is_active = False
+            db.session.commit()
+        return False
+
+def send_push_notification_to_user(user_phone, title, body, url=None, require_interaction=False):
+    """Envoie une notification push à tous les appareils d'un utilisateur."""
+    subscriptions = PushSubscription.query.filter_by(
+        user_phone=user_phone,
+        is_active=True
+    ).all()
+    
+    success_count = 0
+    for sub in subscriptions:
+        if send_push_notification_to_subscription(sub, title, body, url, require_interaction=require_interaction):
+            success_count += 1
+    
+    return success_count > 0
+
+def broadcast_push_notification(title, body, url=None, require_interaction=False):
+    """Envoie une notification push à TOUS les utilisateurs (pour annonces globales)."""
+    # Récupérer tous les abonnements actifs
+    subscriptions = PushSubscription.query.filter_by(is_active=True).all()
+    
+    success_count = 0
+    for sub in subscriptions:
+        if send_push_notification_to_subscription(sub, title, body, url, require_interaction=require_interaction):
+            success_count += 1
+    
+    return success_count
+
+@app.route('/api/push/vapid-keys')
+def api_get_vapid_keys():
+    """Retourne la clé publique VAPID pour le navigateur."""
+    _, public_key = get_vapid_keys()
+    return jsonify({'publicKey': public_key})
+
+@app.route('/api/push/subscribe', methods=['POST'])
+@login_required
+def api_subscribe_push():
+    """Enregistre un nouvel abonnement push pour l'utilisateur connecté."""
+    try:
+        user_phone = session.get('phone')
+        if not user_phone:
+            return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+        
+        data = request.get_json()
+        endpoint = data.get('endpoint')
+        p256dh = data.get('p256dh')
+        auth = data.get('auth')
+        browser = data.get('browser', 'Unknown')
+        device_type = data.get('device_type', 'desktop')
+        
+        if not all([endpoint, p256dh, auth]):
+            return jsonify({'success': False, 'error': 'Missing subscription data'}), 400
+        
+        # Vérifier si l'abonnement existe déjà
+        existing = PushSubscription.query.filter_by(endpoint=endpoint).first()
+        if existing:
+            existing.is_active = True
+            existing.last_used = datetime.utcnow()
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Subscription updated'})
+        
+        # Créer un nouvel abonnement
+        subscription = PushSubscription(
+            user_phone=user_phone,
+            endpoint=endpoint,
+            p256dh=p256dh,
+            auth=auth,
+            browser=browser,
+            device_type=device_type,
+            is_active=True
+        )
+        db.session.add(subscription)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Subscription created'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/push/unsubscribe', methods=['POST'])
+@login_required
+def api_unsubscribe_push():
+    """Désactive tous les abonnements push de l'utilisateur."""
+    try:
+        user_phone = session.get('phone')
+        if not user_phone:
+            return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+        
+        PushSubscription.query.filter_by(user_phone=user_phone).update({'is_active': False})
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Unsubscribed from push notifications'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/push/test', methods=['POST'])
+@login_required
+def api_test_push():
+    """Envoie une notification push de test à l'utilisateur."""
+    try:
+        user_phone = session.get('phone')
+        if not user_phone:
+            return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+        
+        data = request.get_json()
+        title = data.get('title', 'Test TokenFlow')
+        body = data.get('body', 'Ceci est une notification de test')
+        
+        success = send_push_notification_to_user(
+            user_phone,
+            title,
+            body,
+            url='/dashboard',
+            require_interaction=True
+        )
+        
+        return jsonify({'success': success})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == "__main__":
     bg_thread = threading.Thread(target=paiement_quotidien, daemon=True)
