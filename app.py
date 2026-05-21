@@ -4250,7 +4250,27 @@ def broadcast_push_notification(title, body, url=None, require_interaction=False
 def api_get_vapid_keys():
     """Retourne la clé publique VAPID pour le navigateur."""
     _, public_key = get_vapid_keys()
-    print(f"🔑 VAPID Public Key retournée: {public_key[:20]}... (longueur: {len(public_key)})")
+    
+    # Logs détaillés
+    print("=" * 60)
+    print("🔑 VAPID PUBLIC KEY DETAILS:")
+    print(f"   Longueur: {len(public_key)} caractères")
+    print(f"   Début: {public_key[:20]}...")
+    print(f"   Fin: ...{public_key[-10:]}")
+    
+    # Décoder pour vérifier le format
+    try:
+        # Ajouter le padding pour décodage
+        padded = public_key + '=='
+        decoded_bytes = base64.urlsafe_b64decode(padded)
+        print(f"   Bytes décodés: {len(decoded_bytes)} bytes")
+        print(f"   Premier byte: 0x{decoded_bytes[0]:02x} (doit être 0x04)")
+        print(f"   Format: {'✅ CORRECT (65 bytes, 0x04 prefix)' if len(decoded_bytes) == 65 and decoded_bytes[0] == 0x04 else '❌ INCORRECT'}")
+    except Exception as e:
+        print(f"   Erreur décodage: {e}")
+    
+    print("=" * 60)
+    
     return jsonify({'publicKey': public_key})
 
 @app.route('/api/push/subscribe', methods=['POST'])
