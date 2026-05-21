@@ -4107,7 +4107,6 @@ def _generate_vapid_keys():
     """Génère une nouvelle paire de clés VAPID en utilisant py_vapid."""
     try:
         from py_vapid import Vapid
-        from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
         
         # Generate new VAPID keys using py_vapid
         vapid = Vapid()
@@ -4115,24 +4114,22 @@ def _generate_vapid_keys():
         # Get private key as base64url (32 bytes)
         private_key = base64.urlsafe_b64encode(vapid.private_raw).rstrip(b'=').decode('ascii')
         
-        # Get public key in uncompressed format (65 bytes with 0x04 prefix)
-        # Then remove the 0x04 prefix to get 64 bytes (x || y only)
-        public_key_uncompressed = vapid.public_raw
-        if len(public_key_uncompressed) == 65 and public_key_uncompressed[0] == 0x04:
-            # Remove the 0x04 prefix
-            public_key_raw = public_key_uncompressed[1:]
-        elif len(public_key_uncompressed) == 64:
-            # Already without prefix
-            public_key_raw = public_key_uncompressed
-        else:
-            # Try to get from the cryptography object
-            public_numbers = vapid.public_key.public_numbers()
-            public_key_raw = public_numbers.x.to_bytes(32, byteorder='big') + public_numbers.y.to_bytes(32, byteorder='big')
+        # Get public key in UNCOMPRESSED format (65 bytes WITH 0x04 prefix)
+        # This is the format required by Web Push API
+        public_key_raw = vapid.public_raw
+        
+        # If the key doesn't have the 0x04 prefix, add it
+        if len(public_key_raw) == 64:
+            # Add 0x04 prefix for uncompressed format
+            public_key_raw = b'\x04' + public_key_raw
+        elif len(public_key_raw) == 65 and public_key_raw[0] != 0x04:
+            # Replace first byte with 0x04
+            public_key_raw = b'\x04' + public_key_raw[1:]
         
         # Encode as base64url without padding
         public_key = base64.urlsafe_b64encode(public_key_raw).rstrip(b'=').decode('ascii')
         
-        print(f"🔑 Clés VAPID générées - Private length: {len(private_key)}, Public length: {len(public_key)}")
+        print(f"🔑 Clés VAPID générées - Private length: {len(private_key)}, Public length: {len(public_key)} (format: 65 bytes avec 0x04)")
         
         return private_key, public_key
     except ImportError:
