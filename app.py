@@ -4095,7 +4095,7 @@ import json as json_module
 import base64
 import os
 
-# VAPID Keys Configuration - Generate once and cache
+# VAPID Keys Configuration
 _VAPID_PRIVATE_KEY = None
 _VAPID_PUBLIC_KEY = None
 
@@ -4104,27 +4104,43 @@ VAPID_CLAIMS = {
 }
 
 def _generate_vapid_keys():
-    """Génère une nouvelle paire de clés VAPID en base64url sans padding."""
-    from cryptography.hazmat.primitives.asymmetric import ec
-    from cryptography.hazmat.backends import default_backend
-    
-    # Generate a new key pair using P-256 curve (required for VAPID)
-    private_key_obj = ec.generate_private_key(ec.SECP256R1(), default_backend())
-    public_key_obj = private_key_obj.public_key()
-    
-    # Get the private key as 32 bytes
-    private_numbers = private_key_obj.private_numbers()
-    private_raw = private_numbers.private_value.to_bytes(32, byteorder='big')
-    
-    # Get the public key as 64 bytes (x || y only, WITHOUT 0x04 prefix for VAPID)
-    public_numbers = public_key_obj.public_numbers()
-    public_raw = public_numbers.x.to_bytes(32, byteorder='big') + public_numbers.y.to_bytes(32, byteorder='big')
-    
-    # Convert to base64url without padding
-    def to_base64url(data):
-        return base64.urlsafe_b64encode(data).rstrip(b'=').decode('ascii')
-    
-    return to_base64url(private_raw), to_base64url(public_raw)
+    """Génère une nouvelle paire de clés VAPID en utilisant py_vapid."""
+    try:
+        from py_vapid import Vapid
+        from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+        
+        # Generate new VAPID keys using py_vapid
+        vapid = Vapid()
+        
+        # Get private key as base64url (32 bytes)
+        private_key = base64.urlsafe_b64encode(vapid.private_raw).rstrip(b'=').decode('ascii')
+        
+        # Get public key in uncompressed format (65 bytes with 0x04 prefix)
+        # Then remove the 0x04 prefix to get 64 bytes (x || y only)
+        public_key_uncompressed = vapid.public_raw
+        if len(public_key_uncompressed) == 65 and public_key_uncompressed[0] == 0x04:
+            # Remove the 0x04 prefix
+            public_key_raw = public_key_uncompressed[1:]
+        elif len(public_key_uncompressed) == 64:
+            # Already without prefix
+            public_key_raw = public_key_uncompressed
+        else:
+            # Try to get from the cryptography object
+            public_numbers = vapid.public_key.public_numbers()
+            public_key_raw = public_numbers.x.to_bytes(32, byteorder='big') + public_numbers.y.to_bytes(32, byteorder='big')
+        
+        # Encode as base64url without padding
+        public_key = base64.urlsafe_b64encode(public_key_raw).rstrip(b'=').decode('ascii')
+        
+        print(f"🔑 Clés VAPID générées - Private length: {len(private_key)}, Public length: {len(public_key)}")
+        
+        return private_key, public_key
+    except ImportError:
+        print("❌ py_vapid n'est pas installé. Installez-le avec: pip install py-vapid")
+        return None, None
+    except Exception as e:
+        print(f"❌ Erreur génération clés VAPID: {e}")
+        return None, None
 
 def get_vapid_keys():
     """Récupère les clés VAPID depuis les variables d'environnement ou en génère de nouvelles."""
@@ -4134,19 +4150,26 @@ def get_vapid_keys():
         return _VAPID_PRIVATE_KEY, _VAPID_PUBLIC_KEY
     
     # Try to get from environment
-    env_private = os.getenv('VAPID_PRIVATE_KEY', '')
-    env_public = os.getenv('VAPID_PUBLIC_KEY', '')
+    env_private = os.getenv('VAPID_PRIVATE_KEY', '').strip()
+    env_public = os.getenv('VAPID_PUBLIC_KEY', '').strip()
     
     if env_private and env_public:
         _VAPID_PRIVATE_KEY = env_private
         _VAPID_PUBLIC_KEY = env_public
+        print(f"✅ Clés VAPID chargées depuis .env (public key length: {len(env_public)})")
         return _VAPID_PRIVATE_KEY, _VAPID_PUBLIC_KEY
     
     # Generate new keys
+    print("🔄 Génération de nouvelles clés VAPID...")
     _VAPID_PRIVATE_KEY, _VAPID_PUBLIC_KEY = _generate_vapid_keys()
-    print("⚠️  Nouvelles clés VAPID générées. Ajoutez-les à votre .env:")
-    print(f"   VAPID_PRIVATE_KEY={_VAPID_PRIVATE_KEY}")
-    print(f"   VAPID_PUBLIC_KEY={_VAPID_PUBLIC_KEY}")
+    
+    if _VAPID_PRIVATE_KEY and _VAPID_PUBLIC_KEY:
+        print("⚠️  Nouvelles clés VAPID générées. Ajoutez-les à votre .env:")
+        print(f"   VAPID_PRIVATE_KEY={_VAPID_PRIVATE_KEY}")
+        print(f"   VAPID_PUBLIC_KEY={_VAPID_PUBLIC_KEY}")
+        print(f"   (public key length: {len(_VAPID_PUBLIC_KEY)})")
+    else:
+        print("❌ Erreur génération clés VAPID")
     
     return _VAPID_PRIVATE_KEY, _VAPID_PUBLIC_KEY
 
