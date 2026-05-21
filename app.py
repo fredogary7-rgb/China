@@ -4092,43 +4092,80 @@ def api_mark_all_notifications_read():
 import hmac
 import hashlib
 import json as json_module
-from py_vapid import Vapid
-from pywebpush import webpush
+import base64
+import os
 
-# VAPID Keys Configuration
-VAPID_PRIVATE_KEY = os.getenv('VAPID_PRIVATE_KEY', '')
-VAPID_PUBLIC_KEY = os.getenv('VAPID_PUBLIC_KEY', '')
+# VAPID Keys Configuration - Generate once and cache
+_VAPID_PRIVATE_KEY = None
+_VAPID_PUBLIC_KEY = None
+
 VAPID_CLAIMS = {
     'sub': 'mailto:support@flowtoken.uk'
 }
 
-def generate_vapid_keys():
-    """Génère une nouvelle paire de clés VAPID si elles n'existent pas."""
-    vapid = Vapid()
-    return vapid.private_raw, vapid.public_raw
+def _generate_vapid_keys():
+    """Génère une nouvelle paire de clés VAPID en base64."""
+    # Generate a random 32-byte private key
+    private_key_bytes = os.urandom(32)
+    private_key_b64 = base64.urlsafe_b64encode(private_key_bytes).rstrip(b'=')
+    
+    # For VAPID, we need to derive the public key from the private key
+    # Using the standard NIST P-256 curve
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.hazmat.backends import default_backend
+    
+    # Generate a new key pair
+    private_key_obj = ec.generate_private_key(ec.SECP256R1(), default_backend())
+    public_key_obj = private_key_obj.public_key()
+    
+    # Get the raw bytes
+    private_numbers = private_key_obj.private_numbers()
+    private_raw = private_numbers.private_value.to_bytes(32, byteorder='big')
+    public_raw = public_key_obj.public_numbers().x.to_bytes(32, byteorder='big') + \
+                 public_key_obj.public_numbers().y.to_bytes(32, byteorder='big')
+    
+    # Convert to base64url
+    private_b64 = base64.urlsafe_b64encode(private_raw).rstrip(b'=')
+    public_b64 = base64.urlsafe_b64encode(public_raw).rstrip(b'=')
+    
+    return private_b64.decode('ascii'), public_b64.decode('ascii')
 
 def get_vapid_keys():
     """Récupère les clés VAPID depuis les variables d'environnement ou en génère de nouvelles."""
-    global VAPID_PRIVATE_KEY, VAPID_PUBLIC_KEY
+    global _VAPID_PRIVATE_KEY, _VAPID_PUBLIC_KEY
     
-    if not VAPID_PRIVATE_KEY or not VAPID_PUBLIC_KEY:
-        VAPID_PRIVATE_KEY, VAPID_PUBLIC_KEY = generate_vapid_keys()
-        print("⚠️  Nouvelles clés VAPID générées. Ajoutez-les à votre .env:")
-        print(f"   VAPID_PRIVATE_KEY={VAPID_PRIVATE_KEY}")
-        print(f"   VAPID_PUBLIC_KEY={VAPID_PUBLIC_KEY}")
+    if _VAPID_PRIVATE_KEY and _VAPID_PUBLIC_KEY:
+        return _VAPID_PRIVATE_KEY, _VAPID_PUBLIC_KEY
     
-    return VAPID_PRIVATE_KEY, VAPID_PUBLIC_KEY
+    # Try to get from environment
+    env_private = os.getenv('VAPID_PRIVATE_KEY', '')
+    env_public = os.getenv('VAPID_PUBLIC_KEY', '')
+    
+    if env_private and env_public:
+        _VAPID_PRIVATE_KEY = env_private
+        _VAPID_PUBLIC_KEY = env_public
+        return _VAPID_PRIVATE_KEY, _VAPID_PUBLIC_KEY
+    
+    # Generate new keys
+    _VAPID_PRIVATE_KEY, _VAPID_PUBLIC_KEY = _generate_vapid_keys()
+    print("⚠️  Nouvelles clés VAPID générées. Ajoutez-les à votre .env:")
+    print(f"   VAPID_PRIVATE_KEY={_VAPID_PRIVATE_KEY}")
+    print(f"   VAPID_PUBLIC_KEY={_VAPID_PUBLIC_KEY}")
+    
+    return _VAPID_PRIVATE_KEY, _VAPID_PUBLIC_KEY
 
 def send_push_notification_to_subscription(subscription, title, body, url=None, icon='/static/images/logo.svg', badge='/static/images/badge.png', require_interaction=False):
     """Envoie une notification push à un abonnement spécifique."""
     try:
+        from py_vapid import Vapid
+        from pywebpush import webpush
+        
         private_key, public_key = get_vapid_keys()
         
-        # Convertir les clés en format brut pour py_vapid
-        vapid = Vapid.from_raw(
-            private_key=private_key,
-            public_key=public_key
-        )
+        # Create Vapid instance
+        vapid = Vapid()
+        vapid.private_raw = base64.urlsafe_b64decode(private_key + '==')
+        vapid.public_raw = base64.urlsafe_b64decode(public_key + '==')
         
         payload = json_module.dumps({
             'title': title,
