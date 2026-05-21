@@ -4116,9 +4116,9 @@ def _generate_vapid_keys():
     private_numbers = private_key_obj.private_numbers()
     private_raw = private_numbers.private_value.to_bytes(32, byteorder='big')
     
-    # Get the public key as 65 bytes (uncompressed point: 0x04 || x || y)
+    # Get the public key as 64 bytes (x || y only, WITHOUT 0x04 prefix for VAPID)
     public_numbers = public_key_obj.public_numbers()
-    public_raw = b'\x04' + public_numbers.x.to_bytes(32, byteorder='big') + public_numbers.y.to_bytes(32, byteorder='big')
+    public_raw = public_numbers.x.to_bytes(32, byteorder='big') + public_numbers.y.to_bytes(32, byteorder='big')
     
     # Convert to base64url without padding
     def to_base64url(data):
