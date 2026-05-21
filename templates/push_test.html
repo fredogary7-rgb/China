@@ -487,6 +487,16 @@
                 // Get VAPID public key
                 log('Récupération de la clé VAPID...', 'info');
                 const response = await fetch('/api/push/vapid-keys');
+                
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    log(`❌ Réponse non-JSON reçue: ${text.substring(0, 100)}`, 'error');
+                    log('⚠️ Vérifiez que le serveur Flask est correctement démarré', 'error');
+                    return;
+                }
+                
                 const data = await response.json();
                 
                 if (!data.publicKey) {
