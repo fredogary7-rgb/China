@@ -4104,31 +4104,27 @@ VAPID_CLAIMS = {
 }
 
 def _generate_vapid_keys():
-    """Génère une nouvelle paire de clés VAPID en base64."""
-    # Generate a random 32-byte private key
-    private_key_bytes = os.urandom(32)
-    private_key_b64 = base64.urlsafe_b64encode(private_key_bytes).rstrip(b'=')
-    
-    # For VAPID, we need to derive the public key from the private key
-    # Using the standard NIST P-256 curve
+    """Génère une nouvelle paire de clés VAPID en base64url sans padding."""
     from cryptography.hazmat.primitives.asymmetric import ec
     from cryptography.hazmat.backends import default_backend
     
-    # Generate a new key pair
+    # Generate a new key pair using P-256 curve (required for VAPID)
     private_key_obj = ec.generate_private_key(ec.SECP256R1(), default_backend())
     public_key_obj = private_key_obj.public_key()
     
-    # Get the raw bytes
+    # Get the private key as 32 bytes
     private_numbers = private_key_obj.private_numbers()
     private_raw = private_numbers.private_value.to_bytes(32, byteorder='big')
-    public_raw = public_key_obj.public_numbers().x.to_bytes(32, byteorder='big') + \
-                 public_key_obj.public_numbers().y.to_bytes(32, byteorder='big')
     
-    # Convert to base64url
-    private_b64 = base64.urlsafe_b64encode(private_raw).rstrip(b'=')
-    public_b64 = base64.urlsafe_b64encode(public_raw).rstrip(b'=')
+    # Get the public key as 65 bytes (uncompressed point: 0x04 || x || y)
+    public_numbers = public_key_obj.public_numbers()
+    public_raw = b'\x04' + public_numbers.x.to_bytes(32, byteorder='big') + public_numbers.y.to_bytes(32, byteorder='big')
     
-    return private_b64.decode('ascii'), public_b64.decode('ascii')
+    # Convert to base64url without padding
+    def to_base64url(data):
+        return base64.urlsafe_b64encode(data).rstrip(b'=').decode('ascii')
+    
+    return to_base64url(private_raw), to_base64url(public_raw)
 
 def get_vapid_keys():
     """Récupère les clés VAPID depuis les variables d'environnement ou en génère de nouvelles."""
