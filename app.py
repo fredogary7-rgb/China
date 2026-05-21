@@ -4248,28 +4248,31 @@ def broadcast_push_notification(title, body, url=None, require_interaction=False
 
 @app.route('/api/push/vapid-keys')
 def api_get_vapid_keys():
-    """Retourne la clé publique VAPID pour le navigateur."""
-    _, public_key = get_vapid_keys()
+    """Retourne la clé publique VAPID pour le navigateur.
     
-    # Logs détaillés
+    NOTE: Cette route doit être publique (pas de @login_required)
+    car elle est appelée avant l'abonnement push.
+    """
+    # Récupérer directement depuis les variables d'environnement
+    public_key = os.environ.get('VAPID_PUBLIC_KEY', '').strip()
+    
+    # Logs backend
     print("=" * 60)
-    print("🔑 VAPID PUBLIC KEY DETAILS:")
+    print("🔑 API /api/push/vapid-keys called")
+    print(f"   VAPID_PUBLIC_KEY from env: {public_key[:20] if public_key else 'NONE'}...")
     print(f"   Longueur: {len(public_key)} caractères")
-    print(f"   Début: {public_key[:20]}...")
-    print(f"   Fin: ...{public_key[-10:]}")
     
-    # Décoder pour vérifier le format
-    try:
-        # Ajouter le padding pour décodage
-        padded = public_key + '=='
-        decoded_bytes = base64.urlsafe_b64decode(padded)
-        print(f"   Bytes décodés: {len(decoded_bytes)} bytes")
-        print(f"   Premier byte: 0x{decoded_bytes[0]:02x} (doit être 0x04)")
-        print(f"   Format: {'✅ CORRECT (65 bytes, 0x04 prefix)' if len(decoded_bytes) == 65 and decoded_bytes[0] == 0x04 else '❌ INCORRECT'}")
-    except Exception as e:
-        print(f"   Erreur décodage: {e}")
+    if not public_key:
+        print("   ⚠️  VAPID_PUBLIC_KEY not set in environment!")
+        # Générer une nouvelle clé si manquante
+        _, public_key = get_vapid_keys()
+        if public_key:
+            print(f"   🔄 Generated new key: {public_key[:20]}... ({len(public_key)} chars)")
     
     print("=" * 60)
+    
+    if not public_key:
+        return jsonify({'error': 'VAPID public key not configured'}), 500
     
     return jsonify({'publicKey': public_key})
 
