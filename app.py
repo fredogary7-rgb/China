@@ -4230,6 +4230,7 @@ def broadcast_push_notification(title, body, url=None, require_interaction=False
 def api_get_vapid_keys():
     """Retourne la clé publique VAPID pour le navigateur."""
     _, public_key = get_vapid_keys()
+    print(f"🔑 VAPID Public Key retournée: {public_key[:20]}... (longueur: {len(public_key)})")
     return jsonify({'publicKey': public_key})
 
 @app.route('/api/push/subscribe', methods=['POST'])
