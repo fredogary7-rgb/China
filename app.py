@@ -4171,10 +4171,17 @@ def get_vapid_keys():
     return _VAPID_PRIVATE_KEY, _VAPID_PUBLIC_KEY
 
 def send_push_notification_to_subscription(subscription, title, body, url=None, icon='/static/images/logo.svg', badge='/static/images/badge.png', require_interaction=False):
-    """Envoie une notification push à un abonnement spécifique."""
+    """Envoie une notification push à un abonnement spécifique.
+    
+    Gère automatiquement le nettoyage des abonnements invalides:
+    - 404: Endpoint introuvable
+    - 410: Endpoint expiré/supprimé
+    - Autres erreurs de connexion
+    """
     try:
         from py_vapid import Vapid
         from pywebpush import webpush
+        from pywebpush import WebPushException
         
         private_key, public_key = get_vapid_keys()
         
@@ -4183,6 +4190,7 @@ def send_push_notification_to_subscription(subscription, title, body, url=None, 
         vapid.private_raw = base64.urlsafe_b64decode(private_key + '==')
         vapid.public_raw = base64.urlsafe_b64decode(public_key + '==')
         
+        # Payload optimisé pour batterie mobile (léger)
         payload = json_module.dumps({
             'title': title,
             'body': body,
@@ -4190,8 +4198,9 @@ def send_push_notification_to_subscription(subscription, title, body, url=None, 
             'icon': icon,
             'badge': badge,
             'requireInteraction': require_interaction,
-            'timestamp': datetime.utcnow().isoformat()
-        })
+            'timestamp': datetime.utcnow().isoformat(),
+            'ttl': 86400  # Indique au client la durée de vie
+        }, separators=(',', ':'))  # Réduit taille JSON
         
         response = webpush(
             subscription_info={
@@ -4204,18 +4213,38 @@ def send_push_notification_to_subscription(subscription, title, body, url=None, 
             data=payload,
             vapid_private_key=private_key,
             vapid_claims=VAPID_CLAIMS,
-            ttl=86400  # 24 hours
+            ttl=86400,  # 24 hours - évite réveils inutiles
+            requests_package='requests'
         )
         
-        # Mettre à jour last_used
+        status_code = response.status_code
+        
+        # Nettoyer les abonnements invalides
+        if status_code in [404, 410, 400]:
+            print(f"[TokenFlow Push] 🗑️ Subscription invalide ({status_code}), désactivation...")
+            subscription.is_active = False
+            subscription.last_used = datetime.utcnow()
+            db.session.commit()
+            return False
+        
+        # Mettre à jour last_used pour les succès
         subscription.last_used = datetime.utcnow()
         db.session.commit()
         
-        return response.status_code < 400
+        return status_code < 400
+        
+    except WebPushException as e:
+        print(f"[TokenFlow Push] ❌ WebPushException: {e}")
+        # Nettoyer si erreur fatale
+        if e.response and e.response.status_code in [404, 410, 400]:
+            subscription.is_active = False
+            db.session.commit()
+        return False
+        
     except Exception as e:
-        print(f"❌ Erreur envoi push notification: {e}")
-        # Si l'abonnement est invalide (410 Gone), le supprimer
-        if hasattr(e, 'response') and e.response.status_code == 410:
+        print(f"[TokenFlow Push] ❌ Erreur envoi push notification: {e}")
+        # Nettoyer si endpoint expiré
+        if '410' in str(e) or '404' in str(e) or 'Gone' in str(e):
             subscription.is_active = False
             db.session.commit()
         return False
