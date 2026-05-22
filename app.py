@@ -4349,7 +4349,28 @@ def api_test_push():
         title = data.get('title', 'Test TokenFlow')
         body = data.get('body', 'Ceci est une notification de test')
         
-        print(f"🔔 Envoi notification push test à {user_phone}: {title} - {body}")
+        print("=" * 60)
+        print(f"🔔 Envoi notification push test à {user_phone}")
+        print(f"   Title: {title}")
+        print(f"   Body: {body}")
+        
+        # Vérifier les abonnements
+        subscriptions = PushSubscription.query.filter_by(
+            user_phone=user_phone,
+            is_active=True
+        ).all()
+        
+        print(f"   Abonnements trouvés: {len(subscriptions)}")
+        
+        if not subscriptions:
+            print("   ❌ Aucun abonnement actif trouvé")
+            return jsonify({'success': False, 'error': 'Aucun abonnement push actif'}), 400
+        
+        for i, sub in enumerate(subscriptions):
+            print(f"   Abonnement {i+1}:")
+            print(f"     Endpoint: {sub.endpoint[:50]}...")
+            print(f"     p256dh: {sub.p256dh[:20]}...")
+            print(f"     auth: {sub.auth[:20]}...")
         
         success = send_push_notification_to_user(
             user_phone,
@@ -4360,9 +4381,12 @@ def api_test_push():
         )
         
         print(f"{'✅' if success else '❌'} Notification push test {'envoyée' if success else 'échouée'}")
+        print("=" * 60)
         return jsonify({'success': success})
     except Exception as e:
         print(f"❌ Erreur envoi notification test: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/push-test')
