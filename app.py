@@ -4213,8 +4213,7 @@ def send_push_notification_to_subscription(subscription, title, body, url=None, 
             data=payload,
             vapid_private_key=private_key,
             vapid_claims=VAPID_CLAIMS,
-            ttl=86400,  # 24 hours - évite réveils inutiles
-            requests_package='requests'
+            ttl=86400  # 24 hours - évite réveils inutiles
         )
         
         status_code = response.status_code
