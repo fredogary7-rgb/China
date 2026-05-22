@@ -3334,8 +3334,8 @@ def retrait_confirmation_page(montant):
         flash("Solde insuffisant.", "danger")
         return redirect(url_for("retrait_page"))
 
-    taxe = int(montant * 0.15)
-    net = montant - taxe
+        taxe = int(montant * 0.10)
+        net = montant - taxe
 
     if request.method == "POST":
         retrait = Retrait(phone=phone, montant=montant, statut="en_attente")
