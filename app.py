@@ -4221,16 +4221,59 @@ def send_push_notification_to_subscription(subscription, title, body, url=None, 
         return False
 
 def send_push_notification_to_user(user_phone, title, body, url=None, require_interaction=False):
-    """Envoie une notification push à tous les appareils d'un utilisateur."""
+    """Envoie une notification push à TOUS les appareils d'un utilisateur (multi-device).
+    
+    Supporte:
+    - PC (Chrome, Firefox, Edge, Safari)
+    - Android (Chrome, Samsung Internet)
+    - iOS/iPadOS (Safari PWA)
+    - Tablettes
+    
+    Logs production:
+    - Nombre d'appareils cibles
+    - Type de chaque appareil
+    - Navigateur et OS
+    - Statut d'envoi par appareil
+    """
     subscriptions = PushSubscription.query.filter_by(
         user_phone=user_phone,
         is_active=True
     ).all()
     
+    if not subscriptions:
+        print(f"[TokenFlow Push] ❌ Aucun abonnement actif trouvé pour {user_phone}")
+        return False
+    
+    print(f"[TokenFlow Push] 📱 Envoi notification à {user_phone} sur {len(subscriptions)} appareil(s):")
+    
     success_count = 0
-    for sub in subscriptions:
-        if send_push_notification_to_subscription(sub, title, body, url, require_interaction=require_interaction):
-            success_count += 1
+    failed_count = 0
+    
+    for i, sub in enumerate(subscriptions):
+        device_info = f"Appareil {i+1}: {sub.browser} ({sub.device_type})"
+        
+        try:
+            result = send_push_notification_to_subscription(
+                sub, 
+                title, 
+                body, 
+                url, 
+                require_interaction=require_interaction
+            )
+            
+            if result:
+                success_count += 1
+                print(f"[TokenFlow Push] ✅ {device_info} - Notification envoyée")
+            else:
+                failed_count += 1
+                print(f"[TokenFlow Push] ❌ {device_info} - Échec envoi")
+                
+        except Exception as e:
+            failed_count += 1
+            print(f"[TokenFlow Push] ❌ {device_info} - Erreur: {e}")
+    
+    total = len(subscriptions)
+    print(f"[TokenFlow Push] 📊 Résumé: {success_count}/{total} appareils atteints, {failed_count} échecs")
     
     return success_count > 0
 
