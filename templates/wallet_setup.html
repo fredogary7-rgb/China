@@ -1,1186 +1,249 @@
-{% extends "base.html" %}
-
-{% block title %}Retrait | TokenFlow Wallet{% endblock %}
-
-{% block page_styles %}
-/* ============================================
-   SYSTÈME DE PORTEFEUILLE & RETRAIT PREMIUM
-   Style: Binance, Revolut, Bybit, Trust Wallet
-   ============================================ */
-
-:root {
-  --bg-page: #F1F5F9;
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --bg-card-hover: rgba(255, 255, 255, 0.95);
-  --bg-glass: rgba(255, 255, 255, 0.65);
-  --border-glow: rgba(99, 102, 241, 0.2);
-  --border-card: rgba(148, 163, 184, 0.2);
-  
-  --profit-green: #10B981;
-  --profit-green-glow: rgba(16, 185, 129, 0.15);
-  --loss-red: #EF4444;
-  --loss-red-glow: rgba(239, 68, 68, 0.15);
-  --warning-orange: #F59E0B;
-  --warning-glow: rgba(245, 158, 11, 0.15);
-  
-  --primary: #6366F1;
-  --primary-glow: rgba(99, 102, 241, 0.15);
-  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-  
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
-  
-  --wallet-usd: linear-gradient(135deg, #10B981, #06D6A0);
-  --wallet-eur: linear-gradient(135deg, #3B82F6, #6366F1);
-}
-
-* { 
-  box-sizing: border-box; 
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: var(--bg-page);
-  color: var(--text-primary);
-  overflow-x: hidden;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: 
-    radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: 
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.app-container {
-  position: relative;
-  z-index: 1;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.top-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  padding: 16px 20px;
-  background: var(--bg-card);
-  border-radius: 16px;
-  border: 1px solid var(--border-card);
-  backdrop-filter: blur(20px);
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--primary-gradient);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 900;
-  color: white;
-  box-shadow: 0 4px 16px var(--primary-glow);
-}
-
-.brand-name {
-  font-size: 18px;
-  font-weight: 800;
-  background: var(--primary-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.icon-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-card);
-  color: var(--text-secondary);
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-btn:hover {
-  background: var(--primary-glow);
-  color: var(--primary);
-  border-color: var(--border-glow);
-}
-
-.total-balance-card {
-  padding: 24px;
-  background: var(--bg-card);
-  border-radius: 20px;
-  border: 1px solid var(--border-card);
-  backdrop-filter: blur(20px);
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 24px;
-}
-
-.total-balance-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--primary-gradient);
-}
-
-.total-balance-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.total-balance-value {
-  font-size: 36px;
-  font-weight: 900;
-  background: var(--primary-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1.2;
-  margin-bottom: 4px;
-}
-
-.total-balance-sub {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.wallet-cards-section {
-  margin-bottom: 32px;
-}
-
-.section-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.section-title i {
-  color: var(--primary);
-}
-
-.wallet-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.wallet-card {
-  position: relative;
-  padding: 20px 16px;
-  border-radius: 20px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid transparent;
-}
-
-.wallet-card.usd {
-  background: var(--wallet-usd);
-}
-
-.wallet-card.eur {
-  background: var(--wallet-eur);
-}
-
-.wallet-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-}
-
-.wallet-card.active {
-  border-color: var(--primary);
-  box-shadow: 0 0 30px var(--primary-glow);
-  transform: translateY(-4px);
-}
-
-.wallet-card .currency-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 900;
-  margin-bottom: 12px;
-}
-
-.wallet-card .currency-code {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  opacity: 0.8;
-  margin-bottom: 4px;
-}
-
-.wallet-card .balance {
-  font-size: 22px;
-  font-weight: 900;
-  line-height: 1.2;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-}
-
-.wallet-card .balance-label {
-  font-size: 10px;
-  opacity: 0.7;
-  margin-top: 4px;
-}
-
-.wallet-info-section {
-  margin-bottom: 24px;
-}
-
-.wallet-info-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 20px;
-  background: var(--bg-card);
-  border-radius: 20px;
-  border: 1px solid var(--border-card);
-  backdrop-filter: blur(20px);
-  transition: all 0.3s;
-}
-
-.wallet-info-card:hover {
-  border-color: var(--border-glow);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.wallet-info-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  background: var(--primary-glow);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: var(--primary);
-  flex-shrink: 0;
-}
-
-.wallet-info-icon.orange {
-  background: var(--warning-glow);
-  color: var(--warning-orange);
-}
-
-.wallet-info-details {
-  flex: 1;
-}
-
-.wallet-info-details .label {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.wallet-info-details .value {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.wallet-info-edit {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-card);
-  color: var(--text-secondary);
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-}
-
-.wallet-info-edit:hover {
-  background: var(--primary-glow);
-  color: var(--primary);
-  border-color: var(--border-glow);
-}
-
-.withdrawal-form-section {
-  margin-bottom: 24px;
-}
-
-.form-card {
-  background: var(--bg-card);
-  border-radius: 24px;
-  padding: 24px;
-  border: 1px solid var(--border-card);
-  backdrop-filter: blur(20px);
-}
-
-.selector-group {
-  margin-bottom: 20px;
-}
-
-.selector-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.selector-label i {
-  color: var(--primary);
-}
-
-.currency-selector {
-  display: flex;
-  gap: 8px;
-  padding: 4px;
-  background: var(--bg-glass);
-  border-radius: 14px;
-  border: 1px solid var(--border-card);
-}
-
-.currency-btn {
-  flex: 1;
-  padding: 12px;
-  background: transparent;
-  border: none;
-  border-radius: 12px;
-  color: var(--text-secondary);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.currency-btn.active {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 4px 16px var(--primary-glow);
-}
-
-.currency-btn:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-primary);
-}
-
-.method-selector {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.method-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 12px;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-card);
-  border-radius: 16px;
-  color: var(--text-secondary);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  text-align: center;
-}
-
-.method-btn i {
-  font-size: 24px;
-}
-
-.method-btn.active {
-  background: var(--primary-glow);
-  border-color: var(--border-glow);
-  color: var(--primary);
-}
-
-.method-btn:hover:not(.active) {
-  border-color: var(--primary);
-  color: var(--text-primary);
-}
-
-.amount-section {
-  margin-bottom: 20px;
-}
-
-.amount-input-wrapper {
-  position: relative;
-  margin-bottom: 12px;
-}
-
-.amount-input-wrapper .currency-prefix {
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 20px;
-  font-weight: 900;
-  color: var(--text-muted);
-  pointer-events: none;
-  z-index: 2;
-}
-
-.amount-input-wrapper input {
-  width: 100%;
-  padding: 20px 20px 20px 60px;
-  font-size: 28px;
-  font-weight: 900;
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid #CBD5E1;
-  border-radius: 18px;
-  color: #0F172A;
-  outline: none;
-  transition: all 0.3s;
-  -webkit-appearance: none;
-}
-
-.amount-input-wrapper input:focus {
-  border-color: #6366F1;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
-  background: #ffffff;
-}
-
-.quick-amounts {
-  display: flex;
-  gap: 8px;
-}
-
-.quick-amount {
-  flex: 1;
-  padding: 10px;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-card);
-  border-radius: 12px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.quick-amount:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--primary-glow);
-}
-
-.fee-breakdown {
-  background: var(--bg-glass);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border-card);
-}
-
-.fee-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  font-size: 13px;
-}
-
-.fee-row:not(:last-child) {
-  border-bottom: 1px solid var(--border-card);
-}
-
-.fee-row .label {
-  color: var(--text-muted);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.fee-row .value {
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.fee-row.total {
-  padding-top: 16px;
-  border-top: 1px solid var(--border-card);
-  margin-top: 4px;
-}
-
-.fee-row.total .label {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.fee-row.total .value {
-  font-size: 18px;
-  color: var(--profit-green);
-  text-shadow: 0 0 20px var(--profit-green-glow);
-}
-
-.info-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.info-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  background: var(--bg-glass);
-  border-radius: 14px;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-}
-
-.info-card i {
-  color: var(--primary);
-  font-size: 16px;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.info-card p {
-  font-size: 12px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0;
-}
-
-.info-card.success {
-  border-color: rgba(16, 185, 129, 0.2);
-}
-
-.info-card.success i {
-  color: var(--profit-green);
-}
-
-.info-card.warning {
-  border-color: rgba(255, 184, 77, 0.2);
-}
-
-.info-card.warning i {
-  color: var(--warning-orange);
-}
-
-.btn-submit {
-  width: 100%;
-  padding: 18px;
-  background: var(--primary-gradient);
-  color: white;
-  border: none;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 8px 30px var(--primary-glow);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.btn-submit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px var(--primary-glow);
-}
-
-.btn-submit:active {
-  transform: scale(0.98);
-}
-
-.btn-submit:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.history-section {
-  margin-bottom: 32px;
-}
-
-.history-card {
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: 20px;
-  border: 1px solid var(--border-card);
-  backdrop-filter: blur(20px);
-}
-
-.history-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.history-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.history-title i {
-  color: var(--primary);
-}
-
-.view-all-btn {
-  font-size: 12px;
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 600;
-  transition: opacity 0.3s;
-}
-
-.view-all-btn:hover {
-  opacity: 0.8;
-}
-
-.empty-history {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text-muted);
-}
-
-.empty-history i {
-  font-size: 48px;
-  opacity: 0.3;
-  margin-bottom: 12px;
-}
-
-.empty-history p {
-  font-size: 13px;
-}
-
-@media (max-width: 600px) {
-  .app-container {
-    padding: 16px;
-  }
-  
-  .wallet-cards-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .method-selector {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .amount-input-wrapper input {
-    font-size: 24px;
-  }
-  
-  .total-balance-value {
-    font-size: 28px;
-  }
-}
-
-.animate-fade-in {
-  animation: fadeInUp 0.6s ease forwards;
-}
-
-.card-animated {
-  animation: fadeInUp 0.6s ease forwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(148, 163, 184, 0.2);
-  display: flex;
-  justify-content: space-around;
-  padding: 8px 0;
-  padding-bottom: max(8px, env(safe-area-inset-bottom));
-  z-index: 1000;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.bottom-nav .nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  text-decoration: none;
-  color: var(--text-muted);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 12px;
-  transition: all 0.3s;
-  min-width: 60px;
-}
-
-.bottom-nav .nav-item i {
-  font-size: 20px;
-  transition: all 0.3s;
-}
-
-.bottom-nav .nav-item:hover,
-.bottom-nav .nav-item.active {
-  color: var(--primary);
-}
-
-.bottom-nav .nav-item:hover i,
-.bottom-nav .nav-item.active i {
-  transform: translateY(-2px);
-}
-
-.bottom-nav .nav-item.active {
-  background: rgba(99, 102, 241, 0.15);
-}
-
-body {
-  padding-bottom: 80px;
-}
-{% endblock %}
-
-{% block content %}
-<div class="app-container">
-  
-  <!-- Header -->
-  <header class="top-header animate-fade-in">
-    <div class="brand">
-      <a href="/dashboard" style="display: flex; align-items: center; gap: 8px;">
-        <i class="fa-solid fa-arrow-left" style="color: var(--text-secondary); font-size: 18px;"></i>
-      </a>
-      <div class="brand-logo">T</div>
-      <span class="brand-name">TokenFlow</span>
-    </div>
-    <button class="icon-btn" onclick="toggleTheme()" aria-label="Mode">
-      <i class="fa-solid fa-moon"></i>
-    </button>
-  </header>
-
-  <!-- Total Balance Card (solde_revenu uniquement) -->
-  <div class="total-balance-card card-animated" style="margin-bottom: 24px;">
-    <div class="total-balance-label">
-      <i class="fa-solid fa-wallet"></i>
-      Solde disponible (Revenus)
-    </div>
-    <div class="total-balance-value">${{ "{:,.2f}".format(solde_revenu or 0) }} USD</div>
-    <div class="total-balance-sub">
-      <i class="fa-solid fa-arrow-trend-up" style="color: var(--profit-green);"></i>
-      Revenus générés par vos investissements
-    </div>
-  </div>
-
-  <!-- Wallet Cards - Multi-devise -->
-  <div class="wallet-cards-section scroll-fade-in">
-    <div class="section-title">
-      <i class="fa-solid fa-credit-card"></i>
-      Mes portefeuilles
-    </div>
-    
-    <div class="wallet-cards-grid">
-      <!-- USD Wallet -->
-      <div class="wallet-card usd active" onclick="selectCurrency('USD', this)">
-        <div class="currency-icon">$</div>
-        <div class="currency-code">USD</div>
-        <div class="balance">{{ "%.2f"|format(solde_revenu or 0) }}</div>
-        <div class="balance-label">Dollars</div>
-      </div>
-      
-      <!-- EUR Wallet -->
-      <div class="wallet-card eur" onclick="selectCurrency('EUR', this)">
-        <div class="currency-icon">€</div>
-        <div class="currency-code">EUR</div>
-        <div class="balance">{{ "%.2f"|format((solde_revenu or 0) * 0.92) }}</div>
-        <div class="balance-label">Euros</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Wallet Info - Portefeuille enregistré -->
-  <div class="wallet-info-section scroll-fade-in">
-    <div class="section-title">
-      <i class="fa-solid fa-wallet"></i>
-      Portefeuille de retrait
-    </div>
-    
-    <div class="wallet-info-card">
-      <div class="wallet-info-icon {% if user.wallet_operator == 'Non configuré' %}orange{% endif %}">
-        <i class="fa-solid {% if user.wallet_operator == 'MTN' %}fa-mobile-screen{% elif user.wallet_operator == 'Orange Money' %}fa-mobile-screen{% elif user.wallet_operator == 'Wave' %}fa-water{% elif user.wallet_operator == 'Moov' %}fa-mobile{% else %}fa-credit-card{% endif %}"></i>
-      </div>
-      <div class="wallet-info-details">
-        <div class="label">Opérateur</div>
-        <div class="value">{{ user.wallet_operator or 'Non configuré' }}</div>
-      </div>
-      <div class="wallet-info-details">
-        <div class="label">Numéro</div>
-        <div class="value">{{ user.wallet_number or '---' }}</div>
-      </div>
-      <a href="/ajouter_portefeuille" class="wallet-info-edit" title="Modifier">
-        <i class="fa-solid fa-pen"></i>
-      </a>
-    </div>
-  </div>
-
-  <!-- Withdrawal Form -->
-  <div class="withdrawal-form-section scroll-fade-in">
-    <form method="POST" action="/retrait" id="withdrawalForm">
-      <div class="form-card">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Configurer mon Compte de Retrait | NovaTrade</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-main: #f4f7fe;
+            --blue-light: #e0f2fe;
+            --blue-accent: #0284c7;
+            --blue-dark: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background: var(--bg-main);
+            color: var(--blue-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 80px;
+        }
+
+        /* Topbar */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar a { color: var(--blue-accent); text-decoration: none; font-size: 18px; }
+        .topbar h1 { font-size: 16px; font-weight: 600; color: var(--blue-dark); }
+
+        .container {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Alertes Flash */
+        .flash {
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .flash.danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+        /* Formulaire Card */
+        .setup-card {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+        }
+
+        .instruction-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 8px; }
         
-        <!-- Currency Selector -->
-        <div class="selector-group">
-          <div class="selector-label">
-            <i class="fa-solid fa-coins"></i>
-            Devise de retrait
-          </div>
-          <div class="currency-selector">
-            <button type="button" class="currency-btn active" data-currency="USD" onclick="setFormCurrency('USD', this)">USD</button>
-            <button type="button" class="currency-btn" data-currency="EUR" onclick="setFormCurrency('EUR', this)">EUR</button>
-          </div>
-        </div>
+        /* Select & Input styles */
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-main);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            color: var(--blue-dark);
+            font-size: 15px;
+            font-weight: 500;
+            outline: none;
+            transition: 0.3s;
+            appearance: none; /* Enlève le style natif des select */
+        }
+        .form-control:focus { border-color: var(--blue-accent); background: white; }
 
-        <!-- Payment Method Selector -->
-        <div class="selector-group">
-          <div class="selector-label">
-            <i class="fa-solid fa-building-columns"></i>
-            Méthode de retrait
-          </div>
-          <div class="method-selector">
-            <button type="button" class="method-btn active" data-method="mtn" onclick="selectMethod('mtn', this)">
-              <i class="fa-solid fa-mobile-screen"></i>
-              MTN MoMo
-            </button>
-            <button type="button" class="method-btn" data-method="orange" onclick="selectMethod('orange', this)">
-              <i class="fa-solid fa-mobile-screen"></i>
-              Orange Money
-            </button>
-            <button type="button" class="method-btn" data-method="wave" onclick="selectMethod('wave', this)">
-              <i class="fa-solid fa-water"></i>
-              Wave
-            </button>
-            <button type="button" class="method-btn" data-method="moov" onclick="selectMethod('moov', this)">
-              <i class="fa-solid fa-mobile"></i>
-              Moov
-            </button>
-            <button type="button" class="method-btn" data-method="airtel" onclick="selectMethod('airtel', this)">
-              <i class="fa-solid fa-tower-broadcast"></i>
-              Airtel Money
-            </button>
-            <button type="button" class="method-btn" data-method="card" onclick="selectMethod('card', this)">
-              <i class="fa-solid fa-credit-card"></i>
-              Carte Bancaire
-            </button>
-          </div>
-        </div>
+        /* Wrapper pour l'icône de flèche sur les sélecteurs */
+        .select-wrapper { position: relative; }
+        .select-wrapper::after {
+            content: '\f107';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
 
-        <!-- Amount Input -->
-        <div class="amount-section">
-          <div class="selector-label">
-            <i class="fa-solid fa-money-bill"></i>
-            Montant à retirer
-          </div>
-          <div class="amount-input-wrapper">
-            <span class="currency-prefix" id="currencyPrefix">$</span>
-            <input type="number" name="montant" id="montant" placeholder="0.00" min="1.60" max="{{ "%.2f"|format(solde_revenu or 0) }}" step="0.01" required>
-          </div>
-          
-          <!-- Quick Amounts -->
-          <div class="quick-amounts">
-            <div class="quick-amount" onclick="setAmount(10)">10</div>
-            <div class="quick-amount" onclick="setAmount(25)">25</div>
-            <div class="quick-amount" onclick="setAmount(50)">50</div>
-            <div class="quick-amount" onclick="setAmount(100)">100</div>
-            <div class="quick-amount" onclick="setAmount({{ "%.2f"|format(solde_revenu or 0) }})">Max</div>
-          </div>
-        </div>
+        /* Alerte info importante */
+        .warning-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-size: 11.5px;
+            color: #92400e;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+            line-height: 1.5;
+        }
+        .warning-box i { font-size: 16px; margin-top: 2px; }
 
-        <!-- Fee Breakdown -->
-        <div class="fee-breakdown">
-          <div class="fee-row">
-            <span class="label"><i class="fa-solid fa-tag"></i> Montant demandé</span>
-            <span class="value" id="requestedAmount">$0.00 USD</span>
-          </div>
-          <div class="fee-row">
-            <span class="label"><i class="fa-solid fa-percent"></i> Frais de traitement (3%)</span>
-            <span class="value" id="feeAmount" style="color: var(--loss-red);">- $0.00 USD</span>
-          </div>
-          <div class="fee-row total">
-            <span class="label"><i class="fa-solid fa-check-circle"></i> Net à recevoir</span>
-            <span class="value" id="netAmount" style="color: var(--profit-green);">$0.00 USD</span>
-          </div>
-        </div>
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: var(--blue-accent);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+        }
+        .btn-submit:hover { opacity: 0.9; }
 
-        <!-- Info Cards -->
-        <div class="info-cards">
-          <div class="info-card">
-            <i class="fa-solid fa-circle-info"></i>
-            <p>
-              <b>Minimum:</b> $1.60 USD • 
-              <b>Délai:</b> 24h-48h • 
-              Les retraits sont traités du lundi au vendredi.
-            </p>
-          </div>
-          
-          <div class="info-card success">
-            <i class="fa-solid fa-shield-halved"></i>
-            <p>
-              <b>Sécurité maximale:</b> Tous les retraits sont vérifiés et sécurisés. 
-              Vos fonds sont protégés par cryptage de bout en bout.
-            </p>
-          </div>
-          
-          <div class="info-card warning">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <p>
-              <b>Vérification requise:</b> Assurez-vous que votre portefeuille est correctement configuré avant de procéder au retrait.
-            </p>
-          </div>
-        </div>
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0;
+            border-top: 1px solid #e2e8f0;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.04);
+            z-index: 1000;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 500;
+            gap: 4px;
+        }
+        .nav-item i { font-size: 18px; }
+        .nav-item.active { color: var(--blue-accent); }
+    </style>
+</head>
+<body>
 
-        <!-- Submit Button -->
-        <button type="submit" class="btn-submit" id="submitBtn" disabled>
-          <i class="fa-solid fa-paper-plane"></i>
-          <span id="submitText">Confirmer le retrait</span>
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Withdrawal History -->
-  <div class="history-section scroll-fade-in">
-    <div class="history-card">
-      <div class="history-header">
-        <div class="history-title">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          Historique des retraits
-        </div>
-        <a href="/historique" class="view-all-btn">Voir tout →</a>
-      </div>
-      
-      <div class="history-list" id="historyList">
-        <!-- Empty state by default -->
-        <div class="empty-history">
-          <i class="fa-solid fa-inbox"></i>
-          <p>Aucun retrait récent</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
+<div class="topbar">
+    <a href="/dashboard"><i class="fa fa-chevron-left"></i></a>
+    <h1>Configuration Retrait</h1>
+    <div style="width: 20px;"></div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-// Configuration
-const EXCHANGE_RATES = {
-  USD: 1,
-  EUR: 0.92
-};
+<div class="container">
 
-const FEE_RATE = 0.03; // 3% frais
-const MIN_AMOUNT = 1.60; // Minimum in USD
-const maxAmount = {{ "%.2f"|format(solde_revenu or 0) }};
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">
+              <i class="fa fa-times-circle"></i> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-let currentCurrency = 'USD';
-let currentMethod = 'mtn';
+    <div class="setup-card">
+        <p class="instruction-text">
+            Veuillez associer votre compte de paiement (Mobile Money ou Crypto-monnaie). Cette information sera définitive et servira pour tous vos retraits.
+        </p>
 
-// Select currency for wallet cards display
-function selectCurrency(currency, element) {
-  document.querySelectorAll('.wallet-card').forEach(card => {
-    card.classList.remove('active');
-  });
-  element.classList.add('active');
-}
+        <form method="POST" action="{{ url_for('wallet_setup_page') }}">
+            
+            <div class="form-group">
+                <label for="country">Votre Pays / Zone</label>
+                <div class="select-wrapper">
+                    <select id="country" name="country" class="form-control" onchange="updateOperators()" required>
+                        <option value="" disabled selected>Choisir un pays...</option>
+                        <option value="TG">🇹🇬 Togo</option>
+                        <option value="CI">🇨🇮 Côte d'Ivoire</option>
+                        <option value="CM">🇨🇲 Cameroun</option>
+                        <option value="BF">🇧🇫 Burkina Faso</option>
+                        <option value="BJ">🇧🇯 Bénin</option>
+                        <option value="COD">🇨🇩 Congo RDC</option>
+                        <option value="COG">🇨🇬 Congo Brazzaville</option>
+                        <option value="GAB">🇬🇦 Gabon</option>
+                        <option value="UGA">🇺🇬 Uganda</option>
+                        <option value="INTL">🌍 International (Crypto / Moie Electronique)</option>
+                    </select>
+                </div>
+            </div>
 
-// Set form currency
-function setFormCurrency(currency, element) {
-  currentCurrency = currency;
-  
-  // Update button states
-  document.querySelectorAll('.currency-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  element.classList.add('active');
-  
-  // Update currency prefix
-  const prefix = currency === 'USD' ? '$' : '€';
-  document.getElementById('currencyPrefix').textContent = prefix;
-  
-  // Update placeholder and min/max based on currency
-  const input = document.getElementById('montant');
-  if (currency === 'USD') {
-    input.placeholder = '0.00';
-    input.min = '1.60';
-    input.max = maxAmount.toFixed(2);
-    input.step = '0.01';
-  } else if (currency === 'EUR') {
-    input.placeholder = '0.00';
-    input.min = '1.47';
-    input.max = (maxAmount * EXCHANGE_RATES.EUR).toFixed(2);
-    input.step = '0.01';
-  }
-  
-  updateFeeBreakdown();
-}
+            <div class="form-group">
+                <label for="operator">Opérateur / Réseau</label>
+                <div class="select-wrapper">
+                    <select id="operator" name="operator" class="form-control" required disabled>
+                        <option value="" disabled selected>Sélectionnez d'abord le pays...</option>
+                    </select>
+                </div>
+            </div>
 
-// Select payment method
-function selectMethod(method, element) {
-  currentMethod = method;
-  
-  document.querySelectorAll('.method-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  element.classList.add('active');
-}
+            <div class="form-group">
+                <label id="numberLabel" for="number">Numéro de téléphone de retrait</label>
+                <input type="text" id="number" name="number" class="form-control" placeholder="Ex: +22890123456" required autocomplete="off">
+            </div>
 
-// Set quick amount
-function setAmount(amount) {
-  const input = document.getElementById('montant');
-  if (currentCurrency === 'EUR') {
-    input.value = (amount * EXCHANGE_RATES.EUR).toFixed(2);
-  } else {
-    input.value = amount.toFixed(2);
-  }
-  updateFeeBreakdown();
-}
+            <div class="warning-box">
+                <i class="fa fa-exclamation-triangle"></i>
+                <div>
+                    <strong>Attention :</strong> Assurez-vous de l'exactitude des informations fournies. Aucun changement ultérieur ne pourra être effectué sans contacter le support technique.
+                </div>
+            </div>
 
-// Get amount in USD (base currency)
-function getAmountInUSD() {
-  const amount = parseFloat(document.getElementById('montant').value) || 0;
-  if (currentCurrency === 'USD') return amount;
-  return amount / EXCHANGE_RATES.EUR;
-}
-
-// Update fee breakdown in real-time
-function updateFeeBreakdown() {
-  const amount = getAmountInUSD();
-  const fee = amount * FEE_RATE;
-  const net = amount - fee;
-  
-  // Format display based on current currency
-  const displayAmount = formatCurrency(amount, currentCurrency);
-  const displayFee = formatCurrency(fee, currentCurrency);
-  const displayNet = formatCurrency(net, currentCurrency);
-  
-  document.getElementById('requestedAmount').textContent = displayAmount;
-  document.getElementById('feeAmount').textContent = '- ' + displayFee;
-  document.getElementById('netAmount').textContent = displayNet;
-  
-  // Enable/disable submit button
-  const submitBtn = document.getElementById('submitBtn');
-  const minInCurrency = currentCurrency === 'USD' ? MIN_AMOUNT : MIN_AMOUNT * EXCHANGE_RATES.EUR;
-  
-  if (amount >= minInCurrency && amount <= maxAmount && amount > 0) {
-    submitBtn.disabled = false;
-  } else {
-    submitBtn.disabled = true;
-  }
-}
-
-// Format currency display
-function formatCurrency(amount, currency) {
-  if (currency === 'USD') {
-    return '$' + amount.toFixed(2) + ' USD';
-  } else if (currency === 'EUR') {
-    return '€' + (amount / EXCHANGE_RATES.EUR).toFixed(2) + ' EUR';
-  }
-  return amount.toFixed(2) + ' ' + currency;
-}
-
-// Toggle theme
-function toggleTheme() {
-  const icon = document.querySelector('.icon-btn i');
-  if (icon.classList.contains('fa-moon')) {
-    icon.classList.remove('fa-moon');
-    icon.classList.add('fa-sun');
-  } else {
-    icon.classList.remove('fa-sun');
-    icon.classList.add('fa-moon');
-  }
-}
-
-// Event listeners
-document.getElementById('montant').addEventListener('input', updateFeeBreakdown);
-
-// Initialize
-updateFeeBreakdown();
-</script>
-{% endblock %}
+            <button type="submit" class="btn-submit">SAUVEGARDER LE COMPTE</button>
+        </form>
+    </div>
+</div>
 
 <nav class="bottom-nav">
   <a href="/dashboard" class="nav-item">
@@ -1195,8 +258,97 @@ updateFeeBreakdown();
     <i class="fa-solid fa-users"></i>
     <span>Réseau</span>
   </a>
-  <a href="/profile" class="nav-item">
+  <a href="/profile" class="nav-item active">
     <i class="fa-solid fa-user"></i>
     <span>Profil</span>
   </a>
 </nav>
+
+<script>
+const operatorsData = {
+    "TG": [
+        { "name": "T-MONEY TG", "desc": "T-MONEY TOGO" },
+        { "name": "MOOV TG", "desc": "MOOV TOGO" }
+    ],
+    "CI": [
+        { "name": "WAVE CI", "desc": "WAVE COTE D'IVOIRE" },
+        { "name": "OM CI", "desc": "ORANGE MONEY COTE D'IVOIRE" },
+        { "name": "MOMO CI", "desc": "MTN MONEY COTE D'IVOIRE" },
+        { "name": "MOOV CI", "desc": "MOOV COTE D'IVOIRE" }
+    ],
+    "CM": [
+        { "name": "MOMO CM", "desc": "MTN MOBILE MONEY CAMEROUN" },
+        { "name": "OM CM", "desc": "ORANGE MONEY CAMEROUN" }
+    ],
+    "BF": [
+        { "name": "OM BF", "desc": "ORANGE MONEY BURKINA FASO" },
+        { "name": "MOOV BF", "desc": "MOOV BURKINA FASO" }
+    ],
+    "BJ": [
+        { "name": "MOMO BJ", "desc": "MTN MONEY BENIN" },
+        { "name": "MOOV BJ", "desc": "MOOV BENIN" }
+    ],
+    "COD": [
+        { "name": "VODACOM COD", "desc": "VODACOM CONGO DRC" },
+        { "name": "AIRTEL COD", "desc": "AIRTEL CONGO DRC" },
+        { "name": "ORANGE COD", "desc": "ORANGE CONGO DRC" }
+    ],
+    "COG": [
+        { "name": "MOMO COG", "desc": "MTN MOMO CONGO" },
+        { "name": "AIRTEL COG", "desc": "AIRTEL CONGO" }
+    ],
+    "GAB": [
+        { "name": "AIRTEL GAB", "desc": "AIRTEL GABON" }
+    ],
+    "UGA": [
+        { "name": "MOMO UGA", "desc": "MTN MOMO UGANDA" },
+        { "name": "AIRTEL UGA", "desc": "AIRTEL UGANDA" }
+    ],
+    "INTL": [
+        { "name": "BITCOIN", "desc": "Bitcoin (BTC)" },
+        { "name": "LITECOIN", "desc": "Litecoin (LTC)" },
+        { "name": "DOGECOIN", "desc": "Dogecoin (DOGE)" },
+        { "name": "PAYPAL", "desc": "PayPal" },
+        { "name": "PM", "desc": "Perfect Money" }
+    ]
+};
+
+function updateOperators() {
+    const countrySelect = document.getElementById("country");
+    const operatorSelect = document.getElementById("operator");
+    const numberLabel = document.getElementById("numberLabel");
+    const numberInput = document.getElementById("number");
+    
+    const selectedCountry = countrySelect.value;
+    
+    // Réinitialise le selecteur d'opérateurs
+    operatorSelect.innerHTML = '<option value="" disabled selected>Choisir un réseau...</option>';
+    
+    if (selectedCountry && operatorsData[selectedCountry]) {
+        operatorSelect.disabled = false;
+        
+        // Ajoute les opérateurs correspondants
+        operatorsData[selectedCountry].forEach(op => {
+            const option = document.createElement("option");
+            option.value = op.name;
+            option.textContent = op.desc;
+            operatorSelect.appendChild(option);
+        });
+
+        // Adapte le libellé si c'est de la crypto à l'international
+        if (selectedCountry === "INTL") {
+            numberLabel.textContent = "Adresse de Réception / Email du Compte";
+            numberInput.placeholder = "Entrez votre adresse de portefeuille ou email...";
+        } else {
+            numberLabel.textContent = "Numéro de téléphone de retrait";
+            numberInput.placeholder = "Ex: +22890123456";
+        }
+    } else {
+        operatorSelect.disabled = true;
+    }
+}
+</script>
+
+</body>
+</html>
+
