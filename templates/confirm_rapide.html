@@ -736,19 +736,18 @@ body {
     </div>
       <div class="wallet-info">
         <div class="label">Solde disponible</div>
-        <div class="balance">${{ "{:,.2f}".format((user.solde_total or 0) }} USD</div>
+        <div class="balance">${{ "{:,.2f}".format(user.solde_total or 0) }} USD</div>
       </div>
   </div>
   
-  <div class="wallet-status">
-    {% if (user.solde_total or 0) >= montant %}
-    <div class="status-dot"></div>
-    <span class="status-text success">Solde suffisant ✅</span>
-    {% else %}
-    <div class="status-dot insufficient"></div>
-    <span class="status-text error">Solde insuffisant ❌</span>
-    {% endif %}
-  </div>
+<div class="wallet-status">
+  {% if (user.solde_total or 0) >= (montant|float) %}
+  <div class="status-dot"></div>
+  <span class="status-text success">Solde suffisant ✅</span>
+  {% else %}
+  <div class="status-dot insufficient"></div>
+  <span class="status-text error">Solde insuffisant ❌</span>
+  {% endif %}
 </div>
 
 <!-- Confirm Button -->
