@@ -114,6 +114,7 @@ padding:4px;
 <th>Statut</th>
 <th>Crédit / Débit</th>
 <th>Quick Invest</th>
+<th>Rôle</th>
 <th>Bannir</th>
 </tr>
 
@@ -130,6 +131,16 @@ padding:4px;
 <td><b>{{u.solde_total}} FCFA</b></td>
 
 <td>{{u.date_creation.strftime("%d/%m/%Y")}}</td>
+
+<td>
+
+{% if u.is_admin %}
+<span class="status-active">Admin</span>
+{% else %}
+<span>Utilisateur</span>
+{% endif %}
+
+</td>
 
 <td>
 
@@ -194,6 +205,17 @@ padding:4px;
 {% endfor %}
 
 </table>
+
+<style>
+.btn-admin {
+background: #9b59b6;
+color: white;
+}
+.btn-remove-admin {
+background: #95a5a6;
+color: white;
+}
+</style>
 
 <script>
 

@@ -1,10 +1,20 @@
 Tables in database:
   - alembic_version
   - commission
+  - custom_product
   - depot
+  - exchange_rate
   - investissement
+  - investment_product
+  - notification
+  - push_subscription
+  - referral_leaderboard
   - retrait
+  - security_log
   - staking
   - support_message
+  - transaction
   - user
+  - user_vip_level
   - vlog
+  - wallet
