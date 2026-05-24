@@ -934,26 +934,26 @@ body {
   </div>
 
   <!-- Filter Tabs -->
-  <div class="filter-group">
-    <button class="filter-btn active" onclick="filterCategory('all', this)">
-      <i class="fa-solid fa-layer-group"></i> Tous
-    </button>
-    <button class="filter-btn" onclick="filterCategory('crypto', this)">
-      <i class="fa-brands fa-bitcoin"></i> Immobilier
-    </button>
-    <button class="filter-btn" onclick="filterCategory('forex', this)">
-      <i class="fa-solid fa-money-bill-transfer"></i> Materials
-    </button>
-    <button class="filter-btn" onclick="filterCategory('gold', this)">
-      <i class="fa-solid fa-gem"></i> Metaux Précieux
-    </button>
-    <button class="filter-btn" onclick="filterCategory('ai', this)">
-      <i class="fa-solid fa-brain"></i> AI Trading
-    </button>
-    <button class="filter-btn" onclick="filterCategory('vip', this)">
-      <i class="fa-solid fa-crown"></i> VIP
-    </button>
-  </div>
+<div class="filter-group">
+  <button class="filter-btn active" onclick="filterCategory('all', this)">
+    <i class="fa-solid fa-layer-group"></i> Tous
+  </button>
+  <button class="filter-btn" onclick="filterCategory('crypto', this)">
+    <i class="fa-solid fa-building"></i> Immobilier
+  </button>
+  <button class="filter-btn" onclick="filterCategory('forex', this)">
+    <i class="fa-solid fa-boxes-stacked"></i> Materials
+  </button>
+  <button class="filter-btn" onclick="filterCategory('gold', this)">
+    <i class="fa-solid fa-gem"></i> Metaux Précieux
+  </button>
+  <button class="filter-btn" onclick="filterCategory('ai', this)">
+    <i class="fa-solid fa-brain"></i> AI Trading
+  </button>
+  <button class="filter-btn" onclick="filterCategory('vip', this)">
+    <i class="fa-solid fa-crown"></i> VIP
+  </button>
+</div>
 
   <!-- Products Grid -->
   <div class="products-grid" id="productsGrid">
@@ -1212,20 +1212,59 @@ function setCurrency(currency, btn) {
   localStorage.setItem('preferredCurrency', currency);
 }
 
-// Filtrage par catégorie
 function filterCategory(category, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  // 1. Force le changement visuel du bouton cliqué
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.remove('active');
+  });
   btn.classList.add('active');
+
+  // 2. Filtre les cartes avec un ciblage strict
+  const cards = document.querySelectorAll('.product-card');
   
-  document.querySelectorAll('.product-card').forEach(card => {
-    if (category === 'all' || card.dataset.category === category) {
+  cards.forEach(card => {
+    const cardCategory = card.getAttribute('data-category');
+    
+    // Si on clique sur 'Tous' ('all') ou si la catégorie correspond exactement
+    if (category === 'all' || cardCategory === category) {
+      card.style.setProperty('display', 'block', 'important');
+    } else {
+      card.style.setProperty('display', 'none', 'important');
+    }
+  });
+}
+
+
+// Sécurisation de la recherche pour éviter qu'elle bloque le filtrage par clic
+function searchProducts() {
+  const searchInput = document.getElementById('searchInput');
+  if (!searchInput) return; // Si le champ n'existe pas, on quitte sans bloquer le reste
+
+  const query = searchInput.value.toLowerCase().trim();
+  const activeBtn = document.querySelector('.filter-group .filter-btn.active');
+  let categoryFilter = 'all';
+  
+  if (activeBtn) {
+    // Extrait la catégorie directement depuis l'attribut onclick du bouton actif
+    const match = activeBtn.getAttribute('onclick').match(/'([^']+)'/);
+    if (match) categoryFilter = match[1];
+  }
+
+  document.querySelectorAll('#productsGrid .product-card').forEach(card => {
+    const name = card.dataset.name || '';
+    const category = card.dataset.category || '';
+
+    const matchesSearch = name.includes(query) || query === '';
+    const matchesCategory = categoryFilter === 'all' || category === categoryFilter;
+
+    if (matchesSearch && matchesCategory) {
       card.style.display = 'block';
-      card.style.animation = 'fadeIn 0.3s ease';
     } else {
       card.style.display = 'none';
     }
   });
 }
+
 
 // Recherche
 function searchProducts() {

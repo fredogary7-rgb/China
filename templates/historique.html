@@ -3,6 +3,23 @@
 {% block title %}Historique | TokenFlow Premium{% endblock %}
 
 {% block content %}
+<style>
+  /* Petits styles de badges pour rendre les statuts nets et lisibles */
+  .status-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-top: 4px;
+      text-transform: uppercase;
+  }
+  .status-badge.en_attente { background: #fef3c7; color: #d97706; } /* Orange/Jaune */
+  .status-badge.valide { background: #d1fae5; color: #059669; }    /* Vert */
+  .status-badge.rejete { background: #fee2e2; color: #dc2626; }    /* Rouge */
+  .status-badge.default { background: #f1f5f9; color: #64748b; }   /* Gris par défaut */
+</style>
+
 <div class="app-container">
   <header class="top-header">
     <div class="brand">
@@ -27,7 +44,22 @@
     <div class="transaction-item">
       <div class="transaction-left">
         <div class="transaction-icon deposit"><i class="fa-solid fa-plus"></i></div>
-        <div class="transaction-info"><b>Rechargement Mobile</b><span>{{ d.date.strftime('%d %b %H:%M') if d.date else 'Date inconnue' }}</span></div>
+        <div class="transaction-info">
+          <b>Rechargement Mobile</b>
+          <span>{{ d.date.strftime('%d %b %H:%M') if d.date else 'Date inconnue' }}</span>
+          
+          <div>
+            {% if d.statut == 'en_attente' %}
+              <span class="status-badge en_attente">En attente</span>
+            {% elif d.statut == 'valide' or d.statut == 'accepte' %}
+              <span class="status-badge valide">Complété</span>
+            {% elif d.statut == 'rejete' or d.statut == 'refuse' %}
+              <span class="status-badge rejete">Refusé</span>
+            {% else %}
+              <span class="status-badge default">{{ d.statut }}</span>
+            {% endif %}
+          </div>
+        </div>
       </div>
       <div class="transaction-amount plus">+${{ "{:,.2f}".format(d.montant|float) }}</div>
     </div>
@@ -40,7 +72,20 @@
     <div class="transaction-item">
       <div class="transaction-left">
         <div class="transaction-icon withdraw"><i class="fa-solid fa-money-bill-transfer"></i></div>
-        <div class="transaction-info"><b>Demande de retrait</b><span>{{ r.statut }}</span></div>
+        <div class="transaction-info">
+          <b>Demande de retrait</b>
+          <span>
+            {% if r.statut == 'en_attente' %}
+              <span class="status-badge en_attente">En attente</span>
+            {% elif r.statut == 'valide' or r.statut == 'paye' %}
+              <span class="status-badge valide">Payé</span>
+            {% elif r.statut == 'rejete' or r.statut == 'refuse' %}
+              <span class="status-badge rejete">Refusé</span>
+            {% else %}
+              <span class="status-badge default">{{ r.statut }}</span>
+            {% endif %}
+          </span>
+        </div>
       </div>
       <div class="transaction-amount minus">-${{ "{:,.2f}".format(r.montant|float) }}</div>
     </div>
@@ -64,3 +109,4 @@
 </div>
 
 {% endblock %}
+
