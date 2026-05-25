@@ -309,7 +309,6 @@ body {
   </div>
 
   {% if investissements %}
-    <!-- Stats Summary -->
     <div class="stats-summary">
       <div class="stat-box">
         <div class="stat-value">{{ investissements|length }}</div>
@@ -317,30 +316,28 @@ body {
       </div>
       <div class="stat-box">
         <div class="stat-value" style="color: var(--success);">
-          ${{ "%.2f"|format(investissements|sum(attribute='revenu_journalier') or 0) }} USD
+          ${{ "%.2f"|format((investissements|sum(attribute='revenu_journalier') or 0) / 625) }} USD
         </div>
         <div class="stat-label">Profit/jour</div>
       </div>
     </div>
 
-    <!-- Total Profit Card -->
     <div class="total-profit">
-      <div class="profit-value">+${{ "%.2f"|format((investissements|sum(attribute='revenu_journalier') or 0) * 30) }} USD</div>
+      <div class="profit-value">+${{ "%.2f"|format(((investissements|sum(attribute='revenu_journalier') or 0) / 625) * 30) }} USD</div>
       <div class="profit-label">Profit mensuel estimé</div>
     </div>
 
-    <!-- Investment Cards -->
     {% for inv in investissements %}
     <div class="card">
 
       <div class="row">
         <span class="label"><i class="fa-solid fa-vault"></i> Capital</span>
-        <span class="val">${{ "%.2f"|format(inv.montant|float) }} USD</span>
+        <span class="val">${{ "%.2f"|format((inv.montant|float) / 625) }} USD</span>
       </div>
 
       <div class="row">
         <span class="label"><i class="fa-solid fa-chart-line"></i> Profit / jour</span>
-        <span class="val" style="color: var(--success);">+ ${{ "%.2f"|format(inv.revenu_journalier|float) }} USD</span>
+        <span class="val" style="color: var(--success);">+ ${{ "%.2f"|format((inv.revenu_journalier|float) / 625) }} USD</span>
       </div>
 
       <div class="row">
@@ -360,7 +357,7 @@ body {
 
       <div class="status-container">
         <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">État du contrat :</span>
-        {% if inv.jours_restants > 0 %}
+        {% if inv.jours_restants > 0 and inv.actif %}
           <span class="badge active-badge">En cours</span>
         {% else %}
           <span class="badge finished-badge">Clôturé</span>
@@ -385,10 +382,7 @@ body {
 
 </div>
 
-
-
 {% endblock %}
-
 
 <nav class="bottom-nav">
   <a href="/dashboard" class="nav-item">

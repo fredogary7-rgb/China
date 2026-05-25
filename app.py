@@ -2639,7 +2639,7 @@ def confirmer_produit_rapide(vip_id):
     # Check if it's a custom product (ID >= 1000)
     produit = None
     is_custom = False
-    
+
     if vip_id >= 1000:
         # Look for custom product
         custom_id = vip_id - 1000
@@ -2658,15 +2658,16 @@ def confirmer_produit_rapide(vip_id):
     else:
         # Look in default products
         produit = next((p for p in PRODUITS_VIP if p["id"] == vip_id), None)
-    
+
     if not produit:
         flash("Produit introuvable.", "danger")
         return redirect(url_for("produits_rapide_page"))
 
     # Conversion USD vers XOF (1 USD = 625 XOF)
-    montant_usd = produit["prix_usd"]
-    montant = int(montant_usd * USD_TO_XOF)  # Prix en XOF
-    revenu_journalier_usd = produit["revenu_journalier_usd"]
+    montant_usd = float(produit["prix_usd"])
+    montant = int(montant_usd * USD_TO_XOF)  # Prix en XOF (15625)
+    
+    revenu_journalier_usd = float(produit["revenu_journalier_usd"])
     revenu_journalier = int(revenu_journalier_usd * USD_TO_XOF)  # Revenu en XOF
     revenu_total = revenu_journalier * 120
 
@@ -2681,16 +2682,19 @@ def confirmer_produit_rapide(vip_id):
             submitted=False
         )
 
-    if float(user.solde_total or 0) < montant:
+    # CORRECTION ICI : Comparaison en Dollars (30.0 vs 25.0)
+    if float(user.solde_total or 0) < montant_usd:
         flash("Solde insuffisant.", "danger")
         return redirect(url_for("produits_rapide_page"))
 
-    user.solde_total -= montant
-    credit_user_revenu(user, 1000)
+    # CORRECTION ICI : Déduction du solde en Dollars
+    user.solde_total -= montant_usd
+    credit_user_revenu(user, 5)
 
+    # Création de l'investissement (Ici tu choisis si tu stockes montant ou montant_usd dans ta BDD)
     inv = Investissement(
         phone=phone,
-        montant=montant,
+        montant=montant,  # Reste en XOF pour ton historique si nécessaire
         revenu_journalier=revenu_journalier,
         duree=120,
         actif=True
@@ -2707,6 +2711,7 @@ def confirmer_produit_rapide(vip_id):
         user=user,
         submitted=True
     )
+
 
 @app.route("/produits_rapide/valider/<int:vip_id>", methods=["POST"])
 @login_required
@@ -2741,31 +2746,7 @@ def valider_produit_rapide(vip_id):
 
 from datetime import datetime
 
-@app.route("/achats")
-@login_required
-def achats_page():
-    phone = get_logged_in_user_phone()
-
-    investissements = []
-    now = datetime.now()
-
-    for inv in Investissement.query.filter_by(phone=phone).order_by(Investissement.date_debut.desc()).all():
-        jours_passes = (now - inv.date_debut).days
-        progression = min(int((jours_passes / inv.duree) * 100), 100)
-        jours_restants = max(inv.duree - jours_passes, 0)
-
-        investissements.append({
-            "montant": inv.montant,
-            "revenu_journalier": inv.revenu_journalier,
-            "jours_restants": jours_restants,
-            "progression": progression,
-            "actif": inv.actif
-        })
-
-    return render_template(
-        "achats.html",
-        investissements=investissements
-    )
+from datetime import datetime, timedelta, UTC
 
 @app.route("/finance")
 @login_required
@@ -2777,25 +2758,38 @@ def finance_page():
         flash("Session expirée.", "danger")
         return redirect(url_for("connexion_page"))
 
+    # Les revenus sont calculés en USD
     revenus_totaux = (user.solde_revenu or 0) + (user.solde_parrainage or 0)
+    
+    # Sécurité Devise : Si solde_depot est en Dollars, l'addition est correcte.
+    # Si solde_depot est en XOF, remplace par : (user.solde_depot or 0) / 625
     fortune_totale = (user.solde_depot or 0) + revenus_totaux
 
+    # Ajustement des colonnes de tri : utilisation de 'date_creation' au lieu de 'date' si nécessaire
     retraits = Retrait.query.filter_by(phone=phone)\
-        .order_by(Retrait.date.desc()).limit(10).all()
+        .order_by(Retrait.date_creation.desc() if hasattr(Retrait, 'date_creation') else Retrait.date.desc())\
+        .limit(10).all()
 
     depots = Depot.query.filter_by(phone=phone)\
-        .order_by(Depot.date.desc()).limit(10).all()
+        .order_by(Depot.date_creation.desc() if hasattr(Depot, 'date_creation') else Depot.date.desc())\
+        .limit(10).all()
 
     actifs_raw = Investissement.query.filter_by(phone=phone, actif=True).all()
 
     actifs = []
     for a in actifs_raw:
-        date_fin = a.date_debut + timedelta(days=a.duree)
+        # Sécurité : On s'assure que date_debut est bien un objet datetime
+        d_debut = a.date_debut
+        if isinstance(d_debut, str):
+            d_debut = datetime.strptime(d_debut, "%Y-%m-%d %H:%M:%S") # Adapte le format si nécessaire
+            
+        date_fin = d_debut + timedelta(days=a.duree)
+        
         actifs.append({
-            "montant": a.montant,
+            "montant": a.montant, # Prix réel de l'investissement
             "revenu_journalier": a.revenu_journalier,
             "duree": a.duree,
-            "date_debut": a.date_debut,
+            "date_debut": d_debut,
             "date_fin": date_fin
         })
 
@@ -2808,6 +2802,45 @@ def finance_page():
         depots=depots,
         actifs=actifs
     )
+
+@app.route("/achats")
+@login_required
+def achats_page():
+    phone = get_logged_in_user_phone()
+
+    investissements = []
+    # Utilisation de la méthode moderne sans fuseau pour la comparaison
+    now = datetime.now()
+
+    for inv in Investissement.query.filter_by(phone=phone).order_by(Investissement.date_debut.desc()).all():
+        # Sécurité conversion datetime
+        d_debut = inv.date_debut
+        if isinstance(d_debut, str):
+            d_debut = datetime.strptime(d_debut, "%Y-%m-%d %H:%M:%S")
+
+        # Calcul des jours passés depuis le début de l'investissement
+        jours_passes = (now - d_debut).days
+        
+        # Gestion des garde-fous pour éviter les divisions par zéro ou progressions > 100%
+        duree = inv.duree if inv.duree and inv.duree > 0 else 120
+        progression = min(int((jours_passes / duree) * 100), 100)
+        
+        # Empêcher d'avoir des jours restants négatifs si l'investissement est expiré
+        jours_restants = max(duree - jours_passes, 0)
+
+        investissements.append({
+            "montant": inv.montant,
+            "revenu_journalier": inv.revenu_journalier,
+            "jours_restants": jours_restants,
+            "progression": max(progression, 0), # Évite les valeurs négatives si l'achat est instantané
+            "actif": inv.actif
+        })
+
+    return render_template(
+        "achats.html",
+        investissements=investissements
+    )
+
 
 @app.route("/profile")
 @login_required
@@ -3291,26 +3324,38 @@ def retrait_page():
     if not user.wallet_number:
         return redirect(url_for("wallet_setup_page"))
 
-    # Solde retirable = parrainage + revenu SEULEMENT (pas le depot)
+    # Le solde retirable se base uniquement sur parrainage + revenu selon tes règles
     solde_retraitable = (user.solde_parrainage or 0) + (user.solde_revenu or 0)
 
     if request.method == "POST":
         try:
             montant = float(request.form["montant"])
-        except:
+        except ValueError:
             flash("Montant invalide.", "danger")
             return redirect(url_for("retrait_page"))
 
-        # Minimum 35 USD
+        # Vérification des limites de retrait (Minimum 35 USD)
         if montant < 35:
             flash("Montant minimum : 35 USD.", "warning")
             return redirect(url_for("retrait_page"))
 
+        # L'utilisateur doit avoir assez sur son solde retirable global pour initier la demande
         if montant > solde_retraitable:
             flash("Solde insuffisant.", "danger")
             return redirect(url_for("retrait_page"))
 
-        return redirect(url_for("retrait_confirmation_page", montant=montant))
+        # Enregistrement initial de la demande de retrait en BDD
+        # On n'envoie que les colonnes de base pour respecter la structure de ton modèle
+        nouveau_retrait = Retrait(
+            phone=phone,
+            montant=montant,
+            statut="En attente"  # Fait moins de 20 caractères, aucun risque de plantage
+        )
+        
+        db.session.add(nouveau_retrait)
+        db.session.commit()  # Génère l'ID unique requis pour l'étape suivante
+
+        return redirect(url_for("retrait_confirmation_page", retrait_id=nouveau_retrait.id))
 
     return render_template(
         "retrait.html",
@@ -3319,72 +3364,112 @@ def retrait_page():
         solde_retraitable=solde_retraitable
     )
 
-@app.route("/retrait/confirmation/<int:montant>", methods=["GET", "POST"])
+
+@app.route("/retrait/confirmation/<int:retrait_id>", methods=["GET", "POST"])
 @login_required
-def retrait_confirmation_page(montant):
+def retrait_confirmation_page(retrait_id):
     phone = get_logged_in_user_phone()
     user = User.query.filter_by(phone=phone).first()
 
-    if not user:
-        flash("Session expirée.", "danger")
-        return redirect(url_for("connexion_page"))
+    # Récupération sécurisée du retrait créé à l'étape précédente
+    retrait = Retrait.query.get_or_404(retrait_id)
+    montant = float(retrait.montant)
 
-    solde_retraitable = (user.solde_parrainage or 0) + (user.solde_revenu or 0)
-    if montant > solde_retraitable:
-        flash("Solde insuffisant.", "danger")
-        return redirect(url_for("retrait_page"))
+    # Calcul des frais et du net à la volée pour l'affichage HTML
+    taxe = montant * 0.05  # Exemple : 5% de frais de retrait
+    net = montant - taxe
 
-        taxe = int(montant * 0.10)
-        net = montant - taxe
+    if request.method == "GET":
+        return render_template(
+            "retrait_confirmation.html", 
+            montant=montant, 
+            taxe=taxe, 
+            net=net, 
+            user=user, 
+            submitted=False
+        )
 
     if request.method == "POST":
-        retrait = Retrait(phone=phone, montant=montant, statut="en_attente")
-        db.session.add(retrait)
+        # REGLATION DU DÉBIT : Vérification stricte sur le solde Revenu uniquement
+        if (user.solde_revenu or 0) < montant:
+            flash("Votre solde revenu est insuffisant pour valider ce retrait.", "danger")
+            return redirect(url_for("retrait_page"))
 
-        reste = montant
-        if user.solde_parrainage >= reste:
-            user.solde_parrainage -= reste
-            reste = 0
-        else:
-            reste -= user.solde_parrainage
-            user.solde_parrainage = 0
+        # 1. Débit exclusif des colonnes de solde concernées
+        user.solde_revenu = (user.solde_revenu or 0) - montant
 
-        if reste > 0:
-            user.solde_revenu -= reste
+        # 2. Transition du statut (Reste à "En attente" ou passe à "Validé" selon tes besoins)
+        # Veille à ce que ce texte ne dépasse jamais 20 caractères au total !
+        retrait.statut = "En attente" 
+        
+        # Correctif moderne pour remplacer le utcnow() obsolète à la ligne 3433
+        if hasattr(retrait, 'date_creation'):
+            retrait.date_creation = datetime.now(datetime.UTC)
 
+        # 3. Validation et enregistrement définitif des modifications
         db.session.commit()
-        return render_template("retrait_confirmation.html", montant=montant, taxe=taxe, net=net, user=user, submitted=True)
 
-    return render_template("retrait_confirmation.html", montant=montant, taxe=taxe, net=net, user=user, submitted=False)
+        flash("Votre demande de retrait a été enregistrée avec succès !", "success")
+        return render_template(
+            "retrait_confirmation.html", 
+            montant=montant, 
+            taxe=taxe, 
+            net=net, 
+            user=user, 
+            submitted=True
+        )
+
+from datetime import datetime, UTC
 
 @app.route("/cron/pay_invests")
 def cron_pay_invests():
-    maintenant = datetime.utcnow()
+    # Utilisation de la syntaxe moderne sans dépréciation
+    maintenant = datetime.now(UTC)
     invests = Investissement.query.filter_by(actif=True).all()
 
     total_payes = 0
 
     for inv in invests:
+        # Sécurité : Conversion en datetime si les dates sont stockées en String
+        if isinstance(inv.dernier_paiement, str):
+            inv.dernier_paiement = datetime.strptime(inv.dernier_paiement, "%Y-%m-%d %H:%M:%S")
+        if isinstance(inv.date_debut, str):
+            inv.date_debut = datetime.strptime(inv.date_debut, "%Y-%m-%d %H:%M:%S")
+
+        # Si aucun paiement n'a encore eu lieu, on initialise avec la date de début
         if not inv.dernier_paiement:
             inv.dernier_paiement = inv.date_debut
 
+        # Calcul du temps écoulé depuis le dernier paiement
         diff = maintenant - inv.dernier_paiement
 
+        # 86400 secondes = 24 heures
         if diff.total_seconds() >= 86400:
-
             user = User.query.filter_by(phone=inv.phone).first()
             if user:
-                user.solde_revenu += inv.revenu_journalier
+                # CORRECTION CRITIQUE : inv.revenu_journalier est en XOF.
+                # On le divise par 625 pour ajouter la valeur réelle en Dollars (USD) sur ses soldes.
+                gain_usd = float(inv.revenu_journalier) / 625
+                
+                user.solde_revenu = (user.solde_revenu or 0) + gain_usd
+                user.solde_total = (user.solde_total or 0) + gain_usd # On synchronise le solde global
                 total_payes += 1
 
+            # On met à jour l'horodatage du dernier paiement
             inv.dernier_paiement = maintenant
 
-            inv.duree -= 1
-            if inv.duree <= 0:
+            # Réduction de la durée du contrat
+            if inv.duree and inv.duree > 0:
+                inv.duree -= 1
+                if inv.duree <= 0:
+                    inv.actif = False
+            else:
                 inv.actif = False
 
+    # Sauvegarde de tous les paiements et états de contrats en une seule fois
     db.session.commit()
-    return f"{total_payes} paiements effectués."
+    return f"{total_payes} paiements effectués avec succès en USD."
+
 
 import threading
 import time

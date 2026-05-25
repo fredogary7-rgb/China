@@ -728,20 +728,19 @@ body {
   </div>
 </div>
 
-<!-- Wallet Section -->
 <div class="wallet-section">
   <div class="wallet-header">
     <div class="wallet-icon">
       <i class="fa-solid fa-wallet"></i>
     </div>
-      <div class="wallet-info">
-        <div class="label">Solde disponible</div>
-        <div class="balance">${{ "{:,.2f}".format(user.solde_total or 0) }} USD</div>
-      </div>
+    <div class="wallet-info">
+      <div class="label">Solde disponible</div>
+      <div class="balance">${{ "{:,.2f}".format(user.solde_total or 0) }} USD</div>
+    </div>
   </div>
-  
+
 <div class="wallet-status">
-  {% if (user.solde_total or 0) >= (montant|float) %}
+  {% if (user.solde_total or 0)|float >= ((montant|float) / 625) %}
   <div class="status-dot"></div>
   <span class="status-text success">Solde suffisant ✅</span>
   {% else %}
@@ -750,14 +749,18 @@ body {
   {% endif %}
 </div>
 
-<!-- Confirm Button -->
 <div class="confirm-section">
   <form method="POST">
-    <button type="submit" class="btn-confirm" {% if (user.solde_total or 0) < montant %}disabled{% endif %}>
+    <button type="submit" class="btn-confirm" {% if (user.solde_total or 0)|float < ((montant|float) / 625) %}disabled{% endif %}>
       <i class="fa-solid fa-bolt"></i>
-      {% if (user.solde_total or 0) >= montant %}Confirmer l'investissement{% else %}Solde insuffisant{% endif %}
+      {% if (user.solde_total or 0)|float >= ((montant|float) / 625) %}
+        Confirmer l'investissement
+      {% else %}
+        Solde insuffisant
+      {% endif %}
     </button>
   </form>
+</div>
   
   <a href="/produits_rapide" class="btn-back">
     <i class="fa-solid fa-arrow-left"></i> Retour aux produits
