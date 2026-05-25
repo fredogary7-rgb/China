@@ -2134,47 +2134,56 @@ def api_soleaspay_services(country_code):
 def soleaspay_webhook():
     """Webhook pour les notifications de paiement SoleasPay."""
     import json
-    
+
     # Vérifier la signature
     signature = request.headers.get('X-SoleasPay-Signature', '')
     payload = request.get_data()
-    
+
     if not verify_soleaspay_webhook(signature, payload):
         return jsonify({'error': 'Invalid signature'}), 401
-    
+
     data = request.get_json()
-    
+
     event_type = data.get('event')
     reference = data.get('reference')
-    
+
     if event_type == 'payment.completed':
         # Trouver le dépôt par référence
         depot = Depot.query.filter_by(reference=reference).first()
-        
+
         if depot and depot.statut == 'pending':
             user = User.query.filter_by(phone=depot.phone).first()
-            
+
             if user:
-                # Valider le dépôt
+                # CORRECTION PARRAINAGE : On compte les dépôts validés AVANT d'activer celui-ci
+                nb_depots_valides = Depot.query.filter_by(phone=user.phone, statut='valide').count()
+
+                # Validation du dépôt actuel
                 depot.statut = 'valide'
-                user.solde_depot += depot.montant
-                user.solde_total += depot.montant
                 
-                # Vérifier si c'est le premier dépôt pour les commissions
-                premier_depot = Depot.query.filter_by(phone=user.phone, statut='valide').first()
-                if not premier_depot and user.parrain_code:
-                    donner_commission(user.phone, depot.montant)
+                # Gestion des devises :
+                # Si depot.montant est en XOF dans ta BDD, conversion en USD pour les soldes de l'User
+                # Si depot.montant est DEJA en USD, laisse : user.solde_depot += depot.montant
+                montant_usd = float(depot.montant) / 625  # À retirer si le montant en BDD est déjà en USD
                 
+                user.solde_depot = (user.solde_depot or 0) + montant_usd
+                user.solde_total = (user.solde_total or 0) + montant_usd
+
+                # Déclenchement de la commission si c'est strictement son premier dépôt
+                if nb_depots_valides == 0 and user.parrain_code:
+                    # On envoie le montant converti ou brut selon ce qu'attend ta fonction
+                    donner_commission(user.phone, montant_usd)
+
                 db.session.commit()
-                
-                # Créer une notification
+
+                # Créer une notification textuelle propre et claire
                 create_notification(
                     user.phone,
                     'deposit',
                     'Dépôt validé',
-                    f'Votre dépôt de ${depot.montant:.2f} USD a été validé avec succès.'
+                    f'Votre dépôt de ${montant_usd:.2f} USD a été validé avec succès.'
                 )
-    
+
     return jsonify({'status': 'ok'}), 200
 
 # No XOF conversion - all amounts stored in USD directly
