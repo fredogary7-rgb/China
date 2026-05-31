@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Formation Agro-Élevage de Précision - NovaGroup</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --agri-green: #10b981;
+            --agri-dark: #064e3b;
+            --agri-gold: #f59e0b;
+            --nova-bg: #f4f7fe;
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
+
+        body { background: var(--nova-bg); color: #333; overflow-x: hidden; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header / Hero Style */
+        .hero-agri {
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.95), rgba(16, 185, 129, 0.85)), url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1000') no-repeat center center/cover;
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+            border-radius: 0 0 40px 40px;
+            animation: fadeInUp 0.6s var(--transition-smooth);
+        }
+        .hero-agri h1 { font-size: 26px; font-weight: 800; line-height: 1.3; margin-bottom: 12px; }
+        .hero-agri p { font-size: 14px; opacity: 0.9; max-width: 500px; margin: 0 auto 25px auto; }
+
+        .badge-agri {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+        .stat-card div:first-child { font-size: 18px; font-weight: 800; color: var(--agri-gold); }
+        .stat-card div:last-child { font-size: 10px; opacity: 0.8; }
+
+        /* Container & Cards */
+        .container { padding: 20px; max-width: 800px; margin: 0 auto; }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--agri-dark);
+            margin: 25px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+            transition: var(--transition-smooth);
+            animation: fadeInUp 0.8s var(--transition-smooth) backwards;
+        }
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(6, 78, 59, 0.05);
+        }
+
+        /* Curriculum / Modules */
+        .module-item {
+            border-left: 3px solid var(--agri-green);
+            padding-left: 15px;
+            margin-bottom: 18px;
+        }
+        .module-item h4 { font-size: 15px; color: var(--agri-dark); margin-bottom: 4px; }
+        .module-item p { font-size: 12px; color: #666; line-height: 1.5; }
+
+        /* Download Section Fixed Card */
+        .download-box {
+            background: linear-gradient(135deg, #ffffff, #f0fdf4);
+            border: 2px dashed var(--agri-green);
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 25px;
+            margin-top: 30px;
+        }
+        .download-box i.file-icon {
+            font-size: 45px;
+            color: var(--agri-green);
+            margin-bottom: 15px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .btn-download {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: var(--agri-green);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.25);
+            transition: var(--transition-smooth);
+            margin-top: 15px;
+            border: none;
+            width: 100%;
+        }
+        .btn-download:hover {
+            background: var(--agri-dark);
+            box-shadow: 0 12px 25px rgba(6, 78, 59, 0.3);
+        }
+
+        /* Back Button */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+        .back-link:hover { color: var(--agri-green); }
+    </style>
+</head>
+<body>
+
+<div class="container" style="padding-bottom: 0;">
+    <a href="/academy/tiktok" class="back-link"><i class="fa fa-arrow-left"></i> Retour à l'Academy</a>
+</div>
+
+<!-- Hero Section -->
+<div class="hero-agri">
+    <span class="badge-agri"><i class="fa-solid fa-leaf"></i> Formation Business Vert</span>
+    <h1>Agribusiness & Élevage Rentable</h1>
+    <p>Maîtrisez les techniques modernes de production agricole et de gestion d'élevage pour bâtir une entreprise d'envergure internationale.</p>
+    
+    <!-- Tableaux de statistiques de la formation -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div>12</div>
+            <div>Modules</div>
+        </div>
+        <div class="stat-card">
+            <div>A+</div>
+            <div>Niveau</div>
+        </div>
+        <div class="stat-card">
+            <div>PDF</div>
+            <div>Inclus</div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Description générale -->
+    <h3 class="section-title"><i class="fa-solid fa-circle-info"></i> Présentation du programme</h3>
+    <div class="info-card">
+        <p style="font-size: 14px; color: #4b5563; line-height: 1.7;">
+            Ce programme d'élite est conçu pour transformer des passionnés en véritables exploitants agricoles modernes. Loin des méthodes traditionnelles obsolètes, vous apprendrez à maximiser vos rendements sur de petites et grandes surfaces grâce à la technologie et aux stratégies d'optimisation financière.
+        </p>
+    </div>
+
+    <!-- Programme détaillé -->
+    <h3 class="section-title"><i class="fa-solid fa-graduation-cap"></i> Curriculum de la formation</h3>
+    <div class="info-card">
+        
+        <div class="module-item">
+            <h4>Module 1 : Agriculture Durable & de Précision</h4>
+            <p>Étude des sols, irrigation intelligente en zones arides, gestion écologique des nuisibles et cultures à haute valeur ajoutée.</p>
+        </div>
+
+        <div class="module-item">
+            <h4>Module 2 : Élevage Moderne (Aviculture & Bovins)</h4>
+            <p>Optimisation de la nutrition animale, biosécurité des infrastructures, cycles de reproduction et suivi vétérinaire préventif.</p>
+        </div>
+
+        <div class="module-item">
+            <h4>Module 3 : Financement & Agribusiness</h4>
+            <p>Calcul des coûts de revient, planification des récoltes, et stratégies de distribution directes sur les marchés locaux et internationaux.</p>
+        </div>
+
+    </div>
+
+    <!-- Bloc de téléchargement du Guide PDF -->
+    <div class="download-box">
+        <i class="fa-solid fa-file-pdf file-icon"></i>
+        <h3 style="color: var(--agri-dark); font-size: 18px; margin-bottom: 5px;">Guide Complet d'Exploitation</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Téléchargez le manuel officiel de formation (Fichier : ek.pdf) contenant l'intégralité des tableaux de rendement et schémas techniques.</p>
+        
+        <!-- Le bouton appelle directement le fichier ek.pdf placé à la racine de ton serveur Flask -->
+        <!-- L'attribut 'download' force l'iPhone/Pixel à enregistrer le fichier plutôt qu'à juste l'ouvrir -->
+        <a href="{{ url_for('static', filename='ek.pdf') }}" download="Guide_Agro_Elevage_NovaGroup.pdf" class="btn-download">
+            <i class="fa-solid fa-cloud-arrow-down"></i> Télécharger le Guide PDF
+        </a>
+    </div>
+
+</div>
+
+<div style="text-align: center; padding: 40px 20px; font-size: 11px; color: #aaa;">
+    &copy; 2026 NovaGroup International • Pôle Compétences Vertes.
+</div>
+
+</body>
+</html>
+

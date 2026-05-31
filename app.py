@@ -1125,6 +1125,16 @@ def send_verification_email(user_email, verification_token):
         print(f"❌ Erreur envoi email verification via Resend: {e}")
         return False
 
+@app.route("/academy/agriculture")
+@login_required
+def formation_agri_page():
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    
+    # On passe l'utilisateur pour garder la barre de navigation cohérente si besoin
+    return render_template("agriculture.html", user=user)
+
+
 @app.route('/verify-email/<token>')
 def verify_email_page(token):
     """Page de vérification d'email."""
