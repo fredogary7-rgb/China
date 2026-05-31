@@ -10,6 +10,7 @@
             --agri-green: #10b981;
             --agri-dark: #064e3b;
             --agri-gold: #f59e0b;
+            --agri-light: #d1fae5;
             --nova-bg: #f4f7fe;
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -100,49 +101,213 @@
         .module-item h4 { font-size: 15px; color: var(--agri-dark); margin-bottom: 4px; }
         .module-item p { font-size: 12px; color: #666; line-height: 1.5; }
 
-        /* Download Section Fixed Card */
-        .download-box {
-            background: linear-gradient(135deg, #ffffff, #f0fdf4);
-            border: 2px dashed var(--agri-green);
-            text-align: center;
-            padding: 30px 20px;
-            border-radius: 25px;
+        /* PDF Library Section */
+        .pdf-library {
             margin-top: 30px;
         }
-        .download-box i.file-icon {
-            font-size: 45px;
-            color: var(--agri-green);
-            margin-bottom: 15px;
-            display: inline-block;
-            animation: bounce 2s infinite;
+
+        .pdf-level-section {
+            margin-bottom: 25px;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .btn-download {
+        .pdf-level-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        .pdf-level-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+        .pdf-level-header .level-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pdf-level-header .level-badge {
             background: var(--agri-green);
             color: white;
-            padding: 15px 30px;
-            border-radius: 30px;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pdf-level-header .level-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--agri-dark);
+        }
+
+        .pdf-level-header .level-requirement {
+            font-size: 11px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .pdf-level-header .status-icon {
+            font-size: 20px;
+            color: var(--agri-green);
+        }
+
+        .pdf-level-header .status-icon.locked {
+            color: #999;
+        }
+
+        .pdf-list {
+            padding: 0 0 0 10px;
+        }
+
+        .pdf-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .pdf-item:hover {
+            background: var(--agri-light);
+        }
+
+        .pdf-item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pdf-item-info i {
+            font-size: 20px;
+            color: #ef4444;
+        }
+
+        .pdf-item-info .pdf-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--agri-dark);
+        }
+
+        .pdf-item-info .pdf-size {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .btn-download-pdf {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--agri-green);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-download-pdf:hover {
+            background: var(--agri-dark);
+            transform: scale(1.05);
+        }
+
+        .btn-download-pdf.disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Locked Content Overlay */
+        .locked-overlay {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px dashed #ddd;
+            margin-top: 15px;
+        }
+
+        .locked-overlay i {
+            font-size: 40px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .locked-overlay h4 {
+            color: var(--agri-dark);
+            margin-bottom: 8px;
+        }
+
+        .locked-overlay p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .btn-upgrade {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--agri-gold);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
             text-decoration: none;
             font-weight: 700;
-            font-size: 15px;
-            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.25);
+            font-size: 14px;
             transition: var(--transition-smooth);
-            margin-top: 15px;
-            border: none;
-            width: 100%;
         }
-        .btn-download:hover {
-            background: var(--agri-dark);
-            box-shadow: 0 12px 25px rgba(6, 78, 59, 0.3);
+
+        .btn-upgrade:hover {
+            background: #d97706;
+            transform: scale(1.05);
+        }
+
+        /* User Pack Info Banner */
+        .user-pack-banner {
+            background: linear-gradient(135deg, var(--agri-green), var(--agri-dark));
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .user-pack-banner .current-pack {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .user-pack-banner .pack-label {
+            font-size: 12px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .user-pack-banner .pack-benefits {
+            font-size: 13px;
+            margin-top: 10px;
+            opacity: 0.95;
+            line-height: 1.5;
         }
 
         /* Back Button */
@@ -157,12 +322,20 @@
             transition: color 0.3s;
         }
         .back-link:hover { color: var(--agri-green); }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .hero-agri { padding: 35px 15px; }
+            .hero-agri h1 { font-size: 22px; }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .pdf-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container" style="padding-bottom: 0;">
-    <a href="/academy/tiktok" class="back-link"><i class="fa fa-arrow-left"></i> Retour à l'Academy</a>
+    <a href="/dashboard" class="back-link"><i class="fa fa-arrow-left"></i> Retour au Dashboard</a>
 </div>
 
 <!-- Hero Section -->
@@ -189,6 +362,21 @@
 </div>
 
 <div class="container">
+
+    <!-- User Pack Info Banner -->
+    <div class="user-pack-banner">
+        <div class="pack-label">Votre Pack Actuel</div>
+        <div class="current-pack">Pack {{ user.pack_level or 1 }}</div>
+        <div class="pack-benefits">
+            {% if user.pack_level and user.pack_level >= 5 %}
+                🎉 Accès complet à tous les livres et ressources!
+            {% elif user.pack_level and user.pack_level >= 2 %}
+                ✅ Accès aux livres jusqu'au niveau {{ user.pack_level }}
+            {% else %}
+                🔒 Activez un pack supérieur pour débloquer plus de contenu
+            {% endif %}
+        </div>
+    </div>
 
     <!-- Description générale -->
     <h3 class="section-title"><i class="fa-solid fa-circle-info"></i> Présentation du programme</h3>
@@ -219,17 +407,263 @@
 
     </div>
 
-    <!-- Bloc de téléchargement du Guide PDF -->
-    <div class="download-box">
-        <i class="fa-solid fa-file-pdf file-icon"></i>
-        <h3 style="color: var(--agri-dark); font-size: 18px; margin-bottom: 5px;">Guide Complet d'Exploitation</h3>
-        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Téléchargez le manuel officiel de formation (Fichier : ek.pdf) contenant l'intégralité des tableaux de rendement et schémas techniques.</p>
+    <!-- PDF Library Section -->
+    <h3 class="section-title"><i class="fa-solid fa-book-open"></i> Bibliothèque de Ressources PDF</h3>
+    <div class="info-card pdf-library">
         
-        <!-- Le bouton appelle directement le fichier ek.pdf placé à la racine de ton serveur Flask -->
-        <!-- L'attribut 'download' force l'iPhone/Pixel à enregistrer le fichier plutôt qu'à juste l'ouvrir -->
-        <a href="{{ url_for('static', filename='ek.pdf') }}" download="Guide_Agro_Elevage_NovaGroup.pdf" class="btn-download">
-            <i class="fa-solid fa-cloud-arrow-down"></i> Télécharger le Guide PDF
-        </a>
+        <!-- Level 1 - No Access -->
+        <div class="pdf-level-section">
+            <div class="pdf-level-header" onclick="togglePdfLevel(1)">
+                <div class="level-info">
+                    <span class="level-badge">Niveau 1</span>
+                    <div>
+                        <div class="level-title">Introduction à l'Agribusiness</div>
+                        <div class="level-requirement">🔒 Pack 2 requis pour accéder</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-lock status-icon locked" id="icon-level-1"></i>
+            </div>
+            <div class="pdf-list" id="pdf-level-1" style="display: none;">
+                <div class="locked-overlay">
+                    <i class="fa-solid fa-lock"></i>
+                    <h4>Contenu Verrouillé</h4>
+                    <p>Activez le Pack 2 pour débloquer les ressources de niveau 1.</p>
+                    <a href="/produits_rapide" class="btn-upgrade">
+                        <i class="fa-solid fa-rocket"></i> Voir les Packs
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level 2 -->
+        <div class="pdf-level-section">
+            <div class="pdf-level-header" onclick="togglePdfLevel(2)">
+                <div class="level-info">
+                    <span class="level-badge">Niveau 2</span>
+                    <div>
+                        <div class="level-title">Techniques d'Élevage Avancées</div>
+                        <div class="level-requirement">🔒 Pack 2 requis pour accéder</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-lock status-icon locked" id="icon-level-2"></i>
+            </div>
+            <div class="pdf-list" id="pdf-level-2" style="display: none;">
+                {% if user.pack_level and user.pack_level >= 2 %}
+                    <div class="pdf-item">
+                        <div class="pdf-item-info">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <div>
+                                <div class="pdf-name">Guide Complet d'Élevage Avicole</div>
+                                <div class="pdf-size">2.4 MB • 45 pages</div>
+                            </div>
+                        </div>
+                        <a href="/api/agriculture/download/elevage_avicole" class="btn-download-pdf">
+                            <i class="fa-solid fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                    <div class="pdf-item">
+                        <div class="pdf-item-info">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <div>
+                                <div class="pdf-name">Manuel de Nutrition Animale</div>
+                                <div class="pdf-size">1.8 MB • 32 pages</div>
+                            </div>
+                        </div>
+                        <a href="/api/agriculture/download/nutrition_animale" class="btn-download-pdf">
+                            <i class="fa-solid fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="locked-overlay">
+                        <i class="fa-solid fa-lock"></i>
+                        <h4>Contenu Verrouillé</h4>
+                        <p>Activez le Pack 2 pour débloquer les ressources de niveau 2.</p>
+                        <a href="/produits_rapide" class="btn-upgrade">
+                            <i class="fa-solid fa-rocket"></i> Voir les Packs
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Level 3 -->
+        <div class="pdf-level-section">
+            <div class="pdf-level-header" onclick="togglePdfLevel(3)">
+                <div class="level-info">
+                    <span class="level-badge">Niveau 3</span>
+                    <div>
+                        <div class="level-title">Agriculture de Précision</div>
+                        <div class="level-requirement">🔒 Pack 3 requis pour accéder</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-lock status-icon locked" id="icon-level-3"></i>
+            </div>
+            <div class="pdf-list" id="pdf-level-3" style="display: none;">
+                {% if user.pack_level and user.pack_level >= 3 %}
+                    <div class="pdf-item">
+                        <div class="pdf-item-info">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <div>
+                                <div class="pdf-name">Irrigation Intelligente et Gestion de l'Eau</div>
+                                <div class="pdf-size">3.2 MB • 58 pages</div>
+                            </div>
+                        </div>
+                        <a href="/api/agriculture/download/irrigation" class="btn-download-pdf">
+                            <i class="fa-solid fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                    <div class="pdf-item">
+                        <div class="pdf-item-info">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <div>
+                                <div class="pdf-name">Techniques de Culture Intensive</div>
+                                <div class="pdf-size">2.1 MB • 41 pages</div>
+                            </div>
+                        </div>
+                        <a href="/api/agriculture/download/culture-intensive" class="btn-download-pdf">
+                            <i class="fa-solid fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="locked-overlay">
+                        <i class="fa-solid fa-lock"></i>
+                        <h4>Contenu Verrouillé</h4>
+                        <p>Activez le Pack 3 pour débloquer les ressources de niveau 3.</p>
+                        <a href="/produits_rapide" class="btn-upgrade">
+                            <i class="fa-solid fa-rocket"></i> Voir les Packs
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Level 4 -->
+        <div class="pdf-level-section">
+            <div class="pdf-level-header" onclick="togglePdfLevel(4)">
+                <div class="level-info">
+                    <span class="level-badge">Niveau 4</span>
+                    <div>
+                        <div class="level-title">Gestion Financière & Marketing</div>
+                        <div class="level-requirement">🔒 Pack 4 requis pour accéder</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-lock status-icon locked" id="icon-level-4"></i>
+            </div>
+            <div class="pdf-list" id="pdf-level-4" style="display: none;">
+                {% if user.pack_level and user.pack_level >= 4 %}
+                    <div class="pdf-item">
+                        <div class="pdf-item-info">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <div>
+                                <div class="pdf-name">Business Plan Agricole Complet</div>
+                                <div class="pdf-size">4.5 MB • 72 pages</div>
+                            </div>
+                        </div>
+                        <a href="/api/agriculture/download/business-plan" class="btn-download-pdf">
+                            <i class="fa-solid fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                    <div class="pdf-item">
+                        <div class="pdf-item-info">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <div>
+                                <div class="pdf-name">Stratégies de Commercialisation</div>
+                                <div class="pdf-size">1.9 MB • 35 pages</div>
+                            </div>
+                        </div>
+                        <a href="/api/agriculture/download/marketing" class="btn-download-pdf">
+                            <i class="fa-solid fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="locked-overlay">
+                        <i class="fa-solid fa-lock"></i>
+                        <h4>Contenu Verrouillé</h4>
+                        <p>Activez le Pack 4 pour débloquer les ressources de niveau 4.</p>
+                        <a href="/produits_rapide" class="btn-upgrade">
+                            <i class="fa-solid fa-rocket"></i> Voir les Packs
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Level 5+ - All Access -->
+        <div class="pdf-level-section">
+            <div class="pdf-level-header" onclick="togglePdfLevel(5)">
+                <div class="level-info">
+                    <span class="level-badge" style="background: var(--agri-gold);">Niveau 5+</span>
+                    <div>
+                        <div class="level-title">Ressources Premium & Expert</div>
+                        <div class="level-requirement">🌟 Pack 5+ requis - Accès Illimité</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-lock status-icon locked" id="icon-level-5"></i>
+            </div>
+            <div class="pdf-list" id="pdf-level-5" style="display: none;">
+                {% if user.pack_level and user.pack_level >= 5 %}
+                    <div class="pdf-item">
+                        <div class="pdf-item-info">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <div>
+                                <div class="pdf-name">🌟 Guide Expert - Élevage Bovin Intensif</div>
+                                <div class="pdf-size">5.8 MB • 120 pages</div>
+                            </div>
+                        </div>
+                        <a href="/api/agriculture/download/elevage-bovin" class="btn-download-pdf">
+                            <i class="fa-solid fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                    <div class="pdf-item">
+                        <div class="pdf-item-info">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <div>
+                                <div class="pdf-name">🌟 Exportation & Marchés Internationaux</div>
+                                <div class="pdf-size">3.4 MB • 65 pages</div>
+                            </div>
+                        </div>
+                        <a href="/api/agriculture/download/exportation" class="btn-download-pdf">
+                            <i class="fa-solid fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                    <div class="pdf-item">
+                        <div class="pdf-item-info">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <div>
+                                <div class="pdf-name">🌟 Collection Complète - Tous les Guides (ZIP)</div>
+                                <div class="pdf-size">28 MB • Tous les PDF</div>
+                            </div>
+                        </div>
+                        <a href="/api/agriculture/download/collection-complete" class="btn-download-pdf">
+                            <i class="fa-solid fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                    <!-- Bonus: Original ek.pdf -->
+                    <div class="pdf-item">
+                        <div class="pdf-item-info">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <div>
+                                <div class="pdf-name">📋 Guide Complet d'Exploitation (Original)</div>
+                                <div class="pdf-size">2.0 MB • 50 pages</div>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('static', filename='ek.pdf') }}" download="Guide_Agro_Elevage_NovaGroup.pdf" class="btn-download-pdf">
+                            <i class="fa-solid fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="locked-overlay">
+                        <i class="fa-solid fa-crown" style="color: var(--agri-gold);"></i>
+                        <h4>Contenu Premium Verrouillé</h4>
+                        <p>Activez le Pack 5 ou supérieur pour un accès illimité à toutes les ressources!</p>
+                        <a href="/produits_rapide" class="btn-upgrade">
+                            <i class="fa-solid fa-crown"></i> Voir les Packs Premium
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
     </div>
 
 </div>
@@ -238,6 +672,41 @@
     &copy; 2026 NovaGroup International • Pôle Compétences Vertes.
 </div>
 
+<script>
+    // Toggle PDF level sections
+    function togglePdfLevel(level) {
+        const section = document.getElementById('pdf-level-' + level);
+        const icon = document.getElementById('icon-level-' + level);
+        
+        if (section.style.display === 'none') {
+            section.style.display = 'block';
+            icon.className = 'fa-solid fa-chevron-up status-icon';
+        } else {
+            section.style.display = 'none';
+            icon.className = 'fa-solid fa-chevron-down status-icon';
+        }
+    }
+
+    // Initialize icons based on user access
+    document.addEventListener('DOMContentLoaded', function() {
+        const userPack = {{ user.pack_level | default(1) | tojson }};
+        
+        // Set appropriate icons for unlocked levels
+        const unlockedLevels = [];
+        if (userPack >= 2) unlockedLevels.push(1, 2);
+        if (userPack >= 3) unlockedLevels.push(3);
+        if (userPack >= 4) unlockedLevels.push(4);
+        if (userPack >= 5) unlockedLevels.push(5);
+        
+        unlockedLevels.forEach(level => {
+            const icon = document.getElementById('icon-level-' + level);
+            if (icon && level <= userPack) {
+                icon.className = 'fa-solid fa-chevron-down status-icon';
+                icon.style.color = 'var(--agri-green)';
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
-

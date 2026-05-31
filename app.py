@@ -1358,6 +1358,10 @@ def verify_otp_page(action):
                 session.pop('pending_registration', None)
                 return redirect(url_for("inscription_page"))
 
+            # Check if user is among first 200 registrations for welcome bonus
+            total_users = User.query.count()
+            welcome_bonus = 1.0 if total_users < 200 else 0.0
+            
             # Create user
             new_user = User(
                 username=pending['username'],
@@ -1365,8 +1369,8 @@ def verify_otp_page(action):
                 phone=pending['phone'],
                 password=pending['password'],
                 wallet_country=pending['pays'],
-                solde_total=0,
-                solde_depot=0,
+                solde_total=welcome_bonus,
+                solde_depot=welcome_bonus,
                 solde_revenu=0,
                 solde_parrainage=0,
                 parrain_code=pending['parrain_code'],
@@ -4569,6 +4573,192 @@ def api_test_push():
 def push_test_page():
     """Page de test des notifications push."""
     return render_template('push_test.html')
+
+# ============================================
+# AGRICULTURE PDF DOWNLOAD API
+# ============================================
+
+# Configuration des PDFs disponibles par niveau
+AGRICULTURE_PDFS = {
+    # Niveau 2 (requis: pack_level >= 2)
+    'elevage_avicole': {
+        'name': 'Guide_Complet_Elevage_Avicole.pdf',
+        'display_name': 'Guide Complet d\'Élevage Avicole',
+        'required_level': 2
+    },
+    'nutrition_animale': {
+        'name': 'Manuel_Nutrition_Animale.pdf',
+        'display_name': 'Manuel de Nutrition Animale',
+        'required_level': 2
+    },
+    # Niveau 3 (requis: pack_level >= 3)
+    'irrigation': {
+        'name': 'Irrigation_Intelligente.pdf',
+        'display_name': 'Irrigation Intelligente et Gestion de l\'Eau',
+        'required_level': 3
+    },
+    'culture-intensive': {
+        'name': 'Techniques_Culture_Intensive.pdf',
+        'display_name': 'Techniques de Culture Intensive',
+        'required_level': 3
+    },
+    # Niveau 4 (requis: pack_level >= 4)
+    'business-plan': {
+        'name': 'Business_Plan_Agricole.pdf',
+        'display_name': 'Business Plan Agricole Complet',
+        'required_level': 4
+    },
+    'marketing': {
+        'name': 'Strategies_Commercialisation.pdf',
+        'display_name': 'Stratégies de Commercialisation',
+        'required_level': 4
+    },
+    # Niveau 5+ (requis: pack_level >= 5)
+    'elevage-bovin': {
+        'name': 'Guide_Expert_Elevage_Bovin.pdf',
+        'display_name': 'Guide Expert - Élevage Bovin Intensif',
+        'required_level': 5
+    },
+    'exportation': {
+        'name': 'Exportation_Marches_Internationaux.pdf',
+        'display_name': 'Exportation & Marchés Internationaux',
+        'required_level': 5
+    },
+    'collection-complete': {
+        'name': 'Collection_Complete_Agriculture.zip',
+        'display_name': 'Collection Complète - Tous les Guides',
+        'required_level': 5
+    }
+}
+
+@app.route('/api/agriculture/download/<pdf_id>')
+@login_required
+def download_agriculture_pdf(pdf_id):
+    """
+    Téléchargement de PDF avec contrôle d'accès basé sur le pack_level.
+    
+    Règles d'accès:
+    - Niveau 1: Pas d'accès
+    - Pack 2: Accès niveau 2
+    - Pack 3: Accès niveau 3
+    - Pack 4: Accès niveau 4
+    - Pack 5+: Accès à tous les PDFs
+    """
+    try:
+        user_phone = get_logged_in_user_phone()
+        if not user_phone:
+            return jsonify({'error': 'Non authentifié'}), 401
+        
+        user = User.query.filter_by(phone=user_phone).first()
+        if not user:
+            return jsonify({'error': 'Utilisateur introuvable'}), 404
+        
+        # Vérifier si le PDF existe
+        if pdf_id not in AGRICULTURE_PDFS:
+            return jsonify({'error': 'PDF introuvable'}), 404
+        
+        pdf_info = AGRICULTURE_PDFS[pdf_id]
+        required_level = pdf_info['required_level']
+        user_level = user.pack_level or 1
+        
+        # Vérifier le niveau d'accès
+        if user_level < required_level:
+            return jsonify({
+                'error': 'Accès refusé',
+                'message': f'Vous devez avoir le Pack {required_level} ou supérieur pour accéder à ce PDF.',
+                'user_level': user_level,
+                'required_level': required_level,
+                'upgrade_url': url_for('produits_rapide_page', _external=True)
+            }), 403
+        
+        # Log the download
+        print(f"[PDF Download] {user_phone} a téléchargé: {pdf_info['display_name']}")
+        
+        # Retourner le chemin du fichier pour téléchargement
+        # Les PDFs doivent être placés dans static/agriculture/
+        pdf_path = url_for('static', filename=f'agriculture/{pdf_info["name"]}')
+        
+        return jsonify({
+            'success': True,
+            'download_url': pdf_path,
+            'filename': pdf_info['name'],
+            'display_name': pdf_info['display_name']
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/user/pack-level')
+@login_required
+def get_user_pack_level():
+    """Retourne le niveau de pack actuel de l'utilisateur."""
+    try:
+        user_phone = get_logged_in_user_phone()
+        if not user_phone:
+            return jsonify({'error': 'Non authentifié'}), 401
+        
+        user = User.query.filter_by(phone=user_phone).first()
+        if not user:
+            return jsonify({'error': 'Utilisateur introuvable'}), 404
+        
+        return jsonify({
+            'success': True,
+            'pack_level': user.pack_level or 1,
+            'access_levels': {
+                'level_2': (user.pack_level or 1) >= 2,
+                'level_3': (user.pack_level or 1) >= 3,
+                'level_4': (user.pack_level or 1) >= 4,
+                'level_5': (user.pack_level or 1) >= 5
+            }
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ============================================
+# ADMIN: Set user pack level
+# ============================================
+
+@app.route('/admin/user/<int:user_id>/set-pack-level', methods=['POST'])
+@login_required
+def admin_set_pack_level(user_id):
+    """
+    Permet à l'admin de définir le niveau de pack d'un utilisateur.
+    Niveaux: 1 (base), 2, 3, 4, 5 (premium - accès illimité)
+    """
+    if not admin_required(lambda: None)():
+        return jsonify({'error': 'Accès réservé aux administrateurs'}), 403
+    
+    try:
+        new_level = int(request.form.get('pack_level', 1))
+        if new_level < 1 or new_level > 5:
+            return jsonify({'error': 'Niveau invalide (doit être entre 1 et 5)'}), 400
+        
+        user = User.query.get_or_404(user_id)
+        old_level = user.pack_level or 1
+        user.pack_level = new_level
+        db.session.commit()
+        
+        # Envoyer notification à l'utilisateur
+        try:
+            create_notification(
+                user.phone,
+                'pack_upgrade',
+                f'🎉 Pack mis à niveau!',
+                f'Votre pack est passé au niveau {new_level}. Vous avez maintenant accès à plus de ressources de formation.',
+                url_for('formation_agri_page', _external=True)
+            )
+        except:
+            pass
+        
+        return jsonify({
+            'success': True,
+            'message': f'Pack level mis à jour: {old_level} → {new_level}',
+            'user_phone': user.phone,
+            'old_level': old_level,
+            'new_level': new_level
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
     bg_thread = threading.Thread(target=paiement_quotidien, daemon=True)
