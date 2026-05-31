@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nos règles | TokenFlow</title>
+<title>Conditions Générales & Règlement | TokenFlow</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 :root{
   --primary: #5D5FEF;
+  --primary-dark: #4c4ed6;
   --primary-light: rgba(93, 95, 239, 0.1);
   --bg-page: #F4F7FE;
   --white: #ffffff;
@@ -19,6 +20,7 @@
   --danger: #FF4D4F;
   --warning: #F6AD55;
   --success: #22c55e;
+  --border: #E2E8F0;
 }
 
 *{ box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
@@ -34,7 +36,7 @@ body{
 .app{
   max-width:480px;
   margin:auto;
-  padding: 20px 20px 80px;
+  padding: 20px 20px 100px;
 }
 
 /* HEADER */
@@ -64,21 +66,90 @@ body{
   letter-spacing: -0.5px;
 }
 
-/* INTRO CARD */
-.intro-card{
-  background: var(--primary);
+/* HERO CARD */
+.hero-card{
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
   border-radius: 24px;
-  padding: 22px;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 20px rgba(93, 95, 239, 0.2);
+  padding: 28px 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 12px 30px rgba(93, 95, 239, 0.3);
+  position: relative;
+  overflow: hidden;
 }
-.intro-card p{
+.hero-card::before{
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-card .badge{
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.hero-card h2{
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+.hero-card p{
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.7;
   margin: 0;
   font-weight: 500;
   opacity: 0.95;
+}
+
+/* TABS */
+.tabs{
+  display: flex;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+}
+.tab{
+  flex: 1;
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  background: transparent;
+}
+.tab.active{
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(93, 95, 239, 0.3);
+}
+.tab:hover:not(.active){
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* TAB CONTENT */
+.tab-content{
+  display: none;
+}
+.tab-content.active{
+  display: block;
 }
 
 /* CARD */
@@ -93,8 +164,8 @@ body{
 
 /* TITLE */
 .card h3{
-  margin: 0 0 15px;
-  font-size: 14px;
+  margin: 0 0 18px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--primary);
   display: flex;
@@ -102,27 +173,147 @@ body{
   gap: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--primary-light);
+}
+.card h3 i{
+  font-size: 16px;
 }
 
 /* RULE ITEM */
 .rule{
   display:flex;
   gap:12px;
-  margin:10px 0;
+  margin:14px 0;
   font-size:13px;
-  line-height:1.5;
+  line-height:1.6;
   font-weight: 600;
   color: var(--text-dark);
+  padding: 12px;
+  background: var(--bg-page);
+  border-radius: 12px;
+  transition: transform 0.2s;
+}
+.rule:hover{
+  transform: translateX(4px);
 }
 .rule i{
+  flex-shrink: 0;
   margin-top:2px;
   font-size: 14px;
 }
 .rule .fa-check{ color: var(--success); }
 .rule .fa-xmark, .rule .fa-ban{ color: var(--danger); }
 .rule .fa-clock{ color: var(--warning); }
+.rule .fa-info-circle{ color: var(--primary); }
+.rule .fa-shield{ color: #06B6D4; }
 
 .rule-text-danger{ color: var(--danger); }
+.rule-text-success{ color: var(--success); }
+.rule-text-warning{ color: var(--warning); }
+
+/* INFO BOX */
+.info-box{
+  background: linear-gradient(135deg, rgba(93, 95, 239, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);
+  border-left: 4px solid var(--primary);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+.info-box h4{
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.info-box p{
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* TABLE */
+.info-table{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 16px 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.info-table th{
+  background: var(--primary);
+  color: white;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.info-table td{
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+.info-table tr:last-child td{
+  border-bottom: none;
+}
+.info-table tr:nth-child(even) td{
+  background: var(--bg-page);
+}
+
+/* ACCORDION */
+.accordion{
+  margin: 16px 0;
+}
+.accordion-item{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.accordion-header{
+  padding: 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--white);
+  transition: background 0.3s;
+}
+.accordion-header:hover{
+  background: var(--primary-light);
+}
+.accordion-header i{
+  transition: transform 0.3s;
+  color: var(--primary);
+}
+.accordion-header.active i{
+  transform: rotate(180deg);
+}
+.accordion-content{
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background: var(--bg-page);
+}
+.accordion-content p{
+  padding: 16px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  font-weight: 500;
+}
 
 /* FOOTER NOTE */
 .note{
@@ -130,14 +321,48 @@ body{
   font-size:12px;
   color: var(--text-muted);
   margin-top:30px;
-  line-height: 1.6;
-  padding: 0 10px;
+  line-height: 1.8;
+  padding: 20px;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
 }
 .note strong { color: var(--primary); }
+.note .logo-text{
+  font-size: 16px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block;
+  margin: 12px 0;
+}
 
-/* ============================================
-   BOTTOM NAVIGATION - Premium Style
-   ============================================ */
+/* SECURITY BADGES */
+.security-badges{
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+.badge-item{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--white);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--success);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.badge-item i{
+  font-size: 14px;
+}
+
+/* BOTTOM NAV */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -191,6 +416,20 @@ body{
 body {
   padding-bottom: 80px;
 }
+
+/* VERSION BADGE */
+.version-badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--success);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 8px;
+}
 </style>
 </head>
 
@@ -200,62 +439,273 @@ body {
 
   <div class="header">
     <i class="fa-solid fa-chevron-left" onclick="history.back()"></i>
-    <h2>Conditions & Règles</h2>
+    <h2>Conditions & Règles <span class="version-badge"><i class="fa-solid fa-bolt"></i> v3.2</span></h2>
   </div>
 
-  <div class="intro-card">
+  <!-- HERO SECTION -->
+  <div class="hero-card">
+    <span class="badge"><i class="fa-solid fa-shield-halved"></i> Document Officiel</span>
+    <h2>Conditions Générales d'Utilisation</h2>
     <p>
-      Pour garantir une expérience <strong>exclusive</strong> et <strong>sécurisée</strong> à tous nos partenaires, veuillez lire et respecter les conditions d’utilisation de la plateforme <strong>TokenFlow Group</strong>.
+      Bienvenue sur <strong>TokenFlow</strong>. Ce document constitue le contrat légal entre vous et TokenFlow Group. 
+      En utilisant nos services, vous acceptez intégralement ces conditions. Dernière mise à jour : <strong>31 Mai 2026</strong>.
     </p>
   </div>
 
-  <div class="card">
-    <h3><i class="fa-solid fa-user-shield"></i> 1. Gestion du compte</h3>
-    <div class="rule"><i class="fa-solid fa-check"></i>Un seul compte unique par partenaire TokenFlow.</div>
-    <div class="rule"><i class="fa-solid fa-check"></i>Identité réelle et vérifiable obligatoire.</div>
-    <div class="rule rule-text-danger"><i class="fa-solid fa-xmark"></i>La duplication de compte entraîne une suspension immédiate.</div>
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('rules')">
+      <i class="fa-solid fa-list-check"></i> Règles
+    </button>
+    <button class="tab" onclick="showTab('legal')">
+      <i class="fa-solid fa-scale-balanced"></i> Légal
+    </button>
+    <button class="tab" onclick="showTab('security')">
+      <i class="fa-solid fa-lock"></i> Sécurité
+    </button>
   </div>
 
-  <div class="card">
-    <h3><i class="fa-solid fa-plane-up"></i> 2. Investissements</h3>
-    <div class="rule"><i class="fa-solid fa-check"></i>Les fonds sont alloués aux projets officiels de la flotte.</div>
-    <div class="rule"><i class="fa-solid fa-check"></i>Chaque contrat est ferme pour sa durée déterminée.</div>
-    <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Annulation impossible après activation d'un plan.</div>
+  <!-- TAB: RULES -->
+  <div id="rules" class="tab-content active">
+    
+    <div class="card">
+      <h3><i class="fa-solid fa-user-shield"></i> 1. Gestion du Compte</h3>
+      <div class="rule"><i class="fa-solid fa-check"></i>Un seul compte unique par partenaire TokenFlow est autorisé.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Identité réelle et vérifiable obligatoire (KYC requis).</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>L'email et le numéro de téléphone doivent être valides et accessibles.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-xmark"></i>La duplication de compte entraîne une suspension immédiate et définitive.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-xmark"></i>Tout compte inactif pendant 12 mois sera considéré comme dormant.</div>
+      
+      <div class="info-box">
+        <h4><i class="fa-solid fa-circle-info"></i> Vérification d'Identité (KYC)</h4>
+        <p>Pour des raisons de conformité légale et de sécurité, TokenFlow se réserve le droit de demander une vérification d'identité à tout moment. Les documents acceptés : passeport, carte nationale d'identité, ou permis de conduire en cours de validité.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-plane-up"></i> 2. Investissements & Produits</h3>
+      <div class="rule"><i class="fa-solid fa-check"></i>Les fonds sont alloués aux projets officiels de la plateforme TokenFlow.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Chaque contrat d'investissement est ferme et définitif pour sa durée déterminée.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Les rendements sont calculés quotidiennement et crédités automatiquement.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Annulation impossible après activation d'un plan d'investissement.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Toute tentative de manipulation des algorithmes est strictement interdite.</div>
+      
+      <table class="info-table">
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Montant Min.</th>
+            <th>ROI Journalier</th>
+            <th>Durée</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>AI Basic Trader</td>
+            <td>$25 USD</td>
+            <td>~1.0%</td>
+            <td>120 jours</td>
+          </tr>
+          <tr>
+            <td>Crypto Premium</td>
+            <td>$100 USD</td>
+            <td>~1.2%</td>
+            <td>120 jours</td>
+          </tr>
+          <tr>
+            <td>Gold Reserve</td>
+            <td>$200 USD</td>
+            <td>~0.8%</td>
+            <td>180 jours</td>
+          </tr>
+          <tr>
+            <td>VIP Diamond</td>
+            <td>$1,000 USD</td>
+            <td>~1.5%</td>
+            <td>60 jours</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-chart-line"></i> 3. Rendements & Performance</h3>
+      <div class="rule"><i class="fa-solid fa-check"></i>Calcul des bénéfices basé sur les performances réelles des algorithmes.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Crédit automatique sur le solde disponible à minuit UTC.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Les rendements sont exprimés en USD (référence internationale).</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Fraude aux algorithmes : bannissement définitif et poursuites judiciaires.</div>
+      <div class="rule"><i class="fa-solid fa-clock"></i>Les rendements historiques ne préjugent pas des performances futures.</div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-receipt"></i> 4. Retraits & Transactions</h3>
+      <div class="rule"><i class="fa-solid fa-check"></i>Respect des seuils minimums de retrait (35 USD).</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Frais de service réseau de 5% appliqués sur chaque retrait.</div>
+      <div class="rule"><i class="fa-solid fa-clock"></i>Délais de traitement : Instantané à 24h ouvrées maximum.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Les retraits sont effectués vers le portefeuille enregistré uniquement.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Tout retrait suspect sera bloqué pour vérification de sécurité.</div>
+      
+      <div class="info-box">
+        <h4><i class="fa-solid fa-circle-info"></i> Politique de Retrait</h4>
+        <p>Pour des raisons de sécurité, seul le portefeuille enregistré lors de la configuration du compte peut recevoir des retraits. En cas de changement, contactez le support avec les justificatifs nécessaires.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-users"></i> 5. Affiliation & Parrainage</h3>
+      <div class="rule"><i class="fa-solid fa-check"></i>Commissions versées selon la hiérarchie officielle à 3 niveaux.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Niveau 1 : 27% | Niveau 2 : 2% | Niveau 3 : 1% sur les dépôts des filleuls.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Les commissions sont créditées automatiquement après validation du dépôt.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-xmark"></i>L'auto-parrainage (comptes multiples) est strictement interdit.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-xmark"></i>Publicité mensongère ou promesses non autorisées = exclusion du programme.</div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-gavel"></i> 6. Clause de Sécurité & Sanctions</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; font-weight: 600;">
+          TokenFlow se réserve le droit de restreindre l'accès en cas de :
+      </p>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Tentative d'intrusion, hacking ou exploitation de vulnérabilités.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Activité inhabituelle, blanchiment d'argent ou financement illicite.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Atteinte à l'image du groupe ou diffamation publique.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Utilisation de VPN, proxy ou outils d'anonymisation suspects.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Partage de compte ou delegation d'accès à un tiers.</div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3><i class="fa-solid fa-chart-line"></i> 3. Rendements</h3>
-    <div class="rule"><i class="fa-solid fa-check"></i>Calcul des bénéfices basé sur les performances réelles.</div>
-    <div class="rule"><i class="fa-solid fa-check"></i>Crédit automatique sur le solde disponible à minuit.</div>
-    <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Fraude aux algorithmes : bannissement définitif.</div>
+  <!-- TAB: LEGAL -->
+  <div id="legal" class="tab-content">
+    
+    <div class="card">
+      <h3><i class="fa-solid fa-building"></i> Informations Légales</h3>
+      <div class="info-box">
+        <h4><i class="fa-solid fa-certificate"></i> TokenFlow Group Ltd.</h4>
+        <p>
+          <strong>Siège Social :</strong> Road Town, Tortola, Îles Vierges Britanniques<br>
+          <strong>Numéro d'Immatriculation :</strong> BVI-2024-TF-8847<br>
+          <strong>Email Légal :</strong> legal@flowtoken.uk<br>
+          <strong>Support :</strong> support@flowtoken.uk
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-file-contract"></i> Acceptation des Conditions</h3>
+      <div class="accordion">
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span><i class="fa-solid fa-circle-check" style="color: var(--success); margin-right: 8px;"></i> Consentement Éclairé</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="accordion-content">
+            <p>En créant un compte TokenFlow, vous déclarez avoir lu, compris et accepté intégralement les présentes Conditions Générales d'Utilisation (CGU). Vous reconnaissez avoir la capacité juridique nécessaire pour contracter et utiliser nos services d'investissement.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span><i class="fa-solid fa-circle-check" style="color: var(--success); margin-right: 8px;"></i> Modifications des CGU</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="accordion-content">
+            <p>TokenFlow se réserve le droit de modifier ces conditions à tout moment. Les utilisateurs seront notifiés par email et via notification in-app 7 jours avant l'entrée en vigueur des modifications. La poursuite de l'utilisation des services après cette date vaut acceptation des nouvelles conditions.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span><i class="fa-solid fa-circle-check" style="color: var(--success); margin-right: 8px;"></i> Droit Applicable</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="accordion-content">
+            <p>Les présentes CGU sont régies par le droit des Îles Vierges Britanniques. Tout litige sera soumis à la compétence exclusive des tribunaux de Road Town, Tortola, sauf disposition impérative contraire du droit du pays de résidence de l'utilisateur.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-triangle-exclamation"></i> Avertissements Importants</h3>
+      <div class="rule rule-text-warning"><i class="fa-solid fa-triangle-exclamation"></i><strong>Risque d'Investissement :</strong> Les investissements sur TokenFlow comportent des risques. Les performances passées ne garantissent pas les résultats futurs. N'investissez que des fonds que vous pouvez vous permettre de perdre.</div>
+      <div class="rule rule-text-warning"><i class="fa-solid fa-triangle-exclamation"></i><strong>Non-Conseil Financier :</strong> TokenFlow ne fournit pas de conseils en investissement. Les informations partagées sont à titre éducatif uniquement. Consultez un conseiller financier professionnel avant toute décision importante.</div>
+      <div class="rule rule-text-warning"><i class="fa-solid fa-triangle-exclamation"></i><strong>Conformité Fiscale :</strong> Il est de votre responsabilité de déclarer vos revenus et plus-values conformément à la législation fiscale de votre pays de résidence.</div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-user-lock"></i> Protection des Données (RGPD)</h3>
+      <p style="font-size: 13px; color: var(--text-muted); line-height: 1.7; margin-bottom: 12px;">
+        TokenFlow s'engage à protéger vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD) et aux standards internationaux.
+      </p>
+      <div class="rule"><i class="fa-solid fa-check"></i>Données collectées : identité, email, téléphone, informations de portefeuille.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Finalité : exécution du contrat, conformité légale, sécurité.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Durée de conservation : 5 ans après la dernière activité ou clôture de compte.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Droit d'accès, rectification et suppression exercable via support@flowtoken.uk</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Transfert international : données hébergées sur serveurs sécurisés (UE/UK).</div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3><i class="fa-solid fa-receipt"></i> 4. Retraits</h3>
-    <div class="rule"><i class="fa-solid fa-check"></i>Respect des seuils minimums de retrait.</div>
-    <div class="rule"><i class="fa-solid fa-check"></i>Frais de service réseau de 15% appliqués.</div>
-    <div class="rule"><i class="fa-solid fa-clock"></i>Délais de traitement : Instantané à 24h.</div>
-  </div>
+  <!-- TAB: SECURITY -->
+  <div id="security" class="tab-content">
+    
+    <div class="card">
+      <h3><i class="fa-solid fa-shield-halved"></i> Mesures de Sécurité</h3>
+      
+      <div class="security-badges">
+        <div class="badge-item"><i class="fa-solid fa-lock"></i> SSL 256-bit</div>
+        <div class="badge-item"><i class="fa-solid fa-fingerprint"></i> 2FA</div>
+        <div class="badge-item"><i class="fa-solid fa-server"></i> Cold Storage</div>
+        <div class="badge-item"><i class="fa-solid fa-eye-slash"></i> Anonymat</div>
+      </div>
 
-  <div class="card">
-    <h3><i class="fa-solid fa-users"></i> 5. Affiliation</h3>
-    <div class="rule"><i class="fa-solid fa-check"></i>Commissions versées selon la hiérarchie officielle.</div>
-    <div class="rule rule-text-danger"><i class="fa-solid fa-xmark"></i>L'auto-parrainage est strictement interdit.</div>
-  </div>
+      <div class="info-box">
+        <h4><i class="fa-solid fa-shield"></i> Infrastructure de Sécurité</h4>
+        <p>
+          TokenFlow utilise une infrastructure de niveau bancaire avec chiffrement de bout en bout (AES-256), authentification à deux facteurs (2FA), surveillance 24/7 des transactions, et stockage majoritaire des fonds en cold storage (hors ligne).
+        </p>
+      </div>
+    </div>
 
-  <div class="card">
-    <h3><i class="fa-solid fa-gavel"></i> 6. Clause de sécurité</h3>
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; font-weight: 600;">
-        TokenFlow se réserve le droit de restreindre l'accès en cas de :
-    </p>
-    <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Tentative d'intrusion ou de hacking.</div>
-    <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Activité inhabituelle ou blanchiment.</div>
-    <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Atteinte à l'image du groupe.</div>
+    <div class="card">
+      <h3><i class="fa-solid fa-user-shield"></i> Bonnes Pratiques Utilisateur</h3>
+      <div class="rule"><i class="fa-solid fa-check"></i>Utilisez un mot de passe unique et complexe (min. 12 caractères).</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Activez l'authentification à deux facteurs (2FA) sur votre compte.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Ne partagez jamais vos identifiants, codes OTP ou clés privées.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Vérifiez toujours l'URL (https://flowtoken.uk) avant de vous connecter.</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Méfiez-vous des emails ou messages non sollicités (phishing).</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-xmark"></i>N'utilisez jamais de WiFi public pour accéder à votre compte.</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-xmark"></i>Ne téléchargez jamais TokenFlow depuis des sources non officielles.</div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-bug"></i> Programme de Bug Bounty</h3>
+      <p style="font-size: 13px; color: var(--text-muted); line-height: 1.7; margin-bottom: 12px;">
+        TokenFlow encourage la recherche responsable en sécurité. Si you découvrez une vulnérabilité, signalez-la de manière éthique :
+      </p>
+      <div class="rule"><i class="fa-solid fa-envelope"></i>Email sécurisé : security@flowtoken.uk</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Délai de réponse : 48h maximum</div>
+      <div class="rule"><i class="fa-solid fa-check"></i>Récompenses : jusqu'à $10,000 USD selon la sévérité</div>
+      <div class="rule rule-text-danger"><i class="fa-solid fa-ban"></i>Toute exploitation malveillante sera poursuivie judiciairement</div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-phone"></i> Contact Urgence Sécurité</h3>
+      <div class="info-box">
+        <h4><i class="fa-solid fa-circle-exclamation"></i> En cas de compromission de compte</h4>
+        <p>
+          <strong>1.</strong> Changez immédiatement votre mot de passe<br>
+          <strong>2.</strong> Révoquez toutes les sessions actives (Profil → Sécurité)<br>
+          <strong>3.</strong> Contactez le support : support@flowtoken.uk<br>
+          <strong>4.</strong> Signalez tout retrait non autorisé dans l'heure
+        </p>
+      </div>
+    </div>
   </div>
 
   <div class="note">
-    📌 L'utilisation des services TokenFlow implique l'adhésion totale à ces clauses.<br><br>
-    ✈️ <strong>TokenFlow Group</strong> – Excellence, Prestige et Sécurité ✈️
+    <span class="logo-text">TokenFlow</span>
+    📌 L'utilisation des services TokenFlow implique l'adhésion totale à ces clauses.<br>
+    ⚖️ Ces conditions sont susceptibles d'évoluer. Consultez régulièrement cette page.<br>
+    📧 Pour toute question : legal@flowtoken.uk<br><br>
+    <strong>TokenFlow Group</strong> – Excellence, Prestige et Sécurité<br>
+    <span style="font-size: 11px; color: #94A3B8;">© 2026 TokenFlow. Tous droits réservés.</span>
   </div>
 
 </div>
@@ -279,8 +729,42 @@ body {
   </a>
 </nav>
 
+<script>
+function showTab(tabId) {
+  // Hide all tabs
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  
+  // Deactivate all tab buttons
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Show selected tab
+  document.getElementById(tabId).classList.add('active');
+  
+  // Activate corresponding button
+  event.currentTarget.classList.add('active');
+}
+
+function toggleAccordion(header) {
+  const content = header.nextElementSibling;
+  const isActive = header.classList.contains('active');
+  
+  // Close all accordions
+  document.querySelectorAll('.accordion-header').forEach(h => {
+    h.classList.remove('active');
+    h.nextElementSibling.style.maxHeight = null;
+  });
+  
+  // Open clicked one if it was closed
+  if (!isActive) {
+    header.classList.add('active');
+    content.style.maxHeight = content.scrollHeight + "px";
+  }
+}
+</script>
+
 </body>
 </html>
-
-
-
