@@ -32,94 +32,94 @@ cursor.execute("DELETE FROM custom_product")
 
 # Nouveaux produits basés sur le tableau fourni
 nouveaux_produits = [
-    # Paquet 1
+    # Paquet 1 - Immobilier
     {
         "name": "Pack Découverte",
         "description": "Idéal pour commencer - 40% de rendement mensuel",
         "price_usd": 25.0,
         "daily_revenue_usd": 0.33,
-        "category": "starter",
+        "category": "realestate",
         "image_filename": "pack1.jpg"
     },
-    # Paquet 2
+    # Paquet 2 - Immobilier
     {
         "name": "Pack Essentiel",
         "description": "Premier niveau de croissance - 40% de rendement mensuel",
         "price_usd": 70.0,
         "daily_revenue_usd": 0.93,
-        "category": "basic",
+        "category": "realestate",
         "image_filename": "pack2.jpg"
     },
-    # Paquet 3
+    # Paquet 3 - Materials
     {
         "name": "Pack Croissance",
         "description": "Accélérez vos gains - 40% de rendement mensuel",
         "price_usd": 160.0,
         "daily_revenue_usd": 2.13,
-        "category": "growth",
+        "category": "materials",
         "image_filename": "pack3.jpg"
     },
-    # Paquet 4
+    # Paquet 4 - Materials
     {
         "name": "Pack Expansion",
         "description": "Développez votre portefeuille - 40% de rendement mensuel",
         "price_usd": 340.0,
         "daily_revenue_usd": 4.53,
-        "category": "expansion",
+        "category": "materials",
         "image_filename": "pack4.jpg"
     },
-    # Paquet 5
+    # Paquet 5 - Metaux Précieux
     {
         "name": "Pack Avancé",
         "description": "Niveau supérieur - 40% de rendement mensuel",
         "price_usd": 700.0,
         "daily_revenue_usd": 9.33,
-        "category": "advanced",
+        "category": "gold",
         "image_filename": "pack5.jpg"
     },
-    # Paquet 6 - Rendement 45%
+    # Paquet 6 - Metaux Précieux - Rendement 45%
     {
         "name": "Pack Premium",
         "description": "Rendement boosté - 45% de rendement mensuel",
         "price_usd": 1000.0,
         "daily_revenue_usd": 15.0,
-        "category": "premium",
+        "category": "gold",
         "image_filename": "pack6.jpg"
     },
-    # Paquet 7
+    # Paquet 7 - AI Trading
     {
         "name": "Pack Élite",
         "description": "Rendement premium - 45% de rendement mensuel",
         "price_usd": 1420.0,
         "daily_revenue_usd": 21.3,
-        "category": "elite",
+        "category": "ai",
         "image_filename": "pack7.jpg"
     },
-    # Paquet 8 - Rendement 51%
+    # Paquet 8 - AI Trading - Rendement 51%
     {
         "name": "Pack Platinum",
         "description": "Rendement exceptionnel - 51% de rendement mensuel",
         "price_usd": 2860.0,
         "daily_revenue_usd": 48.62,
-        "category": "platinum",
+        "category": "ai",
         "image_filename": "pack8.jpg"
     },
-    # Paquet 9
+    # Paquet 9 - VIP
     {
         "name": "Pack Diamond",
         "description": "Rendement diamant - 51% de rendement mensuel",
         "price_usd": 5740.0,
         "daily_revenue_usd": 97.58,
-        "category": "diamond",
+        "category": "vip",
         "image_filename": "pack9.jpg"
     },
-    # Paquet 10 - Le plus élevé
+    # Paquet 10 - VIP - Le plus élevé
     {
         "name": "Pack Ultimate",
         "description": "Le summum du rendement - 51% de rendement mensuel",
         "price_usd": 11500.0,
         "daily_revenue_usd": 195.5,
-        "category": "ultimate",
+        "category": "vip",
         "image_filename": "pack10.jpg"
     }
 ]

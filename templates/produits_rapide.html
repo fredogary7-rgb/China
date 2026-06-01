@@ -846,14 +846,7 @@ body::after {
   font-size: 10px;
   font-weight: 600;
   padding: 8px 12px;
-  border-radius: 12px;
-  transition: all 0.3s;
-  min-width: 60px;
-}
-
-.bottom-nav .nav-item i {
-  font-size: 20px;
-  transition: all 0.3s;
+  border-rads;
 }
 
 .bottom-nav .nav-item:hover,
@@ -938,10 +931,10 @@ body {
   <button class="filter-btn active" onclick="filterCategory('all', this)">
     <i class="fa-solid fa-layer-group"></i> Tous
   </button>
-  <button class="filter-btn" onclick="filterCategory('crypto', this)">
+  <button class="filter-btn" onclick="filterCategory('realestate', this)">
     <i class="fa-solid fa-building"></i> Immobilier
   </button>
-  <button class="filter-btn" onclick="filterCategory('forex', this)">
+  <button class="filter-btn" onclick="filterCategory('materials', this)">
     <i class="fa-solid fa-boxes-stacked"></i> Materials
   </button>
   <button class="filter-btn" onclick="filterCategory('gold', this)">
@@ -959,10 +952,11 @@ body {
   <div class="products-grid" id="productsGrid">
     {% for p in produits %}
     {% set cat_lower = p.nom|lower %}
-    {% set category = 'crypto' if 'crypto' in cat_lower or 'btc' in cat_lower or 'bitcoin' in cat_lower else 'forex' if 'forex' in cat_lower or 'currency' in cat_lower else 'gold' if 'gold' in cat_lower or 'or' in cat_lower else 'ai' if 'ai' in cat_lower or 'bot' in cat_lower or 'auto' in cat_lower else 'vip' if 'vip' in cat_lower or 'premium' in cat_lower or 'exclusive' in cat_lower else 'stable' %}
+    {% set category = p.category|lower if p.category else 'stable' %}
+    {% set category = 'realestate' if 'immobilier' in p.description|lower or 'realestate' in category else 'materials' if 'materials' in category or 'materiel' in category else 'gold' if 'metal' in category or 'precieux' in category or 'gold' in cat_lower else 'ai' if 'ai' in category or 'trading' in category else 'vip' if 'vip' in category or 'premium' in category else 'stable' %}
     {% set prix_usd = p.prix_usd %}
     {% set revenu_usd = p.revenu_journalier_usd %}
-    {% set roi_total = (revenu_usd * 120) / prix_usd * 100 %}
+    {% set roi_total = (revenu_usd * 30) / prix_usd * 100 %}
     {% set risk_level = 'low' if roi_total < 100 else 'medium' if roi_total < 150 else 'high' %}
     {% set risk_dots = 1 if risk_level == 'low' else 2 if risk_level == 'medium' else 3 %}
     
@@ -1017,13 +1011,13 @@ body {
             </span>
             <span class="label">/jour</span>
           </div>
+        <div class="product-stat">
+          <span class="value duration">30</span>
+          <span class="label">jours</span>
+        </div>
           <div class="product-stat">
-            <span class="value duration">120</span>
-            <span class="label">jours</span>
-          </div>
-          <div class="product-stat">
-            <span class="value total" data-usd="{{ (p.revenu_journalier_usd * 120)|round(2) }}">
-              +${{ "{:,.2f}".format((p.revenu_journalier_usd * 120)|round(2)) }}
+            <span class="value total" data-usd="{{ (p.revenu_journalier_usd * 30)|round(2) }}">
+              +${{ "{:,.2f}".format((p.revenu_journalier_usd * 30)|round(2)) }}
             </span>
             <span class="label">total</span>
           </div>
@@ -1101,8 +1095,8 @@ body {
       <!-- Statistiques -->
       <div class="product-stats" style="margin-bottom: 20px;">
         <div class="product-stat">
-          <span class="value profit" id="modalDaily">0</span>
-          <span class="label">Profit/jour</span>
+          <span class="value total">${{ "%.2f"|format(revenu_usd * 30) }}</span>
+          <span class="label">total</span>
         </div>
         <div class="product-stat">
           <span class="value duration" id="modalDuration">120</span>
@@ -1339,13 +1333,14 @@ function showProductDetails(name, price, daily, category, roi, id, risk) {
   }
   
   // Statistiques
-  document.getElementById('modalDaily').textContent = '+' + formatPrice(daily);
-  document.getElementById('modalDuration').textContent = '120';
-  document.getElementById('modalTotal').textContent = '+' + formatPrice(daily * 120);
+      document.getElementById('modalDaily').textContent = '+' + formatPrice(daily);
+      document.getElementById('modalDuration').textContent = '30';
+      document.getElementById('modalTotal').textContent = '+' + formatPrice(daily * 30);
   
-  // ROI
-  document.getElementById('modalROI').textContent = '+' + roi + '%';
-  document.getElementById('modalROIFill').style.width = Math.min(roi / 2, 100) + '%';
+      // ROI (30 jours)
+      const roi30 = (daily * 30 / price * 100).toFixed(0);
+      document.getElementById('modalROI').textContent = '+' + roi30 + '%';
+      document.getElementById('modalROIFill').style.width = Math.min(roi30 / 2, 100) + '%';
   
   // Niveau de risque
   const riskEl = document.getElementById('modalRisk');
