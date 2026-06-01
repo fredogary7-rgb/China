@@ -2641,6 +2641,7 @@ def produits_rapide_page():
             "revenu_journalier_usd": p.daily_revenue_usd,
             "image": p.image_filename or "ai.jpg",
             "is_custom": True,
+            "category": p.category or "stable",
             "description": p.description or ""
         })
 
