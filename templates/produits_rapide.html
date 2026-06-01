@@ -952,8 +952,8 @@ body {
   <div class="products-grid" id="productsGrid">
     {% for p in produits %}
     {% set cat_lower = p.nom|lower %}
-    {% set category = p.category|lower if p.category else 'stable' %}
-    {% set category = 'realestate' if 'immobilier' in p.description|lower or 'realestate' in category else 'materials' if 'materials' in category or 'materiel' in category else 'gold' if 'metal' in category or 'precieux' in category or 'gold' in cat_lower else 'ai' if 'ai' in category or 'trading' in category else 'vip' if 'vip' in category or 'premium' in category else 'stable' %}
+    {% set base_category = p.category|lower if p.category else 'stable' %}
+    {% set category = 'realestate' if base_category == 'realestate' else 'materials' if base_category == 'materials' else 'gold' if base_category == 'gold' else 'ai' if base_category == 'ai' else 'vip' if base_category == 'vip' else 'stable' %}
     {% set prix_usd = p.prix_usd %}
     {% set revenu_usd = p.revenu_journalier_usd %}
     {% set roi_total = (revenu_usd * 30) / prix_usd * 100 %}
