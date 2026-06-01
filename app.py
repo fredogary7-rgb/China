@@ -2628,14 +2628,14 @@ def produits_rapide_page():
     phone = get_logged_in_user_phone()
     user = User.query.filter_by(phone=phone).first()
 
-    # Get active custom products from database
+    # Get active custom products from database (ONLY custom products, no default PRODUITS_VIP)
     custom_products_db = CustomProduct.query.filter_by(is_active=True).order_by(CustomProduct.created_at.desc()).all()
     
-    # Convert custom products to same format as PRODUITS_VIP
+    # Convert custom products to same format as before
     custom_products = []
     for p in custom_products_db:
         custom_products.append({
-            "id": 1000 + p.id,  # Use offset to avoid ID conflicts
+            "id": p.id,  # Direct ID from database
             "nom": p.name,
             "prix_usd": p.price_usd,
             "revenu_journalier_usd": p.daily_revenue_usd,
@@ -2643,14 +2643,11 @@ def produits_rapide_page():
             "is_custom": True,
             "description": p.description or ""
         })
-    
-    # Combine default products with custom products
-    all_products = PRODUITS_VIP + custom_products
 
     return render_template(
         "produits_rapide.html",
         user=user,
-        produits=all_products
+        produits=custom_products
     )
 
 @app.route("/produits_rapide/confirmer/<int:vip_id>", methods=["GET", "POST"])
@@ -2659,30 +2656,19 @@ def confirmer_produit_rapide(vip_id):
     phone = get_logged_in_user_phone()
     user = User.query.filter_by(phone=phone).first()
 
-    # Check if it's a custom product (ID >= 1000)
-    produit = None
-    is_custom = False
-
-    if vip_id >= 1000:
-        # Look for custom product
-        custom_id = vip_id - 1000
-        custom_product = CustomProduct.query.get(custom_id)
-        if custom_product and custom_product.is_active:
-            produit = {
-                "id": vip_id,
-                "nom": custom_product.name,
-                "prix_usd": custom_product.price_usd,
-                "revenu_journalier_usd": custom_product.daily_revenue_usd,
-                "image": custom_product.image_filename or "ai.jpg",
-                "is_custom": True,
-                "description": custom_product.description or ""
-            }
-            is_custom = True
+    # Look for custom product directly by ID (no offset)
+    custom_product = CustomProduct.query.get(vip_id)
+    if custom_product and custom_product.is_active:
+        produit = {
+            "id": vip_id,
+            "nom": custom_product.name,
+            "prix_usd": custom_product.price_usd,
+            "revenu_journalier_usd": custom_product.daily_revenue_usd,
+            "image": custom_product.image_filename or "ai.jpg",
+            "is_custom": True,
+            "description": custom_product.description or ""
+        }
     else:
-        # Look in default products
-        produit = next((p for p in PRODUITS_VIP if p["id"] == vip_id), None)
-
-    if not produit:
         flash("Produit introuvable.", "danger")
         return redirect(url_for("produits_rapide_page"))
 
