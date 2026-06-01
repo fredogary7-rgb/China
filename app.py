@@ -2700,12 +2700,12 @@ def confirmer_produit_rapide(vip_id):
     user.solde_total -= montant_usd
     credit_user_revenu(user, 5)
 
-    # Création de l'investissement (Ici tu choisis si tu stockes montant ou montant_usd dans ta BDD)
+    # Création de l'investissement (durée: 30 jours)
     inv = Investissement(
         phone=phone,
         montant=montant,  # Reste en XOF pour ton historique si nécessaire
         revenu_journalier=revenu_journalier,
-        duree=120,
+        duree=30,
         actif=True
     )
     db.session.add(inv)
