@@ -953,7 +953,28 @@ body {
     {% for p in produits %}
     {% set cat_lower = p.nom|lower %}
     {% set base_category = p.category|lower if p.category else 'stable' %}
-    {% set category = 'realestate' if base_category == 'realestate' else 'materials' if base_category == 'materials' else 'gold' if base_category == 'gold' else 'ai' if base_category == 'ai' else 'vip' if base_category == 'vip' else 'stable' %}
+    {# Map database categories to filter categories #}
+    {% set category_map = {
+        'real_estate': 'realestate',
+        'realestate': 'realestate',
+        'immobilier': 'realestate',
+        'materials': 'materials',
+        'material': 'materials',
+        'gold': 'gold',
+        'metaux': 'gold',
+        'precieux': 'gold',
+        'precious': 'gold',
+        'ai': 'ai',
+        'ai_trading': 'ai',
+        'aitrading': 'ai',
+        'trading': 'ai',
+        'vip': 'vip',
+        'crypto': 'stable',
+        'forex': 'stable',
+        'custom': 'stable',
+        'stable': 'stable'
+    } %}
+    {% set category = category_map.get(base_category, 'stable') %}
     {% set prix_usd = p.prix_usd %}
     {% set revenu_usd = p.revenu_journalier_usd %}
     {% set roi_total = (revenu_usd * 30) / prix_usd * 100 %}
@@ -1221,9 +1242,13 @@ function filterCategory(category, btn) {
     
     // Si on clique sur 'Tous' ('all') ou si la catégorie correspond exactement
     if (category === 'all' || cardCategory === category) {
-      card.style.setProperty('display', 'block', 'important');
+      // Show the card - remove display:none and let CSS grid handle it
+      card.style.display = '';
+      card.classList.remove('hidden');
     } else {
-      card.style.setProperty('display', 'none', 'important');
+      // Hide the card
+      card.style.display = 'none';
+      card.classList.add('hidden');
     }
   });
 }

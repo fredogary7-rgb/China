@@ -1636,6 +1636,11 @@ def contact_page():
     """Page de contact"""
     return render_template("contact.html")
 
+@app.route("/partner")
+def partner_page():
+    """Page devenir partenaire"""
+    return render_template("partner.html")
+
 @app.route("/sitemap.xml")
 def sitemap():
     """Génère le sitemap XML pour le SEO Google"""

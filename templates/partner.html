@@ -1,0 +1,705 @@
+{% extends "base.html" %}
+
+{% block title %}Devenir Partenaire | TokenFlow{% endblock %}
+
+{% block body_class %}partner-page{% endblock %}
+
+{% block page_styles %}
+/* ============================================
+   PAGE DEVENIR PARTENAIRE PREMIUM
+   Style cohérent avec les autres pages
+   ============================================ */
+
+:root {
+  /* Palette Fintech Premium - Thème Clair */
+  --bg-page: #F1F5F9;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --bg-glass: rgba(255, 255, 255, 0.65);
+  --border-glow: rgba(99, 102, 241, 0.2);
+  --border-card: rgba(148, 163, 184, 0.2);
+  
+  /* Couleurs */
+  --profit-green: #10B981;
+  --profit-green-glow: rgba(16, 185, 129, 0.15);
+  --primary: #6366F1;
+  --primary-glow: rgba(99, 102, 241, 0.15);
+  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  
+  /* Text */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+}
+
+* { 
+  box-sizing: border-box; 
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* Background animé */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Grid de fond */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: 
+    linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.page-header {
+  text-align: center;
+  padding: 48px 24px;
+  margin-bottom: 40px;
+  background: var(--bg-card);
+  border-radius: 24px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+}
+
+.page-header h1 {
+  font-size: 36px;
+  font-weight: 900;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 12px;
+}
+
+.page-header p {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.hero-section {
+  text-align: center;
+  padding: 60px 24px;
+  margin-bottom: 40px;
+  background: var(--primary-gradient);
+  border-radius: 24px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hero-section h2 {
+  font-size: 32px;
+  font-weight: 900;
+  margin: 0 0 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-section p {
+  font-size: 18px;
+  opacity: 0.9;
+  margin: 0 0 32px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-stat {
+  text-align: center;
+}
+
+.hero-stat .number {
+  font-size: 48px;
+  font-weight: 900;
+  display: block;
+}
+
+.hero-stat .label {
+  font-size: 14px;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+   ADVANTAGES SECTION
+   ============================================ */
+.section-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 32px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.advantages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.advantage-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+}
+
+.advantage-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--border-glow);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px var(--primary-glow);
+}
+
+.advantage-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 32px;
+  background: var(--primary-glow);
+  color: var(--primary);
+}
+
+.advantage-card h3 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 12px;
+  color: var(--text-primary);
+}
+
+.advantage-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ============================================
+   COMMISSION SECTION
+   ============================================ */
+.commission-section {
+  background: var(--bg-card);
+  border-radius: 24px;
+  padding: 40px;
+  margin-bottom: 40px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+  text-align: center;
+}
+
+.commission-section h2 {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 32px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.commission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.commission-item {
+  padding: 24px;
+  background: var(--bg-glass);
+  border-radius: 16px;
+  border: 1px solid var(--border-card);
+}
+
+.commission-item .percentage {
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--profit-green);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.commission-item .description {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   CONTACT CARD - EMAIL PRINCIPAL
+   ============================================ */
+.contact-cta {
+  background: var(--bg-card);
+  border-radius: 24px;
+  padding: 48px;
+  text-align: center;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+  margin-bottom: 40px;
+}
+
+.contact-cta h2 {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 16px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.contact-cta p {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin: 0 0 32px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.email-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 32px;
+  background: var(--primary-gradient);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+}
+
+.email-display i {
+  font-size: 24px;
+  color: white;
+}
+
+.email-display .email-text {
+  font-size: 24px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+.email-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: var(--primary-gradient);
+  border-radius: 14px;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: var(--bg-glass);
+  border-radius: 14px;
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s;
+  border: 1px solid var(--border-card);
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  background: var(--primary-glow);
+}
+
+/* ============================================
+   STEPS SECTION
+   ============================================ */
+.steps-section {
+  margin-bottom: 40px;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.step-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-glow);
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 900;
+  background: var(--primary-gradient);
+  color: white;
+  margin-bottom: 20px;
+}
+
+.step-card h3 {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0 0 12px;
+  color: var(--text-primary);
+}
+
+.step-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 16px;
+  }
+  
+  .page-header {
+    padding: 32px 20px;
+  }
+  
+  .page-header h1 {
+    font-size: 28px;
+  }
+  
+  .hero-section {
+    padding: 40px 20px;
+  }
+  
+  .hero-section h2 {
+    font-size: 24px;
+  }
+  
+  .hero-section p {
+    font-size: 16px;
+  }
+  
+  .hero-stats {
+    gap: 24px;
+  }
+  
+  .hero-stat .number {
+    font-size: 36px;
+  }
+  
+  .commission-section,
+  .contact-cta {
+    padding: 32px 20px;
+  }
+  
+  .email-display {
+    flex-direction: column;
+    padding: 16px 24px;
+  }
+  
+  .email-display .email-text {
+    font-size: 18px;
+  }
+  
+  .advantages-grid,
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+  
+  <!-- Header -->
+  <div class="page-header">
+    <h1>🤝 Devenir Partenaire TokenFlow</h1>
+    <p>Rejoignez notre réseau de partenaires et générez des revenus passifs</p>
+  </div>
+
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <h2>Rejoignez l'Élite des Investisseurs</h2>
+    <p>Devenez partenaire TokenFlow et accédez à des avantages exclusifs, des commissions élevées et un réseau mondial d'investisseurs.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="number">15%</span>
+        <span class="label">Commission</span>
+      </div>
+      <div class="hero-stat">
+        <span class="number">10K+</span>
+        <span class="label">Investisseurs</span>
+      </div>
+      <div class="hero-stat">
+        <span class="number">24/7</span>
+        <span class="label">Support</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advantages Section -->
+  <h2 class="section-title">✨ Avantages Exclusifs</h2>
+  <div class="advantages-grid">
+    <div class="advantage-card">
+      <div class="advantage-icon">
+        <i class="fa-solid fa-coins"></i>
+      </div>
+      <h3>Commissions Élevées</h3>
+      <p>Gagnez jusqu'à 15% de commission sur chaque investissement généré par votre réseau.</p>
+    </div>
+    <div class="advantage-card">
+      <div class="advantage-icon">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <h3>Revenus Passifs</h3>
+      <p>Construisez un réseau et générez des revenus récurrents sans effort supplémentaire.</p>
+    </div>
+    <div class="advantage-card">
+      <div class="advantage-icon">
+        <i class="fa-solid fa-globe"></i>
+      </div>
+      <h3>Réseau Mondial</h3>
+      <p>Rejoignez une communauté internationale de partenaires et d'investisseurs ambitieux.</p>
+    </div>
+    <div class="advantage-card">
+      <div class="advantage-icon">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+      <h3>Formation Premium</h3>
+      <p>Accédez à des ressources exclusives et formations pour maximiser vos résultats.</p>
+    </div>
+    <div class="advantage-card">
+      <div class="advantage-icon">
+        <i class="fa-solid fa-rocket"></i>
+      </div>
+      <h3>Outils Marketing</h3>
+      <p>Bénéficiez de supports marketing professionnels pour promouvoir TokenFlow.</p>
+    </div>
+    <div class="advantage-card">
+      <div class="advantage-icon">
+        <i class="fa-solid fa-headset"></i>
+      </div>
+      <h3>Support Dédié</h3>
+      <p>Une équipe dédiée pour vous accompagner dans votre croissance.</p>
+    </div>
+  </div>
+
+  <!-- Commission Section -->
+  <div class="commission-section">
+    <h2>💰 Structure de Commission</h2>
+    <div class="commission-grid">
+      <div class="commission-item">
+        <span class="percentage">15%</span>
+        <span class="description">Niveau 1 - Parrainage direct</span>
+      </div>
+      <div class="commission-item">
+        <span class="percentage">8%</span>
+        <span class="description">Niveau 2 - Réseau indirect</span>
+      </div>
+      <div class="commission-item">
+        <span class="percentage">3%</span>
+        <span class="description">Niveau 3 - Réseau étendu</span>
+      </div>
+      <div class="commission-item">
+        <span class="percentage">Bonus</span>
+        <span class="description">Objectifs mensuels atteints</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Steps Section -->
+  <div class="steps-section">
+    <h2 class="section-title">🚀 Comment Devenir Partenaire</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3>Contactez-nous</h3>
+        <p>Envoyez-nous un email à support@flowtoken.uk pour exprimer votre intérêt et recevoir plus d'informations.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3>Entretien</h3>
+        <p>Notre équipe vous contactera pour un entretien et vous présentera le programme en détail.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3>Formation</h3>
+        <p>Une fois accepté, vous recevrez une formation complète et tous les outils nécessaires.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">4</div>
+        <h3>Lancez-vous</h3>
+        <p>Commencez à construire votre réseau et à générer des commissions dès le premier jour.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact CTA -->
+  <div class="contact-cta">
+    <h2>Prêt à Commencer ?</h2>
+    <p>Contactez-nous dès aujourd'hui pour devenir partenaire TokenFlow et rejoindre l'élite des investisseurs.</p>
+    
+    <div class="email-display">
+      <i class="fa-solid fa-envelope"></i>
+      <span class="email-text">support@flowtoken.uk</span>
+    </div>
+    
+    <div class="email-actions">
+      <a href="mailto:support@flowtoken.uk" class="btn-primary">
+        <i class="fa-solid fa-paper-plane"></i>
+        Envoyer un email
+      </a>
+      <a href="/contact" class="btn-secondary">
+        <i class="fa-solid fa-phone"></i>
+        Autres contacts
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Animation des statistiques au défilement
+document.addEventListener('DOMContentLoaded', function() {
+  const observerOptions = {
+    threshold: 0.5
+  };
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, observerOptions);
+  
+  // Animer les cartes d'avantages
+  document.querySelectorAll('.advantage-card').forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = `all 0.6s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s`;
+    observer.observe(card);
+  });
+  
+  // Animer les étapes
+  document.querySelectorAll('.step-card').forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateX(-20px)';
+    card.style.transition = `all 0.6s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.15}s`;
+    observer.observe(card);
+  });
+});
+</script>
+{% endblock %}
