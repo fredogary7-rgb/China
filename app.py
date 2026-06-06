@@ -976,10 +976,10 @@ def migrate_referral_codes():
     print("🎉 Migration terminée avec succès !")
 
 # ============================================
-# EMAIL VERIFICATION FUNCTIONS
+# EMAIL VERIFICATION FUNCTIONS (SMTP Gmail)
 # ============================================
 import secrets
-import resend
+import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -991,12 +991,41 @@ def generate_otp():
     """Génère un code OTP à 6 chiffres."""
     return ''.join(random.choices(string.digits, k=6))
 
-def send_otp_email(user_email, otp_code, purpose="connexion"):
-    """Envoie un email avec le code OTP via Resend API."""
+def send_email_smtp(to_email, subject, html_content, text_content=None):
+    """Envoie un email via SMTP (Gmail ou autre)."""
     try:
-        # Configure Resend API key
-        resend.api_key = os.getenv('RESEND_API_KEY', '')
+        smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+        smtp_port = int(os.getenv('SMTP_PORT', '587'))
+        smtp_user = os.getenv('SMTP_USER', '')
+        smtp_password = os.getenv('SMTP_PASSWORD', '')
+        email_from = os.getenv('EMAIL_FROM', 'TokenFlow <support@flowtoken.uk>')
         
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = email_from
+        msg['To'] = to_email
+        
+        # Add text version if provided
+        if text_content:
+            msg.attach(MIMEText(text_content, 'plain', 'utf-8'))
+        
+        # Add HTML version
+        msg.attach(MIMEText(html_content, 'html', 'utf-8'))
+        
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_password)
+            server.sendmail(email_from, [to_email], msg.as_string())
+        
+        print(f"✅ Email sent to {to_email} via SMTP")
+        return True
+    except Exception as e:
+        print(f"❌ Erreur envoi email via SMTP: {e}")
+        return False
+
+def send_otp_email(user_email, otp_code, purpose="connexion"):
+    """Envoie un email avec le code OTP via SMTP."""
+    try:
         html_content = f'''
         <html>
         <head>
@@ -1032,46 +1061,29 @@ def send_otp_email(user_email, otp_code, purpose="connexion"):
         </html>
         '''
         
-        params = {
-            "from": "TokenFlow <support@flowtoken.uk>",
-            "to": user_email,
-            "subject": f'Code de vérification TokenFlow - {purpose.capitalize()}',
-            "html": html_content,
-            "text": f"Votre code de vérification TokenFlow pour {purpose} est : {otp_code}\n\nCe code est valide pendant 10 minutes."
-        }
+        text_content = f"Votre code de vérification TokenFlow pour {purpose} est : {otp_code}\n\nCe code est valide pendant 10 minutes."
         
-        result = resend.Emails.send(params)
-        print(f"✅ OTP email sent to {user_email} via Resend")
-        return True
-        
+        return send_email_smtp(
+            user_email,
+            f'Code de vérification TokenFlow - {purpose.capitalize()}',
+            html_content,
+            text_content
+        )
     except Exception as e:
-        print(f"❌ Erreur envoi OTP via Resend: {e}")
+        print(f"❌ Erreur envoi OTP: {e}")
         return False
 
 def send_email_notification(user_email, subject, html_content):
-    """Envoie un email de notification via Resend (pour nouveaux produits, etc.)."""
+    """Envoie un email de notification via SMTP (pour nouveaux produits, etc.)."""
     try:
-        resend.api_key = os.getenv('RESEND_API_KEY', '')
-        
-        params = {
-            "from": "TokenFlow <support@flowtoken.uk>",
-            "to": user_email,
-            "subject": subject,
-            "html": html_content
-        }
-        
-        result = resend.Emails.send(params)
-        print(f"✅ Notification email sent to {user_email} via Resend")
-        return True
+        return send_email_smtp(user_email, subject, html_content)
     except Exception as e:
-        print(f"❌ Erreur envoi email notification via Resend: {e}")
+        print(f"❌ Erreur envoi email notification: {e}")
         return False
 
 def send_verification_email(user_email, verification_token):
-    """Envoie un email de vérification via Resend."""
+    """Envoie un email de vérification via SMTP."""
     try:
-        resend.api_key = os.getenv('RESEND_API_KEY', '')
-        
         verification_url = url_for('verify_email_page', token=verification_token, _external=True)
         
         html_content = f'''
@@ -1090,19 +1102,19 @@ def send_verification_email(user_email, verification_token):
                 <div style="text-align: center; margin-bottom: 30px;">
                     <div class="logo">T</div>
                 </div>
-                <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">Vérifiez your adresse email</h1>
+                <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">Vérifiez votre adresse email</h1>
                 <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
-                    Merci de you être inscrit sur <strong>TokenFlow</strong>. Pour activer your compte, veuillez cliquer sur le bouton ci-dessous :
+                    Merci de vous être inscrit sur <strong>TokenFlow</strong>. Pour activer votre compte, veuillez cliquer sur le bouton ci-dessous :
                 </p>
                 <div style="text-align: center; margin-bottom: 30px;">
                     <a href="{verification_url}" class="btn">Vérifier mon email</a>
                 </div>
                 <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
-                    Si le bouton ne fonctionne pas, copiez-collez ce lien dans your navigateur :<br>
+                    Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur :<br>
                     <a href="{verification_url}" style="color: #6366F1; word-break: break-all;">{verification_url}</a>
                 </p>
                 <div class="footer">
-                    Ce lien expire dans 24 heures. Si you n'avez pas créé de compte TokenFlow, ignorez cet email.<br>
+                    Ce lien expire dans 24 heures. Si vous n'avez pas créé de compte TokenFlow, ignorez cet email.<br>
                     © 2024 TokenFlow. Tous droits réservés.
                 </div>
             </div>
@@ -1110,19 +1122,16 @@ def send_verification_email(user_email, verification_token):
         </html>
         '''
         
-        params = {
-            "from": "TokenFlow <support@flowtoken.uk>",
-            "to": user_email,
-            "subject": "Vérifiez your email - TokenFlow",
-            "html": html_content,
-            "text": f"Vérifiez your email TokenFlow\n\nCliquez sur ce lien pour vérifier your email : {verification_url}\n\nCe lien expire dans 24 heures."
-        }
+        text_content = f"Vérifiez votre email TokenFlow\n\nCliquez sur ce lien pour vérifier your email : {verification_url}\n\nCe lien expire dans 24 heures."
         
-        result = resend.Emails.send(params)
-        print(f"✅ Verification email sent to {user_email} via Resend")
-        return True
+        return send_email_smtp(
+            user_email,
+            "Vérifiez your email - TokenFlow",
+            html_content,
+            text_content
+        )
     except Exception as e:
-        print(f"❌ Erreur envoi email verification via Resend: {e}")
+        print(f"❌ Erreur envoi email verification: {e}")
         return False
 
 @app.route("/academy/agriculture")

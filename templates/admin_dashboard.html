@@ -681,7 +681,7 @@
                         <td class="amount">${{ "%.2f"|format(user.solde_total or 0) }}</td>
                         <td class="amount">${{ "%.2f"|format(user.solde_parrainage or 0) }}</td>
                         <td><code>{{ user.referral_code or '-' }}</code></td>
-                        <td class="date">{{ user.date_creation.strftime("%d/%m/%Y") }}</td>
+                        <td class="date">{{ user.date_creation.strftime("%d/%m/%Y") if user.date_creation else '-' }}</td>
                         <td>
                             <span class="status-badge {{ 'banned' if user.is_banned else ('active' if not user.is_banned else 'inactive') }}">
                                 {% if user.is_banned %}
@@ -755,7 +755,7 @@
                             {% endif %}
                         </td>
                         <td style="font-size: 12px; color: var(--text-muted);">{{ deposit.reference or '-' }}</td>
-                        <td class="date">{{ deposit.date.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td class="date">{{ deposit.date.strftime("%d/%m/%Y %H:%M") if deposit.date else '-' }}</td>
                         <td>
                             <span class="status-badge {{ deposit.statut }}">
                                 {% if deposit.statut == "valide" %}
@@ -820,7 +820,7 @@
                         <td>#{{ retrait.id }}</td>
                         <td>{{ retrait.phone }}</td>
                         <td class="amount">${{ "%.2f"|format(retrait.montant) }}</td>
-                        <td class="date">{{ retrait.date.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td class="date">{{ retrait.date.strftime("%d/%m/%Y %H:%M") if retrait.date else '-' }}</td>
                         <td>
                             <span class="status-badge {{ retrait.statut }}">
                                 {% if retrait.statut == "validé" %}
@@ -938,7 +938,7 @@
                         <td>
                             <span style="color: var(--success); font-weight: 700;">{{ "%.1f"|format((product.daily_revenue_usd / product.price_usd * 100) if product.price_usd > 0 else 0) }}%</span>
                         </td>
-                        <td class="date">{{ product.created_at.strftime("%d/%m/%Y") }}</td>
+                        <td class="date">{{ product.created_at.strftime("%d/%m/%Y") if product.created_at else '-' }}</td>
                         <td>
                             <a href="/admin/products/delete/{{ product.id }}" class="action-btn reject" onclick="return confirm('Désactiver ce produit ?');">
                                 <i class="fa-solid fa-trash"></i> Désactiver
@@ -1046,7 +1046,7 @@
                 <tbody>
                     {% for commission in recent_commissions %}
                     <tr>
-                        <td class="date">{{ commission.date.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td class="date">{{ commission.date.strftime("%d/%m/%Y %H:%M") if commission.date else '-' }}</td>
                         <td>{{ commission.parrain_phone }}</td>
                         <td>{{ commission.filleul_phone }}</td>
                         <td>
