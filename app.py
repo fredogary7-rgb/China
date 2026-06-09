@@ -4376,8 +4376,8 @@ def google_callback():
             phone=phone,
             google_id=google_id,
             password=None,  # Pas de mot de passe pour OAuth
-            solde_total=1000,
-            solde_depot=1000,
+            solde_total=1,
+            solde_depot=1,
             solde_revenu=0,
             solde_parrainage=0,
             parrain_code=parrain_code_value
