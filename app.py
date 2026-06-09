@@ -2330,6 +2330,7 @@ def dashboard_page():
         })
     
     user.investissements_actifs = sorted(investissements_actifs, key=lambda x: x['progression'], reverse=True)
+    investissements_actifs_top = user.investissements_actifs[:5]
     user.transactions_recentes = sorted(transactions_recentes, key=lambda x: x['date'], reverse=True)[:5]
     
     # Compter les membres de l'équipe via parrain_code
@@ -2342,6 +2343,7 @@ def dashboard_page():
         revenu_cumule=revenu_cumule,
         total_users=total_users,
         total_invested=total_invested,
+        investissements_actifs_top=investissements_actifs_top,
     )
 
 def admin_required(f):

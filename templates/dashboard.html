@@ -1591,9 +1591,10 @@
         </a>
       </div>
 
-      {% if user.investissements_actifs and user.investissements_actifs | length > 0 %}
+      {% set investissements_actifs_top = investissements_actifs_top | default(user.investissements_actifs | default([])) %}
+      {% if investissements_actifs_top %}
       <div class="pro-investment-list">
-        {% for inv in user.investissements_actifs[:5] %}
+        {% for inv in investissements_actifs_top %}
         <div class="pro-investment-item">
           <div class="pro-investment-icon crypto">
             <i class="fa-solid fa-chart-pie"></i>
