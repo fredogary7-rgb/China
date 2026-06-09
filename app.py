@@ -1110,87 +1110,59 @@ def send_verification_email(user_email, token):
     """Envoie un email de vérification avec lien de confirmation."""
     try:
         verification_url = f"https://flowtoken.uk/verify-email/{token}"
-        
-        html_content = f'''
-        <!DOCTYPE html>
-        <html lang="fr">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Vérifiez votre email</title>
-        </head>
-        <body style="margin: 0; padding: 0; background-color: #F1F5F9; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-            <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #F1F5F9;">
-                <tr>
-                    <td align="center" style="padding: 40px 20px;">
-                        <table role="presentation" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
-                            <tr>
-                                <td align="center" style="padding: 40px 40px 20px; background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);">
-                                    <div style="width: 60px; height: 60px; background-color: #ffffff; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center;">
-                                        <span style="font-size: 28px; font-weight: 900; color: #6366F1;">T</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="center" style="padding: 40px 40px 20px;">
-                                    <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #0F172A;">Vérifiez votre email</h1>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="center" style="padding: 0 40px 30px;">
-                                    <p style="margin: 0; font-size: 16px; color: #475569; line-height: 1.6;">Bienvenue sur TokenFlow ! Cliquez sur le bouton ci-dessous pour vérifier votre adresse email et activer votre compte.</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="center" style="padding: 0 40px 30px;">
-                                    <a href="{verification_url}" style="display: inline-block; background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);">
-                                        ✅ Vérifier mon email
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="center" style="padding: 0 40px 20px;">
-                                    <p style="margin: 0; font-size: 14px; color: #94A3B8;">Ou copiez ce lien :</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="center" style="padding: 0 40px 30px;">
-                                    <p style="margin: 0; font-size: 12px; color: #6366F1; word-break: break-all; background: #F1F5F9; padding: 12px; border-radius: 8px;">
-                                        <a href="{verification_url}" style="color: #6366F1; text-decoration: none;">{verification_url}</a>
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="center" style="padding: 0 40px 40px;">
-                                    <p style="margin: 0; font-size: 12px; color: #94A3B8; line-height: 1.6;">
-                                        ⏱️ Ce lien expire dans <strong>24 heures</strong><br>
-                                        Si vous n'avez pas créé de compte TokenFlow, ignorez cet email.
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="center" style="padding: 20px 40px; background-color: #F8FAFC; border-top: 1px solid #E2E8F0;">
-                                    <p style="margin: 0; font-size: 12px; color: #64748B;">
-                                        © 2024 TokenFlow. Tous droits réservés.
-                                    </p>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </body>
-        </html>
-        '''
-        
+        footer = get_email_footer().format(user_email=user_email)
+        header = get_email_header()
+
+        html_content = f'''{header}
+                    <!-- Verification Title -->
+                    <tr>
+                        <td align="center" style="padding: 40px 40px 20px;">
+                            <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0F172A; letter-spacing: -0.5px;">Vérifiez votre email</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 0 40px 30px;">
+                            <p style="margin: 0; font-size: 16px; color: #475569; line-height: 1.7;">Bienvenue sur TokenFlow ! Cliquez sur le bouton ci-dessous pour vérifier votre adresse email et activer votre compte.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 0 40px 30px;">
+                            <a href="{verification_url}" style="display: inline-block; background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);">
+                                ✅ Vérifier mon email
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 0 40px 20px;">
+                            <p style="margin: 0; font-size: 14px; color: #94A3B8;">Ou copiez ce lien :</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 0 40px 30px;">
+                            <p style="margin: 0; font-size: 12px; color: #6366F1; word-break: break-all; background: #F1F5F9; padding: 12px; border-radius: 8px;">
+                                <a href="{verification_url}" style="color: #6366F1; text-decoration: none;">{verification_url}</a>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 0 40px 40px;">
+                            <p style="margin: 0; font-size: 13px; color: #64748B; line-height: 1.7;">
+                                ⏱️ Ce lien expire dans <strong>24 heures</strong>.<br>
+                                Si vous n'avez pas créé de compte TokenFlow, ignorez cet email.
+                            </p>
+                        </td>
+                    </tr>
+{footer}'''
+
         text_content = f"Vérifiez votre email TokenFlow\n\nCliquez sur ce lien pour vérifier votre email : {verification_url}\n\nCe lien expire dans 24 heures."
-        
-        return send_email_smtp(
+
+        success, error = send_email_smtp(
             user_email,
             "Vérifiez votre email - TokenFlow",
             html_content,
             text_content
-        )[0]  # Retourner seulement le booléen success
+        )
+        return success
     except Exception as e:
         print(f"❌ Erreur envoi email verification: {e}")
         return False
@@ -1599,10 +1571,10 @@ def send_welcome_email(username, user_email):
             html_content,
             text_content
         )
-        return success
+        return success, error
     except Exception as e:
         print(f"❌ Erreur envoi email de bienvenue: {e}")
-        return False
+        return False, str(e)
 
 def send_deposit_confirmation_email(phone, amount, currency, reference, user_email):
     """Envoie un email de confirmation de dépôt."""
@@ -1616,10 +1588,10 @@ def send_deposit_confirmation_email(phone, amount, currency, reference, user_ema
             html_content,
             text_content
         )
-        return success
+        return success, error
     except Exception as e:
         print(f"❌ Erreur envoi email confirmation dépôt: {e}")
-        return False
+        return False, str(e)
 
 def send_withdrawal_confirmation_email(phone, amount, currency, reference, user_email):
     """Envoie un email de confirmation de retrait."""
@@ -1633,10 +1605,10 @@ def send_withdrawal_confirmation_email(phone, amount, currency, reference, user_
             html_content,
             text_content
         )
-        return success
+        return success, error
     except Exception as e:
         print(f"❌ Erreur envoi email confirmation retrait: {e}")
-        return False
+        return False, str(e)
 
 def send_product_notification_email(user_email, product_name, description, daily_roi, min_amount):
     """Envoie une notification de nouveau produit."""
@@ -1650,132 +1622,22 @@ def send_product_notification_email(user_email, product_name, description, daily
             html_content,
             text_content
         )
-        return success
+        return success, error
     except Exception as e:
         print(f"❌ Erreur envoi notification produit: {e}")
-        return False
+        return False, str(e)
 
 @app.route("/academy/agriculture")
 @login_required
 def formation_agri_page():
     phone = get_logged_in_user_phone()
     user = User.query.filter_by(phone=phone).first()
-    
-    # On passe l'utilisateur pour garder la barre de navigation cohérente si besoin
+
+    if not user:
+        flash("Session expirée, reconnectez-vous.", "danger")
+        return redirect(url_for("connexion_page"))
+
     return render_template("agriculture.html", user=user)
-
-
-@app.route('/verify-email/<token>')
-def verify_email_page(token):
-    """Page de vérification d'email."""
-    user = User.query.filter_by(email_verification_token=token).first()
-    
-    if not user:
-        flash("Token de vérification invalide ou expiré.", "danger")
-        return redirect(url_for('connexion_page'))
-    
-    if user.email_verified:
-        flash("Votre email est déjà vérifié.", "success")
-        return redirect(url_for('dashboard_page'))
-    
-    # Vérifier si le token a expiré (24h)
-    if user.verification_token_expires and datetime.utcnow() > user.verification_token_expires:
-        flash("Token expiré. Veuillez demander un nouveau lien de vérification.", "warning")
-        return redirect(url_for('resend_verification_page'))
-    
-    # Marquer l'email comme vérifié
-    user.email_verified = True
-    user.email_verification_token = None
-    user.verification_token_expires = None
-    db.session.commit()
-    
-    flash("✅ Email vérifié avec succès ! Votre compte est maintenant activé.", "success")
-    
-    # Connecter automatiquement l'utilisateur
-    session['phone'] = user.phone
-    return redirect(url_for('dashboard_page'))
-
-@app.route('/resend-verification')
-@login_required
-def resend_verification_page():
-    """Renvoie un email de vérification."""
-    phone = get_logged_in_user_phone()
-    user = User.query.filter_by(phone=phone).first()
-    
-    if not user:
-        flash("Utilisateur introuvable.", "danger")
-        return redirect(url_for('connexion_page'))
-    
-    if user.email_verified:
-        flash("Votre email est déjà vérifié.", "success")
-        return redirect(url_for('dashboard_page'))
-    
-    if not user.email:
-        flash("Aucun email associé à ce compte.", "warning")
-        return redirect(url_for('profile_page'))
-    
-    # Générer un nouveau token
-    token = generate_verification_token()
-    user.email_verification_token = token
-    user.verification_token_expires = datetime.utcnow() + timedelta(hours=24)
-    db.session.commit()
-    
-    # Envoyer l'email
-    if send_verification_email(user.email, token):
-        flash("✅ Un nouvel email de vérification a été envoyé.", "success")
-    else:
-        flash("❌ Erreur lors de l'envoi de l'email. Réessayez plus tard.", "danger")
-    
-    return redirect(url_for('profile_page'))
-
-@app.cli.command("add-balance-columns")
-def add_balance_columns_command():
-    """
-    Ajoute les colonnes balance_usd et balance_eur à la table user.
-    Usage: flask --app app.py add-balance-columns
-    """
-    from sqlalchemy import inspect
-
-    inspector = inspect(db.engine)
-    columns = [col['name'] for col in inspector.get_columns('user')]
-
-    if 'balance_usd' not in columns:
-        with db.engine.connect() as conn:
-            conn.execute(text('ALTER TABLE "user" ADD COLUMN balance_usd REAL DEFAULT 0.0'))
-            conn.commit()
-        print("✅ Colonne 'balance_usd' ajoutée")
-    else:
-        print("ℹ️ Colonne 'balance_usd' déjà existante")
-
-    if 'balance_eur' not in columns:
-        with db.engine.connect() as conn:
-            conn.execute(text('ALTER TABLE "user" ADD COLUMN balance_eur REAL DEFAULT 0.0'))
-            conn.commit()
-        print("✅ Colonne 'balance_eur' ajoutée")
-    else:
-        print("ℹ️ Colonne 'balance_eur' déjà existante")
-
-    # Migrer solde_total (qui est maintenant en USD) vers balance_usd
-    with db.engine.connect() as conn:
-        result = conn.execute(text('''
-            UPDATE "user" 
-            SET balance_usd = solde_total 
-            WHERE balance_usd IS NULL OR balance_usd = 0
-        '''))
-        conn.commit()
-        print(f"✅ {result.rowcount} utilisateurs migrés vers balance_usd")
-
-    # Calculer balance_eur (1 USD = 0.92 EUR)
-    with db.engine.connect() as conn:
-        result = conn.execute(text('''
-            UPDATE "user" 
-            SET balance_eur = balance_usd * 0.92 
-            WHERE balance_eur IS NULL OR balance_eur = 0
-        '''))
-        conn.commit()
-        print(f"✅ balance_eur calculé pour {result.rowcount} utilisateurs")
-
-    print("🎉 Migration balance_usd/balance_eur terminée !")
 
 def is_valid_phone(phone):
     """Valide le format d'un numéro de téléphone international."""
