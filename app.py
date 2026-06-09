@@ -1006,9 +1006,17 @@ def send_email_smtp(to_email, subject, html_content, text_content=None):
         # Load env variables
         smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
         smtp_port = int(os.getenv('SMTP_PORT', '587'))
-        smtp_user = os.getenv('SMTP_USER', '')
-        smtp_password = os.getenv('SMTP_PASSWORD', '')
-        email_from = os.getenv('EMAIL_FROM', 'TokenFlow <support@flowtoken.uk>')
+        smtp_user = os.getenv('SMTP_USER', '').strip()
+        smtp_password = os.getenv('SMTP_PASSWORD', '').strip()
+        email_from = os.getenv('EMAIL_FROM', '').strip()
+        
+        if not email_from:
+            email_from = f"TokenFlow <{smtp_user}>" if smtp_user else 'TokenFlow <support@flowtoken.uk>'
+        elif smtp_user and 'gmail.com' in smtp_server and smtp_user not in email_from:
+            email_from = f"TokenFlow <{smtp_user}>"
+
+        # Use the authenticated account as the SMTP envelope sender
+        envelope_from = smtp_user if smtp_user else re.sub(r'.*<(.+@.+)>', r'\1', email_from)
         
         print(f"[EMAIL] Configuration SMTP:")
         print(f"  SMTP_SERVER: {smtp_server}")
@@ -1016,6 +1024,7 @@ def send_email_smtp(to_email, subject, html_content, text_content=None):
         print(f"  SMTP_USER: {smtp_user}")
         print(f"  SMTP_PASSWORD: {'*' * len(smtp_password) if smtp_password else 'VIDE'}")
         print(f"  EMAIL_FROM: {email_from}")
+        print(f"  ENVELOPE_FROM: {envelope_from}")
         print(f"  TO: {to_email}")
         
         if not smtp_user or not smtp_password:
@@ -1043,7 +1052,7 @@ def send_email_smtp(to_email, subject, html_content, text_content=None):
         server.login(smtp_user, smtp_password)
         print(f"[EMAIL] Authentification OK")
         print(f"[EMAIL] Envoi vers {to_email}...")
-        server.sendmail(email_from, [to_email], msg.as_string())
+        server.sendmail(envelope_from, [to_email], msg.as_string())
         server.quit()
         print(f"[EMAIL] ✅ Succès - Email envoyé à {to_email}")
         return True, None
@@ -1541,7 +1550,11 @@ def create_product_notification_template(product_name, description, daily_roi, m
 {footer}'''
 
 def send_otp_email(user_email, otp_code, purpose="connexion"):
-    """Envoie un email avec le code OTP via SMTP - Template professionnel TokenFlow."""
+    """Envoie un email avec le code OTP via SMTP - Template professionnel TokenFlow.
+
+    Returns:
+        tuple(bool, str|None): (success, error_message)
+    """
     try:
         # Déterminer le titre et la description selon le but
         if purpose == "inscription":
@@ -1565,11 +1578,14 @@ def send_otp_email(user_email, otp_code, purpose="connexion"):
         text_content = f"TokenFlow - {title}\n\n{description}\n\nCode OTP: {otp_code}\n\nCe code expire dans 10 minutes.\n\nNe partagez jamais ce code."
         
         success, error = send_email_smtp(user_email, subject, html_content, text_content)
-        return success
+        if not success:
+            print(f"[OTP] Erreur envoi email OTP: {error}")
+            return False, error
+        return True, None
     except Exception as e:
         print(f"❌ Erreur envoi email OTP: {e}")
         print(traceback.format_exc())
-        return False
+        return False, str(e)
 
 def send_welcome_email(username, user_email):
     """Envoie un email de bienvenue TokenFlow."""
@@ -1830,12 +1846,11 @@ def inscription_page():
         }
 
         # Send OTP email
-        try:
-            send_otp_email(email, otp, "inscription")
-            flash("✅ Un code OTP a été envoyé à votre email. Veuillez le saisir pour compléter l'inscription.", "info")
-        except Exception as e:
-            flash("⚠️ Erreur envoi email OTP. Essayez encore.", "warning")
+        success, error = send_otp_email(email, otp, "inscription")
+        if not success:
+            flash(f"⚠️ Erreur envoi email OTP. {error or 'Essayez encore.'}", "warning")
             return redirect(url_for("inscription_page"))
+        flash("✅ Un code OTP a été envoyé à votre email. Veuillez le saisir pour compléter l'inscription.", "info")
 
         return redirect(url_for("verify_otp_page", action="inscription"))
 
@@ -2001,8 +2016,11 @@ def resend_otp_page(action):
             pending['otp'] = otp
             pending['otp_expires'] = (datetime.utcnow() + timedelta(minutes=10)).isoformat()
             session['pending_registration'] = pending
-            send_otp_email(pending['email'], otp, "inscription")
-            flash("✅ Nouveau code OTP envoyé !", "success")
+            success, error = send_otp_email(pending['email'], otp, "inscription")
+            if success:
+                flash("✅ Nouveau code OTP envoyé !", "success")
+            else:
+                flash(f"⚠️ Impossible de renvoyer le code OTP. {error or 'Réessayez plus tard.'}", "warning")
     elif action == "connexion":
         phone = session.get('pending_login_phone')
         if phone:
@@ -2012,8 +2030,11 @@ def resend_otp_page(action):
                 user.otp_code = otp
                 user.otp_expires = datetime.utcnow() + timedelta(minutes=10)
                 db.session.commit()
-                send_otp_email(user.email, otp, "connexion")
-                flash("✅ Nouveau code OTP envoyé !", "success")
+                success, error = send_otp_email(user.email, otp, "connexion")
+                if success:
+                    flash("✅ Nouveau code OTP envoyé !", "success")
+                else:
+                    flash(f"⚠️ Impossible de renvoyer le code OTP. {error or 'Réessayez plus tard.'}", "warning")
     return redirect(url_for("verify_otp_page", action=action))
 
 @app.route("/forgot-password", methods=["GET", "POST"])
@@ -2041,12 +2062,11 @@ def forgot_password_page():
         session['reset_email'] = email
         
         # Send OTP email
-        try:
-            send_otp_email(email, otp, "réinitialisation de mot de passe")
-            flash("✅ Un code OTP a été envoyé à votre email. Veuillez le saisir pour réinitialiser votre mot de passe.", "info")
-        except Exception as e:
-            flash("⚠️ Erreur envoi email OTP. Réessayez.", "warning")
+        success, error = send_otp_email(email, otp, "reset_password")
+        if not success:
+            flash(f"⚠️ Erreur envoi email OTP. {error or 'Réessayez.'}", "warning")
             return redirect(url_for("forgot_password_page"))
+        flash("✅ Un code OTP a été envoyé à votre email. Veuillez le saisir pour réinitialiser votre mot de passe.", "info")
         
         return redirect(url_for("verify_otp_page", action="reset_password"))
     
@@ -2126,12 +2146,11 @@ def connexion_page():
         session['pending_login_phone'] = phone
 
         # Send OTP email
-        try:
-            send_otp_email(user.email, otp, "connexion")
-            flash("✅ Un code OTP a been envoyé à votre email. Veuillez le saisir pour compléter la connexion.", "info")
-        except Exception as e:
-            flash("⚠️ Erreur envoi email OTP. Réessayez.", "warning")
+        success, error = send_otp_email(user.email, otp, "connexion")
+        if not success:
+            flash(f"⚠️ Erreur envoi email OTP. {error or 'Réessayez.'}", "warning")
             return redirect(url_for("connexion_page"))
+        flash("✅ Un code OTP a été envoyé à votre email. Veuillez le saisir pour compléter la connexion.", "info")
 
         return redirect(url_for("verify_otp_page", action="connexion"))
 
@@ -3425,11 +3444,11 @@ def confirmer_produit_rapide(vip_id):
     user.solde_total -= montant_usd
     credit_user_revenu(user, 5)
 
-    # Création de l'investissement (durée: 30 jours)
+    # Création de l'investissement (durée: 30 jours) en USD
     inv = Investissement(
         phone=phone,
-        montant=montant,  # Reste en XOF pour ton historique si nécessaire
-        revenu_journalier=revenu_journalier,
+        montant=montant_usd,
+        revenu_journalier=revenu_journalier_usd,
         duree=30,
         actif=True
     )
@@ -4716,10 +4735,13 @@ def api_ai_register():
         }
         
         # Send OTP email
-        try:
-            send_otp_email(email, otp, "inscription")
-        except Exception as e:
-            print(f"OTP email error: {e}")
+        success, error = send_otp_email(email, otp, "inscription")
+        if not success:
+            print(f"OTP email error: {error}")
+            return jsonify({
+                'success': False,
+                'error': f"Impossible d'envoyer le code OTP : {error or 'Erreur inconnue'}"
+            })
         
         return jsonify({
             'success': True,
