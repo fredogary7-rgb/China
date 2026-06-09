@@ -115,3 +115,122 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
 ::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(99,102,241,.25);border-radius:4px;}::-webkit-scrollbar-thumb:hover{background:rgba(99,102,241,.45);}
 {% endblock %}
 
+{% block content %}
+<div class="app-container">
+	<div class="page-hero">
+		<div class="brand-badge">TokenFlow · Investissements</div>
+		<h1>Plateforme d'investissement TokenFlow</h1>
+		<p>Choisissez un pack, investissez et commencez à gagner des revenus quotidiens.</p>
+	</div>
+
+	<div class="balance-bar">
+		<div class="balance-info">
+			<div class="balance-icon">💰</div>
+			<div class="balance-details">
+				<div class="label">Solde disponible</div>
+				<div class="value">{{ user.solde_total or 0 }} USD</div>
+			</div>
+		</div>
+		<div style="display:flex;gap:10px;align-items:center;">
+			<a class="btn-deposit" href="/deposit">Dépôt</a>
+		</div>
+	</div>
+
+	<div class="controls-bar">
+		<div class="filter-group">
+			{% for cat in categories %}
+				{% set active = 'active' if selected_category==cat.code else '' %}
+				{% set extra = '' %}
+				{% if cat.code != 'all' %}
+					{% set extra = 'active-' + cat.code %}
+				{% endif %}
+				<a href="?category={{ cat.code }}" class="filter-btn {{ active }} {{ extra }}">{{ cat.label }}</a>
+			{% endfor %}
+		</div>
+	</div>
+
+	<div class="section-header">
+		<div class="section-title">Produits</div>
+		<div class="section-count">{{ produits|length }} disponibles</div>
+	</div>
+
+	<div class="products-grid">
+		{% for p in produits %}
+			{% set cat = p.get('category','custom') %}
+			<div class="product-card" data-category="{{ cat }}" data-image="{{ p.image }}">
+				<div class="card-header">
+					<div style="display:flex;gap:12px;align-items:center;">
+						<div class="card-icon icon-{{ cat }}">{% if p.image %}<img src="{{ url_for('static', filename='images/' ~ p.image) }}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">{% else %}🏷️{% endif %}</div>
+						<div>
+							<div class="pack-number">{{ p.nom }}</div>
+							<div class="pack-name">{{ p.nom }}</div>
+						</div>
+					</div>
+					<div style="display:flex;gap:8px;align-items:center;">
+						<div class="rendement-badge badge-{{ cat }}">{{ p.rendement }}%</div>
+						{% if p.vip_badge %}
+							<div class="rendement-badge badge-custom" style="padding:6px 10px;background:#111827;">VIP</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="card-body">
+					<div class="price-block">
+						<div class="price-label">Prix</div>
+						<div class="price-amount price-amount-{{ cat }}">{{ '%.2f'|format(p.prix_usd) }} <span class="price-currency">USD</span></div>
+					</div>
+
+					<div class="revenue-grid">
+						<div class="revenue-cell">
+							<span class="rv-value">{{ '%.2f'|format(p.revenu_journalier_usd) }} USD</span>
+							<span class="rv-label">Journalier</span>
+						</div>
+						<div class="revenue-cell">
+							<span class="rv-value monthly">{{ '%.2f'|format(p.revenu_mensuel_usd) }} USD</span>
+							<span class="rv-label">Mensuel</span>
+						</div>
+						<div class="revenue-cell">
+							<span class="rv-value annual">{{ '%.2f'|format(p.revenu_annuel_usd) }} USD</span>
+							<span class="rv-label">Annuel</span>
+						</div>
+					</div>
+
+					<div class="progress-section">
+						<div class="progress-header">
+							<div class="progress-label">Progression</div>
+							<div class="progress-value pv-{{ cat }}">0%</div>
+						</div>
+						<div class="progress-track">
+							<div class="progress-fill fill-{{ cat }}" style="width:0%" data-pct="{{ p.progress_pct }}"></div>
+						</div>
+					</div>
+
+					<div class="card-actions">
+						<a class="btn-details" href="/produits_rapide/confirmer/{{ p.id }}">Détails</a>
+						<a class="btn-invest invest-{{ cat }}" href="/produits_rapide/confirmer/{{ p.id }}">Investir</a>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+</div>
+
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+	// Animate progress bars
+	document.querySelectorAll('.product-card').forEach(function(card, idx){
+		var fill = card.querySelector('.progress-fill');
+		if(!fill) return;
+		var pct = parseInt(fill.getAttribute('data-pct') || '0', 10);
+		setTimeout(function(){
+			fill.style.width = pct + '%';
+			var pv = card.querySelector('.progress-value');
+			if(pv) pv.textContent = pct + '%';
+		}, 200 + (idx * 80));
+	});
+});
+</script>
+{% endblock %}
+

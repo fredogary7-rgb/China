@@ -3326,6 +3326,24 @@ def produits_rapide_page():
             "description": p.description or ""
         })
 
+    # Calculer une progression visuelle par produit (basée sur le prix relatif)
+    try:
+        max_price = max([pr.get("prix_usd", 0) for pr in produits]) if produits else 1
+        if not max_price:
+            max_price = 1
+    except Exception:
+        max_price = 1
+
+    for pr in produits:
+        try:
+            price = float(pr.get("prix_usd", 0) or 0)
+        except Exception:
+            price = 0
+        # progression = proportion du prix / prix max (limité à 95%)
+        pr["progress_pct"] = int(min(max((price / max_price) * 100, 5), 95))
+        # VIP badge pour les packs premium (id >= 8) ou catégorie custom marked vip
+        pr["vip_badge"] = bool(pr.get("id") and int(pr.get("id")) >= 8)
+
     # Filtrage par catégorie (query param: ?category=r40|r45|r51|all)
     selected_category = request.args.get('category', 'all')
     if selected_category and selected_category != 'all':
