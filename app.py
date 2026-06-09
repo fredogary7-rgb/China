@@ -52,7 +52,15 @@ TRANSLATIONS = {
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = "ma_cle_ultra_secrete"
 
-load_dotenv()
+# Charger le .env local en forçant la surcharge des variables d'environnement système
+load_dotenv(override=True)
+print("=" * 60)
+print("🔧 Configuration chargée depuis .env (override=True):")
+print(f"   SMTP_SERVER = {os.getenv('SMTP_SERVER')}")
+print(f"   SMTP_PORT = {os.getenv('SMTP_PORT')}")
+print(f"   SMTP_USER = {os.getenv('SMTP_USER')}")
+print(f"   SMTP_PASSWORD = {'*' * len(os.getenv('SMTP_PASSWORD', '')) if os.getenv('SMTP_PASSWORD') else 'None'}")
+print("=" * 60)
 
 # Configuration pour les URL externes en production
 SERVER_NAME = os.getenv('SERVER_NAME', 'flowtoken.uk')
@@ -993,12 +1001,26 @@ def generate_otp():
 
 def send_email_smtp(to_email, subject, html_content, text_content=None):
     """Envoie un email via SMTP (Gmail ou autre)."""
+    import traceback
     try:
+        # Load env variables
         smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
         smtp_port = int(os.getenv('SMTP_PORT', '587'))
         smtp_user = os.getenv('SMTP_USER', '')
         smtp_password = os.getenv('SMTP_PASSWORD', '')
         email_from = os.getenv('EMAIL_FROM', 'TokenFlow <support@flowtoken.uk>')
+        
+        print(f"[EMAIL] Configuration SMTP:")
+        print(f"  SMTP_SERVER: {smtp_server}")
+        print(f"  SMTP_PORT: {smtp_port}")
+        print(f"  SMTP_USER: {smtp_user}")
+        print(f"  SMTP_PASSWORD: {'*' * len(smtp_password) if smtp_password else 'VIDE'}")
+        print(f"  EMAIL_FROM: {email_from}")
+        print(f"  TO: {to_email}")
+        
+        if not smtp_user or not smtp_password:
+            print(f"[EMAIL] ❌ ERREUR: SMTP_USER ou SMTP_PASSWORD manquant dans .env")
+            return False, "SMTP_USER ou SMTP_PASSWORD manquant"
         
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject
@@ -1012,126 +1034,609 @@ def send_email_smtp(to_email, subject, html_content, text_content=None):
         # Add HTML version
         msg.attach(MIMEText(html_content, 'html', 'utf-8'))
         
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_password)
-            server.sendmail(email_from, [to_email], msg.as_string())
-        
-        print(f"✅ Email sent to {to_email} via SMTP")
-        return True
+        print(f"[EMAIL] Connexion à {smtp_server}:{smtp_port}...")
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.set_debuglevel(1)  # Active les logs détaillés SMTP
+        print(f"[EMAIL] Démarrage TLS...")
+        server.starttls()
+        print(f"[EMAIL] Authentification avec user: {smtp_user}...")
+        server.login(smtp_user, smtp_password)
+        print(f"[EMAIL] Authentification OK")
+        print(f"[EMAIL] Envoi vers {to_email}...")
+        server.sendmail(email_from, [to_email], msg.as_string())
+        server.quit()
+        print(f"[EMAIL] ✅ Succès - Email envoyé à {to_email}")
+        return True, None
+    except smtplib.SMTPAuthenticationError as e:
+        error_msg = f"[EMAIL] ❌ ERREUR AUTHENTIFICATION: {e}"
+        print(error_msg)
+        print(f"[EMAIL] Code erreur: {e.smtp_code}")
+        print(f"[EMAIL] Message erreur: {e.smtp_error}")
+        print(f"[EMAIL] Vérifiez que:")
+        print(f"[EMAIL]   1. La validation en deux étapes est activée sur le compte Google")
+        print(f"[EMAIL]   2. Un mot de passe d'application a été généré (pas le mot de passe normal)")
+        print(f"[EMAIL]   3. Le mot de passe d'application est entré SANS espaces")
+        print(f"[EMAIL]   4. Le compte Gmail autorise les applications moins sécurisées")
+        print(f"[EMAIL] Traceback complet:")
+        print(traceback.format_exc())
+        return False, f"SMTPAuthenticationError: {e.smtp_code} - {e.smtp_error.decode('utf-8', errors='ignore')}"
+    except smtplib.SMTPConnectError as e:
+        error_msg = f"[EMAIL] ❌ ERREUR CONNEXION: {e}"
+        print(error_msg)
+        print(f"[EMAIL] Code erreur: {e.smtp_code}")
+        print(f"[EMAIL] Message erreur: {e.smtp_error}")
+        print(f"[EMAIL] Traceback complet:")
+        print(traceback.format_exc())
+        return False, f"SMTPConnectError: {e.smtp_code} - {str(e.smtp_error)}"
+    except smtplib.SMTPSenderRefused as e:
+        error_msg = f"[EMAIL] ❌ ERREUR EXPEDITEUR REFUSE: {e}"
+        print(error_msg)
+        print(f"[EMAIL] Code erreur: {e.smtp_code}")
+        print(f"[EMAIL] Message erreur: {e.smtp_error}")
+        print(f"[EMAIL] Traceback complet:")
+        print(traceback.format_exc())
+        return False, f"SMTPSenderRefused: {e.smtp_code} - {str(e.smtp_error)}"
+    except smtplib.SMTPRecipientsRefused as e:
+        error_msg = f"[EMAIL] ❌ ERREUR DESTINATAIRE REFUSE: {e}"
+        print(error_msg)
+        print(f"[EMAIL] Traceback complet:")
+        print(traceback.format_exc())
+        return False, f"SMTPRecipientsRefused: {str(e)}"
+    except smtplib.SMTPDataError as e:
+        error_msg = f"[EMAIL] ❌ ERREUR DONNEES: {e}"
+        print(error_msg)
+        print(f"[EMAIL] Code erreur: {e.smtp_code}")
+        print(f"[EMAIL] Message erreur: {e.smtp_error}")
+        print(f"[EMAIL] Traceback complet:")
+        print(traceback.format_exc())
+        return False, f"SMTPDataError: {e.smtp_code} - {str(e.smtp_error)}"
     except Exception as e:
-        print(f"❌ Erreur envoi email via SMTP: {e}")
-        return False
+        error_msg = f"[EMAIL] ❌ Erreur envoi email via SMTP: {type(e).__name__}: {e}"
+        print(error_msg)
+        print(f"[EMAIL] Traceback complet:")
+        print(traceback.format_exc())
+        return False, f"{type(e).__name__}: {str(e)}"
 
-def send_otp_email(user_email, otp_code, purpose="connexion"):
-    """Envoie un email avec le code OTP via SMTP."""
+def send_verification_email(user_email, token):
+    """Envoie un email de vérification avec lien de confirmation."""
     try:
+        verification_url = f"https://flowtoken.uk/verify-email/{token}"
+        
         html_content = f'''
-        <html>
+        <!DOCTYPE html>
+        <html lang="fr">
         <head>
-            <style>
-                body {{ font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; background-color: #F1F5F9; padding: 40px; margin: 0; }}
-                .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }}
-                .logo {{ width: 60px; height: 60px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 900; }}
-                .otp-code {{ display: inline-block; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; font-size: 36px; font-weight: 900; padding: 20px 40px; border-radius: 16px; letter-spacing: 8px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3); }}
-                .footer {{ color: #94A3B8; font-size: 12px; text-align: center; margin-top: 30px; }}
-            </style>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Vérifiez votre email</title>
         </head>
-        <body>
-            <div class="container">
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <div class="logo">T</div>
-                </div>
-                <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">Code de vérification</h1>
-                <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-                    Votre code de vérification pour {purpose} sur TokenFlow est :
-                </p>
-                <div style="text-align: center; margin: 30px 0;">
-                    <div class="otp-code">{otp_code}</div>
-                </div>
-                <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
-                    Ce code est valide pendant 10 minutes. Ne le partagez avec personne.<br>
-                    Si vous n'avez pas demandé ce code, ignorez cet email.
-                </p>
-                <div class="footer">
-                    © 2024 TokenFlow. Tous droits réservés.
-                </div>
-            </div>
+        <body style="margin: 0; padding: 0; background-color: #F1F5F9; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #F1F5F9;">
+                <tr>
+                    <td align="center" style="padding: 40px 20px;">
+                        <table role="presentation" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+                            <tr>
+                                <td align="center" style="padding: 40px 40px 20px; background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);">
+                                    <div style="width: 60px; height: 60px; background-color: #ffffff; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 28px; font-weight: 900; color: #6366F1;">T</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="padding: 40px 40px 20px;">
+                                    <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #0F172A;">Vérifiez votre email</h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="padding: 0 40px 30px;">
+                                    <p style="margin: 0; font-size: 16px; color: #475569; line-height: 1.6;">Bienvenue sur TokenFlow ! Cliquez sur le bouton ci-dessous pour vérifier votre adresse email et activer votre compte.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="padding: 0 40px 30px;">
+                                    <a href="{verification_url}" style="display: inline-block; background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);">
+                                        ✅ Vérifier mon email
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="padding: 0 40px 20px;">
+                                    <p style="margin: 0; font-size: 14px; color: #94A3B8;">Ou copiez ce lien :</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="padding: 0 40px 30px;">
+                                    <p style="margin: 0; font-size: 12px; color: #6366F1; word-break: break-all; background: #F1F5F9; padding: 12px; border-radius: 8px;">
+                                        <a href="{verification_url}" style="color: #6366F1; text-decoration: none;">{verification_url}</a>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="padding: 0 40px 40px;">
+                                    <p style="margin: 0; font-size: 12px; color: #94A3B8; line-height: 1.6;">
+                                        ⏱️ Ce lien expire dans <strong>24 heures</strong><br>
+                                        Si vous n'avez pas créé de compte TokenFlow, ignorez cet email.
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="padding: 20px 40px; background-color: #F8FAFC; border-top: 1px solid #E2E8F0;">
+                                    <p style="margin: 0; font-size: 12px; color: #64748B;">
+                                        © 2024 TokenFlow. Tous droits réservés.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
         </body>
         </html>
         '''
         
-        text_content = f"Votre code de vérification TokenFlow pour {purpose} est : {otp_code}\n\nCe code est valide pendant 10 minutes."
+        text_content = f"Vérifiez votre email TokenFlow\n\nCliquez sur ce lien pour vérifier votre email : {verification_url}\n\nCe lien expire dans 24 heures."
         
         return send_email_smtp(
             user_email,
-            f'Code de vérification TokenFlow - {purpose.capitalize()}',
+            "Vérifiez votre email - TokenFlow",
             html_content,
             text_content
-        )
-    except Exception as e:
-        print(f"❌ Erreur envoi OTP: {e}")
-        return False
-
-def send_email_notification(user_email, subject, html_content):
-    """Envoie un email de notification via SMTP (pour nouveaux produits, etc.)."""
-    try:
-        return send_email_smtp(user_email, subject, html_content)
-    except Exception as e:
-        print(f"❌ Erreur envoi email notification: {e}")
-        return False
-
-def send_verification_email(user_email, verification_token):
-    """Envoie un email de vérification via SMTP."""
-    try:
-        verification_url = url_for('verify_email_page', token=verification_token, _external=True)
-        
-        html_content = f'''
-        <html>
-        <head>
-            <style>
-                body {{ font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; background-color: #F1F5F9; padding: 40px; margin: 0; }}
-                .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }}
-                .logo {{ width: 60px; height: 60px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 900; }}
-                .btn {{ display: inline-block; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3); }}
-                .footer {{ color: #94A3B8; font-size: 12px; text-align: center; margin-top: 30px; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <div class="logo">T</div>
-                </div>
-                <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">Vérifiez votre adresse email</h1>
-                <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
-                    Merci de vous être inscrit sur <strong>TokenFlow</strong>. Pour activer votre compte, veuillez cliquer sur le bouton ci-dessous :
-                </p>
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <a href="{verification_url}" class="btn">Vérifier mon email</a>
-                </div>
-                <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
-                    Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur :<br>
-                    <a href="{verification_url}" style="color: #6366F1; word-break: break-all;">{verification_url}</a>
-                </p>
-                <div class="footer">
-                    Ce lien expire dans 24 heures. Si vous n'avez pas créé de compte TokenFlow, ignorez cet email.<br>
-                    © 2024 TokenFlow. Tous droits réservés.
-                </div>
-            </div>
-        </body>
-        </html>
-        '''
-        
-        text_content = f"Vérifiez votre email TokenFlow\n\nCliquez sur ce lien pour vérifier your email : {verification_url}\n\nCe lien expire dans 24 heures."
-        
-        return send_email_smtp(
-            user_email,
-            "Vérifiez your email - TokenFlow",
-            html_content,
-            text_content
-        )
+        )[0]  # Retourner seulement le booléen success
     except Exception as e:
         print(f"❌ Erreur envoi email verification: {e}")
+        return False
+
+# ============================================
+# EMAIL TEMPLATES TOKENFLOW
+# ============================================
+
+def get_email_header():
+    """Template d'en-tête réutilisable pour tous les emails TokenFlow."""
+    return '''<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @media only screen and (max-width: 600px) {
+            body { width: 100% !important; min-width: 100% !important; }
+            table { width: 100% !important; }
+            .container { width: 100% !important; padding: 20px !important; }
+            .button { width: 100% !important; display: block !important; padding: 16px !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #F1F5F9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #F1F5F9;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" class="container" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.08);">
+                    <!-- Header with gradient -->
+                    <tr>
+                        <td align="center" style="padding: 40px 40px 30px; background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); position: relative;">
+                            <div style="text-align: center;">
+                                <div style="width: 50px; height: 50px; background-color: #ffffff; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                    <span style="font-size: 24px; font-weight: 900; background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">T</span>
+                                </div>
+                                <p style="margin: 0; font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">TokenFlow</p>
+                            </div>
+                        </td>
+                    </tr>'''
+
+def get_email_footer():
+    """Template de pied de page réutilisable."""
+    return '''                    <!-- Footer -->
+                    <tr>
+                        <td align="center" style="padding: 30px 40px; background-color: #F8FAFC; border-top: 1px solid #E2E8F0;">
+                            <p style="margin: 0 0 10px 0; font-size: 12px; color: #64748B; line-height: 1.6;">
+                                © 2024 TokenFlow. Tous droits réservés.<br>
+                                <span style="color: #94A3B8; font-size: 11px;">Plateforme fintech sécurisée</span>
+                            </p>
+                            <p style="margin: 15px 0 0 0; font-size: 11px; color: #94A3B8;">
+                                🔒 Cet email a été envoyé à {user_email} via une connexion sécurisée.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>'''
+
+def create_otp_template(otp_code, title, description, user_email):
+    """Crée un template d'email OTP professionnel."""
+    footer = get_email_footer().format(user_email=user_email)
+    header = get_email_header()
+    
+    return f'''{header}
+                    <!-- Title -->
+                    <tr>
+                        <td align="center" style="padding: 40px 40px 20px;">
+                            <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0F172A; letter-spacing: -0.5px;">{title}</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Description -->
+                    <tr>
+                        <td align="center" style="padding: 0 40px 30px;">
+                            <p style="margin: 0; font-size: 16px; color: #475569; line-height: 1.7;">{description}</p>
+                        </td>
+                    </tr>
+                    
+                    <!-- OTP Code Box -->
+                    <tr>
+                        <td align="center" style="padding: 0 40px 30px;">
+                            <div style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2); transform: scale(1);">
+                                <p style="margin: 0 0 10px 0; font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Votre code OTP</p>
+                                <div style="background-color: rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; border: 2px dashed rgba(255,255,255,0.3); margin-bottom: 15px;">
+                                    <span style="font-size: 42px; font-weight: 900; color: #ffffff; letter-spacing: 12px; font-family: 'Courier New', monospace;">{otp_code}</span>
+                                </div>
+                                <p style="margin: 0; font-size: 11px; color: rgba(255,255,255,0.9);">Ne partagez jamais ce code</p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Expiration Notice -->
+                    <tr>
+                        <td align="center" style="padding: 0 40px 30px;">
+                            <div style="background-color: #FEF3C7; border-left: 4px solid #F59E0B; padding: 15px 20px; border-radius: 6px;">
+                                <p style="margin: 0; font-size: 14px; color: #92400E; font-weight: 600;">
+                                    ⏱️ Ce code expire dans <strong>10 minutes</strong>
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Security Notice -->
+                    <tr>
+                        <td align="center" style="padding: 20px 40px 40px;">
+                            <p style="margin: 0; font-size: 13px; color: #64748B; line-height: 1.6;">
+                                🔐 TokenFlow ne vous demandera jamais votre code OTP par téléphone ou email.<br>
+                                Si vous ne l'avez pas demandé, ignorez ce message.
+                            </p>
+                        </td>
+                    </tr>
+{footer}'''
+
+def create_welcome_template(username, user_email):
+    """Crée un template de bienvenue professionnel."""
+    footer = get_email_footer().format(user_email=user_email)
+    header = get_email_header()
+    
+    return f'''{header}
+                    <!-- Greeting -->
+                    <tr>
+                        <td align="center" style="padding: 40px 40px 20px;">
+                            <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0F172A;">Bienvenue {username} !</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Welcome Message -->
+                    <tr>
+                        <td align="center" style="padding: 0 40px 40px;">
+                            <p style="margin: 0; font-size: 16px; color: #475569; line-height: 1.7;">
+                                Votre compte TokenFlow a été créé avec succès. Vous êtes maintenant prêt à explorer nos services financiers et investissements.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- CTA Button -->
+                    <tr>
+                        <td align="center" style="padding: 0 40px 30px;">
+                            <a href="https://flowtoken.uk/dashboard" style="display: inline-block; background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3); transition: transform 0.2s;">
+                                🚀 Accéder à mon Tableau de Bord
+                            </a>
+                        </td>
+                    </tr>
+                    
+                    <!-- Features -->
+                    <tr>
+                        <td style="padding: 20px 40px 30px;">
+                            <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+                                        <div style="background-color: #F0F9FF; border-radius: 8px; padding: 20px; text-align: center;">
+                                            <p style="margin: 0 0 10px 0; font-size: 24px;">💰</p>
+                                            <p style="margin: 0; font-size: 14px; font-weight: 600; color: #0F172A;">Investissements</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748B;">Rendements attractifs</p>
+                                        </div>
+                                    </td>
+                                    <td style="width: 50%; vertical-align: top; padding-left: 15px;">
+                                        <div style="background-color: #F0F9FF; border-radius: 8px; padding: 20px; text-align: center;">
+                                            <p style="margin: 0 0 10px 0; font-size: 24px;">👥</p>
+                                            <p style="margin: 0; font-size: 14px; font-weight: 600; color: #0F172A;">Parrainage</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748B;">Gagnez des commissions</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr style="height: 15px;"><td></td></tr>
+                                <tr>
+                                    <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+                                        <div style="background-color: #F0F9FF; border-radius: 8px; padding: 20px; text-align: center;">
+                                            <p style="margin: 0 0 10px 0; font-size: 24px;">📊</p>
+                                            <p style="margin: 0; font-size: 14px; font-weight: 600; color: #0F172A;">Analyses</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748B;">Suivi en temps réel</p>
+                                        </div>
+                                    </td>
+                                    <td style="width: 50%; vertical-align: top; padding-left: 15px;">
+                                        <div style="background-color: #F0F9FF; border-radius: 8px; padding: 20px; text-align: center;">
+                                            <p style="margin: 0 0 10px 0; font-size: 24px;">🔒</p>
+                                            <p style="margin: 0; font-size: 14px; font-weight: 600; color: #0F172A;">Sécurité</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748B;">Données protégées</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+{footer}'''
+
+def create_deposit_template(phone, amount, currency, reference, user_email):
+    """Crée un template de confirmation de dépôt."""
+    footer = get_email_footer().format(user_email=user_email)
+    header = get_email_header()
+    
+    return f'''{header}
+                    <!-- Success Icon -->
+                    <tr>
+                        <td align="center" style="padding: 40px 40px 20px;">
+                            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                <span style="font-size: 40px;">✓</span>
+                            </div>
+                            <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0F172A;">Dépôt Confirmé</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Amount -->
+                    <tr>
+                        <td align="center" style="padding: 20px 40px;">
+                            <p style="margin: 0; font-size: 36px; font-weight: 900; color: #10B981;">{amount:.2f} {currency}</p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Details -->
+                    <tr>
+                        <td style="padding: 20px 40px;">
+                            <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                                <tr style="border-bottom: 1px solid #E2E8F0;">
+                                    <td style="padding: 12px 0; color: #64748B; font-size: 14px;">📞 Numéro</td>
+                                    <td style="padding: 12px 0; text-align: right; color: #0F172A; font-weight: 600; font-size: 14px;">{phone}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #E2E8F0;">
+                                    <td style="padding: 12px 0; color: #64748B; font-size: 14px;">💱 Montant</td>
+                                    <td style="padding: 12px 0; text-align: right; color: #0F172A; font-weight: 600; font-size: 14px;">{amount:.2f} {currency}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #E2E8F0;">
+                                    <td style="padding: 12px 0; color: #64748B; font-size: 14px;">📋 Référence</td>
+                                    <td style="padding: 12px 0; text-align: right; color: #0F172A; font-weight: 600; font-size: 14px; font-family: 'Courier New', monospace;">{reference}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; color: #64748B; font-size: 14px;">📅 Date</td>
+                                    <td style="padding: 12px 0; text-align: right; color: #0F172A; font-weight: 600; font-size: 14px;">{datetime.utcnow().strftime('%d/%m/%Y %H:%M')}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- CTA -->
+                    <tr>
+                        <td align="center" style="padding: 30px 40px;">
+                            <a href="https://flowtoken.uk/dashboard" style="display: inline-block; background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 8px; font-weight: 700; font-size: 14px; box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);">
+                                Voir mon Solde
+                            </a>
+                        </td>
+                    </tr>
+{footer}'''
+
+def create_withdrawal_template(phone, amount, currency, reference, user_email):
+    """Crée un template de confirmation de retrait."""
+    footer = get_email_footer().format(user_email=user_email)
+    header = get_email_header()
+    
+    return f'''{header}
+                    <!-- Status Icon -->
+                    <tr>
+                        <td align="center" style="padding: 40px 40px 20px;">
+                            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                <span style="font-size: 40px;">⏳</span>
+                            </div>
+                            <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0F172A;">Demande de Retrait</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Amount -->
+                    <tr>
+                        <td align="center" style="padding: 20px 40px;">
+                            <p style="margin: 0; font-size: 36px; font-weight: 900; color: #F59E0B;">{amount:.2f} {currency}</p>
+                            <p style="margin: 10px 0 0 0; font-size: 14px; color: #92400E; background-color: #FEFCE8; padding: 10px 20px; border-radius: 6px; display: inline-block;">
+                                ⏱️ Traitement en cours (1-2 jours)
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Details -->
+                    <tr>
+                        <td style="padding: 20px 40px;">
+                            <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                                <tr style="border-bottom: 1px solid #E2E8F0;">
+                                    <td style="padding: 12px 0; color: #64748B; font-size: 14px;">📞 Vers</td>
+                                    <td style="padding: 12px 0; text-align: right; color: #0F172A; font-weight: 600; font-size: 14px;">{phone}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #E2E8F0;">
+                                    <td style="padding: 12px 0; color: #64748B; font-size: 14px;">💱 Montant</td>
+                                    <td style="padding: 12px 0; text-align: right; color: #0F172A; font-weight: 600; font-size: 14px;">{amount:.2f} {currency}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #E2E8F0;">
+                                    <td style="padding: 12px 0; color: #64748B; font-size: 14px;">📋 Référence</td>
+                                    <td style="padding: 12px 0; text-align: right; color: #0F172A; font-weight: 600; font-size: 14px; font-family: 'Courier New', monospace;">{reference}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; color: #64748B; font-size: 14px;">📅 Demandé le</td>
+                                    <td style="padding: 12px 0; text-align: right; color: #0F172A; font-weight: 600; font-size: 14px;">{datetime.utcnow().strftime('%d/%m/%Y %H:%M')}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Info Notice -->
+                    <tr>
+                        <td style="padding: 20px 40px;">
+                            <div style="background-color: #EFF6FF; border-left: 4px solid #3B82F6; padding: 15px 20px; border-radius: 6px;">
+                                <p style="margin: 0; font-size: 13px; color: #1E40AF; line-height: 1.6;">
+                                    ℹ️ Votre retrait est en cours de traitement. Vous recevrez une confirmation une fois le paiement effectué.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+{footer}'''
+
+def create_product_notification_template(product_name, description, daily_roi, min_amount, user_email):
+    """Crée un template de notification de nouveau produit."""
+    footer = get_email_footer().format(user_email=user_email)
+    header = get_email_header()
+    
+    return f'''{header}
+                    <!-- Announcement -->
+                    <tr>
+                        <td align="center" style="padding: 40px 40px 20px;">
+                            <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                <span style="font-size: 36px;">✨</span>
+                            </div>
+                            <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0F172A;">Nouveau Produit !</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Product Card -->
+                    <tr>
+                        <td style="padding: 20px 40px;">
+                            <div style="background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%); border-radius: 12px; padding: 25px; color: white; text-align: center;">
+                                <h2 style="margin: 0 0 10px 0; font-size: 24px; font-weight: 800;">{product_name}</h2>
+                                <p style="margin: 0 0 20px 0; font-size: 14px; opacity: 0.9; line-height: 1.6;">{description}</p>
+                                
+                                <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                    <tr>
+                                        <td style="padding: 10px; text-align: center; opacity: 0.95;">
+                                            <p style="margin: 0 0 5px 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; font-weight: 600;">Rendement Quotidien</p>
+                                            <p style="margin: 0; font-size: 28px; font-weight: 900;">{daily_roi:.2f}%</p>
+                                        </td>
+                                        <td style="padding: 10px; text-align: center; border-left: 1px solid rgba(255,255,255,0.3); opacity: 0.95;">
+                                            <p style="margin: 0 0 5px 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; font-weight: 600;">Investissement Min.</p>
+                                            <p style="margin: 0; font-size: 28px; font-weight: 900;">{min_amount:.0f}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- CTA -->
+                    <tr>
+                        <td align="center" style="padding: 30px 40px;">
+                            <a href="https://flowtoken.uk/dashboard" style="display: inline-block; background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);">
+                                Découvrir et Investir
+                            </a>
+                        </td>
+                    </tr>
+{footer}'''
+
+def send_otp_email(user_email, otp_code, purpose="connexion"):
+    """Envoie un email avec le code OTP via SMTP - Template professionnel TokenFlow."""
+    try:
+        # Déterminer le titre et la description selon le but
+        if purpose == "inscription":
+            title = "Code de vérification - Inscription"
+            description = "Bienvenue sur TokenFlow ! Entrez ce code pour créer votre compte :"
+            subject = "Créez votre compte TokenFlow"
+        elif purpose == "connexion":
+            title = "Code de vérification - Connexion"
+            description = "Pour sécuriser votre accès, confirmez avec ce code :"
+            subject = "Connexion à TokenFlow"
+        elif purpose == "reset_password":
+            title = "Code de réinitialisation"
+            description = "Vous avez demandé à réinitialiser votre mot de passe. Voici votre code :"
+            subject = "Réinitialiser votre mot de passe TokenFlow"
+        else:
+            title = "Code de vérification TokenFlow"
+            description = "Voici votre code de vérification :"
+            subject = "Code de vérification - TokenFlow"
+        
+        html_content = create_otp_template(otp_code, title, description, user_email)
+        text_content = f"TokenFlow - {title}\n\n{description}\n\nCode OTP: {otp_code}\n\nCe code expire dans 10 minutes.\n\nNe partagez jamais ce code."
+        
+        success, error = send_email_smtp(user_email, subject, html_content, text_content)
+        return success
+    except Exception as e:
+        print(f"❌ Erreur envoi email OTP: {e}")
+        print(traceback.format_exc())
+        return False
+
+def send_welcome_email(username, user_email):
+    """Envoie un email de bienvenue TokenFlow."""
+    try:
+        html_content = create_welcome_template(username, user_email)
+        text_content = f"Bienvenue {username} !\n\nVotre compte TokenFlow a été créé avec succès.\n\nConsultez votre tableau de bord: https://flowtoken.uk/dashboard"
+        
+        success, error = send_email_smtp(
+            user_email,
+            "Bienvenue sur TokenFlow !",
+            html_content,
+            text_content
+        )
+        return success
+    except Exception as e:
+        print(f"❌ Erreur envoi email de bienvenue: {e}")
+        return False
+
+def send_deposit_confirmation_email(phone, amount, currency, reference, user_email):
+    """Envoie un email de confirmation de dépôt."""
+    try:
+        html_content = create_deposit_template(phone, amount, currency, reference, user_email)
+        text_content = f"Dépôt confirmé\n\nMontant: {amount:.2f} {currency}\nRéférence: {reference}\nDate: {datetime.utcnow().strftime('%d/%m/%Y %H:%M')}"
+        
+        success, error = send_email_smtp(
+            user_email,
+            f"Dépôt confirmé - {amount:.2f} {currency}",
+            html_content,
+            text_content
+        )
+        return success
+    except Exception as e:
+        print(f"❌ Erreur envoi email confirmation dépôt: {e}")
+        return False
+
+def send_withdrawal_confirmation_email(phone, amount, currency, reference, user_email):
+    """Envoie un email de confirmation de retrait."""
+    try:
+        html_content = create_withdrawal_template(phone, amount, currency, reference, user_email)
+        text_content = f"Demande de retrait\n\nMontant: {amount:.2f} {currency}\nVers: {phone}\nRéférence: {reference}\n\nTraitement en cours (1-2 jours)"
+        
+        success, error = send_email_smtp(
+            user_email,
+            f"Demande de retrait - {amount:.2f} {currency}",
+            html_content,
+            text_content
+        )
+        return success
+    except Exception as e:
+        print(f"❌ Erreur envoi email confirmation retrait: {e}")
+        return False
+
+def send_product_notification_email(user_email, product_name, description, daily_roi, min_amount):
+    """Envoie une notification de nouveau produit."""
+    try:
+        html_content = create_product_notification_template(product_name, description, daily_roi, min_amount, user_email)
+        text_content = f"Nouveau produit TokenFlow!\n\n{product_name}\n\n{description}\n\nRendement quotidien: {daily_roi:.2f}%\nInvestissement minimum: {min_amount:.0f}"
+        
+        success, error = send_email_smtp(
+            user_email,
+            f"✨ Nouveau produit: {product_name}",
+            html_content,
+            text_content
+        )
+        return success
+    except Exception as e:
+        print(f"❌ Erreur envoi notification produit: {e}")
         return False
 
 @app.route("/academy/agriculture")
@@ -1398,13 +1903,19 @@ def verify_otp_page(action):
             # Send verification email
             try:
                 send_verification_email(pending['email'], token)
-            except:
-                pass
+            except Exception as e:
+                print(f"Erreur envoi email verification: {e}")
+
+            # Send welcome email
+            try:
+                send_welcome_email(pending['username'], pending['email'])
+            except Exception as e:
+                print(f"Erreur envoi email de bienvenue: {e}")
 
             # Clear pending registration
             session.pop('pending_registration', None)
 
-            flash("🎉 Inscription réussie ! Votre email a été vérifié.", "success")
+            flash("🎉 Inscription réussie ! Vérifiez votre email et connectez-vous.", "success")
             return redirect(url_for("connexion_page"))
 
         elif action == "connexion":
@@ -1649,6 +2160,72 @@ def contact_page():
 def partner_page():
     """Page devenir partenaire"""
     return render_template("partner.html")
+
+@app.route("/test-email")
+def test_email_page():
+    """Route de test pour déboguer l'envoi d'emails."""
+    to_email = request.args.get('to', 'test@example.com')
+    
+    print("=" * 60)
+    print("[EMAIL TEST] Démarrage du test d'envoi d'email...")
+    print("=" * 60)
+    
+    # Debug: afficher toutes les sources de configuration
+    print("[DEBUG] Sources de configuration SMTP:")
+    print(f"  os.getenv('SMTP_SERVER') = {os.getenv('SMTP_SERVER')}")
+    print(f"  os.getenv('SMTP_PORT') = {os.getenv('SMTP_PORT')}")
+    print(f"  os.getenv('SMTP_USER') = {os.getenv('SMTP_USER')}")
+    print(f"  os.getenv('SMTP_PASSWORD') = {'*' * len(os.getenv('SMTP_PASSWORD', '')) if os.getenv('SMTP_PASSWORD') else 'None'}")
+    print(f"  os.getenv('EMAIL_FROM') = {os.getenv('EMAIL_FROM')}")
+    
+    # Vérifier si le .env est chargé
+    print(f"[DEBUG] load_dotenv() a été appelé: {load_dotenv.called if hasattr(load_dotenv, 'called') else 'N/A'}")
+    
+    # Test the email function
+    subject = "Test Email TokenFlow"
+    html_content = "<h1>Test Email</h1><p>Si you recevez cet email, le système SMTP fonctionne !</p>"
+    text_content = "Test Email - Si you recevez cet email, le système SMTP fonctionne !"
+    
+    success = send_email_smtp(to_email, subject, html_content, text_content)
+    
+    if success:
+        result = f"✅ Email envoyé avec succès à {to_email}"
+    else:
+        result = f"❌ Échec de l'envoi d'email à {to_email}"
+    
+    print("=" * 60)
+    print(f"[EMAIL TEST] Résultat: {result}")
+    print("=" * 60)
+    
+    return f"""
+    <html>
+    <head><title>Test Email</title></head>
+    <body style="font-family: sans-serif; padding: 40px;">
+        <h1>Test d'Envoi d'Email</h1>
+        <p><strong>Email envoyé à:</strong> {to_email}</p>
+        <p><strong>Résultat:</strong> {result}</p>
+        <hr>
+        <h2>Configuration SMTP actuelle:</h2>
+        <ul>
+            <li><strong>SMTP_SERVER:</strong> {os.getenv('SMTP_SERVER', 'smtp.gmail.com')}</li>
+            <li><strong>SMTP_PORT:</strong> {os.getenv('SMTP_PORT', '587')}</li>
+            <li><strong>SMTP_USER:</strong> {os.getenv('SMTP_USER', 'NON CONFIGURÉ')}</li>
+            <li><strong>SMTP_PASSWORD:</strong> {'*' * len(os.getenv('SMTP_PASSWORD', '')) if os.getenv('SMTP_PASSWORD') else 'NON CONFIGURÉ'}</li>
+            <li><strong>EMAIL_FROM:</strong> {os.getenv('EMAIL_FROM', 'TokenFlow <support@flowtoken.uk>')}</li>
+        </ul>
+        <hr>
+        <h2>Instructions:</h2>
+        <ol>
+            <li>Vérifiez que SMTP_USER est votre adresse Gmail complète</li>
+            <li>Vérifiez que SMTP_PASSWORD est un mot de passe d'application (16 caractères, sans espaces)</li>
+            <li>Vérifiez que la validation en deux étapes est activée sur votre compte Google</li>
+            <li>Regardez la console du terminal pour les logs détaillés</li>
+        </ol>
+        <hr>
+        <p><a href="/test-email?to={to_email}">🔄 Réessayer</a></p>
+    </body>
+    </html>
+    """
 
 @app.route("/sitemap.xml")
 def sitemap():
@@ -1972,6 +2549,51 @@ def admin_balance(user_id):
 
     db.session.commit()
     flash("Opération réussie ✅", "success")
+    return redirect(request.referrer)
+
+@app.route("/admin/user/balance", methods=["POST"])
+@login_required
+def admin_user_balance():
+    """Permet à l'admin de créditer ou débiter un utilisateur."""
+    phone = get_logged_in_user_phone()
+    user_admin = User.query.filter_by(phone=phone).first()
+    
+    if not user_admin or not user_admin.is_admin:
+        flash("Accès réservé aux administrateurs.", "danger")
+        return redirect(url_for("connexion_page"))
+    
+    user_id = request.form.get("user_id")
+    action = request.form.get("action")
+    
+    try:
+        montant = float(request.form.get("montant", 0))
+    except ValueError:
+        flash("❌ Montant invalide", "danger")
+        return redirect(request.referrer)
+    
+    if montant <= 0:
+        flash("❌ Le montant doit être supérieur à 0", "danger")
+        return redirect(request.referrer)
+    
+    user = User.query.get(int(user_id))
+    if not user:
+        flash("❌ Utilisateur introuvable", "danger")
+        return redirect(request.referrer)
+    
+    if action == "credit":
+        user.solde_total += montant
+        flash(f"✅ {montant} USD crédités à {user.phone}. Nouveau solde: ${user.solde_total:.2f}", "success")
+    elif action == "debit":
+        if user.solde_total < montant:
+            flash(f"❌ Solde insuffisant. Solde actuel: ${user.solde_total:.2f}", "danger")
+            return redirect(request.referrer)
+        user.solde_total -= montant
+        flash(f"✅ {montant} USD débités de {user.phone}. Nouveau solde: ${user.solde_total:.2f}", "success")
+    else:
+        flash("❌ Action invalide", "danger")
+        return redirect(request.referrer)
+    
+    db.session.commit()
     return redirect(request.referrer)
 
 @app.route("/admin/user/<int:user_id>/toggle-ban")
@@ -2586,38 +3208,69 @@ USD_TO_XOF = 625
 USD_TO_EUR = 0.92
 
 PRODUITS_VIP = [
-    # AI Trading (prix en USD) - ROI: ~1% par jour - Minimum $25
-    {"id": 1, "nom": "AI Basic Trader", "prix_usd": 25, "revenu_journalier_usd": 0.25, "image": "ai.jpg"},
-    {"id": 2, "nom": "AI Pro Assistant", "prix_usd": 50, "revenu_journalier_usd": 0.55, "image": "ai.jpg"},
-    {"id": 3, "nom": "AI Trading Bot Alpha", "prix_usd": 100, "revenu_journalier_usd": 1.10, "image": "ai.jpg"},
-    {"id": 4, "nom": "AutoTrader Quantum", "prix_usd": 200, "revenu_journalier_usd": 2.40, "image": "ai.jpg"},
-    {"id": 5, "nom": "AI Elite System", "prix_usd": 500, "revenu_journalier_usd": 6.50, "image": "ai.jpg"},
-    {"id": 6, "nom": "AI Master Platform", "prix_usd": 1000, "revenu_journalier_usd": 14.00, "image": "ai.jpg"},
-    
-    # Crypto Trading (prix en USD) - ROI: ~1% à 1.2% par jour
-    {"id": 7, "nom": "Bitcoin Trader Pro", "prix_usd": 100, "revenu_journalier_usd": 1.10, "image": "crypto.jpg"},
-    {"id": 8, "nom": "Crypto Portfolio Elite", "prix_usd": 200, "revenu_journalier_usd": 2.40, "image": "crypto.jpg"},
-    {"id": 9, "nom": "BTC Mining Fund", "prix_usd": 500, "revenu_journalier_usd": 6.25, "image": "crypto.jpg"},
-    {"id": 10, "nom": "Crypto Premium Fund", "prix_usd": 1000, "revenu_journalier_usd": 13.50, "image": "crypto.jpg"},
-    {"id": 11, "nom": "Bitcoin Elite Trust", "prix_usd": 2500, "revenu_journalier_usd": 35.00, "image": "crypto.jpg"},
-    
-    # Forex Trading (prix en USD) - ROI: ~0.8% à 1% par jour
-    {"id": 12, "nom": "Forex Master Fund", "prix_usd": 100, "revenu_journalier_usd": 0.90, "image": "forex.jpg"},
-    {"id": 13, "nom": "Currency Trader Pro", "prix_usd": 200, "revenu_journalier_usd": 1.90, "image": "forex.jpg"},
-    {"id": 14, "nom": "Forex Elite Platform", "prix_usd": 500, "revenu_journalier_usd": 5.25, "image": "forex.jpg"},
-    {"id": 15, "nom": "Global Forex Trust", "prix_usd": 1000, "revenu_journalier_usd": 11.00, "image": "forex.jpg"},
-    
-    # Gold Investment (prix en USD) - ROI: ~0.6% à 0.8% par jour (sûr)
-    {"id": 16, "nom": "Gold Reserve Fund", "prix_usd": 200, "revenu_journalier_usd": 1.40, "image": "gold.jpg"},
-    {"id": 17, "nom": "Gold Bullion Premium", "prix_usd": 500, "revenu_journalier_usd": 3.75, "image": "gold.jpg"},
-    {"id": 18, "nom": "Gold Elite Reserve", "prix_usd": 1000, "revenu_journalier_usd": 8.00, "image": "gold.jpg"},
-    {"id": 19, "nom": "Gold Platinum Vault", "prix_usd": 5000, "revenu_journalier_usd": 42.50, "image": "gold.jpg"},
-    
-    # VIP Premium (prix en USD) - ROI: 1.2% à 1.5% par jour (le plus élevé)
-    {"id": 20, "nom": "VIP Diamond Club", "prix_usd": 1000, "revenu_journalier_usd": 13.00, "image": "vip.jpg"},
-    {"id": 21, "nom": "VIP Platinum Elite", "prix_usd": 2500, "revenu_journalier_usd": 35.00, "image": "vip.jpg"},
-    {"id": 22, "nom": "VIP Exclusive Fund", "prix_usd": 5000, "revenu_journalier_usd": 72.50, "image": "vip.jpg"},
-    {"id": 23, "nom": "VIP Ultimate Trust", "prix_usd": 10000, "revenu_journalier_usd": 150.00, "image": "vip.jpg"},
+    # ── 40% Rendement annuel ──────────────────────────────────────
+    {
+        "id": 1, "nom": "Pack 1", "prix_usd": 25,
+        "revenu_journalier_usd": 0.33, "revenu_mensuel_usd": 10,
+        "revenu_annuel_usd": 120, "rendement": 40,
+        "category": "r40", "image": "ai.jpg"
+    },
+    {
+        "id": 2, "nom": "Pack 2", "prix_usd": 70,
+        "revenu_journalier_usd": 0.93, "revenu_mensuel_usd": 28,
+        "revenu_annuel_usd": 336, "rendement": 40,
+        "category": "r40", "image": "ai.jpg"
+    },
+    {
+        "id": 3, "nom": "Pack 3", "prix_usd": 160,
+        "revenu_journalier_usd": 2.13, "revenu_mensuel_usd": 64,
+        "revenu_annuel_usd": 768, "rendement": 40,
+        "category": "r40", "image": "ai.jpg"
+    },
+    {
+        "id": 4, "nom": "Pack 4", "prix_usd": 340,
+        "revenu_journalier_usd": 4.53, "revenu_mensuel_usd": 136,
+        "revenu_annuel_usd": 1632, "rendement": 40,
+        "category": "r40", "image": "ai.jpg"
+    },
+    {
+        "id": 5, "nom": "Pack 5", "prix_usd": 700,
+        "revenu_journalier_usd": 9.33, "revenu_mensuel_usd": 280,
+        "revenu_annuel_usd": 3360, "rendement": 40,
+        "category": "r40", "image": "ai.jpg"
+    },
+    # ── 45% Rendement annuel ──────────────────────────────────────
+    {
+        "id": 6, "nom": "Pack 6", "prix_usd": 1000,
+        "revenu_journalier_usd": 15.00, "revenu_mensuel_usd": 450,
+        "revenu_annuel_usd": 5400, "rendement": 45,
+        "category": "r45", "image": "ai.jpg"
+    },
+    {
+        "id": 7, "nom": "Pack 7", "prix_usd": 1420,
+        "revenu_journalier_usd": 21.30, "revenu_mensuel_usd": 639,
+        "revenu_annuel_usd": 7668, "rendement": 45,
+        "category": "r45", "image": "ai.jpg"
+    },
+    # ── 51% Rendement annuel ──────────────────────────────────────
+    {
+        "id": 8, "nom": "Pack 8", "prix_usd": 2860,
+        "revenu_journalier_usd": 48.62, "revenu_mensuel_usd": 1458.60,
+        "revenu_annuel_usd": 17503.20, "rendement": 51,
+        "category": "r51", "image": "ai.jpg"
+    },
+    {
+        "id": 9, "nom": "Pack 9", "prix_usd": 5740,
+        "revenu_journalier_usd": 97.58, "revenu_mensuel_usd": 2927.40,
+        "revenu_annuel_usd": 35128.80, "rendement": 51,
+        "category": "r51", "image": "ai.jpg"
+    },
+    {
+        "id": 10, "nom": "Pack 10", "prix_usd": 11500,
+        "revenu_journalier_usd": 195.50, "revenu_mensuel_usd": 5865,
+        "revenu_annuel_usd": 70380, "rendement": 51,
+        "category": "r51", "image": "ai.jpg"
+    },
 ]
 
 def convertir_prix_en_usd(produit):
@@ -2642,27 +3295,55 @@ def produits_rapide_page():
     phone = get_logged_in_user_phone()
     user = User.query.filter_by(phone=phone).first()
 
-    # Get active custom products from database (ONLY custom products, no default PRODUITS_VIP)
+    # 1. Construire la liste des packs statiques officiels TokenFlow
+    produits = []
+    for p in PRODUITS_VIP:
+        entry = p.copy()
+        # S'assurer que les champs optionnels sont présents
+        entry.setdefault("revenu_mensuel_usd", round(entry["revenu_journalier_usd"] * 30, 2))
+        entry.setdefault("revenu_annuel_usd", round(entry["revenu_journalier_usd"] * 365, 2))
+        entry.setdefault("rendement", 40)
+        entry.setdefault("category", "r40")
+        entry.setdefault("is_custom", False)
+        entry.setdefault("description", "")
+        produits.append(entry)
+
+    # 2. Ajouter les produits personnalisés créés par l'admin (base de données)
     custom_products_db = CustomProduct.query.filter_by(is_active=True).order_by(CustomProduct.created_at.desc()).all()
-    
-    # Convert custom products to same format as before
-    custom_products = []
     for p in custom_products_db:
-        custom_products.append({
-            "id": p.id,  # Direct ID from database
+        daily = float(p.daily_revenue_usd or 0)
+        produits.append({
+            "id": p.id,
             "nom": p.name,
-            "prix_usd": p.price_usd,
-            "revenu_journalier_usd": p.daily_revenue_usd,
+            "prix_usd": float(p.price_usd or 0),
+            "revenu_journalier_usd": daily,
+            "revenu_mensuel_usd": round(daily * 30, 2),
+            "revenu_annuel_usd": round(daily * 365, 2),
+            "rendement": 40,
             "image": p.image_filename or "ai.jpg",
             "is_custom": True,
-            "category": p.category or "stable",
+            "category": p.category or "custom",
             "description": p.description or ""
         })
+
+    # Filtrage par catégorie (query param: ?category=r40|r45|r51|all)
+    selected_category = request.args.get('category', 'all')
+    if selected_category and selected_category != 'all':
+        produits = [p for p in produits if p.get('category') == selected_category]
+
+    categories = [
+        {"code": "all", "label": "Tous"},
+        {"code": "r40", "label": "40% Rendement"},
+        {"code": "r45", "label": "45% Rendement"},
+        {"code": "r51", "label": "51% Rendement"},
+    ]
 
     return render_template(
         "produits_rapide.html",
         user=user,
-        produits=custom_products
+        produits=produits,
+        categories=categories,
+        selected_category=selected_category
     )
 
 @app.route("/produits_rapide/confirmer/<int:vip_id>", methods=["GET", "POST"])
@@ -2671,21 +3352,30 @@ def confirmer_produit_rapide(vip_id):
     phone = get_logged_in_user_phone()
     user = User.query.filter_by(phone=phone).first()
 
-    # Look for custom product directly by ID (no offset)
-    custom_product = CustomProduct.query.get(vip_id)
-    if custom_product and custom_product.is_active:
-        produit = {
-            "id": vip_id,
-            "nom": custom_product.name,
-            "prix_usd": custom_product.price_usd,
-            "revenu_journalier_usd": custom_product.daily_revenue_usd,
-            "image": custom_product.image_filename or "ai.jpg",
-            "is_custom": True,
-            "description": custom_product.description or ""
-        }
+    # 1. Chercher d'abord dans les packs statiques PRODUITS_VIP
+    produit = next((p.copy() for p in PRODUITS_VIP if p["id"] == vip_id), None)
+    if produit:
+        produit.setdefault("is_custom", False)
+        produit.setdefault("description", "")
     else:
-        flash("Produit introuvable.", "danger")
-        return redirect(url_for("produits_rapide_page"))
+        # 2. Sinon chercher dans les produits custom de l'admin
+        custom_product = CustomProduct.query.get(vip_id)
+        if custom_product and custom_product.is_active:
+            produit = {
+                "id": vip_id,
+                "nom": custom_product.name,
+                "prix_usd": float(custom_product.price_usd or 0),
+                "revenu_journalier_usd": float(custom_product.daily_revenue_usd or 0),
+                "revenu_mensuel_usd": round(float(custom_product.daily_revenue_usd or 0) * 30, 2),
+                "revenu_annuel_usd": round(float(custom_product.daily_revenue_usd or 0) * 365, 2),
+                "rendement": 40,
+                "image": custom_product.image_filename or "ai.jpg",
+                "is_custom": True,
+                "description": custom_product.description or ""
+            }
+        else:
+            flash("Produit introuvable.", "danger")
+            return redirect(url_for("produits_rapide_page"))
 
     # Conversion USD vers XOF (1 USD = 625 XOF)
     montant_usd = float(produit["prix_usd"])
@@ -2748,22 +3438,24 @@ def valider_produit_rapide(vip_id):
         flash("Produit introuvable.", "danger")
         return redirect(url_for("produits_rapide_page"))
 
-    montant = produit["prix"]
+    # Compatibilité avec les nouveaux produits: utiliser les clés USD
+    montant_usd = float(produit.get("prix_usd", produit.get("prix", 0)))
+    revenu_journalier_usd = float(produit.get("revenu_journalier_usd", produit.get("revenu_journalier", 0)))
 
-    if user.solde_total < montant:
+    if user.solde_total < montant_usd:
         flash("Solde insuffisant.", "danger")
         return redirect(url_for("produits_rapide_page"))
 
     inv = Investissement(
         phone=phone,
-        montant=montant,
-        revenu_journalier=produit["revenu_journalier"],
+        montant=montant_usd,
+        revenu_journalier=revenu_journalier_usd,
         duree=120,
         actif=True
     )
     db.session.add(inv)
 
-    user.solde_total -= montant
+    user.solde_total -= montant_usd
     db.session.commit()
 
     return render_template("achat_rapide_loader.html", produit=produit)
@@ -4215,37 +4907,41 @@ VAPID_CLAIMS = {
 def _generate_vapid_keys():
     """Génère une nouvelle paire de clés VAPID en utilisant py_vapid."""
     try:
-        from py_vapid import Vapid
+        from py_vapid import Vapid02
+        import ecdsa
         
-        # Generate new VAPID keys using py_vapid
-        vapid = Vapid()
+        # Generate new VAPID keys using Vapid02
+        vapid = Vapid02()
+        
+        # Generate the keys
+        vapid.generate_keys()
         
         # Get private key as base64url (32 bytes)
-        private_key = base64.urlsafe_b64encode(vapid.private_raw).rstrip(b'=').decode('ascii')
+        # The private key is the raw secret key
+        private_bytes = vapid.private_key.to_string()
+        private_key = base64.urlsafe_b64encode(private_bytes).rstrip(b'=').decode('ascii')
         
         # Get public key in UNCOMPRESSED format (65 bytes WITH 0x04 prefix)
-        # This is the format required by Web Push API
-        public_key_raw = vapid.public_raw
-        
-        # If the key doesn't have the 0x04 prefix, add it
-        if len(public_key_raw) == 64:
-            # Add 0x04 prefix for uncompressed format
-            public_key_raw = b'\x04' + public_key_raw
-        elif len(public_key_raw) == 65 and public_key_raw[0] != 0x04:
-            # Replace first byte with 0x04
-            public_key_raw = b'\x04' + public_key_raw[1:]
+        # Vapid02 provides public_key as PEM, so we need the raw format
+        public_bytes = vapid.public_key.to_string()
+        # Add 0x04 prefix for uncompressed format
+        public_key_raw = b'\x04' + public_bytes
         
         # Encode as base64url without padding
         public_key = base64.urlsafe_b64encode(public_key_raw).rstrip(b'=').decode('ascii')
         
-        print(f"🔑 Clés VAPID générées - Private length: {len(private_key)}, Public length: {len(public_key)} (format: 65 bytes avec 0x04)")
+        print(f"🔑 Clés VAPID générées avec succès")
+        print(f"   Private key length: {len(private_key)} chars")
+        print(f"   Public key length: {len(public_key)} chars")
         
         return private_key, public_key
     except ImportError:
         print("❌ py_vapid n'est pas installé. Installez-le avec: pip install py-vapid")
         return None, None
     except Exception as e:
-        print(f"❌ Erreur génération clés VAPID: {e}")
+        print(f"❌ Erreur génération clés VAPID: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
         return None, None
 
 def get_vapid_keys():

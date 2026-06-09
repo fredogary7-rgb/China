@@ -697,12 +697,15 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="/admin/user/{{ user.id }}/view" class="action-btn view" title="Voir détails">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
+                            <button class="action-btn validate" onclick="openCreditModal({{ user.id }}, '{{ user.phone }}', {{ user.solde_total or 0 }})" title="Créditer">
+                                <i class="fa-solid fa-plus-circle"></i> Créditer
+                            </button>
+                            <button class="action-btn reject" onclick="openDebitModal({{ user.id }}, '{{ user.phone }}', {{ user.solde_total or 0 }})" title="débiter">
+                                <i class="fa-solid fa-minus-circle"></i> débiter
+                            </button>
                             {% if not user.is_admin %}
-                            <a href="/admin/user/{{ user.id }}/toggle-ban" class="action-btn ban" title="{{ 'Débannir' if user.is_banned else 'Bannir' }}" onclick="return confirm('Confirmer cette action ?');">
-                                <i class="fa-solid fa-{{ 'unlock' if user.is_banned else 'ban' }}"></i>
+                            <a href="/admin/user/{{ user.id }}/toggle-ban" class="action-btn ban" title="{{ 'Débannir' if user.is_banned else 'Bannir' }}" onclick="return confirm('Confirmer cette action ?');"></a>
+                                <i class="fa-solid fa-{{ 'unlock' if user.is_banned else 'ban' }}"></i> {{ 'Débannir' if user.is_banned else 'Bannir' }}
                             </a>
                             {% endif %}
                         </td>
@@ -833,13 +836,17 @@
                             </span>
                         </td>
                         <td>
-                            {% if retrait.statut == "en_attente" %}
+                            {% if retrait.statut == "en_attente" or retrait.statut == "En attente" %}
                                 <a href="/admin/retraits/valider/{{ retrait.id }}" class="action-btn validate" title="Valider">
-                                    <i class="fa-solid fa-check"></i>
+                                    <i class="fa-solid fa-check"></i> Valider
                                 </a>
                                 <a href="/admin/retraits/refuser/{{ retrait.id }}" class="action-btn reject" title="Refuser" onclick="return confirm('Confirmer le refus ?');">
-                                    <i class="fa-solid fa-xmark"></i>
+                                    <i class="fa-solid fa-xmark"></i> Refuser
                                 </a>
+                            {% elif retrait.statut == "validé" or retrait.statut == "Validé" %}
+                                <span style="color: var(--success); font-size: 12px;"><i class="fa-solid fa-check-circle"></i> Validé</span>
+                            {% elif retrait.statut == "refusé" or retrait.statut == "Refusé" %}
+                                <span style="color: var(--danger); font-size: 12px;"><i class="fa-solid fa-xmark-circle"></i> Refusé</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -1061,7 +1068,107 @@
     </div>
 </div>
 
+<!-- Credit Modal -->
+<div class="modal-overlay" id="creditModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-plus-circle" style="color: var(--success);"></i> Créditer un utilisateur</h3>
+            <button class="modal-close" onclick="closeModal('creditModal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <form action="/admin/user/balance" method="POST">
+                <input type="hidden" name="user_id" id="creditUserId">
+                <input type="hidden" name="action" value="credit">
+                
+                <div class="detail-row">
+                    <span class="detail-label">Utilisateur</span>
+                    <span class="detail-value" id="creditUserName">-</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Solde actuel</span>
+                    <span class="detail-value" id="creditCurrentBalance">$0.00</span>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Montant à créditer (USD)</label>
+                    <input type="number" name="montant" step="0.01" min="0.01" placeholder="0.00" required style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 16px;">
+                </div>
+                
+                <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="action-btn reject" onclick="closeModal('creditModal')" style="padding: 12px 24px;">Annuler</button>
+                    <button type="submit" class="action-btn validate" style="padding: 12px 24px;"><i class="fa-solid fa-plus-circle"></i> Créditer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Debit Modal -->
+<div class="modal-overlay" id="debitModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-minus-circle" style="color: var(--danger);"></i> débiter un utilisateur</h3>
+            <button class="modal-close" onclick="closeModal('debitModal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <form action="/admin/user/balance" method="POST">
+                <input type="hidden" name="user_id" id="debitUserId">
+                <input type="hidden" name="action" value="debit">
+                
+                <div class="detail-row">
+                    <span class="detail-label">Utilisateur</span>
+                    <span class="detail-value" id="debitUserName">-</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Solde actuel</span>
+                    <span class="detail-value" id="debitCurrentBalance">$0.00</span>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Montant à débiter (USD)</label>
+                    <input type="number" name="montant" step="0.01" min="0.01" placeholder="0.00" required style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 16px;">
+                </div>
+                
+                <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="action-btn reject" onclick="closeModal('debitModal')" style="padding: 12px 24px;">Annuler</button>
+                    <button type="submit" class="action-btn reject" style="padding: 12px 24px;"><i class="fa-solid fa-minus-circle"></i> débiter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+// Modal functions
+function openCreditModal(userId, userPhone, currentBalance) {
+    document.getElementById('creditUserId').value = userId;
+    document.getElementById('creditUserName').textContent = userPhone;
+    document.getElementById('creditCurrentBalance').textContent = '$' + currentBalance.toFixed(2);
+    document.getElementById('creditModal').classList.add('active');
+}
+
+function openDebitModal(userId, userPhone, currentBalance) {
+    document.getElementById('debitUserId').value = userId;
+    document.getElementById('debitUserName').textContent = userPhone;
+    document.getElementById('debitCurrentBalance').textContent = '$' + currentBalance.toFixed(2);
+    document.getElementById('debitModal').classList.add('active');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+// Close modal when clicking outside
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('active');
+        }
+    });
+});
+
 // Section navigation
 function showSection(sectionId) {
     // Hide all sections
