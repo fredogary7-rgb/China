@@ -1981,21 +1981,43 @@ def reset_password_page():
 @app.route("/connexion", methods=["GET", "POST"])
 def connexion_page():
     if request.method == "POST":
-        phone = request.form.get("phone", "").strip()
+        identifier = request.form.get("identifier", "").strip()
         password = request.form.get("password", "").strip()
 
-        if not phone or not password:
+        if not identifier or not password:
             flash({"title": "Erreur", "message": "Veuillez remplir tous les champs."}, "danger")
             return redirect(url_for("connexion_page"))
 
-        user = User.query.filter_by(phone=phone).first()
+        # Déterminer si l'identifiant est un email ou un numéro
+        user = None
+        if "@" in identifier:
+            user = User.query.filter_by(email=identifier.lower()).first()
+        else:
+            user = User.query.filter_by(phone=identifier).first()
 
         if not user:
-            flash({"title": "Erreur", "message": "Numéro introuvable."}, "danger")
+            flash({"title": "Erreur", "message": "Identifiant introuvable."}, "danger")
             return redirect(url_for("connexion_page"))
 
         if user.password != password:
             flash({"title": "Erreur", "message": "Mot de passe incorrect."}, "danger")
+            return redirect(url_for("connexion_page"))
+
+        # Toujours exiger la vérification par email
+        if not getattr(user, 'email_verified', False):
+            try:
+                token = generate_verification_token()
+                user.email_verification_token = token
+                user.verification_token_expires = datetime.utcnow() + timedelta(hours=24)
+                db.session.commit()
+                sent = send_verification_email(user.email, token)
+                if sent:
+                    flash("⚠️ Votre email n'est pas vérifié. Un email de vérification vient d'être envoyé.", "warning")
+                else:
+                    flash("⚠️ Impossible d'envoyer l'email de vérification. Contactez le support.", "warning")
+            except Exception as e:
+                print(f"Erreur envoi email de vérification: {e}")
+                flash("⚠️ Erreur lors de l'envoi du mail de vérification.", "warning")
             return redirect(url_for("connexion_page"))
 
         # Generate and send OTP before login
@@ -3304,7 +3326,6 @@ def confirmer_produit_rapide(vip_id):
 
     # CORRECTION ICI : Déduction du solde en Dollars
     user.solde_total -= montant_usd
-    credit_user_revenu(user, 5)
 
     # Création de l'investissement (durée: 30 jours) en USD
     inv = Investissement(
@@ -4222,7 +4243,9 @@ def google_callback():
         user = User.query.filter_by(google_id=google_id).first()
         
         if user:
-            # Connexion existante
+            if user.phone.startswith('google_') or not is_valid_phone(user.phone):
+                session['pending_oauth_user_id'] = user.id
+                return redirect(url_for('oauth_add_phone'))
             session['phone'] = user.phone
             flash("✅ Connecté avec Google !", "success")
             return redirect(url_for('dashboard_page'))
@@ -4234,6 +4257,9 @@ def google_callback():
                 # Lier le compte Google à l'utilisateur existant
                 user.google_id = google_id
                 db.session.commit()
+                if user.phone.startswith('google_') or not is_valid_phone(user.phone):
+                    session['pending_oauth_user_id'] = user.id
+                    return redirect(url_for('oauth_add_phone'))
                 session['phone'] = user.phone
                 flash("✅ Google lié à votre compte !", "success")
                 return redirect(url_for('dashboard_page'))
@@ -4263,14 +4289,14 @@ def google_callback():
             solde_depot=1,
             solde_revenu=0,
             solde_parrainage=0,
-            parrain_code=parrain_code_value
+            parrain_code=parrain_code_value,
+            email_verified=True
         )
         db.session.add(new_user)
         db.session.commit()
         
-        session['phone'] = new_user.phone
-        flash("🎉 Compte créé avec Google ! Bienvenue sur TokenFlow.", "success")
-        return redirect(url_for('dashboard_page'))
+        session['pending_oauth_user_id'] = new_user.id
+        return redirect(url_for('oauth_add_phone'))
             
     except Exception as e:
         flash(f"Erreur lors de la connexion Google: {str(e)}", "danger")
@@ -4298,6 +4324,9 @@ def google_callback_json():
         user = User.query.filter_by(google_id=google_id).first()
         
         if user:
+            if user.phone.startswith('google_') or not is_valid_phone(user.phone):
+                session['pending_oauth_user_id'] = user.id
+                return jsonify({'url': url_for('oauth_add_phone')})
             session['phone'] = user.phone
             return jsonify({'url': url_for('dashboard_page')})
         
@@ -4307,6 +4336,9 @@ def google_callback_json():
             if user:
                 user.google_id = google_id
                 db.session.commit()
+                if user.phone.startswith('google_') or not is_valid_phone(user.phone):
+                    session['pending_oauth_user_id'] = user.id
+                    return jsonify({'url': url_for('oauth_add_phone')})
                 session['phone'] = user.phone
                 return jsonify({'url': url_for('dashboard_page')})
         
@@ -4324,16 +4356,57 @@ def google_callback_json():
             solde_total=1000,
             solde_depot=1000,
             solde_revenu=0,
-            solde_parrainage=0
+            solde_parrainage=0,
+            email_verified=True
         )
         db.session.add(new_user)
         db.session.commit()
         
-        session['phone'] = new_user.phone
-        return jsonify({'url': url_for('dashboard_page')})
+        session['pending_oauth_user_id'] = new_user.id
+        return jsonify({'url': url_for('oauth_add_phone')})
             
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
+@app.route("/auth/oauth/add-phone", methods=["GET", "POST"])
+def oauth_add_phone():
+    user_id = session.get('pending_oauth_user_id')
+    if not user_id:
+        flash("Session expirée. Veuillez vous reconnecter.", "danger")
+        return redirect(url_for('connexion_page'))
+
+    user = User.query.get(user_id)
+    if not user:
+        session.pop('pending_oauth_user_id', None)
+        flash("Utilisateur introuvable. Veuillez réessayer.", "danger")
+        return redirect(url_for('connexion_page'))
+
+    if request.method == 'POST':
+        phone = request.form.get('phone', '').strip()
+        if not phone:
+            flash("Veuillez entrer votre numéro de téléphone.", "danger")
+            return redirect(url_for('oauth_add_phone'))
+
+        if not is_valid_phone(phone):
+            flash("Numéro invalide. Utilisez le format international, ex: +22997000000.", "danger")
+            return redirect(url_for('oauth_add_phone'))
+
+        existing = User.query.filter(User.phone == phone, User.id != user.id).first()
+        if existing:
+            flash("Ce numéro est déjà utilisé par un autre compte.", "danger")
+            return redirect(url_for('oauth_add_phone'))
+
+        user.phone = phone
+        user.email_verified = True
+        db.session.commit()
+
+        session['phone'] = user.phone
+        session.pop('pending_oauth_user_id', None)
+
+        flash("✅ Numéro enregistré avec succès. Vous êtes maintenant connecté.", "success")
+        return redirect(url_for('dashboard_page'))
+
+    return render_template('oauth_add_phone.html', user=user)
 
 @app.route("/auth/apple")
 def auth_apple():

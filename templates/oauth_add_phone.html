@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Compléter votre numéro | TokenFlow{% endblock %}
+
+{% block body_class %}auth-page{% endblock %}
+
+{% block page_styles %}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-2xl);
+  padding: 32px 24px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+}
+
+.auth-card h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.form-group input:focus {
+  border-color: var(--primary);
+  background: var(--bg-card-solid);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 16px;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px var(--primary-glow);
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.auth-footer a {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Compléter votre profil</h2>
+    <p style="margin-bottom: 24px; color: var(--text-secondary); text-align: center;">
+      Vous avez démarré avec Google. Pour terminer l'inscription, veuillez renseigner un numéro de téléphone valide.
+    </p>
+
+    <form method="POST" action="/auth/oauth/add-phone">
+      <div class="form-group">
+        <label>Numéro de téléphone</label>
+        <input type="text" name="phone" placeholder="+22997000000" required>
+      </div>
+
+      <button type="submit" class="btn-submit">Enregistrer mon numéro</button>
+    </form>
+  </div>
+
+  <div class="auth-footer">
+    Vous pouvez revenir à la <a href="/connexion">connexion</a> si vous avez déjà un compte.
+  </div>
+</div>
+{% endblock %}
