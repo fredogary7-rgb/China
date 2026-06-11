@@ -1899,6 +1899,44 @@ def resend_otp_page(action):
                     flash(f"⚠️ Impossible de renvoyer le code OTP. {error or 'Réessayez plus tard.'}", "warning")
     return redirect(url_for("verify_otp_page", action=action))
 
+@app.route("/verify-email/<token>")
+def verify_email(token):
+    """Route pour vérifier l'email d'un utilisateur via le token de vérification."""
+    user = User.query.filter_by(email_verification_token=token).first()
+    
+    if not user:
+        flash("Lien de vérification invalide ou expiré.", "danger")
+        return redirect(url_for("connexion_page"))
+    
+    # Vérifier si le token a expiré (24 heures)
+    if user.verification_token_expires and datetime.utcnow() > user.verification_token_expires:
+        flash("Lien de vérification expiré. Veuillez vous reconnecter pour en recevoir un nouveau.", "danger")
+        # Réinitialiser le token pour permettre une nouvelle vérification
+        user.email_verification_token = None
+        user.verification_token_expires = None
+        db.session.commit()
+        return redirect(url_for("connexion_page"))
+    
+    # Vérifier si l'email est déjà vérifié
+    if user.email_verified:
+        flash("Votre email est déjà vérifié.", "success")
+        return redirect(url_for("dashboard_page"))
+    
+    # Marquer l'email comme vérifié
+    user.email_verified = True
+    user.email_verification_token = None
+    user.verification_token_expires = None
+    db.session.commit()
+    
+    flash("✅ Votre email a été vérifié avec succès !", "success")
+    
+    # Si l'utilisateur est connecté, le rediriger vers le dashboard
+    if session.get('phone'):
+        return redirect(url_for("dashboard_page"))
+    
+    # Sinon, le rediriger vers la page de connexion
+    return redirect(url_for("connexion_page"))
+
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password_page():
     if request.method == "POST":

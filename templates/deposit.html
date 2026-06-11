@@ -558,6 +558,19 @@
 </div>
 
 <script>
+// Check for amount parameter in URL and pre-fill the amount field
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const amount = urlParams.get('amount');
+  if (amount) {
+    const amountInput = document.getElementById('montant');
+    amountInput.value = amount;
+    // Highlight the input to show it was pre-filled
+    amountInput.style.borderColor = 'var(--primary)';
+    amountInput.style.boxShadow = '0 0 0 3px var(--primary-light)';
+  }
+});
+
 // SoleasPay services by country (hardcoded for reliability)
 const soleasServicesByCountry = {
   "Togo": [
