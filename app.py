@@ -1694,6 +1694,7 @@ def send_product_notification_email_with_image(user_email, product_name, descrip
             return False, "Utilisateur désinscrit"
         
         header = get_email_header()
+        footer = get_email_footer().format(user_email=user_email)
         
         html_content = f'''{header}
                     <!-- Product Announcement -->
@@ -1942,7 +1943,11 @@ def broadcast_new_product_email(product, scheduled=False):
                 results['notifications'] += 1
                 
                 # 2. Envoyer l'email avec image du produit
-                image_url = url_for('static', filename=f'vlogs/{image_filename}', _external=True) if image_filename else url_for('static', filename='vlogs/ai.jpg', _external=True)
+                # Utiliser une URL absolue explicite pour garantir que l'image s'affiche dans l'email
+                if image_filename:
+                    image_url = f"https://{SERVER_NAME}/static/vlogs/{image_filename}"
+                else:
+                    image_url = f"https://{SERVER_NAME}/static/vlogs/ai.jpg"
                 
                 success, error = send_product_notification_email_with_image(
                     user.email,
@@ -3809,6 +3814,37 @@ def confirmer_produit_rapide(vip_id):
     )
     db.session.add(inv)
     db.session.commit()
+
+    # Envoyer un email de confirmation d'investissement
+    try:
+        # Récupérer l'image du produit
+        image_filename = produit.get('image', 'ai.jpg')
+        if image_filename:
+            image_url = f"https://{SERVER_NAME}/static/vlogs/{image_filename}"
+        else:
+            image_url = f"https://{SERVER_NAME}/static/vlogs/ai.jpg"
+        
+        # Envoyer l'email avec les détails du produit
+        send_product_notification_email_with_image(
+            user.email,
+            produit['nom'],
+            produit.get('description', f"Investissement à {(daily_roi/price*100):.1f}% de rendement journalier"),
+            revenu_journalier_usd,
+            montant_usd,
+            image_url,
+            user.username or user.phone
+        )
+        
+        # Créer une notification in-app
+        create_notification(
+            phone,
+            'investment',
+            '✅ Investissement confirmé !',
+            f'Vous avez investi ${montant_usd:.2f} USD dans {produit["nom"]}. Revenu journalier: ${revenu_journalier_usd:.2f} USD',
+            url_for('dashboard_page', _external=True)
+        )
+    except Exception as e:
+        print(f"Erreur envoi email confirmation investissement: {e}")
 
     return render_template(
         "confirm_rapide.html",

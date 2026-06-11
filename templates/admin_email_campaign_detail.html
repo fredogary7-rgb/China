@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails Campagne #{{ campaign.id }} | TokenFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-light: rgba(99, 102, 241, 0.1);
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --bg: #F1F5F9;
+            --white: #FFFFFF;
+            --text: #0F172A;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { background: var(--bg); color: var(--text); min-height: 100vh; }
+        
+        .admin-header {
+            background: var(--white);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .admin-header h1 {
+            font-size: 20px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-header h1 i { color: var(--primary); }
+        
+        .content { padding: 24px; }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb span {
+            color: var(--text-muted);
+        }
+        
+        .page-header {
+            margin-bottom: 24px;
+        }
+        
+        .page-header h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+        
+        .stat-card.blue::before { background: var(--primary); }
+        .stat-card.green::before { background: var(--success); }
+        .stat-card.red::before { background: var(--danger); }
+        .stat-card.purple::before { background: #8B5CF6; }
+        .stat-card.yellow::before { background: var(--warning); }
+        
+        .stat-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .stat-card.blue .icon { background: var(--primary-light); color: var(--primary); }
+        .stat-card.green .icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .stat-card.red .icon { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .stat-card.purple .icon { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+        .stat-card.yellow .icon { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--text);
+        }
+        
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .section-card {
+            background: var(--white);
+            border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+        }
+        
+        .section-card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-card-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-card-body {
+            padding: 20px;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .detail-item {
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .detail-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .status-badge.completed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .status-badge.sending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-badge.failed {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .status-badge.pending {
+            background: rgba(100, 116, 139, 0.1);
+            color: var(--text-muted);
+        }
+        
+        .type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        
+        .type-badge.product {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+        }
+        
+        .type-badge.promotion {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .type-badge.general {
+            background: rgba(100, 116, 139, 0.1);
+            color: var(--text-muted);
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .action-btn.view {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .action-btn.view:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .data-table {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: #F8FAFC;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            vertical-align: middle;
+        }
+        
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background: #F8FAFC; }
+        
+        .log-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .log-status.sent {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .log-status.failed {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        
+        .empty-state h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        
+        .product-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+        
+        .product-image {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: var(--white);
+        }
+        
+        .product-info h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .product-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .date-text {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .email-preview {
+            padding: 20px;
+            background: var(--bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-top: 16px;
+        }
+        
+        .email-preview h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+        
+        .email-preview-content {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-header { padding: 12px 16px; }
+            .content { padding: 16px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .data-table { overflow-x: auto; }
+            .data-table table { min-width: 700px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-header">
+    <h1><i class="fa-solid fa-chart-pie"></i> Détails Campagne #{{ campaign.id }}</h1>
+    <a href="{{ url_for('admin_email_campaigns') }}" class="action-btn view">
+        <i class="fa-solid fa-arrow-left"></i> Retour
+    </a>
+</div>
+
+<div class="content">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+        <span>/</span>
+        <a href="{{ url_for('admin_email_campaigns') }}">Campagnes</a>
+        <span>/</span>
+        <span style="color: var(--text); font-weight: 600;">#{{ campaign.id }}</span>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h2>
+            <i class="fa-solid fa-envelope-open-text" style="color: var(--primary);"></i>
+            Campagne #{{ campaign.id }}
+        </h2>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card blue">
+            <div class="icon"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="value">{{ campaign.emails_sent + campaign.emails_failed }}</div>
+            <div class="label">Total Tentatives</div>
+        </div>
+        
+        <div class="stat-card green">
+            <div class="icon"><i class="fa-solid fa-envelope-circle-check"></i></div>
+            <div class="value">{{ campaign.emails_sent }}</div>
+            <div class="label">Emails Envoyés</div>
+        </div>
+        
+        <div class="stat-card red">
+            <div class="icon"><i class="fa-solid fa-circle-xmark"></i></div>
+            <div class="value">{{ campaign.emails_failed }}</div>
+            <div class="label">Échecs</div>
+        </div>
+        
+        <div class="stat-card purple">
+            <div class="icon"><i class="fa-solid fa-bell"></i></div>
+            <div class="value">{{ campaign.push_sent }}</div>
+            <div class="label">Notifications Push</div>
+        </div>
+        
+        {% set total = campaign.emails_sent + campaign.emails_failed %}
+        {% if total > 0 %}
+        {% set rate = (campaign.emails_sent / total * 100) | round(1) %}
+        <div class="stat-card yellow">
+            <div class="icon"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="value">{{ rate }}%</div>
+            <div class="label">Taux de Réussite</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Détails de la campagne -->
+    <div class="section-card">
+        <div class="section-card-header">
+            <h3><i class="fa-solid fa-info-circle" style="color: var(--primary);"></i> Informations de la Campagne</h3>
+        </div>
+        <div class="section-card-body">
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Type</div>
+                    <div class="detail-value">
+                        <span class="type-badge {{ campaign.campaign_type }}">
+                            {% if campaign.campaign_type == 'product' %}
+                                <i class="fa-solid fa-box"></i>
+                            {% elif campaign.campaign_type == 'promotion' %}
+                                <i class="fa-solid fa-percent"></i>
+                            {% else %}
+                                <i class="fa-solid fa-envelope"></i>
+                            {% endif %}
+                            {{ campaign.campaign_type }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Statut</div>
+                    <div class="detail-value">
+                        <span class="status-badge {{ campaign.status }}">
+                            {% if campaign.status == 'completed' %}
+                                <i class="fa-solid fa-check"></i> Terminée
+                            {% elif campaign.status == 'sending' %}
+                                <i class="fa-solid fa-spinner fa-spin"></i> En cours
+                            {% elif campaign.status == 'failed' %}
+                                <i class="fa-solid fa-xmark"></i> Échouée
+                            {% else %}
+                                <i class="fa-solid fa-clock"></i> En attente
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Sujet</div>
+                    <div class="detail-value">{{ campaign.subject }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Date de création</div>
+                    <div class="detail-value date-text">
+                        {{ campaign.created_at.strftime('%d/%m/%Y %H:%M:%S') if campaign.created_at else 'N/A' }}
+                    </div>
+                </div>
+                
+                {% if campaign.content %}
+                <div class="detail-item" style="grid-column: span 2;">
+                    <div class="detail-label">Contenu</div>
+                    <div class="email-preview">
+                        <h4><i class="fa-solid fa-file-alt"></i> Aperçu du contenu</h4>
+                        <div class="email-preview-content">{{ campaign.content[:500] }}{% if campaign.content|length > 500 %}...{% endif %}</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Barre de progression -->
+            {% if total > 0 %}
+            <div style="margin-top: 24px;">
+                <div class="progress-label">
+                    <span>Progression</span>
+                    <span style="font-weight: 700; color: var(--text);">{{ rate }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ rate }}%;"></div>
+                </div>
+                <div class="progress-label">
+                    <span style="color: var(--success);">{{ campaign.emails_sent }} réussis</span>
+                    <span style="color: var(--danger);">{{ campaign.emails_failed }} échecs</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Produit associé -->
+    {% if product %}
+    <div class="section-card">
+        <div class="section-card-header">
+            <h3><i class="fa-solid fa-box" style="color: var(--primary);"></i> Produit Associé</h3>
+        </div>
+        <div class="section-card-body">
+            <div class="product-card">
+                <img src="{{ url_for('static', filename='vlogs/' + product.image_filename) if product.image_filename else url_for('static', filename='images/ai.jpg') }}" 
+                     alt="{{ product.name }}" 
+                     class="product-image"
+                     onerror="this.src='{{ url_for('static', filename='images/ai.jpg') }}'">
+                <div class="product-info">
+                    <h4>{{ product.name }}</h4>
+                    <p>{{ product.description[:100] if product.description else 'Aucune description' }}{% if product.description and product.description|length > 100 %}...{% endif %}</p>
+                    <p style="margin-top: 8px; font-weight: 700; color: var(--primary);">${{ "%.2f"|format(product.price_usd) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Logs d'emails -->
+    <div class="section-card">
+        <div class="section-card-header">
+            <h3><i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Logs d'Envoi (Derniers 100)</h3>
+        </div>
+        
+        {% if email_logs %}
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email du destinataire</th>
+                        <th>Statut</th>
+                        <th>Date d'envoi</th>
+                        <th>Erreur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in email_logs %}
+                    <tr>
+                        <td><strong>#{{ log.id }}</strong></td>
+                        <td>{{ log.recipient_email }}</td>
+                        <td>
+                            <span class="log-status {{ 'sent' if log.status == 'sent' else 'failed' }}">
+                                {% if log.status == 'sent' %}
+                                    <i class="fa-solid fa-check"></i> Envoyé
+                                {% else %}
+                                    <i class="fa-solid fa-xmark"></i> Échec
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td class="date-text">
+                            {{ log.sent_at.strftime('%d/%m/%Y %H:%M:%S') if log.sent_at else 'N/A' }}
+                        </td>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ log.error_message or '-' }}">
+                            {{ log.error_message or '-' }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <h4>Aucun log trouvé</h4>
+            <p style="font-size: 13px; margin-top: 8px;">Aucun email n'a été envoyé pour cette campagne.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>
