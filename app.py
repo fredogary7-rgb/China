@@ -1849,6 +1849,24 @@ def broadcast_new_product_email(product, scheduled=False):
     from datetime import datetime
     import time
     
+    # Gérer à la fois les objets CustomProduct et les dictionnaires
+    if hasattr(product, 'name'):
+        # C'est un objet CustomProduct (SQLAlchemy model)
+        product_name = product.name
+        description = product.description or ''
+        price_usd = float(product.price_usd)
+        daily_revenue_usd = float(product.daily_revenue_usd)
+        image_filename = product.image_filename or 'ai.jpg'
+        product_id = product.id
+    else:
+        # C'est un dictionnaire
+        product_name = product.get('name', 'Inconnu')
+        description = product.get('description', '')
+        price_usd = float(product.get('price_usd', 0))
+        daily_revenue_usd = float(product.get('daily_revenue_usd', 0))
+        image_filename = product.get('image_filename', 'ai.jpg')
+        product_id = product.get('id', None)
+    
     results = {
         'sent': 0,
         'failed': 0,
@@ -1856,19 +1874,12 @@ def broadcast_new_product_email(product, scheduled=False):
         'push_sent': 0,
         'notifications': 0,
         'errors': [],
-        'product_name': product.get('name', product.name if hasattr(product, 'name') else 'Inconnu'),
+        'product_name': product_name,
         'campaign_id': None,
         'timestamp': datetime.utcnow().isoformat()
     }
     
     try:
-        # Récupérer les informations du produit
-        product_name = product.get('name', product.name) if hasattr(product, 'name') else product['name']
-        description = product.get('description', product.description) if hasattr(product, 'description') else product.get('description', '')
-        price_usd = float(product.get('price_usd', product.price_usd)) if hasattr(product, 'price_usd') else float(product['price_usd'])
-        daily_revenue_usd = float(product.get('daily_revenue_usd', product.daily_revenue_usd)) if hasattr(product, 'daily_revenue_usd') else float(product['daily_revenue_usd'])
-        image_filename = product.get('image_filename', product.image_filename) if hasattr(product, 'image_filename') else product.get('image_filename', 'ai.jpg')
-        product_id = product.id if hasattr(product, 'id') else None
         
         print("=" * 60)
         print(f"📢 [BROADCAST] Démarrage notification nouveau produit: {product_name}")
@@ -4212,6 +4223,191 @@ def admin_delete_product(product_id):
     
     flash("Produit désactivé avec succès.", "success")
     return redirect(url_for("admin_products"))
+
+@app.route("/admin/email-campaigns")
+@login_required
+def admin_email_campaigns():
+    """Page de gestion des campagnes d'emailing."""
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    
+    if not user or not user.is_admin:
+        flash("Accès réservé aux administrateurs.", "danger")
+        return redirect(url_for("connexion_page"))
+    
+    # Récupérer toutes les campagnes
+    campaigns = EmailCampaign.query.order_by(EmailCampaign.created_at.desc()).limit(50).all()
+    
+    # Récupérer les statistiques globales
+    total_campaigns = len(campaigns)
+    total_emails_sent = sum(c.emails_sent for c in campaigns)
+    total_emails_failed = sum(c.emails_failed for c in campaigns)
+    total_push_sent = sum(c.push_sent for c in campaigns)
+    avg_success_rate = (total_emails_sent / (total_emails_sent + total_emails_failed) * 100) if (total_emails_sent + total_emails_failed) > 0 else 0
+    
+    stats = {
+        'total_campaigns': total_campaigns,
+        'total_emails_sent': total_emails_sent,
+        'total_emails_failed': total_emails_failed,
+        'total_push_sent': total_push_sent,
+        'avg_success_rate': round(avg_success_rate, 1)
+    }
+    
+    return render_template("admin_email_campaigns.html", campaigns=campaigns, stats=stats)
+
+@app.route("/admin/email-campaigns/<int:campaign_id>")
+@login_required
+def admin_email_campaign_detail(campaign_id):
+    """Détails d'une campagne d'emailing."""
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    
+    if not user or not user.is_admin:
+        flash("Accès réservé aux administrateurs.", "danger")
+        return redirect(url_for("connexion_page"))
+    
+    campaign = EmailCampaign.query.get_or_404(campaign_id)
+    
+    # Récupérer les logs d'emails pour cette campagne
+    email_logs = EmailLog.query.filter_by(campaign_id=campaign_id).order_by(EmailLog.sent_at.desc()).limit(100).all()
+    
+    # Récupérer le produit associé si existe
+    product = None
+    if campaign.product_id:
+        product = CustomProduct.query.get(campaign.product_id)
+    
+    return render_template("admin_email_campaign_detail.html", campaign=campaign, email_logs=email_logs, product=product)
+
+@app.route("/admin/email-campaigns/<int:campaign_id>/retry", methods=["POST"])
+@login_required
+def admin_retry_campaign(campaign_id):
+    """Relancer une campagne échouée."""
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    
+    if not user or not user.is_admin:
+        return jsonify({'error': 'Accès réservé aux administrateurs'}), 403
+    
+    campaign = EmailCampaign.query.get_or_404(campaign_id)
+    
+    if not campaign.product_id:
+        return jsonify({'error': 'Produit introuvable pour cette campagne'}), 404
+    
+    product = CustomProduct.query.get(campaign.product_id)
+    if not product:
+        return jsonify({'error': 'Produit introuvable'}), 404
+    
+    # Lancer le broadcast en arrière-plan
+    thread = threading.Thread(target=broadcast_new_product_email_async, args=(product.id,))
+    thread.start()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Campagne relancée en arrière-plan'
+    })
+
+@app.route("/admin/email-campaigns/test", methods=["POST"])
+@login_required
+def admin_test_email():
+    """Envoyer un email test."""
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    
+    if not user or not user.is_admin:
+        return jsonify({'error': 'Accès réservé aux administrateurs'}), 403
+    
+    test_email = request.form.get('email', '').strip()
+    if not test_email:
+        return jsonify({'error': 'Email requis'}), 400
+    
+    # Envoyer un email test
+    html_content = f'''{get_email_header()}
+                    <tr>
+                        <td align="center" style="padding: 40px 40px 20px;">
+                            <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0F172A;">Email Test TokenFlow</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 0 40px 30px;">
+                            <p style="margin: 0; font-size: 16px; color: #475569; line-height: 1.7;">Ceci est un email de test envoyé depuis le panneau d'administration TokenFlow.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 0 40px 30px;">
+                            <div style="background: #F0F9FF; border-left: 4px solid #3B82F6; padding: 15px 20px; border-radius: 6px;">
+                                <p style="margin: 0; font-size: 14px; color: #1E40AF;">
+                                    ✅ Si vous recevez cet email, le système SMTP fonctionne correctement !
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+{get_email_footer().format(user_email=test_email)}'''
+    
+    text_content = f"Email Test TokenFlow\n\nCeci est un email de test envoyé depuis le panneau d'administration TokenFlow.\n\n✅ Si you recevez cet email, le système SMTP fonctionne correctement !"
+    
+    success, error = send_email_smtp(
+        test_email,
+        "🧪 Email Test TokenFlow",
+        html_content,
+        text_content
+    )
+    
+    if success:
+        return jsonify({
+            'success': True,
+            'message': f'Email test envoyé avec succès à {test_email}'
+        })
+    else:
+        return jsonify({
+            'success': False,
+            'error': f'Échec de l\'envoi: {error or "Erreur inconnue"}'
+        }), 500
+
+@app.route("/admin/email-campaigns/stats")
+@login_required
+def admin_email_stats():
+    """Statistiques marketing en temps réel."""
+    phone = get_logged_in_user_phone()
+    user = User.query.filter_by(phone=phone).first()
+    
+    if not user or not user.is_admin:
+        return jsonify({'error': 'Accès réservé aux administrateurs'}), 403
+    
+    # Statistiques du jour
+    today = datetime.utcnow().date()
+    
+    # Emails envoyés aujourd'hui
+    emails_today = db.session.query(EmailLog).filter(
+        db.func.date(EmailLog.sent_at) == today,
+        EmailLog.status == 'sent'
+    ).count()
+    
+    # Push envoyées aujourd'hui
+    push_today = db.session.query(func.sum(EmailCampaign.push_sent)).filter(
+        db.func.date(EmailCampaign.created_at) == today
+    ).scalar() or 0
+    
+    # Utilisateurs actifs (email vérifié, non bloqué)
+    active_users = User.query.filter(
+        User.email_verified == True,
+        User.is_banned == False
+    ).count()
+    
+    # Produits publiés
+    products_published = CustomProduct.query.filter_by(is_active=True).count()
+    
+    # Taux moyen de réussite
+    total_sent = db.session.query(func.sum(EmailCampaign.emails_sent)).scalar() or 0
+    total_failed = db.session.query(func.sum(EmailCampaign.emails_failed)).scalar() or 0
+    avg_success_rate = (total_sent / (total_sent + total_failed) * 100) if (total_sent + total_failed) > 0 else 0
+    
+    return jsonify({
+        'emails_today': emails_today,
+        'push_today': push_today,
+        'active_users': active_users,
+        'products_published': products_published,
+        'avg_success_rate': round(avg_success_rate, 1)
+    })
 
 @app.route("/admin/products/edit", methods=["POST"])
 @login_required
