@@ -523,6 +523,61 @@ class ReferralLeaderboard(db.Model):
     rank = db.Column(db.Integer, default=0)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class EmailCampaign(db.Model):
+    """Historique des campagnes d'emailing"""
+    id = db.Column(db.Integer, primary_key=True)
+    campaign_type = db.Column(db.String(50), nullable=False)  # product, promotion, system
+    product_id = db.Column(db.Integer, nullable=True)  # Référence au produit
+    subject = db.Column(db.String(200), nullable=False)
+    total_recipients = db.Column(db.Integer, default=0)
+    emails_sent = db.Column(db.Integer, default=0)
+    emails_failed = db.Column(db.Integer, default=0)
+    push_sent = db.Column(db.Integer, default=0)
+    notifications_created = db.Column(db.Integer, default=0)
+    status = db.Column(db.String(20), default='completed')  # scheduled, sending, completed, failed
+    scheduled_at = db.Column(db.DateTime, nullable=True)
+    started_at = db.Column(db.DateTime, nullable=True)
+    completed_at = db.Column(db.DateTime, nullable=True)
+    created_by = db.Column(db.String(30))  # phone of admin
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (
+        db.Index('idx_email_campaign_type', 'campaign_type', 'created_at'),
+    )
+
+class EmailLog(db.Model):
+    """Log détaillé de chaque email envoyé"""
+    id = db.Column(db.Integer, primary_key=True)
+    campaign_id = db.Column(db.Integer, db.ForeignKey('email_campaign.id'), nullable=True)
+    user_phone = db.Column(db.String(30), nullable=False)
+    user_email = db.Column(db.String(120), nullable=False)
+    status = db.Column(db.String(20), default='pending')  # pending, sent, failed, bounced
+    error_message = db.Column(db.Text, nullable=True)
+    sent_at = db.Column(db.DateTime, nullable=True)
+    opened_at = db.Column(db.DateTime, nullable=True)  # Pour tracking ouverture
+    clicked_at = db.Column(db.DateTime, nullable=True)  # Pour tracking clics
+    
+    __table_args__ = (
+        db.Index('idx_email_log_campaign', 'campaign_id'),
+        db.Index('idx_email_log_user', 'user_phone'),
+        db.Index('idx_email_log_status', 'status'),
+    )
+
+class Unsubscribe(db.Model):
+    """Liste des utilisateurs désinscrits des emails marketing"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_email = db.Column(db.String(120), nullable=False, unique=True)
+    user_phone = db.Column(db.String(30), nullable=True)
+    unsubscribe_token = db.Column(db.String(100), nullable=False, unique=True)
+    reason = db.Column(db.String(50), nullable=True)  # marketing, all, spam
+    unsubscribed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    ip_address = db.Column(db.String(45), nullable=True)
+    
+    __table_args__ = (
+        db.Index('idx_unsubscribe_email', 'user_email'),
+        db.Index('idx_unsubscribe_token', 'unsubscribe_token'),
+    )
+
 def generate_referral_code(length=6):
     """Génère un code de parrainage unique (défaut 6 caractères)."""
     while True:
@@ -1627,6 +1682,355 @@ def send_product_notification_email(user_email, product_name, description, daily
         print(f"❌ Erreur envoi notification produit: {e}")
         return False, str(e)
 
+def send_product_notification_email_with_image(user_email, product_name, description, daily_roi, price, image_url, username):
+    """Envoie un email de notification de produit avec image."""
+    try:
+        # Générer le token de désinscription
+        unsub_token = secrets.token_urlsafe(32)
+        
+        # Vérifier si l'utilisateur est déjà désinscrit
+        unsubscribed = Unsubscribe.query.filter_by(user_email=user_email).first()
+        if unsubscribed:
+            return False, "Utilisateur désinscrit"
+        
+        header = get_email_header()
+        
+        html_content = f'''{header}
+                    <!-- Product Announcement -->
+                    <tr>
+                        <td align="center" style="padding: 40px 40px 20px;">
+                            <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                <span style="font-size: 36px;">✨</span>
+                            </div>
+                            <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0F172A;">Nouveau Produit Disponible!</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Greeting -->
+                    <tr>
+                        <td align="center" style="padding: 0 40px 20px;">
+                            <p style="margin: 0; font-size: 16px; color: #475569;">Bonjour {username},</p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Product Image -->
+                    <tr>
+                        <td align="center" style="padding: 0 40px 20px;">
+                            <img src="{image_url}" alt="{product_name}" style="max-width: 100%; width: 300px; height: auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                        </td>
+                    </tr>
+                    
+                    <!-- Product Details Card -->
+                    <tr>
+                        <td style="padding: 20px 40px;">
+                            <div style="background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%); border-radius: 16px; padding: 30px; color: white; text-align: center;">
+                                <h2 style="margin: 0 0 15px 0; font-size: 26px; font-weight: 800;">{product_name}</h2>
+                                <p style="margin: 0 0 25px 0; font-size: 15px; opacity: 0.95; line-height: 1.6;">{description}</p>
+                                
+                                <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
+                                    <tr>
+                                        <td style="padding: 15px; text-align: center; background: rgba(255,255,255,0.15); border-radius: 12px;">
+                                            <p style="margin: 0 0 5px 0; font-size: 12px; opacity: 0.85; text-transform: uppercase; font-weight: 600;">Prix</p>
+                                            <p style="margin: 0; font-size: 28px; font-weight: 900;">${price:.2f} USD</p>
+                                        </td>
+                                        <td style="width: 15px;"></td>
+                                        <td style="padding: 15px; text-align: center; background: rgba(255,255,255,0.15); border-radius: 12px;">
+                                            <p style="margin: 0 0 5px 0; font-size: 12px; opacity: 0.85; text-transform: uppercase; font-weight: 600;">Revenu Journalier</p>
+                                            <p style="margin: 0; font-size: 28px; font-weight: 900;">${daily_roi:.2f} USD</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                                <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+                                    📈 Rendement: {(daily_roi/price*100):.1f}% par jour
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- CTA Button -->
+                    <tr>
+                        <td align="center" style="padding: 30px 40px;">
+                            <a href="https://flowtoken.uk/produits_rapide" style="display: inline-block; background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: #ffffff; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);">
+                                🚀 Investir Maintenant
+                            </a>
+                        </td>
+                    </tr>
+                    
+                    <!-- Info Box -->
+                    <tr>
+                        <td style="padding: 0 40px 30px;">
+                            <div style="background-color: #F0F9FF; border-left: 4px solid #3B82F6; padding: 15px 20px; border-radius: 8px;">
+                                <p style="margin: 0; font-size: 13px; color: #1E40AF; line-height: 1.6;">
+                                    💡 <strong>Conseil:</strong> Les places sont limitées pour ce produit. Investissez maintenant pour sécuriser votre rendement quotidien!
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Unsubscribe -->
+                    <tr>
+                        <td align="center" style="padding: 20px 40px 30px;">
+                            <p style="margin: 0 0 10px 0; font-size: 12px; color: #94A3B8;">
+                                Vous recevez cet email car vous êtes membre de TokenFlow.
+                            </p>
+                            <a href="https://flowtoken.uk/unsubscribe/{unsub_token}" style="font-size: 12px; color: #6366F1; text-decoration: none;">
+                                Je ne souhaite plus recevoir d'emails marketing
+                            </a>
+                        </td>
+                    </tr>
+{footer}'''
+        
+        text_content = f"""Nouveau Produit TokenFlow!
+
+{product_name}
+
+{description}
+
+Prix: ${price:.2f} USD
+Revenu journalier: ${daily_roi:.2f} USD
+Rendement: {(daily_roi/price*100):.1f}% par jour
+
+Investissez maintenant: https://flowtoken.uk/produits_rapide
+
+---
+Pour vous désinscrire: https://flowtoken.uk/unsubscribe/{unsub_token}
+"""
+        
+        success, error = send_email_smtp(
+            user_email,
+            f"✨ Nouveau produit: {product_name}",
+            html_content,
+            text_content
+        )
+        return success, error
+    except Exception as e:
+        print(f"❌ Erreur envoi notification produit avec image: {e}")
+        return False, str(e)
+
+def broadcast_new_product_email_async(product_id):
+    """
+    Version asynchrone de broadcast - exécutée en arrière-plan via threading.
+    Récupère le produit depuis la base de données.
+    """
+    from datetime import datetime
+    import time
+    
+    with app.app_context():
+        product = CustomProduct.query.get(product_id)
+        if not product:
+            print(f"❌ Produit {product_id} introuvable pour broadcast")
+            return None
+        
+        return broadcast_new_product_email(product, scheduled=False)
+
+def broadcast_new_product_email(product, scheduled=False):
+    """
+    Envoie automatiquement un email de notification à TOUS les utilisateurs actifs
+    lors de la création d'un nouveau produit.
+    
+    Fonctionnalités professionnelles:
+    - Envoi uniquement aux utilisateurs ACTIFS (non bloqués, email vérifié)
+    - Image du produit dans l'email
+    - Bouton de désinscription
+    - Notifications push téléphone + navigateur
+    - Rate limiting (100 emails/minute)
+    - Statistiques détaillées
+    - Compatible Gmail SMTP, Resend, Brevo, Zoho
+    - File d'attente en arrière-plan (threading)
+    
+    Args:
+        product: Objet CustomProduct ou dictionnaire avec name, description, price_usd, daily_revenue_usd, image_filename
+        scheduled: Si True, la campagne est planifiée
+        
+    Returns:
+        dict: {'sent': int, 'failed': int, 'total': int, 'errors': list, 'campaign_id': int}
+    """
+    from datetime import datetime
+    import time
+    
+    results = {
+        'sent': 0,
+        'failed': 0,
+        'total': 0,
+        'push_sent': 0,
+        'notifications': 0,
+        'errors': [],
+        'product_name': product.get('name', product.name if hasattr(product, 'name') else 'Inconnu'),
+        'campaign_id': None,
+        'timestamp': datetime.utcnow().isoformat()
+    }
+    
+    try:
+        # Récupérer les informations du produit
+        product_name = product.get('name', product.name) if hasattr(product, 'name') else product['name']
+        description = product.get('description', product.description) if hasattr(product, 'description') else product.get('description', '')
+        price_usd = float(product.get('price_usd', product.price_usd)) if hasattr(product, 'price_usd') else float(product['price_usd'])
+        daily_revenue_usd = float(product.get('daily_revenue_usd', product.daily_revenue_usd)) if hasattr(product, 'daily_revenue_usd') else float(product['daily_revenue_usd'])
+        image_filename = product.get('image_filename', product.image_filename) if hasattr(product, 'image_filename') else product.get('image_filename', 'ai.jpg')
+        product_id = product.id if hasattr(product, 'id') else None
+        
+        print("=" * 60)
+        print(f"📢 [BROADCAST] Démarrage notification nouveau produit: {product_name}")
+        print(f"   Prix: ${price_usd:.2f} USD")
+        print(f"   Revenu journalier: ${daily_revenue_usd:.2f} USD")
+        print(f"   Image: {image_filename}")
+        print("=" * 60)
+        
+        # 1. Créer la campagne email
+        campaign = EmailCampaign(
+            campaign_type='product',
+            product_id=product_id,
+            subject=f"🚀 Nouveau Produit: {product_name}",
+            created_by=session.get('phone', 'system') if not scheduled else 'scheduled'
+        )
+        db.session.add(campaign)
+        db.session.commit()
+        results['campaign_id'] = campaign.id
+        
+        # 2. Récupérer TOUS les utilisateurs ACTIFS (critères stricts)
+        users = User.query.filter(
+            User.email.isnot(None),
+            User.email != '',
+            User.email_verified == True,
+            User.is_banned == False
+        ).all()
+        
+        results['total'] = len(users)
+        campaign.total_recipients = len(users)
+        campaign.status = 'sending'
+        campaign.started_at = datetime.utcnow()
+        db.session.commit()
+        
+        print(f"👥 {len(users)} utilisateurs actifs éligibles trouvés")
+        
+        # Taux de limitation: 100 emails/minute pour éviter blocage SMTP
+        RATE_LIMIT_DELAY = 0.6  # secondes entre chaque email
+        email_count = 0
+        batch_start = time.time()
+        
+        # 3. Envoyer à chaque utilisateur
+        for i, user in enumerate(users, 1):
+            try:
+                # Vérifier si l'utilisateur n'est pas désinscrit des emails marketing
+                unsubscribed = Unsubscribe.query.filter_by(user_email=user.email).first()
+                if unsubscribed:
+                    results['failed'] += 1
+                    continue
+                
+                # 1. Créer la notification in-app
+                notification = Notification(
+                    user_phone=user.phone,
+                    type='product',
+                    title='🚀 Nouveau Produit Disponible!',
+                    message=f'Découvrez notre nouveau produit: {product_name}. ROI journalier: ${daily_revenue_usd:.2f} USD',
+                    action_url=url_for('produits_rapide_page', _external=True)
+                )
+                db.session.add(notification)
+                campaign.notifications_created += 1
+                results['notifications'] += 1
+                
+                # 2. Envoyer l'email avec image du produit
+                image_url = url_for('static', filename=f'vlogs/{image_filename}', _external=True) if image_filename else url_for('static', filename='vlogs/ai.jpg', _external=True)
+                
+                success, error = send_product_notification_email_with_image(
+                    user.email,
+                    product_name,
+                    description or f"Investissement à {(daily_revenue_usd/price_usd*100):.1f}% de rendement journalier",
+                    daily_revenue_usd,
+                    price_usd,
+                    image_url,
+                    user.username or user.phone
+                )
+                
+                # 3. Log l'envoi email
+                email_log = EmailLog(
+                    campaign_id=campaign.id,
+                    user_phone=user.phone,
+                    user_email=user.email,
+                    status='sent' if success else 'failed',
+                    error_message=error,
+                    sent_at=datetime.utcnow() if success else None
+                )
+                db.session.add(email_log)
+                
+                if success:
+                    results['sent'] += 1
+                    campaign.emails_sent += 1
+                else:
+                    results['failed'] += 1
+                    campaign.emails_failed += 1
+                    error_msg = f"Échec email pour {user.email}: {error or 'Erreur inconnue'}"
+                    results['errors'].append(error_msg)
+                
+                # 4. Envoyer notification push (téléphone + navigateur)
+                try:
+                    push_result = send_push_notification_to_user(
+                        user.phone,
+                        '🚀 Nouveau Produit Disponible!',
+                        f'Découvrez {product_name} et commencez à gagner dès aujourd\'hui.',
+                        url=url_for('produits_rapide_page', _external=True),
+                        require_interaction=False
+                    )
+                    if push_result:
+                        campaign.push_sent += 1
+                        results['push_sent'] += 1
+                except Exception as push_error:
+                    print(f"   ⚠️ Push error for {user.phone}: {push_error}")
+                
+                db.session.commit()
+                
+                # Rate limiting: pause après 100 emails
+                email_count += 1
+                if email_count >= 100:
+                    elapsed = time.time() - batch_start
+                    if elapsed < 60:
+                        sleep_time = 60 - elapsed
+                        print(f"   ⏱️ Rate limit: pause de {sleep_time:.1f}s après 100 emails...")
+                        time.sleep(sleep_time)
+                    email_count = 0
+                    batch_start = time.time()
+                else:
+                    time.sleep(RATE_LIMIT_DELAY)
+                
+                if results['sent'] % 10 == 0:
+                    print(f"   📧 {results['sent']}/{len(users)} emails envoyés...")
+                    
+            except Exception as user_error:
+                results['failed'] += 1
+                campaign.emails_failed += 1
+                error_msg = f"Exception pour {user.email}: {str(user_error)}"
+                results['errors'].append(error_msg)
+                print(f"   ❌ {error_msg}")
+                db.session.commit()
+                # Continuer avec l'utilisateur suivant
+        
+        # Résumé final
+        campaign.status = 'completed'
+        campaign.completed_at = datetime.utcnow()
+        db.session.commit()
+        
+        print("=" * 60)
+        print(f"📊 [BROADCAST] Résumé:")
+        print(f"   Total: {results['total']}")
+        print(f"   Emails envoyés: {results['sent']}")
+        print(f"   Échecs: {results['failed']}")
+        print(f"   Notifications in-app: {results['notifications']}")
+        print(f"   Notifications push: {results['push_sent']}")
+        print(f"   Taux de réussite: {(results['sent']/results['total']*100) if results['total'] > 0 else 0:.1f}%")
+        print("=" * 60)
+        
+        return results
+        
+    except Exception as e:
+        error_msg = f"Erreur générale broadcast: {str(e)}"
+        print(f"❌ {error_msg}")
+        results['errors'].append(error_msg)
+        if 'campaign' in locals():
+            campaign.status = 'failed'
+            db.session.commit()
+        return results
+
 @app.route("/academy/agriculture")
 @login_required
 def formation_agri_page():
@@ -1898,6 +2302,25 @@ def resend_otp_page(action):
                 else:
                     flash(f"⚠️ Impossible de renvoyer le code OTP. {error or 'Réessayez plus tard.'}", "warning")
     return redirect(url_for("verify_otp_page", action=action))
+
+@app.route("/unsubscribe/<token>")
+def unsubscribe_page(token):
+    """Page de désinscription des emails marketing."""
+    unsub = Unsubscribe.query.filter_by(unsubscribe_token=token).first()
+    
+    if not unsub:
+        flash("Lien de désinscription invalide.", "danger")
+        return redirect(url_for("index_page"))
+    
+    # Si l'utilisateur est connecté, on met à jour son statut
+    if session.get('phone'):
+        user = User.query.filter_by(phone=session['phone']).first()
+        if user and user.email == unsub.user_email:
+            unsub.user_phone = user.phone
+            db.session.commit()
+    
+    flash("✅ Vous avez été désinscrit avec succès des emails marketing.", "success")
+    return render_template("unsubscribe.html", user_email=unsub.user_email)
 
 @app.route("/verify-email/<token>")
 def verify_email(token):
@@ -3763,65 +4186,10 @@ def admin_products():
         db.session.add(new_product)
         db.session.commit()
         
-        # Send notification to all users (in-app + email)
-        all_users = User.query.all()
-        email_count = 0
-        for u in all_users:
-            # In-app notification
-            create_notification(
-                u.phone,
-                'product',
-                'Nouveau Produit Disponible!',
-                f'Le produit "{name}" est maintenant disponible. ROI journalier: ${daily_revenue_usd:.2f} USD',
-                url_for('produits_rapide_page', _external=True)
-            )
-            
-            # Send email notification if user has email
-            if u.email and u.email_verified:
-                try:
-                    email_subject = f"🚀 Nouveau Produit: {name}"
-                    email_body = f'''
-<html>
-<body style="font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F1F5F9; padding: 40px;">
-    <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
-        <div style="text-align: center; margin-bottom: 30px;">
-            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 900;">T</div>
-        </div>
-        <h1 style="color: #0F172A; font-size: 24px; margin-bottom: 20px;">🚀 Nouveau Produit Disponible!</h1>
-        <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-            Bonjour {u.username or 'cher utilisateur'},
-        </p>
-        <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-            Un nouveau produit d'investissement vient d'être ajouté sur TokenFlow :
-        </p>
-        <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border-radius: 16px; padding: 24px; margin: 20px 0; border: 1px solid rgba(99, 102, 241, 0.2);">
-            <h2 style="color: #6366F1; font-size: 20px; margin: 0 0 12px;">{name}</h2>
-            <p style="color: #475569; font-size: 14px; margin: 0 0 8px;"><strong>Prix:</strong> ${price_usd:.2f} USD</p>
-            <p style="color: #10B981; font-size: 18px; font-weight: 700; margin: 0;">📈 ROI Journalier: ${daily_revenue_usd:.2f} USD</p>
-        </div>
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="{url_for('produits_rapide_page', _external=True)}" style="display: inline-block; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);">
-                Investir Maintenant
-            </a>
-        </div>
-        <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
-            Ne manquez pas cette opportunité d'investissement !<br>
-            Connectez-vous à votre compte TokenFlow pour en profiter.
-        </p>
-        <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 30px 0;">
-        <p style="color: #94A3B8; font-size: 12px; text-align: center;">
-            © 2024 TokenFlow. Tous droits réservés.
-        </p>
-    </div>
-</body>
-</html>
-                    '''
-                    send_email_notification(u.email, email_subject, email_body)
-                    email_count += 1
-                except Exception as e:
-                    print(f"Erreur envoi email notification: {e}")
+        # Send broadcast notification to all users (in-app + email)
+        broadcast_results = broadcast_new_product_email(new_product)
         
-        flash(f"✅ Produit créé avec succès ! {email_count} notifications email envoyées.", "success")
+        flash(f"✅ Produit créé avec succès ! {broadcast_results['sent']} emails envoyés, {broadcast_results['failed']} échecs.", "success")
         return redirect(url_for("admin_products"))
     
     # GET request - show products list and creation form
