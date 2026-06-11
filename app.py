@@ -2065,7 +2065,7 @@ def connexion_page():
         db.session.commit()
 
         # Store phone in session for OTP verification
-        session['pending_login_phone'] = phone
+        session['pending_login_phone'] = user.phone
 
         # Send OTP email
         success, error = send_otp_email(user.email, otp, "connexion")
