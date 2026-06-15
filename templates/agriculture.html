@@ -310,6 +310,13 @@
             line-height: 1.5;
         }
 
+        .user-pack-banner .files-count {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--agri-gold);
+            margin-top: 8px;
+        }
+
         /* Back Button */
         .back-link {
             display: inline-flex;
@@ -366,14 +373,23 @@
     <!-- User Pack Info Banner -->
     <div class="user-pack-banner">
         <div class="pack-label">Votre Pack Actuel</div>
-        <div class="current-pack">Pack {{ user.pack_level or 1 }}</div>
+        <div class="current-pack">Pack {{ user.pack_level | default(0) }}</div>
+        <div class="files-count">
+            {% if user.pack_level and user.pack_level >= 5 %}
+                🎉 Fichiers illimités !
+            {% elif user.pack_level and user.pack_level >= 1 %}
+                📥 {{ user.pack_level }} fichier(s) téléchargeable(s)
+            {% else %}
+                🔒 0 fichier disponible
+            {% endif %}
+        </div>
         <div class="pack-benefits">
             {% if user.pack_level and user.pack_level >= 5 %}
-                🎉 Accès complet à tous les livres et ressources!
-            {% elif user.pack_level and user.pack_level >= 2 %}
-                ✅ Accès aux livres jusqu'au niveau {{ user.pack_level }}
+                🎉 Accès complet à tous les livres et ressources !
+            {% elif user.pack_level and user.pack_level >= 1 %}
+                ✅ Vous pouvez télécharger {{ user.pack_level }} fichier(s) dans cette section
             {% else %}
-                🔒 Activez un pack supérieur pour débloquer plus de contenu
+                🔒 Achetez un produit pour débloquer des fichiers (1 produit = 1 fichier)
             {% endif %}
         </div>
     </div>
@@ -785,7 +801,7 @@
 
     // Initialize icons based on user access
     document.addEventListener('DOMContentLoaded', function() {
-        const userPack = {{ user.pack_level | default(1) | tojson }};
+        const userPack = parseInt('{{ user.pack_level | default(0) }}') || 0;
         
         // Set appropriate icons for unlocked levels
         const unlockedLevels = [];
