@@ -293,6 +293,10 @@ class User(db.Model):
     otp_expires = db.Column(db.DateTime, nullable=True)
     otp_verified = db.Column(db.Boolean, default=False)
 
+    # Pack level for agriculture PDF access (0-5)
+    # 1 investissement = pack_level 1, 2 investissements = pack_level 2, etc.
+    pack_level = db.Column(db.Integer, default=0)
+
     date_creation = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Depot(db.Model):
