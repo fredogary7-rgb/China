@@ -4615,8 +4615,8 @@ def retrait_page():
             return redirect(url_for("retrait_page"))
 
         # Vérification des limites de retrait (Minimum 35 USD)
-        if montant < 35:
-            flash("Montant minimum : 35 USD.", "warning")
+        if montant < 25:
+            flash("Montant minimum : 25 USD.", "warning")
             return redirect(url_for("retrait_page"))
 
         # L'utilisateur doit avoir assez sur son solde retirable global pour initier la demande
