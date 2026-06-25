@@ -4701,55 +4701,59 @@ def retrait_confirmation_page(retrait_id):
 
 from datetime import datetime, UTC
 
+from datetime import datetime, UTC
+from datetime import datetime, UTC
+
 @app.route("/cron/pay_invests")
 def cron_pay_invests():
-    # Utilisation de la syntaxe moderne sans dépréciation
     maintenant = datetime.now(UTC)
-    invests = Investissement.query.filter_by(actif=True).all()
 
+    invests = Investissement.query.filter_by(actif=True).all()
     total_payes = 0
 
     for inv in invests:
-        # Sécurité : Conversion en datetime si les dates sont stockées en String
-        if isinstance(inv.dernier_paiement, str):
-            inv.dernier_paiement = datetime.strptime(inv.dernier_paiement, "%Y-%m-%d %H:%M:%S")
-        if isinstance(inv.date_debut, str):
-            inv.date_debut = datetime.strptime(inv.date_debut, "%Y-%m-%d %H:%M:%S")
 
-        # Si aucun paiement n'a encore eu lieu, on initialise avec la date de début
         if not inv.dernier_paiement:
             inv.dernier_paiement = inv.date_debut
 
-        # Calcul du temps écoulé depuis le dernier paiement
+        # Corriger les dates naïves
+        if inv.dernier_paiement.tzinfo is None:
+            inv.dernier_paiement = inv.dernier_paiement.replace(tzinfo=UTC)
+
+        if inv.date_debut and inv.date_debut.tzinfo is None:
+            inv.date_debut = inv.date_debut.replace(tzinfo=UTC)
+
         diff = maintenant - inv.dernier_paiement
 
-        # 86400 secondes = 24 heures
+        # Paiement toutes les 24h
         if diff.total_seconds() >= 86400:
+
             user = User.query.filter_by(phone=inv.phone).first()
+
             if user:
-                # CORRECTION CRITIQUE : inv.revenu_journalier est en XOF.
-                # On le divise par 625 pour ajouter la valeur réelle en Dollars (USD) sur ses soldes.
-                gain_usd = float(inv.revenu_journalier) / 625
-                
-                user.solde_revenu = (user.solde_revenu or 0) + gain_usd
-                user.solde_total = (user.solde_total or 0) + gain_usd # On synchronise le solde global
+                gain = float(inv.revenu_journalier or 0)
+
+                user.solde_revenu = (user.solde_revenu or 0) + gain
+
                 total_payes += 1
 
-            # On met à jour l'horodatage du dernier paiement
             inv.dernier_paiement = maintenant
 
-            # Réduction de la durée du contrat
+            # Réduire la durée restante
             if inv.duree and inv.duree > 0:
                 inv.duree -= 1
+
                 if inv.duree <= 0:
                     inv.actif = False
             else:
                 inv.actif = False
 
-    # Sauvegarde de tous les paiements et états de contrats en une seule fois
     db.session.commit()
-    return f"{total_payes} paiements effectués avec succès en USD."
 
+    return {
+        "success": True,
+        "paiements_effectues": total_payes
+    }
 
 import threading
 import time
